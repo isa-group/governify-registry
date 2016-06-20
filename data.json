@@ -1,0 +1,82 @@
+[{
+    "guarantee": "guarantee_SPU_K01",
+    "scope": {
+        "prioridad": "1",
+        "nodo": "Sevilla",
+        "lineaServicio": "1. Linea servicio de mantenimiento básico",
+        "actividad": "1.1. Actividad de incidencias"
+    },
+    "logs": {
+        "casdm": "https://casdm.log.sas.governify.io/commit/2334"
+    },
+    "period": {
+        "from": "20150516",
+        "to": "20150615"
+    },
+    "evidences": [{
+        "evidence": true,
+        "id": "2872096",
+        "subject": "Asunto 10",
+        "startDate": "20150516 03:25:30",
+        "endDate": "20150516 04:35:30",
+        "duration": "1:00:00"
+    }],
+    "fulfilled": false,
+    "penalties": {
+        "PorcentajePTOT": 5
+    }
+}, {
+    "guarantee": "guarantee_SPU_K01",
+    "scope": {
+        "prioridad": "1",
+        "nodo": "Huelva",
+        "lineaServicio": "1. Linea servicio de mantenimiento básico",
+        "actividad": "1.1. Actividad de incidencias"
+    },
+    "logs": {
+        "casdm": "https://casdm.log.sas.governify.io/commit/2334"
+    },
+    "period": {
+        "from": "20150516",
+        "to": "20150615"
+    },
+    "evidences": [{
+        "evidence": true,
+        "id": "2872096",
+        "subject": "Asunto 10",
+        "startDate": "20150516 03:25:30",
+        "endDate": "20150516 04:35:30",
+        "duration": "1:00:00"
+    }],
+    "fulfilled": false,
+    "penalties": {
+        "PorcentajePTOT": 2
+    }
+}, {
+    "guarantee": "guarantee_SPU_K02",
+    "scope": {
+        "prioridad": "1",
+        "nodo": "Sevilla",
+        "lineaServicio": "1. Linea servicio de mantenimiento básico",
+        "actividad": "1.1. Actividad de incidencias"
+    },
+    "logs": {
+        "casdm": "https://casdm.log.sas.governify.io/commit/2334"
+    },
+    "period": {
+        "from": "20150516",
+        "to": "20150615"
+    },
+    "evidences": [{
+        "evidence": true,
+        "id": "2872096",
+        "subject": "Asunto 10",
+        "startDate": "20150516 03:25:30",
+        "endDate": "20150516 04:35:30",
+        "duration": "1:00:00"
+    }],
+    "fulfilled": false,
+    "penalties": {
+        "PorcentajePTOT": 5
+    }
+}]

@@ -1,0 +1,77 @@
+'use strict'
+var mongoose = require('mongoose');
+var swaggerMongoose = require('swagger-mongoose');
+var $RefParser = require('json-schema-ref-parser');
+var jsyaml = require('js-yaml');
+var fs = require('fs');
+var winston = require('winston');
+
+var state = {
+    logger: null,
+    db: null,
+    models: null
+}
+
+var configString = fs.readFileSync('./config/config.yaml', 'utf8');
+var config = jsyaml.safeLoad(configString)[process.env.NODE_ENV ? process.env.NODE_ENV : 'development'];
+config.state = state;
+module.exports = config;
+
+// Setup logger
+module.exports.logger = {};
+module.exports.logger.setup = function() {
+    if (state.logger) return;
+    if (!fs.existsSync('./logs')) {
+        fs.mkdirSync('./logs');
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        state.logger = new(winston.Logger)({
+            transports: [
+                new(winston.transports.Console)(),
+                new(winston.transports.File)({
+                    filename: config.logfile
+                })
+            ]
+        });
+        state.logger.transports.console.timestamp = true;
+    } else {
+        // while testing, log only to file, leaving stdout free for unit test status messages
+        state.logger = new(winston.Logger)({
+            transports: [
+                new(winston.transports.File)({
+                    filename: config.logfile
+                })
+            ]
+        });
+    }
+}
+
+// MongoDB configuration
+module.exports.db = {};
+module.exports.db.connect = function() {
+    if (state.db) return;
+    mongoose.connect(config.database.url);
+    var db = mongoose.connection;
+    db.on('error', console.error.bind(console, 'connection error:'));
+    db.on('open', function() {
+        state.db = db;
+        console.log('Connected to db!');
+        if (state.models) return;
+        var swagger = jsyaml.safeLoad(fs.readFileSync('./api/swagger.yaml'));
+        state.models = swaggerMongoose.compile(swagger).models;
+        module.exports.db.models = state.models;
+    });
+}
+
+module.exports.db.get = function() {
+    return state.db
+}
+
+module.exports.db.close = function(done) {
+    if (state.db) {
+        state.db.close(function(err, result) {
+            state.db = null;
+            state.mode = null;
+        })
+    }
+}
