@@ -1,48 +1,11 @@
 'use strict';
 
+var mongoose = require('mongoose');
 var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
 var config = require('../config');
 
-exports.namespacesGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   **/
-
-  var NamespaceModel = config.db.models.namespace;
-
-  NamespaceModel.find(function(err, namespaces) {
-    if (err) {
-      console.error(err);
-      res.end();
-    }
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(namespaces));
-  });
-}
-
-exports.namespacesPOST = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (Namespace)
-   **/
-  // no response value expected for this operation
-
-  var NamespaceModel = config.db.models.namespace;
-  var namespace = new NamespaceModel(args.namespace.value);
-  namespace.save(function(err) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('Namespace ' + args.namespace.value.name + ' created successfully!');
-    }
-    res.end();
-  });
-
-  res.end();
-}
-
-exports.namespacesNamespaceAgreementsAgreementContextDefinitionsGET = function(args, res, next) {
+exports.agreementsAgreementContextDefinitionsGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -72,7 +35,7 @@ exports.namespacesNamespaceAgreementsAgreementContextDefinitionsGET = function(a
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementContextDefinitionsLogsGET = function(args, res, next) {
+exports.agreementsAgreementContextDefinitionsLogsGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -89,7 +52,7 @@ exports.namespacesNamespaceAgreementsAgreementContextDefinitionsLogsGET = functi
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementContextDefinitionsSchemasGET = function(args, res, next) {
+exports.agreementsAgreementContextDefinitionsSchemasGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -106,7 +69,7 @@ exports.namespacesNamespaceAgreementsAgreementContextDefinitionsSchemasGET = fun
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementContextDefinitionsScopesGET = function(args, res, next) {
+exports.agreementsAgreementContextDefinitionsScopesGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -123,7 +86,7 @@ exports.namespacesNamespaceAgreementsAgreementContextDefinitionsScopesGET = func
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementContextGET = function(args, res, next) {
+exports.agreementsAgreementContextGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -153,7 +116,7 @@ exports.namespacesNamespaceAgreementsAgreementContextGET = function(args, res, n
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementContextInfrastructureGET = function(args, res, next) {
+exports.agreementsAgreementContextInfrastructureGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -170,7 +133,7 @@ exports.namespacesNamespaceAgreementsAgreementContextInfrastructureGET = functio
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementContextValidityGET = function(args, res, next) {
+exports.agreementsAgreementContextValidityGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -190,58 +153,7 @@ exports.namespacesNamespaceAgreementsAgreementContextValidityGET = function(args
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (String)
-   * agreement (String)
-   **/
-  var examples = {};
-  examples['application/json'] = {
-    "terms": {
-      "quotas": {},
-      "rates": {},
-      "metrics": {},
-      "guarantees": {},
-      "pricing": {
-        "cost": 1.3579000000000001069366817318950779736042022705078125,
-        "currency": "aeiou",
-        "billing": {
-          "init": "aeiou",
-          "period": "aeiou",
-          "penalties": "",
-          "rewards": ""
-        }
-      }
-    },
-    "context": {
-      "provider": "aeiou",
-      "infrastructure": {},
-      "validity": {
-        "init": "aeiou",
-        "end": "aeiou"
-      },
-      "definitions": {
-        "schemas": {},
-        "scopes": {},
-        "logs": {}
-      },
-      "consumer": "aeiou"
-    },
-    "id": "aeiou",
-    "type": "aeiou",
-    "version": "aeiou"
-  };
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
-
-}
-
-exports.namespacesNamespaceAgreementsAgreementTermsGET = function(args, res, next) {
+exports.agreementsAgreementTermsGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -273,7 +185,7 @@ exports.namespacesNamespaceAgreementsAgreementTermsGET = function(args, res, nex
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementTermsGuaranteesGET = function(args, res, next) {
+exports.agreementsAgreementTermsMetricsGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -290,46 +202,7 @@ exports.namespacesNamespaceAgreementsAgreementTermsGuaranteesGET = function(args
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementTermsGuaranteesGuaranteeGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (String)
-   * agreement (String)
-   * guarantee (String)
-   **/
-  var examples = {};
-  examples['application/json'] = {
-    "scope": [{}],
-    "of": {},
-    "id": "aeiou"
-  };
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
-
-}
-
-exports.namespacesNamespaceAgreementsAgreementTermsMetricsGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (String)
-   * agreement (String)
-   **/
-  var examples = {};
-  examples['application/json'] = {};
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
-
-}
-
-exports.namespacesNamespaceAgreementsAgreementTermsMetricsMetricGET = function(args, res, next) {
+exports.agreementsAgreementTermsMetricsMetricGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -347,7 +220,7 @@ exports.namespacesNamespaceAgreementsAgreementTermsMetricsMetricGET = function(a
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingGET = function(args, res, next) {
+exports.agreementsAgreementTermsPricingBillingGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -369,7 +242,7 @@ exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingGET = function(
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingPenaltiesGET = function(args, res, next) {
+exports.agreementsAgreementTermsPricingBillingPenaltiesGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -386,7 +259,7 @@ exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingPenaltiesGET = 
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingPenaltiesPenaltyGET = function(args, res, next) {
+exports.agreementsAgreementTermsPricingBillingPenaltiesPenaltyGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -411,7 +284,7 @@ exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingPenaltiesPenalt
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingRewardsGET = function(args, res, next) {
+exports.agreementsAgreementTermsPricingBillingRewardsGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -428,7 +301,7 @@ exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingRewardsGET = fu
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingRewardsRewardGET = function(args, res, next) {
+exports.agreementsAgreementTermsPricingBillingRewardsRewardGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -453,7 +326,7 @@ exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingRewardsRewardGE
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementTermsPricingGET = function(args, res, next) {
+exports.agreementsAgreementTermsPricingGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -479,7 +352,7 @@ exports.namespacesNamespaceAgreementsAgreementTermsPricingGET = function(args, r
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementTermsQuotasGET = function(args, res, next) {
+exports.agreementsAgreementTermsQuotasGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -496,7 +369,7 @@ exports.namespacesNamespaceAgreementsAgreementTermsQuotasGET = function(args, re
 
 }
 
-exports.namespacesNamespaceAgreementsAgreementTermsRatesGET = function(args, res, next) {
+exports.agreementsAgreementTermsRatesGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -513,107 +386,125 @@ exports.namespacesNamespaceAgreementsAgreementTermsRatesGET = function(args, res
 
 }
 
-exports.namespacesNamespaceAgreementsGET = function(args, res, next) {
+exports.agreementsGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
    **/
-
-  var NamespaceModel = config.db.models.namespace;
-  NamespaceModel.find({
-    'name': args.namespace.value
-  }, function(err, namespaces) {
-    if (err) {
-      console.log(err);
-      res.end();
-    }
-    if (namespaces.length > 0) {
-      var namespace = namespaces[0];
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(namespace.agreements));
-    } else {
-      console.log('No results found');
-      res.end();
-    }
-
-  });
-
-}
-
-exports.namespacesNamespaceAgreementsPOST = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (String)
-   * agreement (Agreement)
-   **/
-  // no response value expected for this operation
-
-  var NamespaceModel = config.db.models.namespace;
-  NamespaceModel.find({
-    'name': args.namespace.value
-  }, function(err, namespaces) {
-    if (namespaces.length > 0) {
-      try {
-        var namespace = namespaces[0];
-        var AgreementModel = config.db.models.agreement;
-        $RefParser.dereference(args.agreement.value, function(err, schema) {
-          if (err) {
-            console.log(err);
-            res.end(JSON.stringify({
-              code: 500,
-              message: err
-            }));
-          } else {
-            var agreement = new AgreementModel(schema);
-            namespace.agreements.push(agreement);
-            namespace.save(function(err) {
-              if (err) {
-                console.log(err);
-                res.end(JSON.stringify({
-                  code: 500,
-                  message: err
-                }));
-              } else {
-                console.log('New agreement saved successfully!');
-                res.end(JSON.stringify({
-                  code: 200,
-                  message: 'New agreement saved successfully!'
-                }));
-              }
-            });
-          }
-        });
-      } catch (error) {
-        res.end(JSON.stringify({
-          code: 500,
-          message: error
-        }));
-      }
-    } else {
-      console.log('Namespace not found');
-      res.end(JSON.stringify({
-        code: 404,
-        message: 'Namespace not found'
-      }));
-    }
-  });
-}
-
-exports.namespacesNamespaceGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (String)
-   **/
-
-  var NamespaceModel = config.db.models.namespace;
-  NamespaceModel.find({
-    'name': args.namespace.value
-  }, function(err, namespace) {
+  var AgreementModel = config.db.models.AgreementModel;
+  AgreementModel.find(function(err, agreements) {
     if (err) {
       console.error(err);
       res.end();
     }
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(namespace));
+    res.end(JSON.stringify(agreements));
   });
+
+}
+
+exports.agreementsPOST = function(args, res, next) {
+  /**
+   * parameters expected in the args:
+   * agreement (Agreement)
+   **/
+  // no response value expected for this operation
+
+  //console.log(config.db.models.agreement);
+
+  $RefParser.dereference(args.agreement.value, function(err, schema) {
+    if (err) {
+      console.log(err);
+      res.end(JSON.stringify({
+        code: 500,
+        message: err
+      }));
+    } else {
+      var agreement = new config.db.models.AgreementModel(args.agreement.value);
+      agreement.save(function(err) {
+        if (err) {
+          console.log(err);
+          res.end(JSON.stringify({
+            code: 500,
+            message: err
+          }));
+        } else {
+          console.log('New agreement saved successfully!');
+          res.end(JSON.stringify({
+            code: 200,
+            message: 'New agreement saved successfully!',
+            data: agreement
+          }));
+        }
+      });
+    }
+  });
+}
+
+exports.agreementsAgreementGET = function(args, res, next) {
+  /**
+   * parameters expected in the args:
+   * agreement (String)
+   **/
+
+  var AgreementModel = config.db.models.AgreementModel;
+  AgreementModel.find({
+    'id': args.agreement.value
+  }, function(err, agreement) {
+    if (err) {
+      console.error(err);
+      res.end();
+    }
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(agreement));
+  });
+
+}
+
+exports.agreementsAgreementTermsGuaranteesGET = function(args, res, next) {
+  /**
+   * parameters expected in the args:
+   * agreement (String)
+   **/
+  var AgreementModel = config.db.models.AgreementModel;
+  AgreementModel.find({
+    'id': args.agreement.value
+  }, function(err, agreement) {
+    if (err) {
+      console.error(err);
+      res.end();
+    }
+    if (agreement.length === 1) {
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(agreement[0].terms.guarantees));
+    }
+  });
+
+}
+
+exports.agreementsAgreementTermsGuaranteesGuaranteeGET = function(args, res, next) {
+  /**
+   * parameters expected in the args:
+   * agreement (String)
+   * guarantee (String)
+   **/
+  var guarantee = {};
+  var AgreementModel = config.db.models.AgreementModel;
+  AgreementModel.find({
+    'id': args.agreement.value
+  }, function(err, agreement) {
+    if (err) {
+      console.error(err);
+      res.end();
+    }
+    if (agreement.length === 1) {
+      var guarantee = agreement[0].terms.guarantees.filter(function(guarantee) {
+        return guarantee.id === args.guarantee.value;
+      });
+
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(guarantee));
+    }
+  });
+
 }

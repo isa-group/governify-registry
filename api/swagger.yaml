@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   description: >-
-    First paragraph of description.\n\nSecond paragraph of description\n
+    First paragraph of description.\\n\\nSecond paragraph of description\\n
     <div class="postman-run-button"
       data-postman-action="collection/import"
       data-postman-var-1="4cc14a96eab965c49970"
@@ -30,9 +30,9 @@ host: "registry.governify.io"
 basePath: "/api/v1"
 tags:
 - name: "agreement-registry"
-  description: "SLA-Driven papamoscas"
+  description: "Agreement registry"
 - name: "state-registry"
-  description: "SLA-Driven vencejo"
+  description: "State registry"
 schemes:
 - "http"
 - "https"
@@ -41,79 +41,12 @@ consumes:
 produces:
 - "application/json"
 paths:
-  /namespaces:
+  /agreements:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesGET"
-      parameters: []
-      responses:
-        200:
-          description: "Success"
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/namespace"
-        400:
-          description: "Bad request"
-          schema:
-            $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
-    post:
-      tags:
-      - "agreement-registry"
-      description: "XXX"
-      operationId: "namespacesPOST"
-      parameters:
-        - name: "namespace"
-          in: "body"
-          description: "XXX"
-          required: true
-          schema:
-            $ref: "#/definitions/namespace"
-      responses:
-        200:
-          description: "Success"
-        400:
-          description: "Bad request"
-          schema:
-            $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}:
-    get:
-      tags:
-      - "agreement-registry"
-      description: "XXX"
-      operationId: "namespacesNamespaceGET"
-      parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
-      responses:
-        200:
-          description: "Success"
-          schema:
-            $ref: "#/definitions/namespace"
-        400:
-          description: "Bad request"
-          schema:
-            $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements:
-    get:
-      tags:
-      - "agreement-registry"
-      description: "XXX"
-      operationId: "namespacesNamespaceAgreementsGET"
-      parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
+      operationId: "agreementsGET"
       responses:
         200:
           description: "Success"
@@ -130,13 +63,8 @@ paths:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsPOST"
+      operationId: "agreementsPOST"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "body"
         description: "XXX"
@@ -151,18 +79,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}:
+  /agreements/{agreement}:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementGET"
+      operationId: "agreementsAgreementGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -178,18 +101,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/context:
+  /agreements/{agreement}/context:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementContextGET"
+      operationId: "agreementsAgreementContextGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -205,18 +123,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/context/definitions:
+  /agreements/{agreement}/context/definitions:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementContextDefinitionsGET"
+      operationId: "agreementsAgreementContextDefinitionsGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -232,18 +145,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/context/definitions/logs:
+  /agreements/{agreement}/context/definitions/logs:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementContextDefinitionsLogsGET"
+      operationId: "agreementsAgreementContextDefinitionsLogsGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -261,18 +169,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/context/definitions/schemas:
+  /agreements/{agreement}/context/definitions/schemas:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementContextDefinitionsSchemasGET"
+      operationId: "agreementsAgreementContextDefinitionsSchemasGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -290,18 +193,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/context/definitions/scopes:
+  /agreements/{agreement}/context/definitions/scopes:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementContextDefinitionsScopesGET"
+      operationId: "agreementsAgreementContextDefinitionsScopesGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -317,18 +215,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/context/infrastructure:
+  /agreements/{agreement}/context/infrastructure:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementContextInfrastructureGET"
+      operationId: "agreementsAgreementContextInfrastructureGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -344,18 +237,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/context/validity:
+  /agreements/{agreement}/context/validity:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementContextValidityGET"
+      operationId: "agreementsAgreementContextValidityGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -371,18 +259,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/terms:
+  /agreements/{agreement}/terms:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementTermsGET"
+      operationId: "agreementsAgreementTermsGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -398,18 +281,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/terms/guarantees:
+  /agreements/{agreement}/terms/guarantees:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementTermsGuaranteesGET"
+      operationId: "agreementsAgreementTermsGuaranteesGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -427,18 +305,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/terms/guarantees/{guarantee}:
+  /agreements/{agreement}/terms/guarantees/{guarantee}:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementTermsGuaranteesGuaranteeGET"
+      operationId: "agreementsAgreementTermsGuaranteesGuaranteeGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -459,18 +332,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/terms/metrics:
+  /agreements/{agreement}/terms/metrics:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementTermsMetricsGET"
+      operationId: "agreementsAgreementTermsMetricsGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -488,18 +356,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/terms/metrics/{metric}:
+  /agreements/{agreement}/terms/metrics/{metric}:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementTermsMetricsMetricGET"
+      operationId: "agreementsAgreementTermsMetricsMetricGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -520,18 +383,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/terms/pricing:
+  /agreements/{agreement}/terms/pricing:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementTermsPricingGET"
+      operationId: "agreementsAgreementTermsPricingGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -547,18 +405,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/terms/pricing/billing:
+  /agreements/{agreement}/terms/pricing/billing:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementTermsPricingBillingGET"
+      operationId: "agreementsAgreementTermsPricingBillingGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -574,18 +427,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/terms/pricing/billing/penalties:
+  /agreements/{agreement}/terms/pricing/billing/penalties:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementTermsPricingBillingPenaltiesGET"
+      operationId: "agreementsAgreementTermsPricingBillingPenaltiesGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -603,18 +451,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/terms/pricing/billing/penalties/{penalty}:
+  /agreements/{agreement}/terms/pricing/billing/penalties/{penalty}:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementTermsPricingBillingPenaltiesPenaltyGET"
+      operationId: "agreementsAgreementTermsPricingBillingPenaltiesPenaltyGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -635,18 +478,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/terms/pricing/billing/rewards:
+  /agreements/{agreement}/terms/pricing/billing/rewards:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementTermsPricingBillingRewardsGET"
+      operationId: "agreementsAgreementTermsPricingBillingRewardsGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -664,18 +502,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/terms/pricing/billing/rewards/{reward}:
+  /agreements/{agreement}/terms/pricing/billing/rewards/{reward}:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementTermsPricingBillingRewardsRewardGET"
+      operationId: "agreementsAgreementTermsPricingBillingRewardsRewardGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -696,18 +529,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/terms/quotas:
+  /agreements/{agreement}/terms/quotas:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementTermsQuotasGET"
+      operationId: "agreementsAgreementTermsQuotasGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -723,18 +551,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/agreements/{agreement}/terms/rates:
+  /agreements/{agreement}/terms/rates:
     get:
       tags:
       - "agreement-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceAgreementsAgreementTermsRatesGET"
+      operationId: "agreementsAgreementTermsRatesGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -750,18 +573,12 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
-  /namespaces/{namespace}/states:
+  /states:
     get:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceStatesGET"
-      parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
+      operationId: "statesGET"
       responses:
         200:
           description: "Success"
@@ -774,18 +591,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
-  /namespaces/{namespace}/states/{agreement}:
+  /states/{agreement}:
     get:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceStatesAgreementGET"
+      operationId: "statesAgreementGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -801,18 +613,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
-  /namespaces/{namespace}/states/{agreement}/guarantees:
+  /states/{agreement}/guarantees:
     get:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceStatesAgreementGuaranteesGET"
+      operationId: "statesAgreementGuaranteesGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -840,18 +647,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
-  /namespaces/{namespace}/states/{agreement}/guarantees/{guarantee}:
+  /states/{agreement}/guarantees/{guarantee}:
     get:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceStatesAgreementGuaranteesGuaranteeGET"
+      operationId: "statesAgreementGuaranteesGuaranteeGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -884,18 +686,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
-  /namespaces/{namespace}/states/{agreement}/metrics:
+  /states/{agreement}/metrics:
     get:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceStatesAgreementMetricsGET"
+      operationId: "statesAgreementMetricsGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -911,18 +708,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
-  /namespaces/{namespace}/states/{agreement}/metrics/{metric}:
+  /states/{agreement}/metrics/{metric}:
     get:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceStatesAgreementMetricsMetricGET"
+      operationId: "statesAgreementMetricsMetricGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -947,13 +739,8 @@ paths:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceStatesAgreementMetricsMetricPUT"
+      operationId: "statesAgreementMetricsMetricPUT"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -974,18 +761,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
-  /namespaces/{namespace}/states/{agreement}/pricing:
+  /states/{agreement}/pricing:
     get:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceStatesAgreementPricingGET"
+      operationId: "statesAgreementPricingGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -1001,18 +783,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
-  /namespaces/{namespace}/states/{agreement}/quotas:
+  /states/{agreement}/quotas:
     get:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceStatesAgreementQuotasGET"
+      operationId: "statesAgreementQuotasGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -1028,18 +805,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
-  /namespaces/{namespace}/states/{agreement}/quotas/{quota}:
+  /states/{agreement}/quotas/{quota}:
     get:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceStatesAgreementQuotasQuotaGET"
+      operationId: "statesAgreementQuotasQuotaGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -1064,13 +836,8 @@ paths:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceStatesAgreementQuotasQuotaPUT"
+      operationId: "statesAgreementQuotasQuotaPUT"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -1091,18 +858,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
-  /namespaces/{namespace}/states/{agreement}/rates:
+  /states/{agreement}/rates:
     get:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceStatesAgreementRatesGET"
+      operationId: "statesAgreementRatesGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -1118,18 +880,13 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
-  /namespaces/{namespace}/states/{agreement}/rates/{rate}:
+  /states/{agreement}/rates/{rate}:
     get:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceStatesAgreementRatesRateGET"
+      operationId: "statesAgreementRatesRateGET"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -1150,13 +907,8 @@ paths:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "namespacesNamespaceStatesAgreementRatesRatePUT"
+      operationId: "statesAgreementRatesRatePUT"
       parameters:
-      - name: "namespace"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
       - name: "agreement"
         in: "path"
         description: "XXX"
@@ -1174,16 +926,6 @@ paths:
             $ref: "#/definitions/rate_state"
       x-swagger-router-controller: "Stateregistry"
 definitions:
-  namespace:
-    type: object
-    properties:
-      name:
-        type: string
-      agreements:
-        type: array
-        items:
-          $ref: "#/definitions/agreement"
-
   agreement:
     type: object
     properties:

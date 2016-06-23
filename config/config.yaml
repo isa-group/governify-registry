@@ -1,11 +1,11 @@
 ---
 development:
   database:
-    url: "mongodb://localhost/test"
+    url: "mongodb://localhost/governify-registry"
   port: 8080
   logfile: "./logs/dev.log"
 production:
   database:
-    url: "ds025802.mlab.com:25802/governify-registry"
-  port: 80
+    url: "mongodb://mongo/governify-registry"
+  port: 8080
   logfile: "./logs/prod.log"

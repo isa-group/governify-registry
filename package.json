@@ -9,6 +9,7 @@
   "license": "Apache-2.0",
   "private": true,
   "dependencies": {
+    "bluebird": "^3.4.1",
     "body-parser": "^1.15.1",
     "express": "^4.13.4",
     "js-yaml": "^3.3.0",

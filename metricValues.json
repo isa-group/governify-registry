@@ -1,0 +1,83 @@
+[{
+    "scope": {
+        "priority": "3",
+        "node": "Sevilla",
+        "serviceLine": "a",
+        "activity": "x"
+    },
+    "logs": {
+        "casdm": "https://casdm.log.sas.governify.io/commit/2334"
+    },
+    "period": {
+        "from": "20160116",
+        "to": "201602115"
+    },
+    "evidences": [{
+        "evidence": true,
+        "issue_init": "12/1/12-8:10:00",
+        "issue_end": "12/1/12-10:10:00",
+        "issue_duration": "2:00:00"
+    }, {
+        "evidence": true,
+        "issue_init": "12/1/12-8:10:00",
+        "issue_end": "12/1/12-10:10:00",
+        "issue_duration": "2:00:00"
+    }, {
+        "evidence": true,
+        "issue_init": "12/1/12-8:10:00",
+        "issue_end": "12/1/12-10:10:00",
+        "issue_duration": "2:00:00"
+    }, {
+        "evidence": true,
+        "issue_init": "12/1/12-8:10:00",
+        "issue_end": "12/1/12-10:10:00",
+        "issue_duration": "2:00:00"
+    }, {
+        "evidence": true,
+        "issue_init": "12/1/12-8:10:00",
+        "issue_end": "12/1/12-10:10:00",
+        "issue_duration": "2:00:00"
+    }],
+    "value": 22.2
+}, {
+    "scope": {
+        "priority": "3",
+        "node": "Huelva",
+        "serviceLine": "a",
+        "activity": "x"
+    },
+    "logs": {
+        "casdm": "https://casdm.log.sas.governify.io/commit/2334"
+    },
+    "period": {
+        "from": "20160116",
+        "to": "201602115"
+    },
+    "evidences": [{
+        "evidence": true,
+        "issue_init": "12/1/12-8:10:00",
+        "issue_end": "12/1/12-10:10:00",
+        "issue_duration": "2:00:00"
+    }, {
+        "evidence": true,
+        "issue_init": "12/1/12-8:10:00",
+        "issue_end": "12/1/12-10:10:00",
+        "issue_duration": "2:00:00"
+    }, {
+        "evidence": true,
+        "issue_init": "12/1/12-8:10:00",
+        "issue_end": "12/1/12-10:10:00",
+        "issue_duration": "2:00:00"
+    }, {
+        "evidence": true,
+        "issue_init": "12/1/12-8:10:00",
+        "issue_end": "12/1/12-10:10:00",
+        "issue_duration": "2:00:00"
+    }, {
+        "evidence": true,
+        "issue_init": "12/1/12-8:10:00",
+        "issue_end": "12/1/12-10:10:00",
+        "issue_duration": "2:00:00"
+    }],
+    "value": 88.5
+}]

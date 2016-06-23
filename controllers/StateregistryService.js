@@ -1,42 +1,81 @@
 'use strict';
 
+var agreementCalculator = require('../calculators/compensations/agreement/agreementCalculator');
 var config = require('../config');
 var example = require('../data');
 
-exports.namespacesNamespaceStatesAgreementGET = function(args, res, next) {
+exports.statesGET = function(args, res, next) {
   /**
    * parameters expected in the args:
-   * namespace (String)
+   **/
+  res.end();
+}
+
+exports.statesAgreementGET = function(args, res, next) {
+  /**
+   * parameters expected in the args:
    * agreement (String)
    **/
-  var examples = {};
-  examples['application/json'] = {};
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
+  res.setHeader('Content-Type', 'application/json');
+
+  var AgreementModel = config.db.models.AgreementModel;
+  AgreementModel.find({
+    'id': args.agreement.value
+  }, function(err, agreement) {
+    if (err) {
+      res.end(JSON.stringify({
+        code: 500,
+        message: err
+      }));
+    }
+
+    if (agreement.length === 1) {
+      agreementCalculator.processCompensations(agreement[0], "20160116", "20160215")
+        .then(function(compensations) {
+          res.end(JSON.stringify(compensations));
+        }, function(err) {
+          console.log(err);
+          res.end(JSON.stringify({
+            code: 500,
+            message: err
+          }));
+        });
+    } else {
+      res.end(JSON.stringify({
+        code: 500,
+        message: 'Error retrieving agreement from the database.'
+      }));
+    }
+  });
 
 }
 
-exports.namespacesNamespaceStatesAgreementGuaranteesGET = function(args, res, next) {
+exports.statesAgreementGuaranteesGET = function(args, res, next) {
   /**
    * parameters expected in the args:
-   * namespace (String)
    * agreement (String)
    * from (String)
    * to (String)
    **/
 
-  res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify(example));
+  var AgreementModel = config.db.models.agreement;
+  AgreementModel.find({
+    'id': args.agreement.value
+  }, function(err, agreement) {
+    if (err) {
+      res.end(JSON.stringify({
+        code: 500,
+        message: err
+      }));
+    }
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(agreement.terms.guarantees));
+  });
 }
 
-exports.namespacesNamespaceStatesAgreementGuaranteesGuaranteeGET = function(args, res, next) {
+exports.statesAgreementGuaranteesGuaranteeGET = function(args, res, next) {
   /**
    * parameters expected in the args:
-   * namespace (String)
    * agreement (String)
    * guarantee (String)
    * from (String)
@@ -49,7 +88,7 @@ exports.namespacesNamespaceStatesAgreementGuaranteesGuaranteeGET = function(args
   })));
 }
 
-exports.namespacesNamespaceStatesAgreementMetricsGET = function(args, res, next) {
+exports.statesAgreementMetricsGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -66,25 +105,7 @@ exports.namespacesNamespaceStatesAgreementMetricsGET = function(args, res, next)
 
 }
 
-exports.namespacesNamespaceStatesAgreementMetricsMetricGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (String)
-   * agreement (String)
-   * metric (String)
-   **/
-  var examples = {};
-  examples['application/json'] = {};
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
-
-}
-
-exports.namespacesNamespaceStatesAgreementMetricsMetricPUT = function(args, res, next) {
+exports.statesAgreementMetricsMetricGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -102,7 +123,25 @@ exports.namespacesNamespaceStatesAgreementMetricsMetricPUT = function(args, res,
 
 }
 
-exports.namespacesNamespaceStatesAgreementPricingGET = function(args, res, next) {
+exports.statesAgreementMetricsMetricPUT = function(args, res, next) {
+  /**
+   * parameters expected in the args:
+   * namespace (String)
+   * agreement (String)
+   * metric (String)
+   **/
+  var examples = {};
+  examples['application/json'] = {};
+  if (Object.keys(examples).length > 0) {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
+  } else {
+    res.end();
+  }
+
+}
+
+exports.statesAgreementPricingGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -119,7 +158,7 @@ exports.namespacesNamespaceStatesAgreementPricingGET = function(args, res, next)
 
 }
 
-exports.namespacesNamespaceStatesAgreementQuotasGET = function(args, res, next) {
+exports.statesAgreementQuotasGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -136,7 +175,7 @@ exports.namespacesNamespaceStatesAgreementQuotasGET = function(args, res, next) 
 
 }
 
-exports.namespacesNamespaceStatesAgreementQuotasQuotaGET = function(args, res, next) {
+exports.statesAgreementQuotasQuotaGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -154,7 +193,7 @@ exports.namespacesNamespaceStatesAgreementQuotasQuotaGET = function(args, res, n
 
 }
 
-exports.namespacesNamespaceStatesAgreementQuotasQuotaPUT = function(args, res, next) {
+exports.statesAgreementQuotasQuotaPUT = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -172,7 +211,7 @@ exports.namespacesNamespaceStatesAgreementQuotasQuotaPUT = function(args, res, n
 
 }
 
-exports.namespacesNamespaceStatesAgreementRatesGET = function(args, res, next) {
+exports.statesAgreementRatesGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -189,7 +228,7 @@ exports.namespacesNamespaceStatesAgreementRatesGET = function(args, res, next) {
 
 }
 
-exports.namespacesNamespaceStatesAgreementRatesRateGET = function(args, res, next) {
+exports.statesAgreementRatesRateGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -211,7 +250,7 @@ exports.namespacesNamespaceStatesAgreementRatesRateGET = function(args, res, nex
 
 }
 
-exports.namespacesNamespaceStatesAgreementRatesRatePUT = function(args, res, next) {
+exports.statesAgreementRatesRatePUT = function(args, res, next) {
   /**
    * parameters expected in the args:
    * namespace (String)
@@ -224,24 +263,6 @@ exports.namespacesNamespaceStatesAgreementRatesRatePUT = function(args, res, nex
   }, {
     name: "oai"
   }];
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
-
-}
-
-exports.namespacesNamespaceStatesGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (String)
-   **/
-  var examples = {};
-  examples['application/json'] = {
-    "name": args.namespace.value
-  };
   if (Object.keys(examples).length > 0) {
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));

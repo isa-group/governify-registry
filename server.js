@@ -15,6 +15,7 @@ var options = {
   useStubs: process.env.NODE_ENV === 'development' ? true : false // Conditionally turn on stubs (mock mode)
 };
 
+
 // The Swagger document (require it, build it programmatically, fetch it from a URL, ...)
 var spec = fs.readFileSync('./api/swagger.yaml', 'utf8');
 var swaggerDoc = jsyaml.safeLoad(spec);
@@ -31,6 +32,7 @@ config.logger.setup();
 // Connect to mongodb
 config.db.connect();
 
+
 // Initialize the Swagger middleware
 swaggerTools.initializeMiddleware(swaggerDoc, function(middleware) {
   // Interpret Swagger resources and attach metadata to request - must be first in swagger-tools middleware chain
@@ -43,7 +45,10 @@ swaggerTools.initializeMiddleware(swaggerDoc, function(middleware) {
   app.use(middleware.swaggerRouter(options));
 
   // Serve the Swagger documents and Swagger UI
-  app.use(middleware.swaggerUi());
+  app.use(middleware.swaggerUi({
+    apiDocs: swaggerDoc.basePath + '/api-docs',
+    swaggerUi: swaggerDoc.basePath + '/docs'
+  }));
 
   // Start the server
   var serverPort = process.env.PORT || config.port;

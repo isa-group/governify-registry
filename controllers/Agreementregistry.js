@@ -1,109 +1,96 @@
 'use strict';
 
 var url = require('url');
-var Agreementregistry = require('./AgreementregistryService');
+var Agreement = require('./AgreementRegistryService');
 
-
-module.exports.namespacesGET = function namespacesGET (req, res, next) {
-  Agreementregistry.namespacesGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementContextDefinitionsGET = function agreementsAgreementContextDefinitionsGET (req, res, next) {
+  Agreement.agreementsAgreementContextDefinitionsGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesPOST = function namespacesPOST (req, res, next) {
-  Agreementregistry.namespacesPOST(req.swagger.params, res, next);
+module.exports.agreementsAgreementContextDefinitionsLogsGET = function agreementsAgreementContextDefinitionsLogsGET (req, res, next) {
+  Agreement.agreementsAgreementContextDefinitionsLogsGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementContextDefinitionsGET = function namespacesNamespaceAgreementsAgreementContextDefinitionsGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementContextDefinitionsGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementContextDefinitionsSchemasGET = function agreementsAgreementContextDefinitionsSchemasGET (req, res, next) {
+  Agreement.agreementsAgreementContextDefinitionsSchemasGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementContextDefinitionsLogsGET = function namespacesNamespaceAgreementsAgreementContextDefinitionsLogsGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementContextDefinitionsLogsGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementContextDefinitionsScopesGET = function agreementsAgreementContextDefinitionsScopesGET (req, res, next) {
+  Agreement.agreementsAgreementContextDefinitionsScopesGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementContextDefinitionsSchemasGET = function namespacesNamespaceAgreementsAgreementContextDefinitionsSchemasGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementContextDefinitionsSchemasGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementContextGET = function agreementsAgreementContextGET (req, res, next) {
+  Agreement.agreementsAgreementContextGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementContextDefinitionsScopesGET = function namespacesNamespaceAgreementsAgreementContextDefinitionsScopesGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementContextDefinitionsScopesGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementContextInfrastructureGET = function agreementsAgreementContextInfrastructureGET (req, res, next) {
+  Agreement.agreementsAgreementContextInfrastructureGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementContextGET = function namespacesNamespaceAgreementsAgreementContextGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementContextGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementContextValidityGET = function agreementsAgreementContextValidityGET (req, res, next) {
+  Agreement.agreementsAgreementContextValidityGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementContextInfrastructureGET = function namespacesNamespaceAgreementsAgreementContextInfrastructureGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementContextInfrastructureGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementGET = function agreementsAgreementGET (req, res, next) {
+  Agreement.agreementsAgreementGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementContextValidityGET = function namespacesNamespaceAgreementsAgreementContextValidityGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementContextValidityGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementTermsGET = function agreementsAgreementTermsGET (req, res, next) {
+  Agreement.agreementsAgreementTermsGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementGET = function namespacesNamespaceAgreementsAgreementGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementTermsGuaranteesGET = function agreementsAgreementTermsGuaranteesGET (req, res, next) {
+  Agreement.agreementsAgreementTermsGuaranteesGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementTermsGET = function namespacesNamespaceAgreementsAgreementTermsGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementTermsGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementTermsGuaranteesGuaranteeGET = function agreementsAgreementTermsGuaranteesGuaranteeGET (req, res, next) {
+  Agreement.agreementsAgreementTermsGuaranteesGuaranteeGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementTermsGuaranteesGET = function namespacesNamespaceAgreementsAgreementTermsGuaranteesGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementTermsGuaranteesGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementTermsMetricsGET = function agreementsAgreementTermsMetricsGET (req, res, next) {
+  Agreement.agreementsAgreementTermsMetricsGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementTermsGuaranteesGuaranteeGET = function namespacesNamespaceAgreementsAgreementTermsGuaranteesGuaranteeGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementTermsGuaranteesGuaranteeGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementTermsMetricsMetricGET = function agreementsAgreementTermsMetricsMetricGET (req, res, next) {
+  Agreement.agreementsAgreementTermsMetricsMetricGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementTermsMetricsGET = function namespacesNamespaceAgreementsAgreementTermsMetricsGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementTermsMetricsGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementTermsPricingBillingGET = function agreementsAgreementTermsPricingBillingGET (req, res, next) {
+  Agreement.agreementsAgreementTermsPricingBillingGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementTermsMetricsMetricGET = function namespacesNamespaceAgreementsAgreementTermsMetricsMetricGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementTermsMetricsMetricGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementTermsPricingBillingPenaltiesGET = function agreementsAgreementTermsPricingBillingPenaltiesGET (req, res, next) {
+  Agreement.agreementsAgreementTermsPricingBillingPenaltiesGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingGET = function namespacesNamespaceAgreementsAgreementTermsPricingBillingGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementTermsPricingBillingGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementTermsPricingBillingPenaltiesPenaltyGET = function agreementsAgreementTermsPricingBillingPenaltiesPenaltyGET (req, res, next) {
+  Agreement.agreementsAgreementTermsPricingBillingPenaltiesPenaltyGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingPenaltiesGET = function namespacesNamespaceAgreementsAgreementTermsPricingBillingPenaltiesGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementTermsPricingBillingPenaltiesGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementTermsPricingBillingRewardsGET = function agreementsAgreementTermsPricingBillingRewardsGET (req, res, next) {
+  Agreement.agreementsAgreementTermsPricingBillingRewardsGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingPenaltiesPenaltyGET = function namespacesNamespaceAgreementsAgreementTermsPricingBillingPenaltiesPenaltyGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementTermsPricingBillingPenaltiesPenaltyGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementTermsPricingBillingRewardsRewardGET = function agreementsAgreementTermsPricingBillingRewardsRewardGET (req, res, next) {
+  Agreement.agreementsAgreementTermsPricingBillingRewardsRewardGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingRewardsGET = function namespacesNamespaceAgreementsAgreementTermsPricingBillingRewardsGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementTermsPricingBillingRewardsGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementTermsPricingGET = function agreementsAgreementTermsPricingGET (req, res, next) {
+  Agreement.agreementsAgreementTermsPricingGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementTermsPricingBillingRewardsRewardGET = function namespacesNamespaceAgreementsAgreementTermsPricingBillingRewardsRewardGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementTermsPricingBillingRewardsRewardGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementTermsQuotasGET = function agreementsAgreementTermsQuotasGET (req, res, next) {
+  Agreement.agreementsAgreementTermsQuotasGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementTermsPricingGET = function namespacesNamespaceAgreementsAgreementTermsPricingGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementTermsPricingGET(req.swagger.params, res, next);
+module.exports.agreementsAgreementTermsRatesGET = function agreementsAgreementTermsRatesGET (req, res, next) {
+  Agreement.agreementsAgreementTermsRatesGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementTermsQuotasGET = function namespacesNamespaceAgreementsAgreementTermsQuotasGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementTermsQuotasGET(req.swagger.params, res, next);
+module.exports.agreementsGET = function agreementsGET (req, res, next) {
+  Agreement.agreementsGET(req.swagger.params, res, next);
 };
 
-module.exports.namespacesNamespaceAgreementsAgreementTermsRatesGET = function namespacesNamespaceAgreementsAgreementTermsRatesGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsAgreementTermsRatesGET(req.swagger.params, res, next);
-};
-
-module.exports.namespacesNamespaceAgreementsGET = function namespacesNamespaceAgreementsGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsGET(req.swagger.params, res, next);
-};
-
-module.exports.namespacesNamespaceAgreementsPOST = function namespacesNamespaceAgreementsPOST (req, res, next) {
-  Agreementregistry.namespacesNamespaceAgreementsPOST(req.swagger.params, res, next);
-};
-
-module.exports.namespacesNamespaceGET = function namespacesNamespaceGET (req, res, next) {
-  Agreementregistry.namespacesNamespaceGET(req.swagger.params, res, next);
+module.exports.agreementsPOST = function agreementsPOST (req, res, next) {
+  Agreement.agreementsPOST(req.swagger.params, res, next);
 };

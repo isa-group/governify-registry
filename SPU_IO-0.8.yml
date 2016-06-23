@@ -1,0 +1,269 @@
+id: SPU_IO-Contract
+version: "0.0"
+type: agreement
+
+context:
+
+  # Si fuera de tipo "template" solo tendria una parte
+  provider:  Accenture
+  consumer: SAS
+
+  validity:
+    init: "20141016"
+    end:
+
+  infrastructure:
+      designer: "http://designer.governify.io/"
+      portal: "http://portal.governify.io/v1/"
+      registry: "http://registry.governify.io/v1/agreement/XXXXX"
+
+  definitions:
+
+    schemas:
+
+      porcentajePTOT:
+        description: Porcentaje de penalizacion sobre la facturacion mensual SPU
+        type: double
+        unit: "%"
+
+      deadline:
+        description: Plazo de resolucion de una inicidencia
+        type: integer
+        format: int32
+        unit: hours
+
+      schedule:
+        description: Horario del servicio
+        type: string
+
+    scopes:
+      SPU:
+        priority:
+          description: Prioridad de la incidencia
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 3
+        node:
+          description: Provincia
+          type: string
+        center:
+          description: Centro
+          type: string
+        serviceLine:
+          description: "Linea de Servicio"
+          type: string
+          default: "1. Linea servicio de mantenimiento básico"
+        activity:
+          description: "Actividad"
+          type: string
+          default: "1.1. Actividad de incidencias"
+
+    logs:
+      casdm:
+        default: true
+        uri: "https://casdm.log.sas.governify.io"
+        scopes:
+          SPU:
+            priority: Prioridad
+            node: Nodo
+            center: Centro
+      jira:
+        uri: "https://jira.log.sas.governify.io"
+        scopes:
+          SPU:
+            node: Nodo
+
+terms:
+  pricing:
+    #cost: 0
+    #currency: "euro"
+    billing:
+      period: "monthly"
+      init: "20160512T103536Z"
+      compensations:
+        penalties:
+          - over:
+              $ref: "#/context/definitions/schemas/porcentajePTOT"
+            aggegatedBy: sum
+            groupBy:
+              - $ref: "#/context/definitions/scopes/SPU/serviceLine"
+              - $ref: "#/context/definitions/scopes/SPU/activity"
+            # upTo: 10
+          #- over:
+          #    $ref: "#/context/definitions/schemas/HBS"
+          #  aggegatedBy: sum
+
+  metrics:
+    issue_init:
+      schema:
+        description: "Fecha de Inicio de incidencia"
+        type: "date"
+      computer: "http://ppinot.sas.governify.io/issue_init/"
+
+    issue_end:
+      schema:
+        description: "Fecha de Inicio de incidencia"
+        type: "date"
+      computer: "http://ppinot.sas.governify.io/issue_end/"
+
+    issue_duration:
+      schema:
+        description: "Duracion de una incidencia"
+        type: integer
+        format: int32
+        unit: hours
+      computer: "http://ppinot.sas.governify.io/issue_duration/"
+
+    SPU_IO_K01_evidence:
+      schema:
+        description: "Incidencias resueltas en plazo"
+        type: "bool"
+      parameters:
+        deadline:
+          schema:
+            $ref: "#/context/definitions/schemas/deadline"
+        schedule:
+          schema:
+            $ref: "#/context/definitions/schemas/schedule"
+      scope:
+        $ref: "#/context/definitions/scopes/SPU"
+      computer: "http://ppinot.sas.governify.io/SPU_IO_K01_evidence/"
+
+    SPU_IO_K01:
+      schema:
+        description: "Porcentaje incidencias resueltas en plazo"
+        type: "double"
+        unit: "%"
+        #      measureDefinition:
+        #        $ref: "http://labs.isa.us.es/ir/DemoMaster/Governify/SAS/ppinotTemplate.ppi#/definitions/SPU_IO_K01/"
+      computer: "http://ppinot.sas.governify.io/SPU_IO_K01/"
+      parameters:
+        deadline:
+          schema:
+            $ref: "#/context/definitions/schemas/deadline"
+        schedule:
+          schema:
+            $ref: "#/context/definitions/schemas/schedule"
+      scope:
+        $ref: "#/context/definitions/scopes/SPU"
+
+    SPU_IO_K05:
+      schema:
+        description: "Porcentaje incidencias sin categorizar el motivo de cierre"
+        type: "double"
+        unit: "%"
+      computer: "http://ppinot.sas.governify.io/SPU_IO_K05/"
+      scope:
+        $ref: "#/context/definitions/scopes/SPU"
+
+    SPU_IO_K06_last_penalty:
+      schema:
+        description: "Penalizacion del mes anterior para SPU_IO_K06"
+        type: "double"
+        unit: "%"
+      #derivedFrom:?
+      # $ref: "#/guarantees/SPU_IO_K06/penalty"
+      computer: "registry.sas.governify.io/agreeements/SPU/guarantees/SPU_IO_K06/penalty"
+      parameters:
+        window:
+          type: last_month
+      scope:
+        $ref: "#/context/definitions/scopes/SPU"
+
+    SPU_IO_K06_penalty:
+      schema:
+        description: "Penalizacion de SPU_IO_K06 del mes actual"
+        type: "double"
+        unit: "%"
+      computer: "registry.sas.governify.io/agreeements/SPU/guarantees/SPU_IO_K06/penalty"
+      parameters:
+        window:
+          type: current_month
+      scope:
+        $ref: "#/context/definitions/scopes/SPU"
+
+    SPU_IO_K18:
+      schema:
+        description: "Factor de rotación del personal"
+        type: int32
+      computer: "http://ppinot.sas.governify.io/SPU_IO_K18/"
+      log:
+        $ref: "#/context/definitions/logs/jira"
+
+  guarantees:
+    guarantee_SPU_IO_K06_C:
+      scope:
+        - $ref: "#/context/definitions/scopes/SPU/priority"
+        - $ref: "#/context/definitions/scopes/SPU/node"
+        - $ref: "#/context/definitions/scopes/SPU/center"
+        - $ref: "#/context/definitions/scopes/SPU/serviceLine"
+        - $ref: "#/context/definitions/scopes/SPU/activity"
+      of:
+        '*,*,*':
+          objective: "SPU_IO_K06_penalty * SPU_IO_K06_last_penalty == 0"
+          with:
+            SPU_IO_K06_penalty: {}
+            SPU_IO_K06_last_penalty: {}
+          window:
+            type: static
+            period: monthly
+            init: 20160512T103536Z
+            end: ""
+          compensations:
+              penalties:
+                - over: {$ref: "#/context/definitions/schemas/porcentajePTOT"}
+                  of:
+                    - value: 0.50
+                      condition: "SPU_IO_K06_penalty * SPU_IO_K06_last_penalty > 0"
+
+
+    guarantee_IO_K01:
+      scope:
+        priority:
+          $ref: "#/context/definitions/scopes/SPU/priority"
+        node:  
+          $ref: "#/context/definitions/scopes/SPU/node"
+        serviceLine:
+          $ref: "#/context/definitions/scopes/SPU/serviceLine"
+        activity:
+          $ref: "#/context/definitions/scopes/SPU/activity"
+      of:
+        '3,*':
+          # mandatory
+          objective: "SPU_IO_K01 >= 95.00"
+          
+          # mandatory
+          with:
+            SPU_IO_K01: {deadline: 2, schedule: L-DT00:00-23:59}
+          
+          # optional
+          window: 
+            type: static
+            period: monthly
+            init: 20141016
+            end: ""
+          
+          # optional
+          evidences:
+            - $ref: "#/terms/metrics/SPU_IO_K01_evidence"
+            - $ref: "#/terms/metrics/issue_init"
+            - $ref: "#/terms/metrics/issue_end"
+            - $ref: "#/terms/metrics/issue_duration"
+          
+          # optional
+          compensations:
+              penalties:
+                - over: {$ref: "#/context/definitions/schemas/porcentajePTOT"}
+                  of:
+                    - value: -2.00
+                      condition: "SPU_IO_K01 >= 90.00 && SPU_IO_K01 < 95.00"
+                    - value: -3.00
+                      condition: "SPU_IO_K01 >= 85.00 && SPU_IO_K01 < 90.00"
+                    - value: -5.00
+                      condition: "SPU_IO_K01 >= 0 && SPU_IO_K01 < 85.00"
+
+        #'2,*':
+        # ...
+        #'1,*':
+        # ...

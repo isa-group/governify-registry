@@ -35,7 +35,6 @@ module.exports.logger.setup = function() {
         });
         state.logger.transports.console.timestamp = true;
     } else {
-        // while testing, log only to file, leaving stdout free for unit test status messages
         state.logger = new(winston.Logger)({
             transports: [
                 new(winston.transports.File)({
@@ -57,8 +56,8 @@ module.exports.db.connect = function() {
         state.db = db;
         console.log('Connected to db!');
         if (state.models) return;
-        var swagger = jsyaml.safeLoad(fs.readFileSync('./api/swagger.yaml'));
-        state.models = swaggerMongoose.compile(swagger).models;
+        state.models = {};
+        setupModel('AgreementModel', './models/agreementModel.json');
         module.exports.db.models = state.models;
     });
 }
@@ -74,4 +73,15 @@ module.exports.db.close = function(done) {
             state.mode = null;
         })
     }
+}
+
+function setupModel(modelName, jsonModel) {
+    var jsonModel = jsyaml.safeLoad(fs.readFileSync(jsonModel));
+    $RefParser.dereference(jsonModel, function(err, model) {
+        if (err)
+            console.log(err);
+        var modelSchema = new mongoose.Schema(model);
+        var Model = mongoose.model(modelName, modelSchema);
+        state.models[modelName] = Model;
+    });
 }
