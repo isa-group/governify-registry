@@ -5,6 +5,12 @@ var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
 var config = require('../config');
 
+var fs = require('fs');
+var errorModel = require('../errors/index.js').errorModel;
+var logger = config.state.logger;
+
+var agreements = require('./agreements/agreements.js');
+
 exports.agreementsAgreementContextDefinitionsGET = function(args, res, next) {
   /**
    * parameters expected in the args:
@@ -386,80 +392,14 @@ exports.agreementsAgreementTermsRatesGET = function(args, res, next) {
 
 }
 
-exports.agreementsGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (String)
-   **/
-  var AgreementModel = config.db.models.AgreementModel;
-  AgreementModel.find(function(err, agreements) {
-    if (err) {
-      console.error(err);
-      res.end();
-    }
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(agreements));
-  });
+//agreements middelwares
 
-}
+exports.agreementsGET = agreements.agreementsGET;
 
-exports.agreementsPOST = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * agreement (Agreement)
-   **/
-  // no response value expected for this operation
+exports.agreementsPOST = agreements.agreementsPOST;
 
-  //console.log(config.db.models.agreement);
+exports.agreementsAgreementGET = agreements.agreementIdGET;
 
-  $RefParser.dereference(args.agreement.value, function(err, schema) {
-    if (err) {
-      console.log(err);
-      res.end(JSON.stringify({
-        code: 500,
-        message: err
-      }));
-    } else {
-      var agreement = new config.db.models.AgreementModel(args.agreement.value);
-      agreement.save(function(err) {
-        if (err) {
-          console.log(err);
-          res.end(JSON.stringify({
-            code: 500,
-            message: err
-          }));
-        } else {
-          console.log('New agreement saved successfully!');
-          res.end(JSON.stringify({
-            code: 200,
-            message: 'New agreement saved successfully!',
-            data: agreement
-          }));
-        }
-      });
-    }
-  });
-}
-
-exports.agreementsAgreementGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * agreement (String)
-   **/
-
-  var AgreementModel = config.db.models.AgreementModel;
-  AgreementModel.find({
-    'id': args.agreement.value
-  }, function(err, agreement) {
-    if (err) {
-      console.error(err);
-      res.end();
-    }
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(agreement));
-  });
-
-}
 
 exports.agreementsAgreementTermsGuaranteesGET = function(args, res, next) {
   /**

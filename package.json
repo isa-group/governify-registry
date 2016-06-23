@@ -10,7 +10,7 @@
   "private": true,
   "dependencies": {
     "bluebird": "^3.4.1",
-    "body-parser": "^1.15.1",
+    "body-parser": "^1.15.2",
     "express": "^4.13.4",
     "js-yaml": "^3.3.0",
     "json-schema-ref-parser": "^3.1.2",

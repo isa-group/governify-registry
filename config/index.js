@@ -54,10 +54,11 @@ module.exports.db.connect = function() {
     db.on('error', console.error.bind(console, 'connection error:'));
     db.on('open', function() {
         state.db = db;
-        console.log('Connected to db!');
+        state.logger.info('Connected to db!');
         if (state.models) return;
         state.models = {};
         setupModel('AgreementModel', './models/agreementModel.json');
+        setupModel('StateModel', './models/stateModel.json');
         module.exports.db.models = state.models;
     });
 }

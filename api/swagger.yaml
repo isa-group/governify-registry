@@ -832,32 +832,7 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
-    put:
-      tags:
-      - "state-registry"
-      description: "XXX"
-      operationId: "statesAgreementQuotasQuotaPUT"
-      parameters:
-      - name: "agreement"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
-      - name: "quota"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
-      responses:
-        200:
-          description: "Success"
-          schema:
-            $ref: "#/definitions/quota_state"
-        400:
-          description: "Bad request"
-          schema:
-            $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Stateregistry"
+
   /states/{agreement}/rates:
     get:
       tags:
@@ -903,28 +878,7 @@ paths:
           schema:
             $ref: "#/definitions/rate_state"
       x-swagger-router-controller: "Stateregistry"
-    put:
-      tags:
-      - "state-registry"
-      description: "XXX"
-      operationId: "statesAgreementRatesRatePUT"
-      parameters:
-      - name: "agreement"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
-      - name: "rate"
-        in: "path"
-        description: "XXX"
-        required: true
-        type: string
-      responses:
-        200:
-          description: "Success"
-          schema:
-            $ref: "#/definitions/rate_state"
-      x-swagger-router-controller: "Stateregistry"
+    
 definitions:
   agreement:
     type: object
@@ -939,7 +893,7 @@ definitions:
         $ref: "#/definitions/context"
       terms:
         $ref: "#/definitions/terms"
-        
+
   context:
     type: object
     properties:
@@ -977,10 +931,10 @@ definitions:
 
   schema:
     type: object
-    
+
   scopes:
     type: object
-    
+
   scope:
     type: object
 
@@ -991,17 +945,17 @@ definitions:
   # scope:
   #   type: object
   #   properties:
-  #     service: 
+  #     service:
   #       type: string
   #     definitions:
   #       type: array
   #       items:
   #         $ref: "#/definitions/scope_definition"
-  
+
   # scope_definition:
   #   type: object
   #   properties:
-  #     id: 
+  #     id:
   #       type: string
   #     name:
   #       type: string
@@ -1017,7 +971,7 @@ definitions:
   #       type: string
   #     default:
   #       type: string
-      
+
   log:
     type: object
     # properties:
@@ -1031,7 +985,7 @@ definitions:
     #     type: array
     #     items:
     #       $ref: "#/definitions/log_scope"
-          
+
   # log_scope:
   #   type: object
 
@@ -1050,7 +1004,7 @@ definitions:
         $ref: "#/definitions/quotas"
       rates:
         $ref: "#/definitions/rates"
-  
+
   pricing:
     type: object
     properties:
@@ -1061,7 +1015,7 @@ definitions:
         type: string
       billing:
         $ref: "#/definitions/billing"
-        
+
   billing:
     type: object
     properties:
@@ -1077,7 +1031,7 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/compensation"
-      
+
   metric:
     type: object
 
@@ -1085,7 +1039,7 @@ definitions:
     type: object
     additionalProperties:
       $ref: "#/definitions/rate"
-      
+
   rate:
     type: object
     additionalProperties:
@@ -1095,16 +1049,16 @@ definitions:
     type: object
     additionalProperties:
       $ref: "#/definitions/quota"
-      
+
   quota:
     type: object
     additionalProperties:
       type: string
-      
+
   guarantee:
     type: object
     properties:
-      id: 
+      id:
         type: string
       scope:
         $ref: "#/definitions/guarantee_scope"
@@ -1112,10 +1066,10 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/scoped_guarante"
-        
+
   guarantee_scope:
     type: object
-      
+
   scoped_guarante:
     type: object
     properties:
@@ -1139,10 +1093,10 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/compensation"
-  
+
   with:
     type: object
-    
+
   window:
     type: object
     properties:
@@ -1154,7 +1108,7 @@ definitions:
         type: string
       period:
         type: string
-  
+
   evidence:
     type: object
 
@@ -1176,7 +1130,7 @@ definitions:
       upTo:
         type: "number"
         format: "double"
-        
+
   compensation_of:
     type: object
     properties:
@@ -1184,37 +1138,37 @@ definitions:
         type: string
       condition:
         type: string
-    
+
   over:
     type: object
-    
+
   groupByObj:
     type: object
-    
+
   agreement_state:
     type: object
-    
+
   metrics_state:
     type: object
-    
+
   metric_state:
     type: object
-    
+
   rates_state:
     type: object
-    
+
   rate_state:
     type: object
-    
+
   quotas_state:
     type: object
-    
+
   quota_state:
     type: object
-    
+
   guarantees_state:
     type: object
-    
+
   guarantee_state:
     type: object
     properties:
@@ -1234,7 +1188,7 @@ definitions:
         type: "boolean"
       penalties:
         $ref: "#/definitions/penalty_state"
-        
+
   period:
     type: object
     properties:
@@ -1242,7 +1196,7 @@ definitions:
         type: string
       to:
         type: string
-        
+
   evidence_state:
     type: object
     properties:
@@ -1254,10 +1208,10 @@ definitions:
         type: string
       issue_duration:
         type: string
-        
+
   penalty_state:
     type: object
-                    
+
   inline_response_400:
     properties:
       code:
@@ -1265,7 +1219,7 @@ definitions:
         format: "int32"
       message:
         type: string
-        
+
 responses:
   error:
     description: "Bad request"

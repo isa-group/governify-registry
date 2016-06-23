@@ -4,6 +4,9 @@ var agreementCalculator = require('../calculators/compensations/agreement/agreem
 var config = require('../config');
 var example = require('../data');
 
+//Requiring states controllers
+var states = require("./states/states.js");
+
 exports.statesGET = function(args, res, next) {
   /**
    * parameters expected in the args:
@@ -158,116 +161,14 @@ exports.statesAgreementPricingGET = function(args, res, next) {
 
 }
 
-exports.statesAgreementQuotasGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (String)
-   * agreement (String)
-   **/
-  var examples = {};
-  examples['application/json'] = {};
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
+//Quotas controllers
 
-}
+exports.statesAgreementQuotasGET = states.quotas.quotasGET;
 
-exports.statesAgreementQuotasQuotaGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (String)
-   * agreement (String)
-   * quota (String)
-   **/
-  var examples = {};
-  examples['application/json'] = {};
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
+exports.statesAgreementQuotasQuotaGET = states.quotas.quotasQuotaGET;
 
-}
+//Rates controllers
 
-exports.statesAgreementQuotasQuotaPUT = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (String)
-   * agreement (String)
-   * quota (String)
-   **/
-  var examples = {};
-  examples['application/json'] = {};
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
+exports.statesAgreementRatesGET = states.rates.ratesGET;
 
-}
-
-exports.statesAgreementRatesGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (String)
-   * agreement (String)
-   **/
-  var examples = {};
-  examples['application/json'] = {};
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
-
-}
-
-exports.statesAgreementRatesRateGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (String)
-   * agreement (String)
-   * rate (String)
-   **/
-  var examples = {};
-  examples['application/json'] = [{
-    name: "sas"
-  }, {
-    name: "oai"
-  }];
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
-
-}
-
-exports.statesAgreementRatesRatePUT = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * namespace (String)
-   * agreement (String)
-   * rate (String)
-   **/
-  var examples = {};
-  examples['application/json'] = [{
-    name: "sas"
-  }, {
-    name: "oai"
-  }];
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
-
-}
+exports.statesAgreementRatesRateGET = states.rates.ratesRateGET;

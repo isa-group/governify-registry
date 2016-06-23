@@ -29,6 +29,7 @@ exports.connect = function(url) {
         if (state.models) return;
         var swagger = jsyaml.safeLoad(fs.readFileSync('./api/swagger.yaml'));
         state.models = swaggerMongoose.compile(swagger).models;
+        console.log(state.models);
     });
 }
 

@@ -1,0 +1,203 @@
+{
+  "agreementId": {
+    "type": "string"
+  },
+  "fulfilled": {
+    "type": "boolean"
+  },
+  "scope": {
+    "type": "object"
+  },
+  "pricing": {
+    "type": "object",
+    "properties": {
+      "cost": {
+        "type": "object"
+      },
+      "period": {
+        "type": "object"
+      },
+      "penalties": {
+        "type": "object"
+      }
+    }
+  },
+  "metrics": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "metric": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "object"
+        },
+        "schema": {
+          "type": "object"
+        },
+        "window": {
+          "type": "object",
+          "properties": {
+            "_type": {
+              "type": "string"
+            },
+            "period": {
+              "type": "string"
+            }
+          }
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "time": {
+                "type": "string"
+              },
+              "parameters": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "guarantees": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "guarantee": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "object"
+        },
+        "logs": {
+          "type": "object"
+        },
+        "period": {
+          "type": "object"
+        },
+        "evidences": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fulfilled": {
+                "type": "boolean"
+              },
+              "penalties": {
+                "type": "object"
+              },
+              "time": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "quotas": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "quota": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "object"
+        },
+        "logs": {
+          "type": "object"
+        },
+        "period": {
+          "type": "object"
+        },
+        "evidences": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fulfilled": {
+                "type": "boolean"
+              },
+              "time": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "rates": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "rate": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "object"
+        },
+        "logs": {
+          "type": "object"
+        },
+        "period": {
+          "type": "object"
+        },
+        "evidences": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fulfilled": {
+                "type": "boolean"
+              },
+              "time": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
