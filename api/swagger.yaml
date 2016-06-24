@@ -751,6 +751,12 @@ paths:
         description: "XXX"
         required: true
         type: string
+      - name: "metricValue"
+        in: "body"
+        description: "XXX"
+        required: true
+        schema:
+          type: object
       responses:
         200:
           description: "Success"
@@ -878,7 +884,7 @@ paths:
           schema:
             $ref: "#/definitions/rate_state"
       x-swagger-router-controller: "Stateregistry"
-    
+
 definitions:
   agreement:
     type: object

@@ -67,9 +67,6 @@
               },
               "time": {
                 "type": "string"
-              },
-              "parameters": {
-                "type": "object"
               }
             }
           }

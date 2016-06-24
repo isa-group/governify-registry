@@ -1,7 +1,7 @@
 ---
 development:
   database:
-    url: "mongodb://localhost/governify-registry"
+    url: "mongodb://dockers/governify-registry"
   port: 8080
   logfile: "./logs/dev.log"
 production:
