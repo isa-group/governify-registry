@@ -81,7 +81,9 @@ function setupModel(modelName, jsonModel) {
     $RefParser.dereference(jsonModel, function(err, model) {
         if (err)
             console.log(err);
-        var modelSchema = new mongoose.Schema(model);
+        var modelSchema = new mongoose.Schema(model, {
+            minimize: false
+        });
         var Model = mongoose.model(modelName, modelSchema);
         state.models[modelName] = Model;
     });

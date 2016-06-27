@@ -4,12 +4,66 @@ var mongoose = require('mongoose');
 var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
 var config = require('../config');
-
 var fs = require('fs');
 var errorModel = require('../errors/index.js').errorModel;
 var logger = config.state.logger;
 
 var agreements = require('./agreements/agreements.js');
+
+exports.agreementsGET = agreements.agreementsGET;
+
+exports.agreementsPOST = agreements.agreementsPOST;
+
+exports.agreementsAgreementGET = agreements.agreementIdGET;
+
+
+exports.agreementsAgreementTermsGuaranteesGET = function(args, res, next) {
+  /**
+   * parameters expected in the args:
+   * agreement (String)
+   **/
+  var AgreementModel = config.db.models.AgreementModel;
+  AgreementModel.find({
+    'id': args.agreement.value
+  }, function(err, agreement) {
+    if (err) {
+      console.error(err);
+      res.end();
+    }
+    if (agreement.length === 1) {
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(agreement[0].terms.guarantees));
+    }
+  });
+
+}
+
+exports.agreementsAgreementTermsGuaranteesGuaranteeGET = function(args, res, next) {
+  /**
+   * parameters expected in the args:
+   * agreement (String)
+   * guarantee (String)
+   **/
+  var guarantee = {};
+  var AgreementModel = config.db.models.AgreementModel;
+  AgreementModel.find({
+    'id': args.agreement.value
+  }, function(err, agreement) {
+    if (err) {
+      console.error(err);
+      res.end();
+    }
+    if (agreement.length === 1) {
+      var guarantee = agreement[0].terms.guarantees.filter(function(guarantee) {
+        return guarantee.id === args.guarantee.value;
+      });
+
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(guarantee));
+    }
+  });
+
+}
 
 exports.agreementsAgreementContextDefinitionsGET = function(args, res, next) {
   /**
@@ -390,61 +444,5 @@ exports.agreementsAgreementTermsRatesGET = function(args, res, next) {
     res.end();
   }
 
-}
-
-//agreements middelwares
-
-exports.agreementsGET = agreements.agreementsGET;
-
-exports.agreementsPOST = agreements.agreementsPOST;
-
-exports.agreementsAgreementGET = agreements.agreementIdGET;
-
-
-exports.agreementsAgreementTermsGuaranteesGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * agreement (String)
-   **/
-  var AgreementModel = config.db.models.AgreementModel;
-  AgreementModel.find({
-    'id': args.agreement.value
-  }, function(err, agreement) {
-    if (err) {
-      console.error(err);
-      res.end();
-    }
-    if (agreement.length === 1) {
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(agreement[0].terms.guarantees));
-    }
-  });
-
-}
-
-exports.agreementsAgreementTermsGuaranteesGuaranteeGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * agreement (String)
-   * guarantee (String)
-   **/
-  var guarantee = {};
-  var AgreementModel = config.db.models.AgreementModel;
-  AgreementModel.find({
-    'id': args.agreement.value
-  }, function(err, agreement) {
-    if (err) {
-      console.error(err);
-      res.end();
-    }
-    if (agreement.length === 1) {
-      var guarantee = agreement[0].terms.guarantees.filter(function(guarantee) {
-        return guarantee.id === args.guarantee.value;
-      });
-
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(guarantee));
-    }
-  });
 
 }
