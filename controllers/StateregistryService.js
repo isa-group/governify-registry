@@ -5,183 +5,37 @@ var request = require('request');
 var config = require('../config');
 var example = require('../data');
 
-//Requiring states controllers
+// Requiring states controllers
 var states = require("./states/states.js");
+
+// Agreement controllers
+
+exports.statesAgreementGET = states.agreements.agreementIdGET;
+
+// Guarantees controllers
+
+exports.statesAgreementGuaranteesGET = states.guarantees.guaranteesGET;
+
+exports.statesAgreementGuaranteesGuaranteeGET = states.guarantees.guaranteeIdGET;
+
+// Quotas controllers
+
+exports.statesAgreementQuotasGET = states.quotas.quotasGET;
+
+exports.statesAgreementQuotasQuotaGET = states.quotas.quotasQuotaGET;
+
+// Rates controllers
+
+exports.statesAgreementRatesGET = states.rates.ratesGET;
+
+exports.statesAgreementRatesRateGET = states.rates.ratesRateGET;
+
 
 exports.statesGET = function(args, res, next) {
   /**
    * parameters expected in the args:
    **/
   res.end();
-}
-
-exports.statesAgreementGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * agreement (String)
-   * from (String)
-   * to (String)
-   **/
-  res.setHeader('Content-Type', 'application/json');
-
-  var agreementId = args.agreement.value;
-  var from = '';
-  var to = '';
-  if (args.from) {
-    from = args.from.value;
-  }
-  if (args.to) {
-    to = args.to.value;
-  }
-
-  var AgreementModel = config.db.models.AgreementModel;
-  AgreementModel.find({
-    'id': agreementId
-  }, function(err, agreement) {
-    if (err) {
-      res.status(500).end(JSON.stringify({
-        code: 500,
-        message: err
-      }));
-    }
-
-    if (agreement.length === 1) {
-      calculators.agreementCalculator.process(agreement[0], from, to).then(function(compensations) {
-        res.end(JSON.stringify(compensations));
-      }, function(err) {
-        console.log(err);
-        res.status(500).end(JSON.stringify({
-          code: 500,
-          message: err
-        }));
-      });
-    } else if (agreement.length === 0) {
-      res.status(404).end(JSON.stringify({
-        code: 404,
-        message: 'Agreement ' + agreementId + ' cannot be found.'
-      }));
-    } else if (agreement.length > 1) {
-      res.status(500).end(JSON.stringify({
-        code: 500,
-        message: 'Error while retrieving agreement ' + agreementId + ' from database.'
-      }));
-    }
-
-  });
-}
-
-exports.statesAgreementGuaranteesGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * agreement (String)
-   * from (String)
-   * to (String)
-   **/
-
-  res.setHeader('Content-Type', 'application/json');
-
-  var agreementId = args.agreement.value;
-  var from = '';
-  var to = '';
-  if (args.from) {
-    from = args.from.value;
-  }
-  if (args.to) {
-    to = args.to.value;
-  }
-
-  var AgreementModel = config.db.models.AgreementModel;
-  AgreementModel.find({
-    'id': agreementId
-  }, function(err, agreement) {
-    if (err) {
-      res.status(500).end(JSON.stringify({
-        code: 500,
-        message: err
-      }));
-    }
-
-    if (agreement.length === 1) {
-      calculators.guaranteeCalculator.processAll(agreement[0], from, to).then(function(compensations) {
-        res.end(JSON.stringify(compensations));
-      }, function(err) {
-        console.log(err);
-        res.status(500).end(JSON.stringify({
-          code: 500,
-          message: err
-        }));
-      });
-    } else if (agreement.length === 0) {
-      res.status(404).end(JSON.stringify({
-        code: 404,
-        message: 'Agreement ' + agreementId + ' cannot be found.'
-      }));
-    } else if (agreement.length > 1) {
-      res.status(500).end(JSON.stringify({
-        code: 500,
-        message: 'Error while retrieving agreement ' + agreementId + ' from database.'
-      }));
-    }
-  });
-}
-
-exports.statesAgreementGuaranteesGuaranteeGET = function(args, res, next) {
-  /**
-   * parameters expected in the args:
-   * agreement (String)
-   * guarantee (String)
-   * from (String)
-   * to (String)
-   **/
-
-  res.setHeader('Content-Type', 'application/json');
-
-  var agreementId = args.agreement.value;
-  var guaranteeId = args.guarantee.value;
-  var from = '';
-  var to = '';
-  if (args.from) {
-    from = args.from.value;
-  }
-  if (args.to) {
-    to = args.to.value;
-  }
-
-  var AgreementModel = config.db.models.AgreementModel;
-  AgreementModel.find({
-    'id': agreementId
-  }, function(err, agreement) {
-    if (err) {
-      res.status(500).end(JSON.stringify({
-        code: 500,
-        message: err
-      }));
-    }
-
-    if (agreement.length === 1) {
-      calculators.guaranteeCalculator.process(agreement[0], guaranteeId, from, to).then(function(guaranteeState) {
-        res.end(JSON.stringify(guaranteeState));
-      }, function(err) {
-        console.log(err);
-        res.status(500).end(JSON.stringify({
-          code: 500,
-          message: err
-        }));
-      });
-    } else if (agreement.length === 0) {
-      res.status(404).end(JSON.stringify({
-        code: 404,
-        message: 'Agreement ' + agreementId + ' cannot be found.'
-      }));
-    } else if (agreement.length > 1) {
-      res.status(500).end(JSON.stringify({
-        code: 500,
-        message: 'Error while retrieving agreement ' + agreementId + ' from database.'
-      }));
-    }
-
-    res.end(JSON.stringify(agreement.terms.guarantees));
-  });
 }
 
 exports.statesAgreementMetricsGET = function(args, res, next) {
@@ -313,7 +167,7 @@ exports.statesAgreementMetricsMetricGET = function(args, res, next) {
 
 }
 
-exports.statesAgreementMetricsMetricPUT = states.metrics.metricsIdPUT; 
+exports.statesAgreementMetricsMetricPUT = states.metrics.metricsIdPUT;
 
 exports.statesAgreementPricingGET = function(args, res, next) {
   /**
@@ -331,15 +185,3 @@ exports.statesAgreementPricingGET = function(args, res, next) {
   }
 
 }
-
-//Quotas controllers
-
-exports.statesAgreementQuotasGET = states.quotas.quotasGET;
-
-exports.statesAgreementQuotasQuotaGET = states.quotas.quotasQuotaGET;
-
-//Rates controllers
-
-exports.statesAgreementRatesGET = states.rates.ratesGET;
-
-exports.statesAgreementRatesRateGET = states.rates.ratesRateGET;
