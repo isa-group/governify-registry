@@ -1119,8 +1119,8 @@ definitions:
   scoped_guarante:
     type: object
     properties:
-      def:
-        type: string
+      scope:
+        $ref: "#/definitions/guarantee_scope"
       objective:
         type: string
       with:

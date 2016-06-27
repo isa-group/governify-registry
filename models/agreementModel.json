@@ -179,8 +179,8 @@
     "scoped_guarante": {
         "type": "object",
         "properties": {
-            "def": {
-                "type": "string"
+            "scope": {
+                "$ref": "#/guarantee_scope"
             },
             "objective": {
                 "type": "string"
