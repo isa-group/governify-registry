@@ -17,19 +17,25 @@ module.exports.metricsIdPUT = function(args, res, next) {
      * metricValue ()
      **/
      var StateModel = config.db.models.StateModel;
-     logger.info("New request to PUT metrics");
      var agreementId = args.agreement.value;
      var metricValue = args.metricValue.value;
      var metricName = args.metric.value;
+
+     logger.info("New request to PUT metrics over: " + metricName + " with value: " + metricValue);
      StateModel.findOne({"agreementId": agreementId}, (err, state) => {
-          if(err) res.status(500).json(new errorModel(500, err.toString()));
+          if(err){
+            logger.error(err.toString());
+            res.status(500).json(new errorModel(500, err.toString()));
+          }
 
           if(state){
-
-              metricsRecords.save(state, metricName,metricValue.scope, metricValue.window, metricValue.value);
+              logger.info("Updating state... ");
+              metricsRecords.save(state, metricName, metricValue.scope, metricValue.window, metricValue.value);
 
               StateModel.update({"agreementId": agreementId}, state, (err) => {
                 if(err) res.status(500).json(new errorModel(500, err.toString()));
+                logger.info("State updated");
+                //RECALCULAR EL ESTADO DE LAS QUOTAS, RATES o GUARANTEES DESPUES DEL CAMBIO EN LA METRICA.
                 res.json(new errorModel(200,"OK"));
               });
 

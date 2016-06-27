@@ -3,6 +3,7 @@
 var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
 var config = require('../../config');
+var stateManager = require('governify-agreement-manager').operations.states;
 
 var fs = require('fs');
 var errorModel = require('../../errors/index.js').errorModel;
@@ -68,7 +69,7 @@ function _agreementsPOST (args, res, next) {
       res.json( new errorModel(500, err ));
     } else {
       var agreement = new config.db.models.AgreementModel(args.agreement.value);
-      agreement.save(function(err) {
+      agreement.save(function(err, agModel) {
         if (err) {
           logger.error("Mongo error saving agreement: " + err.toString());
           res.json(new errorModel(500, err ));
@@ -76,22 +77,28 @@ function _agreementsPOST (args, res, next) {
           logger.info('New agreement saved successfully!');
           logger.info('Initializing agreement state');
           //Initialize state
-          var state = new config.db.models.StateModel(
-            jsyaml.safeLoad(fs.readFileSync('./models/stateExample.json'))
-          );
-          state.save((err) => {
-              if(err){
-                logger.error("Mongo error saving state: " + err.toString());
-                res.json( new errorModel(500, err ));
-              }else{
-                logger.info("State initialized successfully!: ");
-                res.json({
-                  code: 200,
-                  message: 'New agreement saved successfully!',
-                  data: agreement
-                });
-              }
+          stateManager.initializeState(agModel, (st) =>{
+              var state = new config.db.models.StateModel(
+                st
+              );
+              state.save((err) => {
+                  if(err){
+                    logger.error("Mongo error saving state: " + err.toString());
+                    res.json( new errorModel(500, err ));
+                  }else{
+                    logger.info("State initialized successfully!: ");
+                    res.json({
+                      code: 200,
+                      message: 'New agreement saved successfully!',
+                      data: agreement
+                    });
+                  }
+              });
+          }, (err) =>{
+              logger.error("Mongo error saving state: " + err.toString());
+              res.json(new errorModel(500, err ));
           });
+
 
         }
       });
