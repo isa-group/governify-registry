@@ -3,7 +3,9 @@
 var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
 var config = require('../../config');
-var stateManager = require('governify-agreement-manager').operations.states;
+var agreementManager  =  require('governify-agreement-manager');
+
+var stateManager = agreementManager.operations.states;
 
 var fs = require('fs');
 var errorModel = require('../../errors/index.js').errorModel;
@@ -68,8 +70,8 @@ function _agreementsPOST (args, res, next) {
       logger.error(err.toString());
       res.json( new errorModel(500, err ));
     } else {
-      var agreement = new config.db.models.AgreementModel(args.agreement.value);
-      agreement.save(function(err, agModel) {
+      var agreement = new config.db.models.AgreementModel(schema);
+      agreement.save(function(err) {
         if (err) {
           logger.error("Mongo error saving agreement: " + err.toString());
           res.json(new errorModel(500, err ));
@@ -77,10 +79,12 @@ function _agreementsPOST (args, res, next) {
           logger.info('New agreement saved successfully!');
           logger.info('Initializing agreement state');
           //Initialize state
-          stateManager.initializeState(agModel, (st) =>{
+          stateManager.initializeState(schema, (st) =>{
+
               var state = new config.db.models.StateModel(
                 st
               );
+
               state.save((err) => {
                   if(err){
                     logger.error("Mongo error saving state: " + err.toString());
