@@ -18,13 +18,18 @@ module.exports.statesAgreementGuaranteesGuaranteeGET = function statesAgreementG
   Stateregistry.statesAgreementGuaranteesGuaranteeGET(req.swagger.params, res, next);
 };
 
-module.exports.statesAgreementMetricsGET = function statesAgreementMetricsGET (req, res, next) {
-  Stateregistry.statesAgreementMetricsGET(req.swagger.params, res, next);
+module.exports.statesAgreementMetricsPOST = function statesAgreementMetricsPOST (req, res, next) {
+  Stateregistry.statesAgreementMetricsPOST(req, res, next);
 };
 
-module.exports.statesAgreementMetricsMetricGET = function statesAgreementMetricsMetricGET (req, res, next) {
-  Stateregistry.statesAgreementMetricsMetricGET(req.swagger.params, res, next);
+module.exports.statesAgreementMetricsMetricPOST = function statesAgreementMetricsMetricPOST (req, res, next) {
+  Stateregistry.statesAgreementMetricsMetricPOST(req.swagger.params, res, next);
 };
+
+module.exports.statesAgreementMetricsMetricHistoryPOST = function statesAgreementMetricsMetricHistoryPOST (req, res, next) {
+  Stateregistry.statesAgreementMetricsMetricHistoryPOST(req.swagger.params, res, next);
+};
+
 
 module.exports.statesAgreementMetricsMetricPUT = function statesAgreementMetricsMetricPUT (req, res, next) {
   Stateregistry.statesAgreementMetricsMetricPUT(req.swagger.params, res, next);

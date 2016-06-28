@@ -1,4 +1,4 @@
-/* 
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -50,7 +50,6 @@ function processMetric(agreement, metricId, metricParameters) {
 
         // var url = require('url');
         // computerEndpoint = "http://localhost:8081/" + url.parse(computerEndpoint).path;
-
         return new Promise((resolve, reject) => {
             request.post({
                 headers: {
@@ -59,7 +58,7 @@ function processMetric(agreement, metricId, metricParameters) {
                 url: computerEndpoint,
                 body: JSON.stringify(data)
             }, function(err, httpResponse, response) {
-                console.log('- Processing metric ' + metricId + ' (' + JSON.stringify(metricParameters.scope) + ')');
+                //console.log('- Processing metric ' + metricId + ' (' + JSON.stringify(metricParameters.scope) + ')');
                 if (err) return reject(err)
                 var response = yaml.safeLoad(response);
                 if (response && Array.isArray(response)) {

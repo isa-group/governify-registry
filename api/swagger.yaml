@@ -687,17 +687,29 @@ paths:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
   /states/{agreement}/metrics:
-    get:
+    post:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "statesAgreementMetricsGET"
+      operationId: "statesAgreementMetricsPOST"
       parameters:
       - name: "agreement"
         in: "path"
         description: "XXX"
         required: true
         type: string
+      - name: scope
+        in: body
+        description: "XXX"
+        required: true
+        #PASS to definitions
+        schema:
+          type: object
+          properties:
+            scope:
+              type: object
+            window:
+              type: object
       responses:
         200:
           description: "Success"
@@ -709,11 +721,11 @@ paths:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
   /states/{agreement}/metrics/{metric}:
-    get:
+    post:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "statesAgreementMetricsMetricGET"
+      operationId: "statesAgreementMetricsMetricPOST"
       parameters:
       - name: "agreement"
         in: "path"
@@ -725,6 +737,18 @@ paths:
         description: "XXX"
         required: true
         type: string
+      - name: scope
+        in: body
+        description: "XXX"
+        required: true
+        #PASS to definitions
+        schema:
+          type: object
+          properties:
+            scope:
+              type: object
+            window:
+              type: object
       responses:
         200:
           description: "Success"
@@ -757,6 +781,45 @@ paths:
         required: true
         schema:
           type: object
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/metric_state"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/inline_response_400"
+      x-swagger-router-controller: "Stateregistry"
+  /states/{agreement}/metrics/{metric}/history:
+    post:
+      tags:
+      - "state-registry"
+      description: "XXX"
+      operationId: "statesAgreementMetricsMetricHistoryPOST"
+      parameters:
+      - name: "agreement"
+        in: "path"
+        description: "XXX"
+        required: true
+        type: string
+      - name: "metric"
+        in: "path"
+        description: "XXX"
+        required: true
+        type: string
+      - name: scope
+        in: body
+        description: "XXX"
+        required: true
+        #PASS to definitions
+        schema:
+          type: object
+          properties:
+            scope:
+              type: object
+            window:
+              type: object
       responses:
         200:
           description: "Success"

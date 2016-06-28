@@ -4,6 +4,10 @@ var agreementManager = require('governify-agreement-manager');
 var metricsRecords = agreementManager.operations.states.recordsManager.metrics;
 var errorModel = require('../../../errors/index.js').errorModel;
 
+var calculators = require('../../../calculators/calculators.js');
+var Promise = require("bluebird");
+var request = require('request');
+
 var config = require('../../../config');
 var logger = config.state.logger;
 
@@ -45,4 +49,304 @@ module.exports.metricsIdPUT = function(args, res, next) {
           }
 
      });
+}
+
+module.exports.metricsPOST =  function(req, res, next) {
+  /**
+   * parameters expected in the args:
+   * agreement (String)
+   **/
+   var args = req.swagger.params;
+    var StateModel = config.db.models.StateModel;
+    var agreementId = args.agreement.value;
+    var AgreementModel = config.db.models.AgreementModel;
+    logger.info("New request to GET metrics of agreement: " + agreementId);
+    var processMetrics = [];
+    var metricParams = args.scope.value;
+
+    StateModel.findOne({"agreementId": agreementId}, (err, state) => {
+        if(err){
+            logger.error(err.toString());
+            res.status(500).json(new errorModel(500, err.toString() ));
+        }else{
+            if(state){
+                AgreementModel.findOne({'id': agreementId}, function(err, agreement) {
+                    if(err){
+                        logger.error(err.toString());
+                        res.status(500).json(new errorModel(500, err.toString() ));
+                    }
+                    if(agreement){
+                        // Mejorar y pasar a metricCalculator.
+                        logger.info("Preparing requests to /states/" + agreementId + "/metrics/{metricId} : " );
+                        for (var metricId in agreement.terms.metrics) {
+
+                            if(agreement.terms.metrics[metricId].computer){
+                                logger.info("==> metricId = " + metricId );
+                                processMetrics.push(
+                                    new Promise ((resolve,reject)=>{
+                                      request.post({uri: 'http://'+ req.headers.host +'/api/v1/states/' + agreementId + '/metrics/' + metricId,
+                                          json: true, body:metricParams
+                                        },(err, responses, body)=>{
+                                            if(err) reject(err);
+                                            if(responses.statusCode == 200){
+                                                resolve({
+                                                    metricValues: body
+                                                });
+                                            }else{
+                                                 reject("Error from metricsIdGET: " + body.message);
+                                            }
+                                      })
+                                    })
+                                );
+                            }
+                            //processMetrics.push(calculators.metricCalculator.process(agreement, metricId, metricParams));
+                        }
+                        logger.info("Waitting responses..." );
+                        Promise.settle(processMetrics).then(function(results) {
+                            //console.log(results);
+                            var noError = true;
+                            if(results.length > 0){
+                                var metricsValues = [];
+                                for( var r in results){
+                                    if (results[r].isFulfilled()) {
+                                        var values = results[r].value().metricValues;
+                                        //console.log(values);
+                                        for(var v in values){
+                                            metricsValues.push(values[v]);
+                                        }
+                                    }else{
+                                      noError = noError && false;
+                                    }
+                                }
+                                /*if(noError)*/
+                                  res.json(metricsValues);
+                                /*else{
+                                    logger.error("ERROR processing metrics");
+                                    res.status(500).json(new errorModel(500,results[r]));
+                                }*/
+                            }else{
+                                logger.error("ERROR processing metrics");
+                                res.status(500).json(new errorModel(500, "ERROR processing metrics"));
+                            }
+                            //res.json(metricValues);
+                        });
+
+                    }else{
+                        logger.info('Agreement ' + agreementId + ' cannot be found.');
+                        res.status(404).json(new errorModel(404, 'Agreement ' + agreementId + ' cannot be found.'));
+                    }
+
+                });
+            }else {
+                logger.info('State ' + agreementId + ' cannot be found.');
+                res.status(404).json(new errorModel(404, 'State ' + agreementId + ' cannot be found.'));
+            }
+        }
+    });
+
+}
+
+module.exports.metricsIdPOST = function(args, res, next) {
+  /**
+   * parameters expected in the args:
+   * agreement (String)
+   * metric (String)
+   **/
+    var StateModel = config.db.models.StateModel;
+    var agreementId = args.agreement.value;
+    var metricId = args.metric.value;
+    var from = '';
+    var to = '';
+    if (args.from) {
+      from = args.from.value;
+    }
+    if (args.to) {
+      to = args.to.value;
+    }
+    var metricParams = args.scope.value;
+
+    logger.info("New request to GET metric = " + metricId + " of agreement: " + agreementId);
+
+    StateModel.findOne({"agreementId": agreementId}, (err, state) => {
+       if(err) {
+           logger.error(err.toString());
+           res.status(500).json(new errorModel(500, err.toString() ));
+       }else{
+           if(state){
+             var AgreementModel = config.db.models.AgreementModel;
+             AgreementModel.findOne({'id': agreementId}, function(err, agreement) {
+                 if (err) {
+                     logger.error(err.toString());
+                     res.status(500).json(new errorModel(500, err.toString() ));
+                 }
+                logger.info("Deciding if metric is Updated");
+                isUpdated(state, agreement, metricId, metricParams, (isUpdated, logsState)=>{
+                     logger.info("==>" + metricId + " isUpdated = " + isUpdated);
+                     if(!isUpdated){
+                         logger.info("Updating metric...");
+                         if (agreement) {
+                             calculators.metricCalculator.process(agreement, metricId, metricParams).then(function(metricState) {
+                                 if (metricState.metricValues) {
+                                   for(var mValue in metricState.metricValues ){
+                                        var value = metricState.metricValues[mValue];
+                                        metricsRecords.save(state, metricId, value.scope, {type: metricParams.window.type, period: metricParams.window.period}, value.value, logsState, value.evidences);
+
+                                   }
+                                    //RECALCULAR EL ESTADO DE LAS QUOTAS, RATES o GUARANTEES DESPUES DEL CAMBIO EN LA METRICA.
+                                   StateModel.update({"agreementId": agreementId}, state, (err) => {
+                                       if(err) res.status(500).json(new errorModel(500, err.toString()));
+                                       logger.info("State updated");
+                                       res.json(state.metrics.filter((element, index, array) => {
+                                             metricToCurrentValue(state, element.scope, element.window, element);
+                                             if(!element.metric) return false;
+                                             var ret = true;
+                                             if(element.metric != metricId){
+                                                 ret = ret && false;
+                                             }
+                                             for (var s in metricParams.scope){
+                                                 if( element.scope[s] != metricParams.scope[s] && metricParams.scope[s] != "*" )
+                                                   ret = ret && false;
+                                             }
+                                             for (var w in metricParams.window){
+                                                 if(element.window[w] != metricParams.window[w] && w == "type" && w == "period")
+                                                   ret = ret && false;
+                                             }
+                                             return ret;
+                                       }));
+                                   });
+
+                                 }
+                             }, function(err) {
+                                 logger.error(err.toString());
+                                 res.status(500).json(new errorModel(500, err.toString() ));
+                             });
+                         } else{
+
+                             logger.info('Agreement ' + agreementId + ' cannot be found.');
+                             res.status(404).json(new errorModel(404, 'Agreement ' + agreementId + ' cannot be found.'));
+
+                         }
+
+                     }else{
+                         logger.info("==>Metric is already updated, returning metric");
+                         res.json(state.metrics.filter((element, index, array) => {
+                             metricToCurrentValue(state, element.scope, element.window, element);
+                             if(!element.metric) return false;
+                             var ret = true;
+                             if(element.metric != metricId){
+                                 ret = ret && false;
+                             }
+                             for (var s in metricParams.scope){
+                                 if( element.scope[s] != metricParams.scope[s] && metricParams.scope[s] != "*" )
+                                   ret = ret && false;
+                             }
+                             for (var w in metricParams.window){
+                                 if(element.window[w] != metricParams.window[w] && w == "type" && w == "period")
+                                   ret = ret && false;
+                             }
+                             return ret;
+                         }));
+                     }
+                 }, (err) => {
+                     logger.error(err.toString());
+                     res.status(500).json(new errorModel(500, err.toString() ));
+                 });
+               });
+           }else {
+               logger.info('State ' + agreementId + ' cannot be found.');
+               res.status(404).json(new errorModel(404, 'State ' + agreementId + ' cannot be found.'));
+           }
+       }
+    });
+
+}
+
+function isUpdated(state, agreement, mName, metricParams, successCb, errorCb){
+    //var logsState = metricsRecords.current(state, mName, metricParams.scope, metricParams.window).logsState;
+    var logUris = null;
+    for( var log in agreement.context.definitions.logs){
+        if(agreement.context.definitions.logs[log].default) logUris = agreement.context.definitions.logs[log].uri;
+    }
+
+    logUris += "/count";
+
+    var current = metricsRecords.current(state, mName, metricParams.scope, metricParams.window );
+
+    request.get({uri: logUris, json: true}, (err, response, body) =>{
+        if(!err && response.statusCode == 200){
+            if(current){
+                if(current.logsState){
+                    //console.log(current.logsState + "=>" + body.count);
+                    if(current.logsState == body.count) successCb(true, body.count);
+                    else successCb(false, body.count);
+                }else{
+                    successCb(true, body.count);
+                }
+            }else{
+                successCb(false, body.count);
+            }
+        }else{
+            errorCb(err);
+        }
+    });
+}
+
+module.exports.metricsIdHistoryPOST = function(args, res, next) {
+  /**
+   * parameters expected in the args:
+   * agreement (String)
+   * metric (String)
+   **/
+    var StateModel = config.db.models.StateModel;
+    var agreementId = args.agreement.value;
+    var metricId = args.metric.value;
+    var from = '';
+    var to = '';
+    if (args.from) {
+      from = args.from.value;
+    }
+    if (args.to) {
+      to = args.to.value;
+    }
+    var metricParams = args.scope.value;
+
+    logger.info("New request to GET history of metric = " + metricId + " of agreement: " + agreementId);
+
+    StateModel.findOne({"agreementId": agreementId}, (err, state) => {
+       if(err) {
+           logger.error(err.toString());
+           res.status(500).json(new errorModel(500, err.toString() ));
+       }else{
+           if(state){
+             logger.info("Send history of metric = " + metricId + " of agreement: " + agreementId);
+             res.json(state.metrics.filter((element, index, array) => {
+                 if(!element.metric) return false;
+                 var ret = true;
+                 if(element.metric != metricId){
+                     ret = ret && false;
+                 }
+                 for (var s in metricParams.scope){
+                     if( element.scope[s] != metricParams.scope[s] && metricParams.scope[s] != "*" )
+                       ret = ret && false;
+                 }
+                 for (var w in metricParams.window){
+                     if(element.window[w] != metricParams.window[w] && w == "type" && w == "period")
+                       ret = ret && false;
+                 }
+                 return ret;
+             }));
+           }else {
+               logger.info('State ' + agreementId + ' cannot be found.');
+               res.status(404).json(new errorModel(404, 'State ' + agreementId + ' cannot be found.'));
+           }
+       }
+    });
+
+}
+
+
+function metricToCurrentValue(state, scope, window, metric){
+    metric.value = metricsRecords.current(state, metric.metric, scope, window ).value;
+    metric.evidences = metricsRecords.current(state, metric.metric, scope, window ).evidences;
+    delete metric.records;
 }
