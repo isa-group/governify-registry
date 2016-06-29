@@ -48,7 +48,7 @@ function _get(stateType, query, successCb, errorCb ){
               }));
           }else {
               logger.info("==>Refreshing states");
-              this.put();
+              this.update(stateType, query, successCb, errorCb,  logsState);
           }
     }, (err) => {
         logger.info("Error while checking if it is update " + stateType + " = " + JSON.stringify(query));
@@ -94,8 +94,47 @@ function _put(stateType, query, value, successCb, errorCb, logsState, evidences)
 
 }
 
-function _refresh(){
+function _refresh(stateType, query, successCb, errorCb){
+    var from = '?';
+    var to = '?';
 
+    switch (stateType) {
+        case "agreement":
+            calculators.agreementCalculator.process(this.agreement)
+                .then(function(agreementState) {
+                    this.put(stateType, agreementState, successCb, errorCb);
+                }, function(err) {
+                    logger.error(err.toString());
+                    errorCb(new errorModel(500, err));
+                });
+            break;
+        case "guarantees":
+            calculators.guaranteeCalculator.process(this.agreement, query.id)
+                .then(function(guarantees) {
+                    this.put(stateType, guarantees, successCb, errorCb);
+                }, function(err) {
+                    logger.error(err.toString());
+                    res.status(500).json(new errorModel(500, err));
+                });
+            break;
+        case "metrics":
+            calculators.metricCalculator.process(this.agreement, query.id, query)
+                .then(function(metricState) {
+                    this.put(stateType, {
+                      metric: query.metric,
+                      scope: metricState.metricsValues[0].scope,
+                      window: query.window
+                    },metricState.metricsValues[0].value, (success) =>{
+                        successCb(success);
+                    }, (err)=>{
+                        errorCb(err);
+                    },  logsState);
+                }, function(err) {
+                    logger.error(err.toString());
+                    res.status(500).json(new errorModel(500, err));
+                });
+            break;
+    }
 }
 
 function state (value, query, logsState, evidences){
@@ -129,7 +168,7 @@ function isUpdated(state, agreement, stateType, query, successCb, errorCb){
 
     var current = null
     if(elementStates.length > 0)
-       current = getCurrent(elementStates);
+       current = getCurrent(elementStates[0]);
 
     request.get({uri: logUris, json: true}, (err, response, body) =>{
         if(!err && response.statusCode == 200){
