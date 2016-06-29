@@ -62,7 +62,8 @@ context:
     logs:
       casdm:
         default: true
-        uri: "http://logs.sas.governify.io/api/v1/logs/ca-sdm"
+        uri: "http://logs.sas.governify.io/api/v10.12/ca-sdm"
+        stateUri: "http://logs.sas.governify.io/api/v10.12/ca-sdm/count"
         scopes:
           SPU:
             priority: Prioridad
