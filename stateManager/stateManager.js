@@ -127,7 +127,11 @@ function _update(stateType, query, successCb, errorCb, logsState){
                         }));
                     }
                     Promise.all(processguarantees).then((guarantees)=>{
-                      successCb(guarantees);
+                      var result = [];
+                      for (var a in guarantees){
+                          result.push(guarantees[a][0]);
+                      }
+                      successCb(result);
                     })
                 }, function(err) {
                     logger.error(err.toString());
