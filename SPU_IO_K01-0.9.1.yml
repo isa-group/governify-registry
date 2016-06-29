@@ -62,14 +62,14 @@ context:
     logs:
       casdm:
         default: true
-        uri: "https://casdm.log.sas.governify.io"
+        uri: "http://logs.sas.governify.io/api/v1/logs/ca-sdm"
         scopes:
           SPU:
             priority: Prioridad
             node: Nodo
             center: Centro
       jira:
-        uri: "https://jira.log.sas.governify.io"
+        uri: "http://jira.log.sas.governify.io"
         scopes:
           SPU:
             node: Nodo
@@ -141,7 +141,8 @@ terms:
       schema:
         description: Penalizacion total del periodo
         type: double
-      computer: "http://registry.sas.governify.io/states/SPU/pricing/billing/penalty"
+      #computer: "http://registry.sas.governify.io/states/SPU/pricing/billing/penalty"
+      computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K00/"
       scope:
         $ref: "#/context/definitions/scopes/SPU"
       metadata:
