@@ -6,6 +6,7 @@ var request = require('request');
 var errorModel = require('../errors/index.js').errorModel;
 var iso8601 = require('iso8601');
 var calculators = require('../stateManager/calculators.js');
+var Promise = require("bluebird");
 
 module.exports = initialize;
 
@@ -49,7 +50,7 @@ function _get(stateType, query, successCb, errorCb ){
               }));
           }else {
               logger.info("==>Refreshing states");
-              this.update(stateType, query, successCb, errorCb,  logsState);
+              this.update(stateType, query, successCb, errorCb, logsState);
           }
     }, (err) => {
         logger.info("Error while checking if it is update " + stateType + " = " + JSON.stringify(query));
@@ -70,9 +71,11 @@ function _put(stateType, query, value, successCb, errorCb, logsState, evidences)
       StateModel.update({"agreementId": this.agreement.id}, this.state, (err) => {
         if(err) errorCb(new errorModel(500, err));
         else{
-          logger.info("State updated");
+          logger.info(stateType + "updated");
           //RECALCULAR EL ESTADO DE LAS QUOTAS, RATES o GUARANTEES DESPUES DEL CAMBIO EN LA METRICA.
-          successCb(new errorModel(200,"OK"));
+          successCb( this.state[stateType].filter((element, index, array)=>{
+              return checkQuery(element, query);
+          }));
         }
       });
     }else if ( elementStates.length > 1){
@@ -86,9 +89,11 @@ function _put(stateType, query, value, successCb, errorCb, logsState, evidences)
        StateModel.update({"agreementId": this.agreement.id}, this.state, (err) => {
          if(err) errorCb(new errorModel(500, err));
          else{
-           logger.info("State updated");
+           logger.info(stateType + "updated");
            //RECALCULAR EL ESTADO DE LAS QUOTAS, RATES o GUARANTEES DESPUES DEL CAMBIO EN LA METRICA.
-           successCb(new errorModel(200,"OK"));
+           successCb( this.state[stateType].filter((element, index, array)=>{
+               return checkQuery(element, query);
+           }));
          }
        });
     }
@@ -98,7 +103,7 @@ function _put(stateType, query, value, successCb, errorCb, logsState, evidences)
 function _update(stateType, query, successCb, errorCb, logsState){
     var from = '?';
     var to = '?';
-
+    var stateManager = this;
     switch (stateType) {
         case "agreement":
             calculators.agreementCalculator.process(this.agreement)
@@ -110,30 +115,48 @@ function _update(stateType, query, successCb, errorCb, logsState){
                 });
             break;
         case "guarantees":
-            calculators.guaranteeCalculator.process(this.agreement, query.id)
+            calculators.guaranteeCalculator.process(this.agreement, query.guarantee)
                 .then(function(guarantees) {
-                    this.put(stateType, guarantees, successCb, errorCb);
+                    var processguarantees = [];
+                    for(var g in guarantees){
+                        processguarantees.push(new Promise((resolve, reject) => {
+                              stateManager.put(stateType, {
+                                guarantee: query.guarantee,
+                                scope: guarantees[g].scope
+                              },guarantees[g].value, resolve, reject, logsState);
+                        }));
+                    }
+                    Promise.all(processguarantees).then((guarantees)=>{
+                      successCb(guarantees);
+                    })
                 }, function(err) {
                     logger.error(err.toString());
-                    res.status(500).json(new errorModel(500, err));
+                    errorCb(new errorModel(500, err));
                 });
             break;
         case "metrics":
-            var stateManager = this;
             calculators.metricCalculator.process(this.agreement, query.metric, query)
                 .then(function(metricState) {
-                    stateManager.put(stateType, {
-                      metric: query.metric,
-                      scope: metricState.metricValues[0].scope,
-                      window: query.window
-                    },metricState.metricValues[0].value, (success) =>{
-                        successCb(success);
-                    }, (err)=>{
-                        errorCb(err);
-                    },  logsState);
+                    var processMetrics = [];
+                    for(var m in metricState.metricValues){
+                        processMetrics.push(new Promise((resolve, reject) => {
+                              stateManager.put(stateType, {
+                                metric: query.metric,
+                                scope:  metricState.metricValues[m].scope,
+                                window: query.window
+                              }, metricState.metricValues[m].value, resolve, reject, logsState);
+                        }));
+                    }
+                    Promise.all(processMetrics).then((metrics)=>{
+                        var result = [];
+                        for (var a in metrics){
+                            result.push(metrics[a][0]);
+                        }
+                        successCb(result);
+                    })
                 }, function(err) {
                     logger.error(err.toString());
-                    res.status(500).json(new errorModel(500, err));
+                    errorCb(new errorModel(500, err));
                 });
             break;
     }
@@ -174,16 +197,16 @@ function isUpdated(state, agreement, stateType, query, successCb, errorCb){
 
     request.get({uri: logUris, json: true}, (err, response, body) =>{
         if(!err && response.statusCode == 200){
+            //console.log("logState =>" + body);
             if(current){
                 if(current.logsState){
-                    //console.log(current.logsState + "=>" + body.count);
-                    if(current.logsState == body.count) successCb(true, body.count);
-                    else successCb(false, body.count);
+                    if(current.logsState == body) successCb(true, body);
+                    else successCb(false, body);
                 }else{
-                    successCb(true, body.count);
+                    successCb(true, body);
                 }
             }else{
-                successCb(false, body.count);
+                successCb(false, body);
             }
         }else{
             errorCb("Error with Logs state URI this: " + logUris + " is not correct");
