@@ -1,6 +1,6 @@
 'use strict';
 
-var calculators = require('../calculators/calculators.js');
+var calculators = require('../stateManager/calculators.js');
 var request = require('request');
 var config = require('../config');
 var example = require('../data');
