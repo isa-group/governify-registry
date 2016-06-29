@@ -144,3 +144,9 @@ module.exports.metricsIdPOST = function(args, res, next) {
     });
 
 }
+
+/**
+.filter((element)=>{
+    manager.current(element);
+    return true;
+})**/

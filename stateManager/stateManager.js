@@ -30,7 +30,8 @@ function initialize(_agreement, successCb, errorCb){
                         state: _state,
                         get: _get,
                         put: _put,
-                        update: _update
+                        update: _update,
+                        current: _current
                      });
                  }
              });
@@ -53,8 +54,8 @@ function _get(stateType, query, successCb, errorCb ){
               this.update(stateType, query, successCb, errorCb, logsState);
           }
     }, (err) => {
-        logger.info("Error while checking if it is update " + stateType + " = " + JSON.stringify(query));
-        errorCb(new errorModel(500, "Error while checking if it is update " + stateType + " = " + JSON.stringify(query)));
+        logger.info(JSON.stringify(err));
+        errorCb(new errorModel(500, "Error while checking if it is update: " + err));
     });
 
 }
@@ -71,7 +72,7 @@ function _put(stateType, query, value, successCb, errorCb, logsState, evidences)
       StateModel.update({"agreementId": this.agreement.id}, this.state, (err) => {
         if(err) errorCb(new errorModel(500, err));
         else{
-          logger.info(stateType + "updated with query = " + JSON.stringify(query));
+          logger.info("==>" + stateType + " updated with query = " + JSON.stringify(query));
           //RECALCULAR EL ESTADO DE LAS QUOTAS, RATES o GUARANTEES DESPUES DEL CAMBIO EN LA METRICA.
           successCb( this.state[stateType].filter((element, index, array)=>{
               return checkQuery(element, query);
@@ -198,10 +199,10 @@ function isUpdated(state, agreement, stateType, query, successCb, errorCb){
     var current = null
     if(elementStates.length > 0)
        current = getCurrent(elementStates[0]);
-
+/**
     request.get({uri: logUris, json: true}, (err, response, body) =>{
-        if(!err && response.statusCode == 200){
-            //console.log("logState =>" + body);
+        if(!err && response.statusCode == 200 && body){
+            console.log("logState =>" + body);
             if(current){
                 if(current.logsState){
                     if(current.logsState == body) successCb(true, body);
@@ -213,9 +214,11 @@ function isUpdated(state, agreement, stateType, query, successCb, errorCb){
                 successCb(false, body);
             }
         }else{
-            errorCb("Error with Logs state URI this: " + logUris + " is not correct");
+              successCb(false, 200);
+            //errorCb("Error with Logs state URI this: " + logUris + " is not correct");
         }
-    });
+    });**/
+      successCb(false, 200);
 }
 
 function checkQuery (element, query) {
@@ -235,4 +238,9 @@ function checkQuery (element, query) {
 
 function getCurrent(state){
     return state.records[state.records.length -1];
+}
+
+function _current(state){
+    state.value = state.records[state.records.length -1].value;
+    delete state.records;
 }
