@@ -71,7 +71,7 @@ function _put(stateType, query, value, successCb, errorCb, logsState, evidences)
       StateModel.update({"agreementId": this.agreement.id}, this.state, (err) => {
         if(err) errorCb(new errorModel(500, err));
         else{
-          logger.info(stateType + "updated");
+          logger.info(stateType + "updated with query = " + JSON.stringify(query));
           //RECALCULAR EL ESTADO DE LAS QUOTAS, RATES o GUARANTEES DESPUES DEL CAMBIO EN LA METRICA.
           successCb( this.state[stateType].filter((element, index, array)=>{
               return checkQuery(element, query);
@@ -79,17 +79,16 @@ function _put(stateType, query, value, successCb, errorCb, logsState, evidences)
         }
       });
     }else if ( elementStates.length > 1){
-      //error
-      logger.info("Error");
+
+      logger.info("Error, Is not possible to updating state with this query = " + JSON.stringify(query));
       errorCb(new errorModel(400, "Is not possible to updating state with this query"));
+
     }else{
-      logger.info("Crear");
-      //crear
        this.state[stateType].push(new state(value, query, logsState, evidences));
        StateModel.update({"agreementId": this.agreement.id}, this.state, (err) => {
          if(err) errorCb(new errorModel(500, err));
          else{
-           logger.info(stateType + "updated");
+           logger.info("==>Created new entry with query = " + JSON.stringify(query));
            //RECALCULAR EL ESTADO DE LAS QUOTAS, RATES o GUARANTEES DESPUES DEL CAMBIO EN LA METRICA.
            successCb( this.state[stateType].filter((element, index, array)=>{
                return checkQuery(element, query);
@@ -139,6 +138,7 @@ function _update(stateType, query, successCb, errorCb, logsState){
                 });
             break;
         case "metrics":
+            logger.info("==>Getting metrics from compunter URI");
             calculators.metricCalculator.process(this.agreement, query.metric, query)
                 .then(function(metricState) {
                     var processMetrics = [];

@@ -7,8 +7,8 @@ var errorModel = require('../../../errors/index.js').errorModel;
 var config = require('../../../config');
 var logger = config.state.logger;
 var stateManager = require('../../../stateManager/stateManager.js')
-
-
+var Promise = require("bluebird");
+var request = require("request");
 
 module.exports.metricsIdPUT = function(args, res, next) {
     /**
@@ -49,16 +49,72 @@ module.exports.metricsPOST =  function(req, res, next) {
 
     logger.info("New request to GET metrics of agreement: " + agreementId);
 
-    // for each metric
-    stateManager({
-        id: agreementId
-    }).get("metrics", function(metrics) {
-        res.json(metrics);
-    }, function(err) {
-        logger.error(err.message.toString());
-        res.status(err.code).json(err);
-    });
+    AgreementModel.findOne({'id': agreementId}, function(err, agreement) {
+        if(err){
+            logger.error(err.toString());
+            res.status(500).json(new errorModel(500, err.toString() ));
+        }
+        if(agreement){
+            // Mejorar y pasar a metricCalculator.
+            logger.info("Preparing requests to /states/" + agreementId + "/metrics/{metricId} : " );
+            for (var metricId in agreement.terms.metrics) {
 
+                if(agreement.terms.metrics[metricId].computer){
+                    logger.info("==> metricId = " + metricId );
+                    processMetrics.push(
+                        new Promise ((resolve,reject)=>{
+                          request.post({uri: 'http://'+ req.headers.host +'/api/v1/states/' + agreementId + '/metrics/' + metricId,
+                              json: true, body:metricParams
+                            },(err, responses, body)=>{
+                                if(err) reject(err);
+                                if(responses.statusCode == 200){
+                                    resolve({
+                                        metricValues: body
+                                    });
+                                }else{
+                                     reject("Error from metricsIdGET: " + body.message);
+                                }
+                          })
+                        })
+                    );
+                }
+                //processMetrics.push(calculators.metricCalculator.process(agreement, metricId, metricParams));
+            }
+            logger.info("Waitting responses..." );
+            Promise.settle(processMetrics).then(function(results) {
+                var noError = true;
+                if(results.length > 0){
+                    var metricsValues = [];
+                    for( var r in results){
+                        if (results[r].isFulfilled()) {
+                            var values = results[r].value().metricValues;
+                            //console.log(values);
+                            for(var v in values){
+                                metricsValues.push(values[v]);
+                            }
+                        }else{
+                          noError = noError && false;
+                        }
+                    }
+                    /*if(noError)*/
+                      res.json(metricsValues);
+                    /*else{
+                        logger.error("ERROR processing metrics");
+                        res.status(500).json(new errorModel(500,results[r]));
+                    }*/
+                }else{
+                    logger.error("ERROR processing metrics");
+                    res.status(500).json(new errorModel(500, "ERROR processing metrics"));
+                }
+                //res.json(metricValues);
+            });
+
+        }else{
+            logger.info('Agreement ' + agreementId + ' cannot be found.');
+            res.status(404).json(new errorModel(404, 'Agreement ' + agreementId + ' cannot be found.'));
+        }
+
+    });
 
 }
 
