@@ -134,7 +134,8 @@ module.exports.metricsIdPOST = function(args, res, next) {
          manager.get('metrics', {
              metric: metricId,
              scope: metricParams.scope,
-             window: metricParams.window
+             window: metricParams.window,
+             period: metricParams.period ? metricParams.period : {from: '*', to: '*'}
          }, (data) => {
              res.json(data);
          }, (err) => {

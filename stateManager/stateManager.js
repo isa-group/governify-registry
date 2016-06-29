@@ -123,7 +123,7 @@ function _update(stateType, query, successCb, errorCb, logsState){
                               stateManager.put(stateType, {
                                 guarantee: query.guarantee,
                                 scope: guarantees[g].scope
-                              },guarantees[g].value, resolve, reject, logsState);
+                              },guarantees[g].value, resolve, reject, logsState );
                         }));
                     }
                     Promise.all(processguarantees).then((guarantees)=>{
@@ -148,8 +148,9 @@ function _update(stateType, query, successCb, errorCb, logsState){
                               stateManager.put(stateType, {
                                 metric: query.metric,
                                 scope:  metricState.metricValues[m].scope,
+                                period: metricState.metricValues[m].period,
                                 window: query.window
-                              }, metricState.metricValues[m].value, resolve, reject, logsState);
+                              }, metricState.metricValues[m].value, resolve, reject, logsState, metricState.metricValues[m].evidences );
                         }));
                     }
                     Promise.all(processMetrics).then((metrics)=>{
@@ -176,7 +177,8 @@ function state (value, query, logsState, evidences){
 }
 
 function record(value, logsState, evidences){
-    this.value = value;
+
+    this.value= value;
     this.time = iso8601.fromDate(new Date());
     if(logsState == 0 || logsState)
       this.logsState = logsState;
@@ -199,7 +201,7 @@ function isUpdated(state, agreement, stateType, query, successCb, errorCb){
     var current = null
     if(elementStates.length > 0)
        current = getCurrent(elementStates[0]);
-/**
+
     request.get({uri: logUris, json: true}, (err, response, body) =>{
         if(!err && response.statusCode == 200 && body){
             console.log("logState =>" + body);
@@ -214,18 +216,16 @@ function isUpdated(state, agreement, stateType, query, successCb, errorCb){
                 successCb(false, body);
             }
         }else{
-              successCb(false, 200);
-            //errorCb("Error with Logs state URI this: " + logUris + " is not correct");
+            errorCb("Error with Logs state URI this: " + logUris + " is not correct");
         }
-    });**/
-      successCb(false, 200);
+    });
 }
 
 function checkQuery (element, query) {
     //console.log(element);
     var ret = true;
     for(var v in query){
-      if(query[v] instanceof Object){
+      if(query[v] instanceof Object && v != "parameters" ){
           ret = ret && checkQuery(element[v], query[v]);
       }else {
           if(element[v] !== query[v] && query[v] != "*"){
