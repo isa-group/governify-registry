@@ -5,6 +5,7 @@ var logger = config.state.logger;
 var request = require('request');
 var errorModel = require('../errors/index.js').errorModel;
 var iso8601 = require('iso8601');
+var calculators = require('../stateManager/calculators.js');
 
 module.exports = initialize;
 
@@ -28,7 +29,7 @@ function initialize(_agreement, successCb, errorCb){
                         state: _state,
                         get: _get,
                         put: _put,
-                        refresh: _refresh
+                        update: _update
                      });
                  }
              });
@@ -94,7 +95,7 @@ function _put(stateType, query, value, successCb, errorCb, logsState, evidences)
 
 }
 
-function _refresh(stateType, query, successCb, errorCb){
+function _update(stateType, query, successCb, errorCb, logsState){
     var from = '?';
     var to = '?';
 
@@ -118,13 +119,14 @@ function _refresh(stateType, query, successCb, errorCb){
                 });
             break;
         case "metrics":
-            calculators.metricCalculator.process(this.agreement, query.id, query)
+            var stateManager = this;
+            calculators.metricCalculator.process(this.agreement, query.metric, query)
                 .then(function(metricState) {
-                    this.put(stateType, {
+                    stateManager.put(stateType, {
                       metric: query.metric,
-                      scope: metricState.metricsValues[0].scope,
+                      scope: metricState.metricValues[0].scope,
                       window: query.window
-                    },metricState.metricsValues[0].value, (success) =>{
+                    },metricState.metricValues[0].value, (success) =>{
                         successCb(success);
                     }, (err)=>{
                         errorCb(err);
