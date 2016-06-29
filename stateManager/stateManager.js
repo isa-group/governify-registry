@@ -199,26 +199,29 @@ function isUpdated(state, agreement, stateType, query, successCb, errorCb){
     });
 
     var current = null
-    if(elementStates.length > 0)
+    if(elementStates.length > 0){
        current = getCurrent(elementStates[0]);
+       request.get({uri: logUris, json: true}, (err, response, body) =>{
+           if(!err && response.statusCode == 200 && body){
+               //console.log("logState =>" + body);
+               if(current){
+                   if(current.logsState){
+                       if(current.logsState == body) successCb(true, body);
+                       else successCb(false, body);
+                   }else{
+                       successCb(true, body);
+                   }
+               }else{
+                   successCb(false, body);
+               }
+           }else{
+               errorCb("Error with Logs state URI this: " + logUris + " is not correct");
+           }
+       });
+    }else {
+        successCb(true, null);
+    }
 
-    request.get({uri: logUris, json: true}, (err, response, body) =>{
-        if(!err && response.statusCode == 200 && body){
-            console.log("logState =>" + body);
-            if(current){
-                if(current.logsState){
-                    if(current.logsState == body) successCb(true, body);
-                    else successCb(false, body);
-                }else{
-                    successCb(true, body);
-                }
-            }else{
-                successCb(false, body);
-            }
-        }else{
-            errorCb("Error with Logs state URI this: " + logUris + " is not correct");
-        }
-    });
 }
 
 function checkQuery (element, query) {
