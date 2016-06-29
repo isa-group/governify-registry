@@ -918,7 +918,8 @@ definitions:
     type: object
     properties:
       initial:
-        type: string
+        type: integer
+        format: int32
       end:
         type: string
 
@@ -1015,8 +1016,8 @@ definitions:
     type: object
     properties:
       cost:
-        type: "number"
-        format: "double"
+        type: number
+        format: double
       currency:
         type: string
       billing:
@@ -1107,7 +1108,8 @@ definitions:
     type: object
     properties:
       initial:
-        type: string
+        type: integer
+        format: int32
       end:
         type: string
       type:
@@ -1134,8 +1136,8 @@ definitions:
         items:
           $ref: "#/definitions/groupByObj"
       upTo:
-        type: "number"
-        format: "double"
+        type: number
+        format: double
 
   compensation_of:
     type: object
@@ -1221,8 +1223,8 @@ definitions:
   inline_response_400:
     properties:
       code:
-        type: "integer"
-        format: "int32"
+        type: integer
+        format: int32
       message:
         type: string
 

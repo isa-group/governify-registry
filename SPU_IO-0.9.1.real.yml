@@ -19,8 +19,7 @@ context:
         unit: "%"
       deadline:
         description: Plazo de resolucion de una inicidencia
-        type: integer
-        format: int32
+        type: string
         unit: hours
       schedule:
         description: Horario del servicio
@@ -30,21 +29,26 @@ context:
         priority:
           name: Prioridad
           description: Prioridad de la incidencia
-          type: integer
-          format: int32
-          minimum: 1
-          maximum: 3
+          type: string
+          metadata:
+            reported: true
         node:
           name: Nodo
           description: Provincia
           type: string
-        nodeSize:
-          description: SmallNode en Nodo < 20 ETCs y LargeNode en Nodo >= 20 ETCs.
-          type: string
+          metadata:
+            reported: true
+        nodeETC:
+          name: Nodo ETC
+          description: ETCs del nodo
+          type: integer
+          format: int32
         center:
           name: Centro
           description: Centro
           type: string
+          metadata:
+            reported: true
         serviceLine:
           name: LineaServicio
           description: Linea de Servicio
@@ -100,6 +104,26 @@ terms:
         format: int32
         unit: hours
       computer: "http://ppinot.sas.governify.io/issue_duration/"
+    issue_idle_time:
+      schema:
+        description: Tiempo parado
+        type: string
+      computer: 'http://localhost:8081/api/v1/indicators/issue_idle_time/'
+    issue_typology:
+      schema:
+        description: Tipologia de la incidencia
+        type: string
+      computer: 'http://localhost:8081/api/v1/indicators/issue_typology/'
+    issue_source:
+      schema:
+        description: Origen de la incidencia
+        type: string
+      computer: 'http://localhost:8081/api/v1/indicators/issue_source/'
+    issue_subject:
+      schema:
+        description: Asunto de la incidencia
+        type: string
+      computer: 'http://localhost:8081/api/v1/indicators/issue_subject/'
     SPU_IO_K00_evidence:
       schema:
         description: Penalización total
@@ -120,6 +144,12 @@ terms:
       computer: "http://registry.sas.governify.io/states/SPU/pricing/billing/penalty"
       scope:
         $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Penalización total del periodo
+        description: Penalización a aplicar en la factura del periodo.
+        kind: Penalizador
+        class: Totalizador
+        reportable: false
     SPU_IO_K01_evidence:
       schema:
         description: Incidencias resueltas en plazo
@@ -148,6 +178,12 @@ terms:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
         $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Porcentaje incidencias resueltas en plazo
+        description: Porcentaje de incidencias resueltas en plazo respecto del total de incidencias comunicadas.
+        kind: Penalizador
+        class: Negocio
+        reportable: false
     SPU_IO_K05_evidence:
       schema:
         description: Incidencias sin categorizar el motivo de cierre
@@ -169,6 +205,14 @@ terms:
       computer: "http://ppinot.sas.governify.io/SPU_IO_K05/"
       scope:
         $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Porcentaje incidencias sin categorizar el motivo de cierre
+        description: >-
+          Porcentaje de incidencias cerradas sin indicar un motivo de cierre concreto y 
+          categorizado que muestre la solución aplicada para la incidencia.
+        kind: Penalizador
+        class: Negocio
+        reportable: false
     SPU_IO_K06_evidence:
       schema:
         description: >-
@@ -192,6 +236,14 @@ terms:
       computer: "http://ppinot.sas.governify.io/SPU_IO_K06/"
       scope:
         $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Porcentaje incidencias reabiertas
+        description: >-
+          Porcentaje de incidencias que se deben reabrir debido a que en su momento
+          no fueron correctamente solucionadas, es decir, mal cerradas.
+        kind: Penalizador
+        class: Negocio
+        reportable: false
     SPU_IO_K06_t_evidence:
       schema:
         description: Incidencias reabiertas (incluyendo el centro en el scope)
@@ -213,6 +265,14 @@ terms:
       computer: "http://ppinot.sas.governify.io/SPU_IO_K06_t/"
       scope:
         $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Porcentaje incidencias reabiertas
+        description: >-
+          Porcentaje de incidencias que se deben reabrir debido a que en su momento
+          no fueron correctamente solucionadas, es decir, mal cerradas.
+        kind: Penalizador
+        class: Negocio
+        reportable: true
     SPU_IO_K06_last_penalty:
       schema:
         description: Penalizacion del mes anterior para SPU_IO_K06
@@ -258,6 +318,14 @@ terms:
       computer: "http://ppinot.sas.governify.io/SPU_IO_K10/"
       scope:
         $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Porcentaje incidencias reclamadas con el ANS cumplido
+        description: >-
+          Porcentaje de incidencias que son reclamadas por el SAS donde se han
+          superado los tiempos objetivos de resolución de los ANS
+        kind: Penalizador
+        class: Negocio
+        reportable: false
     SPU_IO_K14_evidence:
       schema:
         description: Incidencias pendientes de resolver con más de una semana
@@ -279,6 +347,14 @@ terms:
       computer: "http://ppinot.sas.governify.io/SPU_IO_K14/"
       scope:
         $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Porcentaje incidencias pendientes de resolver > 1 semana
+        description: >-
+          Porcentaje de incidencias pendientes de resolver con más de una semana
+          desde que fueron registradas.
+        kind: Penalizador
+        class: Negocio
+        reportable: false
     SPU_IO_K18_evidence:
       schema:
         description: Factor de rotación del personal
@@ -299,6 +375,14 @@ terms:
       computer: "http://ppinot.sas.governify.io/SPU_IO_K18/"
       log:
         $ref: "#/context/definitions/logs/jira"
+      metadata:
+        name: Factor de rotación del personal (FRP)
+        description: >-
+          Número de cambios de personal que no se han solicitado a la empresa
+          adjudicataria en el período de medida establecido.
+        kind: Penalizador
+        class: Negocio
+        reportable: false
     SPU_IO_K20_evidence:
       schema:
         description: Tiempo de parada respecto del total SLA
@@ -318,6 +402,12 @@ terms:
         type: double
         unit: "%"
       computer: "http://ppinot.sas.governify.io/SPU_IO_K20/"
+      metadata:
+        name: Porcentaje tiempo de parada respecto del total SLA
+        description: Tiempo que están las incidencias paradas respecto al tiempo total disponible por el proveedor
+        kind: Penalizador
+        class: Negocio
+        reportable: false
     SPU_IO_K80_evidence:
       schema:
         description: Incidencias nuevas dadas de alta
@@ -336,6 +426,12 @@ terms:
         description: Numero de incidencias nuevas dadas de alta
         type: number
       computer: "http://ppinot.sas.governify.io/SPU_IO_K80/"
+      metadata:
+        name: Demanda nueva solicitada de incidencias
+        description: Numero de incidencias nuevas dadas de alta
+        kind: Penalizador
+        class: Negocio
+        reportable: true
     SPU_IO_K81_evidence:
       schema:
         description: Incidencias resueltas
@@ -354,8 +450,14 @@ terms:
         description: Numero de incidencias resueltas
         type: number
       computer: "http://ppinot.sas.governify.io/SPU_IO_K81/"
+      metadata:
+        name: Demanda resuelta incidencias
+        description: Numero de incidencias resueltas en el periodo
+        kind: Penalizador
+        class: Negocio
+        reportable: true
   guarantees:
-    - id: guarantee_SPU_IO_K01
+    - id: SPU_IO_K01
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -366,11 +468,13 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - def: "3,*"
+        - scope: 
+            priority: P3
+            node: '*'
           objective: SPU_IO_K01 >= 95.00
           with:
             SPU_IO_K01:
-              deadline: 2
+              deadline: "<= 2"
               schedule: "L-DT00:00-23:59"
           window:
             type: static
@@ -393,11 +497,13 @@ terms:
                   condition: "SPU_IO_K01 >= 85.00 && SPU_IO_K01 < 90.00"
                 - value: "-5"
                   condition: "SPU_IO_K01 >= 0 && SPU_IO_K01 < 85.00"
-        - def: "2,*"
+        - scope: 
+            priority: P2
+            node: '*'
           objective: SPU_IO_K01 >= 90.00
           with:
             SPU_IO_K01:
-              deadline: 4
+              deadline: "<= 4"
               schedule: "L-VT08:00-20:00"
           window:
             type: static
@@ -420,11 +526,13 @@ terms:
                   condition: "SPU_IO_K01 >= 80.00 && SPU_IO_K01 < 85.00"
                 - value: "-3"
                   condition: "SPU_IO_K01 >= 0 && SPU_IO_K01 < 80.00"
-        - def: "1,*"
+        - scope: 
+            priority: P1
+            node: '*'
           objective: SPU_IO_K01 >= 82.50
           with:
             SPU_IO_K01:
-              deadline: 17
+              deadline: "<= 17"
               schedule: "L-VT08:00-20:00"
           window:
             type: static
@@ -447,7 +555,7 @@ terms:
                   condition: "SPU_IO_K01 >= 72.50 && SPU_IO_K01 < 77.50"
                 - value: "-1.75"
                   condition: "SPU_IO_K01 >= 0 && SPU_IO_K01 < 72.50"
-    - id: guarantee_SPU_IO_K05
+    - id: SPU_IO_K05
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -458,8 +566,9 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - def: "*,*,*"
-          objective: SPU_IO_K05 >= 1.00
+        - scope:
+            node: '*'
+          objective: SPU_IO_K05 <= 1.00
           with:
             SPU_IO_K05: {}
           window:
@@ -474,7 +583,7 @@ terms:
               of:
                 - value: "-1"
                   condition: "SPU_IO_K05 >= 1.00 && SPU_IO_K05 <= 100.00"
-    - id: guarantee_SPU_IO_K06
+    - id: SPU_IO_K06
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -485,7 +594,9 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - def: "3,*"
+        - scope: 
+            priority: P3
+            node: '*'
           objective: SPU_IO_K06 <= 1.00
           with:
             SPU_IO_K06: {}
@@ -510,7 +621,9 @@ terms:
                   condition: "SPU_IO_K06 > 2.00 && SPU_IO_K06 <= 3.00"
                 - value: "-5"
                   condition: "SPU_IO_K06  > 3.00 && SPU_IO_K06  <= 100.00"
-        - def: "2,*"
+        - scope: 
+            priority: P2
+            node: '*'
           objective: SPU_IO_K06 <= 2.00
           with:
             SPU_IO_K06: {}
@@ -535,7 +648,9 @@ terms:
                   condition: "SPU_IO_K06 > 3.00 && SPU_IO_K06 <= 5.00"
                 - value: "-3"
                   condition: "SPU_IO_K06 > 5.00 && SPU_IO_K06 <= 100.00"
-        - def: "1,*"
+        - scope: 
+            priority: P1
+            node: '*'
           objective: SPU_IO_K06 <= 7.50
           with:
             SPU_IO_K06: {}
@@ -560,7 +675,7 @@ terms:
                   condition: "SPU_IO_K06 > 11.00 && SPU_IO_K06 <= 14.50"
                 - value: "-1.75"
                   condition: "SPU_IO_K06 > 14.50 && SPU_IO_K06 <= 100.00"
-    - id: guarantee_SPU_IO_K06_t
+    - id: SPU_IO_K06_t
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -573,7 +688,9 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - def: "3,*"
+        - scope: 
+            priority: P3
+            node: '*'
           objective: SPU_IO_K06_t <= 1.00
           with:
             SPU_IO_K06_t: {}
@@ -598,7 +715,9 @@ terms:
                   condition: "SPU_IO_K06_t > 2.00 && SPU_IO_K06_t <= 3.00"
                 - value: "-5"
                   condition: "SPU_IO_K06_t  > 3.00 && SPU_IO_K06_t  <= 100.00"
-        - def: "2,*"
+        - scope: 
+            priority: P2
+            node: '*'
           objective: SPU_IO_K06_t <= 2.00
           with:
             SPU_IO_K06_t: {}
@@ -623,7 +742,9 @@ terms:
                   condition: "SPU_IO_K06_t > 3.00 && SPU_IO_K06_t <= 5.00"
                 - value: "-3"
                   condition: "SPU_IO_K06_t > 5.00 && SPU_IO_K06_t <= 100.00"
-        - def: "1,*"
+        - scope: 
+            priority: P1
+            node: '*'
           objective: SPU_IO_K06_t <= 7.50
           with:
             SPU_IO_K06_t: {}
@@ -648,7 +769,7 @@ terms:
                   condition: "SPU_IO_K06_t > 11.00 && SPU_IO_K06_t <= 14.50"
                 - value: "-1.75"
                   condition: "SPU_IO_K06_t > 14.50 && SPU_IO_K06_t <= 100.00"
-    - id: guarantee_SPU_IO_K06_C
+    - id: SPU_IO_K06_C
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -661,7 +782,10 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - def: "*,*,*"
+        - scope: 
+            priority: '*'
+            node: '*'
+            center: '*'
           objective: SPU_IO_K06_current_penalty * SPU_IO_K06_last_penalty == 0
           with:
             SPU_IO_K06_current_penalty: {}
@@ -678,7 +802,7 @@ terms:
               of:
                 - value: "-0.5"
                   condition: "SPU_IO_K06_current_penalty * SPU_IO_K06_last_penalty > 0"
-    - id: guarantee_SPU_IO_K10
+    - id: SPU_IO_K10
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -691,7 +815,9 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - def: "3,*"
+        - scope: 
+            priority: P3
+            node: '*'
           objective: SPU_IO_K10 <= 1.00
           with:
             SPU_IO_K10:
@@ -714,7 +840,9 @@ terms:
               of:
                 - value: "-2"
                   condition: "SPU_IO_K10 >= 0.00 && SPU_IO_K10 <= 1.00"
-        - def: "2,*"
+        - scope: 
+            priority: P2
+            node: '*'
           objective: SPU_IO_K10 <= 2.00
           with:
             SPU_IO_K10:
@@ -737,7 +865,9 @@ terms:
               of:
                 - value: "-1.5"
                   condition: "SPU_IO_K10 >= 0.00 && SPU_IO_K10 <= 2.00"
-        - def: "1,*"
+        - scope: 
+            priority: P1
+            node: '*'
           objective: SPU_IO_K10 <= 7.50
           with:
             SPU_IO_K10:
@@ -760,7 +890,7 @@ terms:
               of:
                 - value: "-1"
                   condition: "SPU_IO_K10 >= 0.00 && SPU_IO_K10 <= 7.50"
-    - id: guarantee_SPU_IO_K14
+    - id: SPU_IO_K14
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -773,7 +903,9 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - def: "3,*"
+        - scope: 
+            priority: P3
+            node: '*'
           objective: SPU_IO_K14 <= 0.00
           with:
             SPU_IO_K14:
@@ -795,7 +927,9 @@ terms:
               of:
                 - value: "-2"
                   condition: "SPU_IO_K14 > 0.00 && SPU_IO_K14 <= 100.00"
-        - def: "2,*"
+        - scope: 
+            priority: P2
+            node: '*'
           objective: SPU_IO_K14 <= 0.00
           with:
             SPU_IO_K14:
@@ -817,7 +951,9 @@ terms:
               of:
                 - value: "-1.5"
                   condition: "SPU_IO_K14 > 0.00 && SPU_IO_K14 <= 100.00"
-        - def: "1,*"
+        - scope: 
+            priority: P1
+            node: '*'
           objective: SPU_IO_K14 <= 8.50
           with:
             SPU_IO_K14:
@@ -839,7 +975,7 @@ terms:
               of:
                 - value: "-1"
                   condition: "SPU_IO_K14 > 8.50 && SPU_IO_K14 <= 100.00"
-    - id: guarantee_SPU_IO_K18
+    - id: SPU_IO_K18
       scope:
         node:
           $ref: "#/context/definitions/scopes/SPU/node"
@@ -848,13 +984,12 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - def: "*"
-          objective: >-
-            (!(node_ETC < 20) || {SPU_IO_K18 <= 1)) && (!(node_ETC >= 20) ||
-            {SPU_IO_K18 <= 2))
+        - scope:
+            node: '*'
+            nodeETC: '< 20'
+          objective: SPU_IO_K18 <= 1
           with:
             SPU_IO_K18: {}
-            node_ETC: {}
           window:
             type: static
             period: monthly
@@ -866,10 +1001,26 @@ terms:
                   $ref: "#/context/definitions/schemas/porcentajePTOT"
               of:
                 - value: "-1"
-                  condition: "(SPU_IO_K18 >= 2) && (node_ETC >= 20)"
-                - value: "-1"
-                  condition: "(SPU_IO_K18 >= 3) && (node_ETC < 20)"
-    - id: guarantee_SPU_IO_K20
+                  condition: "SPU_IO_K18 >= 2"
+        - scope:
+            node: '*'
+            nodeETC: '>= 20'
+          objective: SPU_IO_K18 <= 2
+          with:
+            SPU_IO_K18: {}
+          window:
+            type: static
+            period: monthly
+            initial: "20141016"
+            end: ""
+          penalties:
+              - over:
+                  porcentajePTOT:
+                    $ref: "#/context/definitions/schemas/porcentajePTOT"
+                of:
+                  - value: "-1"
+                    condition: "SPU_IO_K18 >= 3"
+    - id: SPU_IO_K20
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -880,7 +1031,9 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - def:  "3,*"
+        - scope: 
+            priority: P3
+            node: '*'
           objective: SPU_IO_K20 <= 30.00
           with:
             SPU_IO_K20:
@@ -902,7 +1055,9 @@ terms:
               of:
                 - value: "-((SPU_IO_K20 - 30.00) / 10.00) * 30.00"
                   condition: "SPU_IO_K20 > 30.00 && SPU_IO_K20 <= 100.00"
-        - def: "2,*"
+        - scope: 
+            priority: P2
+            node: '*'
           objective: SPU_IO_K20 <= 50.00
           with:
             SPU_IO_K20:
@@ -924,7 +1079,9 @@ terms:
               of:
                 - value: "-((SPU_IO_K20 - 50.00) / 10.00) * 20.00"
                   condition: "SPU_IO_K20 > 50.00 && SPU_IO_K20 <= 100.00"
-        - def: "1,*"
+        - scope: 
+            priority: P1
+            node: '*'
           objective: SPU_IO_K20 <= 70.00
           with:
             SPU_IO_K20:

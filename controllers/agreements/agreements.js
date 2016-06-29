@@ -3,7 +3,7 @@
 var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
 var config = require('../../config');
-var agreementManager  =  require('governify-agreement-manager');
+var agreementManager = require('governify-agreement-manager');
 
 var stateManager = agreementManager.operations.states;
 
@@ -27,12 +27,11 @@ function _agreementsGET(args, res, next) {
   AgreementModel.find(function(err, agreements) {
     if (err) {
       logger.error(err.toString());
-      res.json( new errorModel(500, err ));
+      res.json(new errorModel(500, err));
     }
     logger.info("Agreements returned");
     res.json(agreements);
   });
-
 }
 
 function _agreementIdGET(args, res, next) {
@@ -42,12 +41,12 @@ function _agreementIdGET(args, res, next) {
    **/
   logger.info("New request to GET agreement with id = " + args.agreement.value);
   var AgreementModel = config.db.models.AgreementModel;
-  AgreementModel.find({
+  AgreementModel.findOne({
     'id': args.agreement.value
   }, function(err, agreement) {
     if (err) {
       logger.error(err.toString());
-      res.json( new errorModel(500, err ));
+      res.json(new errorModel(500, err));
     }
     logger.info("Agreement returned");
     res.json(agreement);
@@ -56,7 +55,7 @@ function _agreementIdGET(args, res, next) {
 }
 
 
-function _agreementsPOST (args, res, next) {
+function _agreementsPOST(args, res, next) {
   /**
    * parameters expected in the args:
    * agreement (Agreement)
@@ -68,42 +67,36 @@ function _agreementsPOST (args, res, next) {
   $RefParser.dereference(args.agreement.value, function(err, schema) {
     if (err) {
       logger.error(err.toString());
-      res.json( new errorModel(500, err ));
+      res.json(new errorModel(500, err));
     } else {
       var agreement = new config.db.models.AgreementModel(schema);
       agreement.save(function(err) {
         if (err) {
           logger.error("Mongo error saving agreement: " + err.toString());
-          res.json(new errorModel(500, err ));
+          res.json(new errorModel(500, err));
         } else {
           logger.info('New agreement saved successfully!');
           logger.info('Initializing agreement state');
           //Initialize state
-          stateManager.initializeState(schema, (st) =>{
-
-              var state = new config.db.models.StateModel(
-                st
-              );
-
-              state.save((err) => {
-                  if(err){
-                    logger.error("Mongo error saving state: " + err.toString());
-                    res.json( new errorModel(500, err ));
-                  }else{
-                    logger.info("State initialized successfully!: ");
-                    res.json({
-                      code: 200,
-                      message: 'New agreement saved successfully!',
-                      data: agreement
-                    });
-                  }
-              });
-          }, (err) =>{
-              logger.error("Mongo error saving state: " + err.toString());
-              res.json(new errorModel(500, err ));
+          stateManager.initializeState(schema, (st) => {
+            var state = new config.db.models.StateModel(st);
+            state.save((err) => {
+              if (err) {
+                logger.error("Mongo error saving state: " + err.toString());
+                res.json(new errorModel(500, err));
+              } else {
+                logger.info("State initialized successfully!: ");
+                res.json({
+                  code: 200,
+                  message: 'New agreement saved successfully!',
+                  data: agreement
+                });
+              }
+            });
+          }, (err) => {
+            logger.error("Mongo error saving state: " + err.toString());
+            res.json(new errorModel(500, err));
           });
-
-
         }
       });
     }

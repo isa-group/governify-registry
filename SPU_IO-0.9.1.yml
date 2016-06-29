@@ -30,21 +30,23 @@ context:
         priority:
           name: Prioridad
           description: Prioridad de la incidencia
-          type: integer
-          format: int32
-          minimum: 1
-          maximum: 3
+          type: string
+          reported: true
         node:
           name: Nodo
           description: Provincia
           type: string
-        nodeSize:
-          description: SmallNode en Nodo < 20 ETCs y LargeNode en Nodo >= 20 ETCs.
-          type: string
+          reported: true
+        nodeETC:
+          name: nodeETC
+          description: ETCs del nodo.
+          type: integer
+          format: int32
         center:
           name: Centro
           description: Centro
           type: string
+          reported: true
         serviceLine:
           name: LineaServicio
           description: Linea de Servicio
@@ -367,7 +369,7 @@ terms:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
         - scope:
-            priority: 3
+            priority: P3
             node: '*'
           objective: SPU_IO_K01 >= 95.00
           with:
@@ -396,7 +398,7 @@ terms:
                 - value: "-5"
                   condition: "SPU_IO_K01 >= 0 && SPU_IO_K01 < 85.00"
         - scope:
-            priority: 2
+            priority: P2
             node: '*'
           objective: SPU_IO_K01 >= 90.00
           with:
@@ -425,7 +427,7 @@ terms:
                 - value: "-3"
                   condition: "SPU_IO_K01 >= 0 && SPU_IO_K01 < 80.00"
         - scope:
-            priority: 1
+            priority: P1
             node: '*'
           objective: SPU_IO_K01 >= 82.50
           with:
@@ -891,12 +893,10 @@ terms:
       of:
         - scope:
             node: '*'
-          objective: >-
-            (!(node_ETC < 20) || {SPU_IO_K18 <= 1)) && (!(node_ETC >= 20) ||
-            {SPU_IO_K18 <= 2))
+            nodeETC: '< 20'
+          objective: SPU_IO_K18 <= 1
           with:
             SPU_IO_K18: {}
-            node_ETC: {}
           window:
             type: static
             period: monthly
@@ -908,9 +908,25 @@ terms:
                   $ref: "#/context/definitions/schemas/porcentajePTOT"
               of:
                 - value: "-1"
-                  condition: "(SPU_IO_K18 >= 2) && (node_ETC < 20)"
-                - value: "-1"
-                  condition: "(SPU_IO_K18 >= 3) && (node_ETC >= 20)"
+                  condition: "SPU_IO_K18 >= 2"
+        - scope:
+              node: '*'
+              nodeETC: '>= 20'
+            objective: SPU_IO_K18 <= 2
+            with:
+              SPU_IO_K18: {}
+            window:
+              type: static
+              period: monthly
+              initial: "20141016"
+              end: ""
+            penalties:
+              - over:
+                  porcentajePTOT:
+                    $ref: "#/context/definitions/schemas/porcentajePTOT"
+                of:
+                  - value: "-1"
+                    condition: "SPU_IO_K18 >= 3"
     - id: guarantee_SPU_IO_K20
       scope:
         priority:

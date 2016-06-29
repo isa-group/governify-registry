@@ -103,7 +103,6 @@ function processScopedGuarantee(agreement, guaranteeId, ofElement) {
 
                     processMetrics.push(metricCalculator.process(agreement, metricId, metricParams));
                 }
-
             }
 
             Promise.all(processMetrics).then(function(metricsValues) {
@@ -135,6 +134,8 @@ function calculateAtomicPenalty(agreement, guaranteeId, metricId, metricValue, s
     vm.runInThisContext(metricId + " = " + metricValue.value);
     var fulfilled = vm.runInThisContext(slo);
     guaranteeValue.value = fulfilled;
+    guaranteeValue.metrics = {};
+    guaranteeValue.metrics[metricId] = metricValue.value;
     if (!fulfilled && penalties.length > 0) {
         guaranteeValue.penalties = {};
         penalties.forEach(function(penalty) {
