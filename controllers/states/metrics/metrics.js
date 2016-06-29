@@ -7,6 +7,9 @@ var errorModel = require('../../../errors/index.js').errorModel;
 var config = require('../../../config');
 var logger = config.state.logger;
 var stateManager = require('../../../stateManager/stateManager.js')
+
+
+
 module.exports.metricsIdPUT = function(args, res, next) {
     /**
      * parameters expected in the args:
@@ -67,12 +70,11 @@ module.exports.metricsIdPOST = function(args, res, next) {
    **/
     var agreementId = args.agreement.value;
     var metricId = args.metric.value;
-    var from = args.from.value;
-    var to = args.to.value;
+
     var metricParams = args.scope.value;
     metricParams.id = metricId;
 
-    stateManager(agreement, (manager)=>{
+    stateManager({id: agreementId}, (manager)=>{
          manager.get('metrics', {
              metric: metricId,
              scope: metricParams.scope,

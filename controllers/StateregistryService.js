@@ -31,9 +31,9 @@ exports.statesAgreementRatesRateGET = states.rates.ratesRateGET;
 
 // Metrics controllers
 
-exports.statesAgreementMetricsGET = states.metrics.metricsGET;
+exports.statesAgreementMetricsPOST = states.metrics.metricsPOST;
 
-exports.statesAgreementMetricsMetricGET = states.metrics.metricsIdGET;
+exports.statesAgreementMetricsMetricPOST = states.metrics.metricsIdPOST;
 
 exports.statesAgreementMetricsMetricPUT = states.metrics.metricsIdPUT;
 
