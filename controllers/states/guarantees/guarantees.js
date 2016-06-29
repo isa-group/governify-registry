@@ -4,7 +4,6 @@ var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
 var config = require('../../../config');
 var stateManager = require('governify-agreement-manager').operations.states;
-var calculators = require('../../../calculators/calculators.js');
 
 var fs = require('fs');
 var errorModel = require('../../../errors/index.js').errorModel;

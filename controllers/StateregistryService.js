@@ -1,6 +1,5 @@
 'use strict';
 
-var calculators = require('../calculators/calculators.js');
 var request = require('request');
 var config = require('../config');
 var example = require('../data');

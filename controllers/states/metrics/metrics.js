@@ -8,14 +8,20 @@ var config = require('../../../config');
 var logger = config.state.logger;
 
 
-module.exports.metricsGET = function(args, res, next) {
-    /**
-     * parameters expected in the args:
-     * agreement (String)
-     **/
-
+module.exports.metricsPOST =  function(req, res, next) {
+  /**
+   * parameters expected in the args:
+   * agreement (String)
+   **/
+   var args = req.swagger.params;
     var agreementId = args.agreement.value;
+    var AgreementModel = config.db.models.AgreementModel;
+    var processMetrics = [];
+    var metricParams = args.scope.value;
 
+    logger.info("New request to GET metrics of agreement: " + agreementId);
+
+    // for each metric
     stateManager({
         id: agreementId
     }).get("metrics", function(metrics) {
@@ -67,19 +73,22 @@ module.exports.metricsGET = function(args, res, next) {
     // });
 }
 
-module.exports.metricsIdGET = function(args, res, next) {
-    /**
-     * parameters expected in the args:
-     * agreement (String)
-     * metric (String)
-     **/
-
+module.exports.metricsIdPOST = function(args, res, next) {
+  /**
+   * parameters expected in the args:
+   * agreement (String)
+   * metric (String)
+   **/
     var agreementId = args.agreement.value;
     var metricId = args.metric.value;
+    var from = args.from.value;
+    var to = args.to.value;
+    var metricParams = args.scope.value;
+    metricParams.id = metricId;
 
     stateManager({
         id: agreementId
-    }).get("metrics", function(metrics) {
+    }).get("metrics", metricParams, function(metrics) {
         res.json(metrics);
     }, function(err) {
         logger.error(err.message.toString());

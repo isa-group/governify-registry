@@ -28,10 +28,15 @@ function processMetric(agreement, metricId, metricParameters) {
 
         if (metricParameters.evidences) {
             data.evidences = [];
-            metricParameters.evidences.forEach(function(evidence) {
+            var evidence;
+            for (var evidenceId in metricParameters.evidences) {
+                evidence = metricParameters.evidences[evidenceId];
                 if (evidence.computer)
-                    data.evidences.push(evidence.computer);
-            });
+                    data.evidences.push({
+                        id: evidenceId,
+                        computer: evidence.computer
+                    });
+            }
         }
 
         if (metric.log) {
