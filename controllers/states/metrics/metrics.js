@@ -26,7 +26,18 @@ module.exports.metricsIdPUT = function(args, res, next) {
      var metricName = args.metric.value;
 
      logger.info("New request to PUT metrics over: " + metricName + " with value: " + metricValue);
-     StateModel.findOne({"agreementId": agreementId}, (err, state) => {
+
+     stateManager({id: agreementId }, (manager) =>{
+        manager.put('metrics', {  metric: metricName, scope: metricValue.scope, window: metricValue.window }, metricValue.value,
+        (success)=>{
+            res.json(success);
+        }, (err) => {
+            res.status(err.code).json(err);
+        });
+     }, (err) => {
+        res.status(err.code).json(err);
+     });
+    /** StateModel.findOne({"agreementId": agreementId}, (err, state) => {
           if(err){
             logger.error(err.toString());
             res.status(500).json(new errorModel(500, err.toString()));
@@ -48,7 +59,7 @@ module.exports.metricsIdPUT = function(args, res, next) {
               res.status(404).json(new errorModel(404, "Not Found any agreement with id = " + agreementId));
           }
 
-     });
+     });**/
 }
 
 module.exports.metricsPOST =  function(req, res, next) {
@@ -173,7 +184,7 @@ module.exports.metricsIdPOST = function(args, res, next) {
     AgreementModel.findOne({'id': agreementId}, function(err, agreement) {
        if (err) {
            logger.error(err.toString());
-           res.status(500).json(new errorModel(500, err.toString() ));
+           res.status(500).json(new errorModel(500, err ));
        }
        stateManager(agreement, (manager)=>{
             manager.get('metrics', {
@@ -183,12 +194,12 @@ module.exports.metricsIdPOST = function(args, res, next) {
             }, (data) => {
                 res.json(data);
             }, (err) => {
-                logger.error(err.toString());
-                res.status(500).json(new errorModel(500, err.toString() ));
+                logger.error(err);
+                res.status(500).json(new errorModel(500, err ));
             })
        }, (err)=>{
-           logger.error(err.toString());
-           res.status(500).json(new errorModel(500, err.toString() ));
+           logger.error(err);
+           res.status(500).json(new errorModel(500, err ));
        });
     });
       /**logger.info("Deciding if metric is Updated");
