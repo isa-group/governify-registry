@@ -108,23 +108,21 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
             if (ofElement.with) {
                 var metrics = [];
                 for (var metricId in ofElement.with) {
-                    processMetrics.push(new Promise((resolve, reject) => {
-                            manager.get('metrics', {
-                                metric: metricId,
-                                scope: scopeWithDefault,
-                                parameters: ofElement.with[metricId],
-                                evidences: ofElement.evidences,
-                                window: ofElement.window,
-                                period: {from: '*', to: '*'}
-                            }, resolve, reject);
+                    processMetrics.push(manager.get('metrics', {
+                        metric: metricId,
+                        scope: scopeWithDefault,
+                        parameters: ofElement.with[metricId],
+                        evidences: ofElement.evidences,
+                        window: ofElement.window,
+                        period: {
+                            from: '*',
+                            to: '*'
+                        }
                     }));
                 }
             }
 
-            Promise.each(processMetrics, function(metricValue){
-                logger.info('Metric processed: ', metricValue);
-            }).then(function(metricsValues) {
-                logger.info('All metric processed: ', metricsValues);
+            Promise.all(processMetrics).then(function(metricsValues) {
                 var guaranteesValues = [];
                 try {
                     metricsValues.forEach(function(metricValues) {
@@ -132,10 +130,10 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                             guaranteesValues.push(calculateAtomicPenalty(agreement, guarantee.id, metricValue.metric, metricValue, slo, penalties));
                         });
                     });
+                    return resolve(guaranteesValues);
                 } catch (err) {
                     return reject(err);
                 }
-                return resolve(guaranteesValues);
             }, function(err) {
                 return reject(err);
             });

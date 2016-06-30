@@ -18,7 +18,7 @@ module.exports.guaranteesGET = function(args, res, next) {
      **/
     logger.info("New request to GET guarantees");
     var agreementId = args.agreement.value;
-
+    
     stateManager({
         id: agreementId
     }).get("guarantees", function(guarantees) {
@@ -27,28 +27,6 @@ module.exports.guaranteesGET = function(args, res, next) {
         logger.error(err.message.toString());
         res.status(err.code).json(err);
     });
-
-    // var AgreementModel = config.db.models.AgreementModel;
-    // AgreementModel.findOne(function(err, agreement) {
-    //     if (err) {
-    //         logger.error(err.toString());
-    //         res.status(500).json(new errorModel(500, err));
-    //     }
-
-    //     if (agreement) {
-    //         calculators.guaranteeCalculator.processAll(agreement, from, to)
-    //             .then(function(guarantees) {
-    //                 res.json(guarantees);
-    //             }, function(err) {
-    //                 logger.error(err.toString());
-    //                 res.status(500).json(new errorModel(500, err));
-    //             });
-    //     } else {
-    //         logger.error('Agreement ' + agreementId + ' not found.');
-    //         res.status(404).json(new errorModel(404, 'Agreement ' +
-    //             agreementId + ' not found.'));
-    //     }
-    // });
 }
 
 module.exports.guaranteeIdGET = function(args, res, next) {
@@ -63,16 +41,20 @@ module.exports.guaranteeIdGET = function(args, res, next) {
 
     stateManager({
         id: agreementId
-    }, (manager) => {
+    }).then((manager) => {
         manager.get('guarantees', {
-                guarantee: guaranteeId
-            },
-            (success) => {
-                res.json(success);
-            }, (err) => {
-                res.status(500).json(new errorModel(500, err));
-            });
+            guarantee: guaranteeId
+        }).then(function(success) {
+            res.json(success.filter((element) => {
+                manager.current(element);
+                return true;
+            }));
+        }, function(err) {
+            logger.error(err);
+            res.status(500).json(new errorModel(500, err));
+        });
     }, (err) => {
+        logger.error(err);
         res.status(500).json(new errorModel(500, err));
     });
 }
