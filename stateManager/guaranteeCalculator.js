@@ -1,4 +1,4 @@
-/* 
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -51,7 +51,7 @@ function processGuarantees(agreement) {
     });
 }
 
-function processGuarantee(agreement, guaranteeId) {
+function processGuarantee(agreement, guaranteeId, manager) {
     var processScopedGuarantees = [];
 
     return new Promise((resolve, reject) => {
@@ -65,7 +65,7 @@ function processGuarantee(agreement, guaranteeId) {
         }
 
         guarantee.of.forEach(function(ofElement) {
-            processScopedGuarantees.push(processScopedGuarantee(agreement, guaranteeId, ofElement));
+            processScopedGuarantees.push(processScopedGuarantee(agreement, guaranteeId, ofElement, manager));
         });
 
         Promise.all(processScopedGuarantees).then(function(values) {
@@ -86,7 +86,7 @@ function processGuarantee(agreement, guaranteeId) {
     });
 }
 
-function processScopedGuarantee(agreement, guaranteeId, ofElement) {
+function processScopedGuarantee(agreement, guaranteeId, ofElement, manager) {
     try {
         return new Promise((resolve, reject) => {
             var stateManager = require('./stateManager.js');
@@ -99,17 +99,18 @@ function processScopedGuarantee(agreement, guaranteeId, ofElement) {
                 var metrics = [];
                 for (var metricId in ofElement.with) {
                     processMetrics.push(new Promise((resolve, reject) => {
-                        stateManager({
-                            id: agreement.id
-                        }, (manager) => {
+                      //  stateManager({
+                      //      id: agreement.id
+                      //  }, (manager) => {
                             manager.get('metrics', {
                                 metric: metricId,
                                 scope: ofElement.scope,
                                 parameters: ofElement.with[metricId],
                                 evidences: ofElement.evidences,
-                                window: ofElement.window
+                                window: ofElement.window,
+                                period: {from: '*', to: '*'}
                             }, resolve, reject);
-                        });
+                      //  });
                     }));
                 }
             }
@@ -141,6 +142,7 @@ function calculateAtomicPenalty(agreement, guaranteeId, metricId, metricValue, s
     var guaranteeValue = {};
     guaranteeValue.scope = metricValue.scope;
     guaranteeValue.window = metricValue.window;
+    guaranteeValue.period = metricValue.period;
     var lastRecord = metricValue.records[metricValue.records.length - 1];
     guaranteeValue.guarantee = guaranteeId;
     vm.runInThisContext(metricId + " = " + lastRecord.value);

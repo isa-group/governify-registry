@@ -60,15 +60,16 @@ function _get(stateType, query, successCb, errorCb ){
 
 }
 
-
-function _put(stateType, query, value, successCb, errorCb, metadata /** = {logsState, evidences, parameters} **/ ){
+/** metadata = {logsState, evidences, parameters} **/
+function _put(stateType, query, value, successCb, errorCb, metadata){
     var StateModel = config.db.models.StateModel;
     var elementStates = this.state[stateType].filter((element, index, array)=>{
         return checkQuery(element, query);
     });
 
     if(elementStates.length > 0 && elementStates.length <= 1){
-      elementStates[0].records.push(new record(value, metadata /** = {logsState, evidences, parameters} **/));
+      /** metadata = {logsState, evidences, parameters} **/
+      elementStates[0].records.push(new record(value, metadata));
       StateModel.update({"agreementId": this.agreement.id}, this.state, (err) => {
         if(err) errorCb(new errorModel(500, err));
         else{
@@ -85,11 +86,17 @@ function _put(stateType, query, value, successCb, errorCb, metadata /** = {logsS
       errorCb(new errorModel(400, "Is not possible to updating state with this query"));
 
     }else{
-       this.state[stateType].push(new state(value, query, metadata /** = {logsState, evidences, parameters} **/));
-       StateModel.update({"agreementId": this.agreement.id}, this.state, (err) => {
+
+       /** metadata = {logsState, evidences, parameters} **/
+       var newState = new state(value, query, metadata );
+       this.state[stateType].push(newState);
+
+       StateModel.update({"agreementId": this.agreement.id}, this.state, (err, state) => {
          if(err) errorCb(new errorModel(500, err));
          else{
+
            logger.info("==>Created new entry with query = " + JSON.stringify(query));
+
            //RECALCULAR EL ESTADO DE LAS QUOTAS, RATES o GUARANTEES DESPUES DEL CAMBIO EN LA METRICA.
            successCb( this.state[stateType].filter((element, index, array)=>{
                return checkQuery(element, query);
@@ -115,18 +122,18 @@ function _update(stateType, query, successCb, errorCb, logsState){
                 });
             break;
         case "guarantees":
-            calculators.guaranteeCalculator.process(this.agreement, query.guarantee)
+            calculators.guaranteeCalculator.process(this.agreement, query.guarantee, stateManager)
                 .then(function(guarantees) {
                     var processguarantees = [];
                     for(var g in guarantees){
                         processguarantees.push(new Promise((resolve, reject) => {
                               stateManager.put(stateType, {
                                 guarantee: query.guarantee,
-                            //    period: guarantees[g].period,
+                                period: guarantees[g].period,
                                 scope: guarantees[g].scope
                               },guarantees[g].value, resolve, reject, {  logsState: logsState,
                                                                         metrics: guarantees[g].metrics,
-                                                                        penalties: guarantees[g].penalties ? guarantees[g].penalties : {} });
+                                                                        penalties: guarantees[g].penalties ? guarantees[g].penalties : null });
                         }));
                     }
                     Promise.all(processguarantees).then((guarantees)=>{
@@ -156,7 +163,7 @@ function _update(stateType, query, successCb, errorCb, logsState){
                                 window: query.window
                               }, metricState.metricValues[m].value, resolve, reject, {  logsState: logsState,
                                                                                         evidences: metricState.metricValues[m].evidences,
-                                                                                        parameters: metricState.metricValues[m].parameters} );
+                                                                                        parameters: metricState.metricValues[m].parameters } );
                         }));
                     }
                     Promise.all(processMetrics).then((metrics)=>{
@@ -174,15 +181,17 @@ function _update(stateType, query, successCb, errorCb, logsState){
     }
 }
 
-function state (value, query, metadata /** = {logsState, evidences, parameters} **/){
+/** metadata = {logsState, evidences, parameters} **/
+function state (value, query, metadata){
     for(var v in query){
         this[v] = query[v];
     }
     this.records = [];
-    this.records.push(new record(value, metadata /** = {logsState, evidences, parameters} **/));
+    this.records.push(new record(value, metadata));
 }
 
-function record(value, metadata /** = {logsState, evidences, parameters} **/){
+/** metadata = {logsState, evidences, parameters} **/
+function record(value, metadata ){
 
     this.value= value;
     this.time = iso8601.fromDate(new Date());
@@ -191,10 +200,7 @@ function record(value, metadata /** = {logsState, evidences, parameters} **/){
           this[v]=metadata[v];
         }
     }
-    /**if(logsState == 0 || logsState)
-      this.logsState = logsState;
-    if(evidences)
-      this.evidences = evidences;**/
+
 }
 
 
@@ -212,7 +218,7 @@ function isUpdated(state, agreement, stateType, query, successCb, errorCb){
     var current = null
     if(elementStates.length > 0)
        current = getCurrent(elementStates[0]);
-       request.get({uri: logUris, json: true}, (err, response, body) =>{
+    /**   request.get({uri: logUris, json: true}, (err, response, body) =>{
            if(!err && response.statusCode == 200 && body){
                //console.log("logState =>" + body);
                if(current){
@@ -228,9 +234,9 @@ function isUpdated(state, agreement, stateType, query, successCb, errorCb){
            }else{
                errorCb("Error with Logs state URI this: " + logUris + " is not correct");
            }
-       });
+       });**/
   //  }else {
-  //     successCb(false, 1315);
+      successCb(false, 1315);
   //  }
 
 }
@@ -255,6 +261,10 @@ function getCurrent(state){
 }
 
 function _current(state){
-    state.value = state.records[state.records.length -1].value;
+    var currentRecord = getCurrent(state);
+    for(var v in currentRecord){
+      if(v != 'time' && v != 'logsState')
+        state[v] = currentRecord[v];
+    }
     delete state.records;
 }

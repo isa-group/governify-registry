@@ -69,8 +69,8 @@ function processMetric(agreement, metricId, metricParameters) {
 
         data.window = metricParameters.window;
 
-        var url = require('url');
-        computerEndpoint = "http://10.188.20.20:8084/ppinot-juanlu" + url.parse(computerEndpoint).path;
+        /*var url = require('url');
+        computerEndpoint = "http://ppinot.computer.sas-devel.governify.io" + url.parse(computerEndpoint).path;*/
 
         return new Promise((resolve, reject) => {
             request.post({

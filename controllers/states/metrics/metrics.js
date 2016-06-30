@@ -137,7 +137,10 @@ module.exports.metricsIdPOST = function(args, res, next) {
              window: metricParams.window,
              period: metricParams.period ? metricParams.period : {from: '*', to: '*'}
          }, (data) => {
-             res.json(data);
+             res.json(data.filter((element)=>{
+                 manager.current(element);
+                 return true;
+             }));
          }, (err) => {
              logger.error(err);
              res.status(500).json(new errorModel(500, err ));
