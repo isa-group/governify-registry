@@ -236,7 +236,7 @@ function isUpdated(state, agreement, stateType, query){
                              return resolve({isUpdated: false,logsState: body});
                            }
                        }else{
-                           return resolve({isUpdated: false,logsState: body});
+                           return resolve({isUpdated: true,logsState: body});
                        }
                    }else{
                        return resolve({isUpdated: false,logsState: body});

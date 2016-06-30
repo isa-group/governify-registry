@@ -43,10 +43,16 @@ module.exports.metricsIdPUT = function(args, res, next) {
 }
 
 module.exports.metricsPOST = function(req, res, next) {
+    /*********************************
+    **********************************
+    Refactor with promise.each(...);
+    *********************************
+    ********************************/
+
     /**
      * parameters expected in the args:
      * agreement (String)
-     **/
+
     var args = req.swagger.params;
     var agreementId = args.agreement.value;
     var AgreementModel = config.db.models.AgreementModel;
@@ -88,12 +94,12 @@ module.exports.metricsPOST = function(req, res, next) {
                           noError = noError && false;
                       }
                   }
-                  /*if(noError)*/
+                  if(noError)
                   res.json(metricsValues);
-                  /*else{
+                  else{
                       logger.error("ERROR processing metrics");
                       res.status(500).json(new errorModel(500,results[r]));
-                  }*/
+                  }
               } else {
                   logger.error("ERROR processing metrics");
                   res.status(500).json(new errorModel(500, "ERROR processing metrics"));
@@ -103,8 +109,8 @@ module.exports.metricsPOST = function(req, res, next) {
     }, (err) => {
       logger.error("ERROR processing metrics");
       res.status(500).json(new errorModel(500, err));
-    });
-
+    });**/
+    res.status(405).json(new errorModel(405, "Method Not Supported"))
 }
 
 module.exports.metricsIdPOST = function(args, res, next) {
