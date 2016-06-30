@@ -12,7 +12,7 @@ var Promise = require("bluebird");
 var request = require('request');
 const vm = require('vm');
 
-var guaranteeCalculator = require('./guaranteeCalculator')
+var calculators = require('./calculators.js')
 
 module.exports = {
     process: processCompensations
@@ -23,11 +23,17 @@ function processCompensations(agreement, from, to) {
         try {
 
             //Process metrics
+            
+            //for each metric processMetric
+            var processMetrics = [];
+            for(var metricId in agreement.terms.metrics){
+                processMetrics.push(calculators.metricCalculator.process(agreement, metricId))
+            }
 
             // Process guarantees compensations
             var processGuarantees = [];
             agreement.terms.guarantees.forEach(function(guarantee) {
-                processGuarantees.push(guaranteeCalculator.process(agreement, guarantee.id));
+                processGuarantees.push(calculators.guaranteeCalculator.process(agreement, guarantee.id));
             });
 
             //Process quotas

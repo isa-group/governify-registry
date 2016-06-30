@@ -65,11 +65,11 @@ function processGuarantee(agreement, guaranteeId) {
         }
 
         guarantee.of.forEach(function(ofElement) {
-            processScopedGuarantees.push(processScopedGuarantee(agreement, guaranteeId, ofElement));
+            processScopedGuarantees.push(processScopedGuarantee(agreement, guarantee, ofElement));
         });
 
         Promise.all(processScopedGuarantees).then(function(values) {
-            console.log('Guarantee ' + guaranteeId + ' has been calculated');
+            logger.info('Guarantee ' + guaranteeId + ' has been calculated');
             var guaranteeValues = [];
             values.forEach(function(scopedValues) {
                 if (scopedValues.length > 0) {
@@ -86,7 +86,7 @@ function processGuarantee(agreement, guaranteeId) {
     });
 }
 
-function processScopedGuarantee(agreement, guaranteeId, ofElement) {
+function processScopedGuarantee(agreement, guarantee, ofElement) {
     try {
         return new Promise((resolve, reject) => {
             var stateManager = require('./stateManager.js');
@@ -95,16 +95,26 @@ function processScopedGuarantee(agreement, guaranteeId, ofElement) {
             var guaranteesValues = [];
             var processMetrics = [];
 
+            var scopeWithDefault = {};
+            var definedScopes = Object.keys(ofElement.scope);
+            for (var guaranteeScope in guarantee.scope) {
+                if (definedScopes.indexOf(guaranteeScope) > -1) {
+                    scopeWithDefault[guaranteeScope] = ofElement.scope[guaranteeScope];
+                } else if (guarantee.scope[guaranteeScope].default) {
+                    scopeWithDefault[guaranteeScope] = guarantee.scope[guaranteeScope].default;
+                }
+            }
+
             if (ofElement.with) {
                 var metrics = [];
                 for (var metricId in ofElement.with) {
-                    processMetrics.push(new Promise((resolve, reject) => {
+                    processMetrics.push(new Promise(function(resolve, reject) {
                         stateManager({
                             id: agreement.id
                         }, (manager) => {
                             manager.get('metrics', {
                                 metric: metricId,
-                                scope: ofElement.scope,
+                                scope: scopeWithDefault,
                                 parameters: ofElement.with[metricId],
                                 evidences: ofElement.evidences,
                                 window: ofElement.window
@@ -114,18 +124,20 @@ function processScopedGuarantee(agreement, guaranteeId, ofElement) {
                 }
             }
 
-            Promise.all(processMetrics).then(function(metricsValues) {
+            Promise.each(processMetrics, function(metricValue){
+                logger.info('Metric processed: ', metricValue);
+            }).then(function(metricsValues) {
+                logger.info('All metric processed: ', metricsValues);
                 var guaranteesValues = [];
                 try {
                     metricsValues.forEach(function(metricValues) {
                         metricValues.forEach(function(metricValue) {
-                            guaranteesValues.push(calculateAtomicPenalty(agreement, guaranteeId, metricValue.metric, metricValue, slo, penalties));
+                            guaranteesValues.push(calculateAtomicPenalty(agreement, guarantee.id, metricValue.metric, metricValue, slo, penalties));
                         });
                     });
                 } catch (err) {
                     return reject(err);
                 }
-                logger.log(guaranteesValues);
                 return resolve(guaranteesValues);
             }, function(err) {
                 return reject(err);
@@ -158,11 +170,9 @@ function calculateAtomicPenalty(agreement, guaranteeId, metricId, metricValue, s
             if (penaltyFufilled.length > 0) {
                 guaranteeValue.penalties[penaltyVar] = parseFloat(vm.runInThisContext(penaltyFufilled[0].value));
             } else {
-                console.log('\n');
-                console.log('SLO not fulfilled and no penalty found: ');
-                console.log('\t- penalty: ', penalty.of);
-                console.log('\t- metric value: ', lastRecord.value);
-                console.log('\n');
+                logger.error('SLO not fulfilled and no penalty found: ');
+                logger.error('\t- penalty: ', penalty.of);
+                logger.error('\t- metric value: ', lastRecord.value);
             }
         });
     }

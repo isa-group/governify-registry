@@ -12,6 +12,8 @@ var $RefParser = require('json-schema-ref-parser');
 var Promise = require("bluebird");
 var request = require('request');
 const vm = require('vm');
+var config = require('../config');
+var logger = config.state.logger;
 
 module.exports = {
     process: processMetric
@@ -19,60 +21,67 @@ module.exports = {
 
 function processMetric(agreement, metricId, metricParameters) {
     try {
-        var metric = agreement.terms.metrics[metricId];
-        var computerEndpoint = metric.computer;
+        return new Promise((resolve, reject) => {
+            var metric = agreement.terms.metrics[metricId];
+            var computerEndpoint = metric.computer;
 
-        var data = {};
+            var data = {};
+            data.parameters = metricParameters.parameters;
+            data.window = metricParameters.window;
 
-        data.parameters = metricParameters.parameters;
+            // if (metricParameters.evidences) {
+            //     data.evidences = [];
+            //     metricParameters.evidences.forEach(function(evidence) {
+            //         var evidenceId = Object.keys(evidence)[0];
+            //         if (evidence[evidenceId].computer) {
+            //             data.evidences.push({
+            //                 id: evidenceId,
+            //                 computer: evidence[evidenceId].computer
+            //             });
+            //         }
+            //     });
+            // }
 
-        // if (metricParameters.evidences) {
-        //     data.evidences = [];
-        //     var evidence;
-        //     for (var evidenceId in metricParameters.evidences) {
-        //         evidence = metricParameters.evidences[evidenceId];
-        //         if (evidence.computer)
-        //             data.evidences.push({
-        //                 id: evidence.id,
-        //                 computer: evidence.computer
-        //             });
-        //     }
-        // }
-
-        var scope = {};
-        if (metric.log) {
-            data.logs = metric.log;
-            for (var metricScope in metricParameters.scope) {
-                var logScope = log.scopes[metric.scope.id][metricScope];
-                if (log.scopes[metric.scope.id] && logScope) {
-                    scope[logScope] = metricParameters.scope[metricScope];
+            var scope = {};
+            if (metric.log) {
+                data.logs = {};
+                var logId = Object.keys(metric.log)[0];
+                data.logs[logId] = metric.log.uri;
+                for (var metricScope in metricParameters.scope) {
+                    var logScope = log.scopes[metric.scope.id][metricScope];
+                    if (log.scopes[metric.scope.id] && logScope) {
+                        scope[logScope] = metricParameters.scope[metricScope];
+                    }
                 }
-            }
-            data.scope = scope;
-        } else {
-            for (var logId in agreement.context.definitions.logs) {
-                var log = agreement.context.definitions.logs[logId];
-                if (log.default) {
-                    data.logs = {};
-                    data.logs[logId] = log.uri;
-                    for (var metricScope in metricParameters.scope) {
+            } else {
+                for (var logId in agreement.context.definitions.logs) {
+                    var log = agreement.context.definitions.logs[logId];
+                    if (log.default) {
+                        data.logs = {};
+                        data.logs[logId] = log.uri;
                         var scopeId = Object.keys(metric.scope)[0];
-                        if (log.scopes[scopeId]) {
-                            var logScope = log.scopes[scopeId][metricScope];
-                            scope[logScope] = metricParameters.scope[metricScope];
+                        for (var metricScope in metricParameters.scope) {
+                            if (log.scopes[scopeId] && log.scopes[scopeId][metricScope]) {
+                                var logScope = log.scopes[scopeId][metricScope];
+                                scope[logScope] = metricParameters.scope[metricScope];
+                            } else {
+                                scope[metricScope] = metricParameters.scope[metricScope];
+                            }
                         }
+                        break;
                     }
                 }
             }
-            data.scope = scope;
-        }
 
-        data.window = metricParameters.window;
+            if (!data.logs) {
+                return reject('Log not found for metric ' + metricId + '. ' +
+                    'Please, specify metric log or default log.');
+            }
 
-        var url = require('url');
-        computerEndpoint = "http://10.188.20.20:8084/ppinot-juanlu" + url.parse(computerEndpoint).path;
+            data.scope = scope ? scope : metricParameters.scope;
 
-        return new Promise((resolve, reject) => {
+            logger.info("Sending request to PPINOT Computer with data: " + JSON.stringify(data));
+
             request.post({
                 headers: {
                     'Content-Type': 'application/json'
@@ -81,34 +90,57 @@ function processMetric(agreement, metricId, metricParameters) {
                 body: JSON.stringify(data)
             }, function(err, httpResponse, response) {
                 //console.log('- Processing metric ' + metricId + ' (' + JSON.stringify(metricParameters.scope) + ')');
-                if (err) return reject(err)
-                response = yaml.safeLoad(response);
-                // PROCESAR VARIABLES DEL SCOPE NODO -> node
-                // PROCESAR VARIABLES DEL SCOPE CENTRO -> center
-                var log;
-                for (var logId in agreement.context.definitions.logs) {
-                    var l = agreement.context.definitions.logs[logId];
-                    if (l.default) {
-                        log = l;
-                    }
+                if (err) {
+                    logger.error("Error in PPINOT Computer response", err);
+                    return reject(err);
                 }
-                if (response && Array.isArray(response)) {
-                    response.forEach(function(m) {
-                        var scope = {};
-                        for (var metricScope in m.scope) {
-                            var scopeId = Object.keys(metric.scope)[0];
-                            if (log.scopes[scopeId]) {
-                                var logScope = log.scopes[scopeId][metricScope];
-                                scope[logScope] = metricParameters.scope[metricScope];
-                            }
+
+                if (!response) {
+                    logger.error("Error in PPINOT Computer response");
+                    return reject("Error in PPINOT Computer response");
+                }
+
+                try {
+                    response = yaml.safeLoad(response);
+                    // PROCESAR VARIABLES DEL SCOPE NODO -> node
+                    // PROCESAR VARIABLES DEL SCOPE CENTRO -> center
+                    var log;
+                    for (var logId in agreement.context.definitions.logs) {
+                        var l = agreement.context.definitions.logs[logId];
+                        if (l.default) {
+                            log = l;
                         }
-                    });
-                    return resolve({
-                        metricId: metricId,
-                        metricValues: response
-                    });
-                } else {
-                    return reject('There was a problem retrieving indicator ' + metricId);
+                    }
+                    if (response && Array.isArray(response)) {
+                        response.forEach(function(metricState) {
+                            var scope = {};
+                            var scopeId = Object.keys(metric.scope)[0];
+                            var logScopes = Object.keys(log.scopes[scopeId]).map(function(key) {
+                                return log.scopes[scopeId][key];
+                            });
+                            for (var metricScope in metricState.scope) {
+                                if (logScopes.indexOf(metricScope) > -1) {
+                                    for (var logScope in log.scopes[scopeId]) {
+                                        if (log.scopes[scopeId][logScope] === metricScope) {
+                                            scope[logScope] = metricState.scope[metricScope];
+                                        }
+                                    }
+                                } else {
+                                    scope[metricScope] = metricState.scope[metricScope];
+                                }
+                            }
+                            metricState.scope = scope ? scope : metricState.scope;
+                        });
+                        return resolve({
+                            metricId: metricId,
+                            metricValues: response
+                        });
+                    } else {
+                        console.log(response);
+                        return reject('There was a problem retrieving indicator ' + metricId);
+                    }
+                } catch (error) {
+                    logger.error("Error in PPINOT Computer response: ", error);
                 }
             });
         });

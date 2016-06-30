@@ -399,8 +399,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K01_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -428,8 +427,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K01_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -457,8 +455,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K01_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -496,8 +493,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K01_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -522,7 +518,7 @@ terms:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
         - scope:
-            priority: 3
+            priority: P3
             node: '*'
           objective: SPU_IO_K06 <= 1.00
           with:
@@ -530,8 +526,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K06_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -549,7 +544,7 @@ terms:
                 - value: "-5"
                   condition: "SPU_IO_K06  > 3.00 && SPU_IO_K06  <= 100.00"
         - scope:
-            priority: 2
+            priority: P2
             node: '*'
           objective: SPU_IO_K06 <= 2.00
           with:
@@ -557,8 +552,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K06_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -576,7 +570,7 @@ terms:
                 - value: "-3"
                   condition: "SPU_IO_K06 > 5.00 && SPU_IO_K06 <= 100.00"
         - scope:
-            priority: 1
+            priority: P1
             node: '*'
           objective: SPU_IO_K06 <= 7.50
           with:
@@ -584,8 +578,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K06_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -616,7 +609,7 @@ terms:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
         - scope:
-            priority: 3
+            priority: P3
             node: '*'
           objective: SPU_IO_K06_t <= 1.00
           with:
@@ -624,8 +617,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K06_t_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -643,7 +635,7 @@ terms:
                 - value: "-5"
                   condition: "SPU_IO_K06_t  > 3.00 && SPU_IO_K06_t  <= 100.00"
         - scope:
-            priority: 2
+            priority: P2
             node: '*'
           objective: SPU_IO_K06_t <= 2.00
           with:
@@ -651,8 +643,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K06_t_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -670,7 +661,7 @@ terms:
                 - value: "-3"
                   condition: "SPU_IO_K06_t > 5.00 && SPU_IO_K06_t <= 100.00"
         - scope:
-            priority: 1
+            priority: P1
             node: '*'
           objective: SPU_IO_K06_t <= 7.50
           with:
@@ -678,8 +669,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K06_t_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -720,8 +710,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: 20160512T103536Z
-            end: ""
+            initial: 20160512
           penalties:
             - over:
                 porcentajePTOT:
@@ -743,7 +732,7 @@ terms:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
         - scope:
-            priority: 3
+            priority: P3
             node: '*'
           objective: SPU_IO_K10 <= 1.00
           with:
@@ -753,8 +742,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K10_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -768,7 +756,7 @@ terms:
                 - value: "-2"
                   condition: "SPU_IO_K10 > 1.00 && SPU_IO_K10 <= 100.00"
         - scope:
-            priority: 2
+            priority: P2
             node: '*'
           objective: SPU_IO_K10 <= 2.00
           with:
@@ -778,8 +766,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K10_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -793,7 +780,7 @@ terms:
                 - value: "-1.5"
                   condition: "SPU_IO_K10 > 2.00 && SPU_IO_K10 <= 100.00"
         - scope:
-            priority: 1
+            priority: P1
             node: '*'
           objective: SPU_IO_K10 <= 7.50
           with:
@@ -803,8 +790,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K10_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -831,7 +817,7 @@ terms:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
         - scope:
-            priority: 3
+            priority: P3
             node: '*'
           objective: SPU_IO_K14 <= 0.00
           with:
@@ -840,8 +826,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K14_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -855,7 +840,7 @@ terms:
                 - value: "-2"
                   condition: "SPU_IO_K14 > 0.00 && SPU_IO_K14 <= 100.00"
         - scope:
-            priority: 2
+            priority: P2
             node: '*'
           objective: SPU_IO_K14 <= 0.00
           with:
@@ -864,8 +849,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K14_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -879,7 +863,7 @@ terms:
                 - value: "-1.5"
                   condition: "SPU_IO_K14 > 0.00 && SPU_IO_K14 <= 100.00"
         - scope:
-            priority: 1
+            priority: P1
             node: '*'
           objective: SPU_IO_K14 <= 8.50
           with:
@@ -888,8 +872,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K14_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -920,8 +903,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           penalties:
             - over:
                 porcentajePTOT:
@@ -938,8 +920,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           penalties:
             - over:
                 porcentajePTOT:
@@ -959,7 +940,7 @@ terms:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
         - scope:
-            priority: 3
+            priority: P3
             node: '*'
           objective: SPU_IO_K20 <= 30.00
           with:
@@ -968,8 +949,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20151116"
-            end: ""
+            initial: 20151116
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K20_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -983,7 +963,7 @@ terms:
                 - value: "-((SPU_IO_K20 - 30.00) / 10.00) * 30.00"
                   condition: "SPU_IO_K20 > 30.00 && SPU_IO_K20 <= 100.00"
         - scope:
-            priority: 2
+            priority: P2
             node: '*'
           objective: SPU_IO_K20 <= 50.00
           with:
@@ -992,8 +972,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20151116"
-            end: ""
+            initial: 20151116
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K20_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -1007,7 +986,7 @@ terms:
                 - value: "-((SPU_IO_K20 - 50.00) / 10.00) * 20.00"
                   condition: "SPU_IO_K20 > 50.00 && SPU_IO_K20 <= 100.00"
         - scope:
-            priority: 1
+            priority: P1
             node: '*'
           objective: SPU_IO_K20 <= 70.00
           with:
@@ -1016,8 +995,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20151116"
-            end: ""
+            initial: 20151116
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K20_evidence"
             - $ref: "#/terms/metrics/issue_init"

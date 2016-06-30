@@ -744,11 +744,6 @@ paths:
         #PASS to definitions
         schema:
           type: object
-          properties:
-            scope:
-              type: object
-            window:
-              type: object
       responses:
         200:
           description: "Success"

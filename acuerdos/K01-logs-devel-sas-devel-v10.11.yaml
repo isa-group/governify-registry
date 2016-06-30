@@ -7,9 +7,9 @@ context:
   validity:
     initial: 20141016
   infrastructure:
-    designer: "http://designer.sas.governify.io/"
-    portal: "http://portal.sas.governify.io/v1/"
-    registry: "http://registry.sas.governify.io/agreements/SPU"
+    designer: "http://designer.sas-devel.governify.io/"
+    portal: "http://portal.sas-devel.governify.io/v1/"
+    registry: "http://registry.sas-devel.governify.io/agreements/SPU"
   definitions:
     schemas:
       porcentajePTOT:
@@ -61,14 +61,14 @@ context:
     logs:
       casdm:
         default: true
-        uri: "http://logs.sas.governify.io/api/v1/logs/ca-sdm"
+        uri: "http://logs-devel.sas-devel.governify.io/api/v1/logs/ca-sdm"
         scopes:
           SPU:
             priority: priority
             node: NODO
             center: CENTRO
       jira:
-        uri: "http://jira.log.sas.governify.io"
+        uri: "http://logs-devel.sas-devel.governify.io/api/v1/logs/jira"
         scopes:
           SPU:
             node: Nodo
@@ -90,23 +90,23 @@ terms:
       schema:
         description: Tipologia de la incidencia
         type: string
-      computer: 'http://localhost:8081/api/v1/indicators/issue_typology/'
+      computer: 'http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_typology/'
     issue_source:
       schema:
         description: Origen de la incidencia
         type: string
-      computer: 'http://localhost:8081/api/v1/indicators/issue_source/'
+      computer: 'http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_source/'
     issue_subject:
       schema:
         description: Asunto de la incidencia
         type: string
-      computer: 'http://localhost:8081/api/v1/indicators/issue_subject/'
+      computer: 'http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_subject/'
     SPU_IO_K01:
       schema:
         description: Porcentaje incidencias resueltas en plazo
         type: double
         unit: "%"
-      computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K01/"
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/SPU_IO_K01/"
       parameters:
         deadline:
           schema:
