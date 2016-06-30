@@ -79,7 +79,6 @@ function processMetric(agreement, metricId, metricParameters) {
             }
 
             data.scope = scope ? scope : metricParameters.scope;
-
             logger.info("Sending request to PPINOT Computer with data: " + JSON.stringify(data));
 
             request.post({

@@ -138,22 +138,22 @@ module.exports.metricsIdPOST = function(args, res, next) {
 
     var metricParams = args.scope.value;
     metricParams.metric = metricId;
+    metricParams.period = metricParams.period ? metricParams.period : {
+        from: '*',
+        to: '*'
+    };
 
     stateManager({
         id: agreementId
     }, (manager) => {
         manager.get('metrics', metricParams, (data) => {
-            res.json(data);
+            res.json(data.filter((element) => {
+                manager.current(element);
+                return true;
+            }));
         }, (err) => {
             logger.error(err);
             res.status(500).json(new errorModel(500, err));
         });
     });
-
 }
-
-/**
-.filter((element)=>{
-    manager.current(element);
-    return true;
-})**/
