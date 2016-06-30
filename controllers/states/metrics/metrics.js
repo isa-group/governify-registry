@@ -67,7 +67,6 @@ module.exports.metricsPOST = function(req, res, next) {
               if (manager.agreement.terms.metrics[metricId].computer) {
                   logger.info("==> metricId = " + metricId);
                   metricParams.metric = metricId;
-                  console.log(metricParams);
                   processMetrics.push(manager.get('metrics', metricParams));
               }
           }
@@ -79,7 +78,7 @@ module.exports.metricsPOST = function(req, res, next) {
                   var metricsValues = [];
                   for (var r in results) {
                       if (results[r].isFulfilled()) {
-                          console.log(results[r].value());
+                          //console.log(results[r].value());
                           var values = results[r].value();
                           //console.log(values);
                           for (var v in values) {

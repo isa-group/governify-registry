@@ -46,17 +46,17 @@ function _get(stateType, query ){
     return new Promise((resolve, reject)=>{
         logger.info("Getting " + stateType + " state for query =  " + JSON.stringify(query));
         logger.info("==>is updated?");
-        isUpdated(stateManager.state, stateManager.agreement, stateType, query).then((isUpdated, logsState)=>{
-              logger.info("==>isUpdated = " + isUpdated);
-              if(isUpdated){
+        isUpdated(stateManager.state, stateManager.agreement, stateType, query).then((data)=>{
+              logger.info("==>isUpdated = " + data.isUpdated);
+              if(data.isUpdated){
                   logger.info("==>Returning states");
                   return resolve(stateManager.state[stateType].filter((element, index, array)=>{
                       return checkQuery(element, query);
                   }));
               }else {
                   logger.info("==>Refreshing states");
-                  stateManager.update(stateType, query, logsState).then((data)=>{
-                      return resolve(data);
+                  stateManager.update(stateType, query,  data.logsState).then((states)=>{
+                      return resolve(states);
                   }, (err) => {
                       return reject(err);
                   } );
@@ -139,7 +139,7 @@ function _update(stateType, query, logsState){
                     .then(function(guarantees) {
                         var processguarantees = [];
                         for(var g in guarantees){
-                            processguarantees.push(stateManager.put(stateType, {guarantee: query.guarantee,period: guarantees[g].period,scope: guarantees[g].scope},guarantees[g].value, {  logsState: logsState,
+                            processguarantees.push(stateManager.put(stateType, {guarantee: query.guarantee,period: guarantees[g].period,scope: guarantees[g].scope},guarantees[g].value, {  "logsState": logsState,
                                                                             metrics: guarantees[g].metrics,
                                                                             penalties: guarantees[g].penalties ? guarantees[g].penalties : null }));
                         }
@@ -167,7 +167,7 @@ function _update(stateType, query, logsState){
                                     scope:  metricState.metricValues[m].scope,
                                     period: metricState.metricValues[m].period,
                                     window: query.window
-                                  }, metricState.metricValues[m].value, {  logsState: logsState,
+                                  }, metricState.metricValues[m].value, {  "logsState": logsState,
                                                                                             evidences: metricState.metricValues[m].evidences,
                                                                                             parameters: metricState.metricValues[m].parameters } ));
                         }
@@ -218,11 +218,9 @@ function isUpdated(state, agreement, stateType, query){
         for( var log in agreement.context.definitions.logs){
             if(agreement.context.definitions.logs[log].default) logUris = agreement.context.definitions.logs[log].stateUri;
         }
-
         var elementStates = state[stateType].filter((element, index, array)=>{
             return checkQuery(element, query);
         });
-
         var current = null
         if(elementStates.length > 0)
            current = getCurrent(elementStates[0]);
@@ -231,13 +229,17 @@ function isUpdated(state, agreement, stateType, query){
                    //console.log("logState =>" + body);
                    if(current){
                        if(current.logsState){
-                           if(current.logsState == body) return resolve(true, body);
-                           else return resolve(false, body);
+                           if(current.logsState == body){
+                             return resolve({isUpdated: true,logsState: body});
+                           }
+                           else{
+                             return resolve({isUpdated: false,logsState: body});
+                           }
                        }else{
-                           return resolve(true, body);
+                           return resolve({isUpdated: false,logsState: body});
                        }
                    }else{
-                       return resolve(false, body);
+                       return resolve({isUpdated: false,logsState: body});
                    }
                }else{
                    return reject("Error with Logs state URI this: " + logUris + " is not correct");
@@ -251,14 +253,15 @@ function isUpdated(state, agreement, stateType, query){
 }
 
 function checkQuery (element, query) {
-    //console.log(element);
     var ret = true;
     for(var v in query){
-      if(query[v] instanceof Object && v != "parameters" ){
-          ret = ret && checkQuery(element[v], query[v]);
-      }else {
-          if(element[v] !== query[v] && query[v] != "*"){
-              ret = ret && false;
+      if(v != "parameters" && v != "evidences" && v != "logs"){
+          if(query[v] instanceof Object ){
+              ret = ret && checkQuery(element[v], query[v]);
+          }else {
+              if(element[v] !== query[v] && query[v] != "*"){
+                  ret = ret && false;
+              }
           }
       }
     }
