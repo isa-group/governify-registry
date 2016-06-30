@@ -52,7 +52,7 @@ module.exports.metricsPOST = function(req, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
-
+     **/
     var args = req.swagger.params;
     var agreementId = args.agreement.value;
     var AgreementModel = config.db.models.AgreementModel;
@@ -69,48 +69,35 @@ module.exports.metricsPOST = function(req, res, next) {
         id: agreementId
     }).then((manager) => {
           logger.info("Preparing requests to /states/" + agreementId + "/metrics/{metricId} : ");
-          for (var metricId in manager.agreement.terms.metrics) {
-              if (manager.agreement.terms.metrics[metricId].computer) {
-                  logger.info("==> metricId = " + metricId);
-                  metricParams.metric = metricId;
-                  processMetrics.push(manager.get('metrics', metricParams));
-              }
-          }
-          logger.info("Waitting responses...");
-          Promise.settle(processMetrics).then(function(results) {
-
-              var noError = true;
-              if (results.length > 0) {
-                  var metricsValues = [];
-                  for (var r in results) {
-                      if (results[r].isFulfilled()) {
-                          //console.log(results[r].value());
-                          var values = results[r].value();
-                          //console.log(values);
-                          for (var v in values) {
-                              metricsValues.push(values[v]);
-                          }
-                      } else {
-                          noError = noError && false;
-                      }
+          var ret= [];
+          Promise.each(Object.keys(manager.agreement.terms.metrics), (metricId)=>{
+              logger.info("==> metricId = " + metricId);
+              var metricParams = args.scope.value;
+              metricParams.period = metricParams.period ? metricParams.period : {
+                  from: '*',
+                  to: '*'
+              };
+              metricParams.metric = metricId;
+              return manager.get('metrics', metricParams).then((results)=>{
+                  for(var i in results){
+                      manager.current(results[i]);
+                      ret.push(results[i]);
                   }
-                  if(noError)
-                  res.json(metricsValues);
-                  else{
-                      logger.error("ERROR processing metrics");
-                      res.status(500).json(new errorModel(500,results[r]));
-                  }
-              } else {
-                  logger.error("ERROR processing metrics");
-                  res.status(500).json(new errorModel(500, "ERROR processing metrics"));
-              }
-              //res.json(metricValues);
+              }, (err)=>{
+                  logger.error(err);
+              });
+          }).then(function(results) {
+              res.json(ret);
+          }, (err)=>{
+              logger.error("ERROR processing metrics");
+              res.status(500).json(new errorModel(500, err));
           });
+
     }, (err) => {
       logger.error("ERROR processing metrics");
       res.status(500).json(new errorModel(500, err));
-    });**/
-    res.status(405).json(new errorModel(405, "Method Not Supported"))
+    });
+    //res.status(405).json(new errorModel(405, "Method Not Supported"))
 }
 
 module.exports.metricsIdPOST = function(args, res, next) {
