@@ -61,14 +61,14 @@ function _get(stateType, query, successCb, errorCb ){
 }
 
 
-function _put(stateType, query, value, successCb, errorCb, logsState, evidences){
+function _put(stateType, query, value, successCb, errorCb, metadata /** = {logsState, evidences, parameters} **/ ){
     var StateModel = config.db.models.StateModel;
     var elementStates = this.state[stateType].filter((element, index, array)=>{
         return checkQuery(element, query);
     });
 
     if(elementStates.length > 0 && elementStates.length <= 1){
-      elementStates[0].records.push(new record(value, logsState, evidences));
+      elementStates[0].records.push(new record(value, metadata /** = {logsState, evidences, parameters} **/));
       StateModel.update({"agreementId": this.agreement.id}, this.state, (err) => {
         if(err) errorCb(new errorModel(500, err));
         else{
@@ -85,7 +85,7 @@ function _put(stateType, query, value, successCb, errorCb, logsState, evidences)
       errorCb(new errorModel(400, "Is not possible to updating state with this query"));
 
     }else{
-       this.state[stateType].push(new state(value, query, logsState, evidences));
+       this.state[stateType].push(new state(value, query, metadata /** = {logsState, evidences, parameters} **/));
        StateModel.update({"agreementId": this.agreement.id}, this.state, (err) => {
          if(err) errorCb(new errorModel(500, err));
          else{
@@ -122,17 +122,20 @@ function _update(stateType, query, successCb, errorCb, logsState){
                         processguarantees.push(new Promise((resolve, reject) => {
                               stateManager.put(stateType, {
                                 guarantee: query.guarantee,
+                            //    period: guarantees[g].period,
                                 scope: guarantees[g].scope
-                              },guarantees[g].value, resolve, reject, logsState );
+                              },guarantees[g].value, resolve, reject, {  logsState: logsState,
+                                                                        metrics: guarantees[g].metrics,
+                                                                        penalties: guarantees[g].penalties ? guarantees[g].penalties : {} });
                         }));
                     }
-                    Promise.all(processguarantees).then((guaranteesStates)=>{
+                    Promise.all(processguarantees).then((guarantees)=>{
                       var result = [];
                       for (var a in guarantees){
                           result.push(guarantees[a][0]);
                       }
-                      //successCb(result);
-                      successCb(guarantees);
+                      successCb(result);
+                      //successCb(guarantees);
                     })
                 }, function(err) {
                     logger.error(err.toString());
@@ -140,7 +143,7 @@ function _update(stateType, query, successCb, errorCb, logsState){
                 });
             break;
         case "metrics":
-            logger.info("==>Getting metrics from compunter URI");
+            logger.info("==>Getting metrics from computer URI");
             calculators.metricCalculator.process(this.agreement, query.metric, query)
                 .then(function(metricState) {
                     var processMetrics = [];
@@ -151,7 +154,9 @@ function _update(stateType, query, successCb, errorCb, logsState){
                                 scope:  metricState.metricValues[m].scope,
                                 period: metricState.metricValues[m].period,
                                 window: query.window
-                              }, metricState.metricValues[m].value, resolve, reject, logsState, metricState.metricValues[m].evidences );
+                              }, metricState.metricValues[m].value, resolve, reject, {  logsState: logsState,
+                                                                                        evidences: metricState.metricValues[m].evidences,
+                                                                                        parameters: metricState.metricValues[m].parameters} );
                         }));
                     }
                     Promise.all(processMetrics).then((metrics)=>{
@@ -169,22 +174,27 @@ function _update(stateType, query, successCb, errorCb, logsState){
     }
 }
 
-function state (value, query, logsState, evidences){
+function state (value, query, metadata /** = {logsState, evidences, parameters} **/){
     for(var v in query){
         this[v] = query[v];
     }
     this.records = [];
-    this.records.push(new record(value, logsState, evidences));
+    this.records.push(new record(value, metadata /** = {logsState, evidences, parameters} **/));
 }
 
-function record(value, logsState, evidences){
+function record(value, metadata /** = {logsState, evidences, parameters} **/){
 
     this.value= value;
     this.time = iso8601.fromDate(new Date());
-    if(logsState == 0 || logsState)
+    if(metadata){
+        for(var v in metadata){
+          this[v]=metadata[v];
+        }
+    }
+    /**if(logsState == 0 || logsState)
       this.logsState = logsState;
     if(evidences)
-      this.evidences = evidences;
+      this.evidences = evidences;**/
 }
 
 
@@ -200,7 +210,7 @@ function isUpdated(state, agreement, stateType, query, successCb, errorCb){
     });
 
     var current = null
-    if(elementStates.length > 0){
+    if(elementStates.length > 0)
        current = getCurrent(elementStates[0]);
        request.get({uri: logUris, json: true}, (err, response, body) =>{
            if(!err && response.statusCode == 200 && body){
@@ -219,9 +229,9 @@ function isUpdated(state, agreement, stateType, query, successCb, errorCb){
                errorCb("Error with Logs state URI this: " + logUris + " is not correct");
            }
        });
-    }else {
-        successCb(true, null);
-    }
+  //  }else {
+  //     successCb(false, 1315);
+  //  }
 
 }
 
