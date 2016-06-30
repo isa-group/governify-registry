@@ -126,12 +126,13 @@ function _update(stateType, query, successCb, errorCb, logsState){
                               },guarantees[g].value, resolve, reject, logsState );
                         }));
                     }
-                    Promise.all(processguarantees).then((guarantees)=>{
+                    Promise.all(processguarantees).then((guaranteesStates)=>{
                       var result = [];
                       for (var a in guarantees){
                           result.push(guarantees[a][0]);
                       }
-                      successCb(result);
+                      //successCb(result);
+                      successCb(guarantees);
                     })
                 }, function(err) {
                     logger.error(err.toString());
