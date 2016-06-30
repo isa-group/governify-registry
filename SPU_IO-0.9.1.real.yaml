@@ -5,8 +5,7 @@ context:
   provider: Accenture
   consumer: SAS
   validity:
-    initial: "20141016"
-    end: ""
+    initial: 20141016
   infrastructure:
     designer: "http://designer.sas.governify.io/"
     portal: "http://portal.sas.governify.io/v1/"
@@ -136,14 +135,16 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K00:
       schema:
         description: Penalizacion total del periodo
         type: double
       computer: "http://registry.sas.governify.io/states/SPU/pricing/billing/penalty"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
       metadata:
         name: Penalización total del periodo
         description: Penalización a aplicar en la factura del periodo.
@@ -162,7 +163,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K01:
       schema:
         description: Porcentaje incidencias resueltas en plazo
@@ -177,7 +179,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
       metadata:
         name: Porcentaje incidencias resueltas en plazo
         description: Porcentaje de incidencias resueltas en plazo respecto del total de incidencias comunicadas.
@@ -196,7 +199,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K05:
       schema:
         description: Porcentaje incidencias sin categorizar el motivo de cierre
@@ -204,7 +208,8 @@ terms:
         unit: "%"
       computer: "http://ppinot.sas.governify.io/SPU_IO_K05/"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
       metadata:
         name: Porcentaje incidencias sin categorizar el motivo de cierre
         description: >-
@@ -227,7 +232,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K06:
       schema:
         description: Porcentaje incidencias reabiertas
@@ -235,7 +241,8 @@ terms:
         unit: "%"
       computer: "http://ppinot.sas.governify.io/SPU_IO_K06/"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
       metadata:
         name: Porcentaje incidencias reabiertas
         description: >-
@@ -256,7 +263,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K06_t:
       schema:
         description: Porcentaje incidencias reabiertas (incluyendo el centro en el scope)
@@ -264,7 +272,8 @@ terms:
         unit: "%"
       computer: "http://ppinot.sas.governify.io/SPU_IO_K06_t/"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
       metadata:
         name: Porcentaje incidencias reabiertas
         description: >-
@@ -284,7 +293,8 @@ terms:
         window:
           type: last_month
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K06_current_penalty:
       schema:
         description: Penalizacion de SPU_IO_K06 del mes actual
@@ -296,7 +306,8 @@ terms:
         window:
           type: current_month
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K10_evidence:
       schema:
         description: Incidencias reclamadas con ANS finalizado
@@ -309,7 +320,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K10:
       schema:
         description: Porcentaje de incidencias reclamadas con el ANS finalizado
@@ -317,7 +329,8 @@ terms:
         unit: "%"
       computer: "http://ppinot.sas.governify.io/SPU_IO_K10/"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
       metadata:
         name: Porcentaje incidencias reclamadas con el ANS cumplido
         description: >-
@@ -338,7 +351,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K14:
       schema:
         description: Porcentaje de incidencias pendientes de resolver con más de una semana
@@ -346,7 +360,8 @@ terms:
         unit: "%"
       computer: "http://ppinot.sas.governify.io/SPU_IO_K14/"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
       metadata:
         name: Porcentaje incidencias pendientes de resolver > 1 semana
         description: >-
@@ -367,7 +382,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K18:
       schema:
         description: Factor de rotación del personal
@@ -395,7 +411,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K20:
       schema:
         description: Porcentaje tiempo de parada respecto del total SLA
@@ -420,7 +437,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K80:
       schema:
         description: Numero de incidencias nuevas dadas de alta
@@ -444,7 +462,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K81:
       schema:
         description: Numero de incidencias resueltas
@@ -479,8 +498,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K01_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -508,8 +526,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K01_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -537,8 +554,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K01_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -574,8 +590,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           penalties:
             - over:
                 porcentajePTOT:
@@ -603,8 +618,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K06_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -630,8 +644,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K06_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -657,8 +670,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K06_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -697,8 +709,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K06_t_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -724,8 +735,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K06_t_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -751,8 +761,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K06_t_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -793,8 +802,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: 20160512T103536Z
-            end: ""
+            initial: 20160512
           penalties:
             - over:
                 porcentajePTOT:
@@ -826,8 +834,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K10_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -851,8 +858,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K10_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -876,8 +882,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K10_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -913,8 +918,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K14_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -937,8 +941,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K14_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -961,8 +964,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K14_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -993,8 +995,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           penalties:
             - over:
                 porcentajePTOT:
@@ -1011,8 +1012,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           penalties:
               - over:
                   porcentajePTOT:
@@ -1041,8 +1041,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20151116"
-            end: ""
+            initial: 20151116
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K20_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -1065,8 +1064,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20151116"
-            end: ""
+            initial: 20151116
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K20_evidence"
             - $ref: "#/terms/metrics/issue_init"
@@ -1089,8 +1087,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20151116"
-            end: ""
+            initial: 20151116
           evidences:
             - $ref: "#/terms/metrics/SPU_IO_K20_evidence"
             - $ref: "#/terms/metrics/issue_init"

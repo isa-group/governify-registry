@@ -114,14 +114,16 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K00:
       schema:
         description: Penalizacion total del periodo
         type: double
       computer: "http://registry.sas.governify.io/states/SPU/pricing/billing/penalty"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K01_evidence:
       schema:
         description: Incidencias resueltas en plazo
@@ -134,7 +136,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K01:
       schema:
         description: Porcentaje incidencias resueltas en plazo
@@ -149,7 +152,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K05_evidence:
       schema:
         description: Incidencias sin categorizar el motivo de cierre
@@ -162,7 +166,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K05:
       schema:
         description: Porcentaje incidencias sin categorizar el motivo de cierre
@@ -170,7 +175,8 @@ terms:
         unit: "%"
       computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K05/"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K06_evidence:
       schema:
         description: >-
@@ -185,7 +191,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K06:
       schema:
         description: Porcentaje incidencias reabiertas
@@ -193,7 +200,8 @@ terms:
         unit: "%"
       computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K06/"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K06_t_evidence:
       schema:
         description: Incidencias reabiertas (incluyendo el centro en el scope)
@@ -206,7 +214,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K06_t:
       schema:
         description: Porcentaje incidencias reabiertas (incluyendo el centro en el scope)
@@ -214,7 +223,8 @@ terms:
         unit: "%"
       computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K06_t/"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K06_last_penalty:
       schema:
         description: Penalizacion del mes anterior para SPU_IO_K06
@@ -226,7 +236,8 @@ terms:
         window:
           type: last_month
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K06_current_penalty:
       schema:
         description: Penalizacion de SPU_IO_K06 del mes actual
@@ -238,7 +249,8 @@ terms:
         window:
           type: current_month
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K10_evidence:
       schema:
         description: Incidencias reclamadas con ANS finalizado
@@ -251,7 +263,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K10:
       schema:
         description: Porcentaje de incidencias reclamadas con el ANS finalizado
@@ -259,7 +272,8 @@ terms:
         unit: "%"
       computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K10/"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K14_evidence:
       schema:
         description: Incidencias pendientes de resolver con más de una semana
@@ -272,7 +286,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K14:
       schema:
         description: Porcentaje de incidencias pendientes de resolver con más de una semana
@@ -280,7 +295,8 @@ terms:
         unit: "%"
       computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K14/"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K18_evidence:
       schema:
         description: Factor de rotación del personal
@@ -293,7 +309,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K18:
       schema:
         description: Factor de rotación del personal
@@ -313,7 +330,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K20:
       schema:
         description: Porcentaje tiempo de parada respecto del total SLA
@@ -332,7 +350,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K80:
       schema:
         description: Numero de incidencias nuevas dadas de alta
@@ -350,7 +369,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
     SPU_IO_K81:
       schema:
         description: Numero de incidencias resueltas
@@ -910,23 +930,23 @@ terms:
                 - value: "-1"
                   condition: "SPU_IO_K18 >= 2"
         - scope:
-              node: '*'
-              nodeETC: '>= 20'
-            objective: SPU_IO_K18 <= 2
-            with:
-              SPU_IO_K18: {}
-            window:
-              type: static
-              period: monthly
-              initial: "20141016"
-              end: ""
-            penalties:
-              - over:
-                  porcentajePTOT:
-                    $ref: "#/context/definitions/schemas/porcentajePTOT"
-                of:
-                  - value: "-1"
-                    condition: "SPU_IO_K18 >= 3"
+            node: '*'
+            nodeETC: '>= 20'
+          objective: SPU_IO_K18 <= 2
+          with:
+            SPU_IO_K18: {}
+          window:
+            type: static
+            period: monthly
+            initial: "20141016"
+            end: ""
+          penalties:
+            - over:
+                porcentajePTOT:
+                  $ref: "#/context/definitions/schemas/porcentajePTOT"
+              of:
+                - value: "-1"
+                  condition: "SPU_IO_K18 >= 3"
     - id: guarantee_SPU_IO_K20
       scope:
         priority:

@@ -5,8 +5,7 @@ context:
   provider: Accenture
   consumer: SAS
   validity:
-    initial: "20141016"
-    end: ""
+    initial: 20141016
   infrastructure:
     designer: "http://designer.sas.governify.io/"
     portal: "http://portal.sas.governify.io/v1/"
@@ -65,9 +64,9 @@ context:
         uri: "http://logs.sas.governify.io/api/v1/logs/ca-sdm"
         scopes:
           SPU:
-            priority: Prioridad
-            node: Nodo
-            center: Centro
+            priority: priority
+            node: NODO
+            center: CENTRO
       jira:
         uri: "http://jira.log.sas.governify.io"
         scopes:
@@ -116,7 +115,8 @@ terms:
           schema:
             $ref: "#/context/definitions/schemas/schedule"
       scope:
-        $ref: "#/context/definitions/scopes/SPU"
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
       metadata:
         name: Porcentaje incidencias resueltas en plazo
         description: Porcentaje de incidencias resueltas en plazo respecto del total de incidencias comunicadas.
@@ -146,8 +146,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/issue_typology"
             - $ref: "#/terms/metrics/issue_source"
@@ -174,8 +173,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/issue_typology"
             - $ref: "#/terms/metrics/issue_source"
@@ -202,8 +200,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: "20141016"
-            end: ""
+            initial: 20141016
           evidences:
             - $ref: "#/terms/metrics/issue_typology"
             - $ref: "#/terms/metrics/issue_source"

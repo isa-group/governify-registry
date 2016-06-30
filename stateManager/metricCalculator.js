@@ -23,38 +23,55 @@ function processMetric(agreement, metricId, metricParameters) {
         var computerEndpoint = metric.computer;
 
         var data = {};
-        data.scope = metricParameters.scope;
+
         data.parameters = metricParameters.parameters;
 
-        if (metricParameters.evidences) {
-            data.evidences = [];
-            var evidence;
-            for (var evidenceId in metricParameters.evidences) {
-                evidence = metricParameters.evidences[evidenceId];
-                if (evidence.computer)
-                    data.evidences.push({
-                        id: evidenceId,
-                        computer: evidence.computer
-                    });
-            }
-        }
+        // if (metricParameters.evidences) {
+        //     data.evidences = [];
+        //     var evidence;
+        //     for (var evidenceId in metricParameters.evidences) {
+        //         evidence = metricParameters.evidences[evidenceId];
+        //         if (evidence.computer)
+        //             data.evidences.push({
+        //                 id: evidence.id,
+        //                 computer: evidence.computer
+        //             });
+        //     }
+        // }
 
+        var scope = {};
         if (metric.log) {
             data.logs = metric.log;
+            for (var metricScope in metricParameters.scope) {
+                var logScope = log.scopes[metric.scope.id][metricScope];
+                if (log.scopes[metric.scope.id] && logScope) {
+                    scope[logScope] = metricParameters.scope[metricScope];
+                }
+            }
+            data.scope = scope;
         } else {
             for (var logId in agreement.context.definitions.logs) {
                 var log = agreement.context.definitions.logs[logId];
                 if (log.default) {
                     data.logs = {};
                     data.logs[logId] = log.uri;
+                    for (var metricScope in metricParameters.scope) {
+                        var scopeId = Object.keys(metric.scope)[0];
+                        if (log.scopes[scopeId]) {
+                            var logScope = log.scopes[scopeId][metricScope];
+                            scope[logScope] = metricParameters.scope[metricScope];
+                        }
+                    }
                 }
             }
+            data.scope = scope;
         }
 
         data.window = metricParameters.window;
 
-        // var url = require('url');
-        // computerEndpoint = "http://localhost:8081/" + url.parse(computerEndpoint).path;
+        var url = require('url');
+        computerEndpoint = "http://10.188.20.20:8084/ppinot-juanlu" + url.parse(computerEndpoint).path;
+
         return new Promise((resolve, reject) => {
             request.post({
                 headers: {
@@ -65,8 +82,27 @@ function processMetric(agreement, metricId, metricParameters) {
             }, function(err, httpResponse, response) {
                 //console.log('- Processing metric ' + metricId + ' (' + JSON.stringify(metricParameters.scope) + ')');
                 if (err) return reject(err)
-                var response = yaml.safeLoad(response);
+                response = yaml.safeLoad(response);
+                // PROCESAR VARIABLES DEL SCOPE NODO -> node
+                // PROCESAR VARIABLES DEL SCOPE CENTRO -> center
+                var log;
+                for (var logId in agreement.context.definitions.logs) {
+                    var l = agreement.context.definitions.logs[logId];
+                    if (l.default) {
+                        log = l;
+                    }
+                }
                 if (response && Array.isArray(response)) {
+                    response.forEach(function(m) {
+                        var scope = {};
+                        for (var metricScope in m.scope) {
+                            var scopeId = Object.keys(metric.scope)[0];
+                            if (log.scopes[scopeId]) {
+                                var logScope = log.scopes[scopeId][metricScope];
+                                scope[logScope] = metricParameters.scope[metricScope];
+                            }
+                        }
+                    });
                     return resolve({
                         metricId: metricId,
                         metricValues: response

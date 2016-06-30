@@ -55,10 +55,12 @@
         "type": "object",
         "properties": {
             "initial": {
-                "type": "string"
+                "type": "integer",
+                "format": "int32"
             },
             "end": {
-                "type": "string"
+                "type": "integer",
+                "format": "int32"
             }
         }
     },
@@ -219,10 +221,12 @@
         "type": "object",
         "properties": {
             "initial": {
-                "type": "string"
+                "type": "integer",
+                "format": "int32"
             },
             "end": {
-                "type": "string"
+                "type": "integer",
+                "format": "int32"
             },
             "type": {
                 "type": "string"

@@ -979,12 +979,15 @@ definitions:
 
   validity:
     type: object
+    required:
+      - initial
     properties:
       initial:
         type: integer
         format: int32
       end:
-        type: string
+        type: integer
+        format: int32
 
   infrastructure:
     type: object
@@ -1169,12 +1172,17 @@ definitions:
 
   window:
     type: object
+    required: 
+      - type
+      - period
+      - initial
     properties:
       initial:
         type: integer
         format: int32
       end:
-        type: string
+        type: integer
+        format: int32
       type:
         type: string
       period:
