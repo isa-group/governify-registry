@@ -1,7 +1,7 @@
 'use strict';
 
 var config = require('../config');
-var logger = config.state.logger;
+var logger = config.logger;
 var request = require('request');
 var errorModel = require('../errors/index.js').errorModel;
 var iso8601 = require('iso8601');

@@ -5,7 +5,7 @@ var metricsRecords = agreementManager.operations.states.recordsManager.metrics;
 var errorModel = require('../../../errors/index.js').errorModel;
 
 var config = require('../../../config');
-var logger = config.state.logger;
+var logger = config.logger;
 var stateManager = require('../../../stateManager/stateManager.js')
 var Promise = require("bluebird");
 var request = require("request");

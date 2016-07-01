@@ -6,7 +6,7 @@ var config = require('../../../config');
 var stateManager = require('../../../stateManager/stateManager.js')
 var fs = require('fs');
 var errorModel = require('../../../errors/index.js').errorModel;
-var logger = config.state.logger;
+var logger = config.logger;
 
 
 module.exports.guaranteesGET = function(args, res, next) {
