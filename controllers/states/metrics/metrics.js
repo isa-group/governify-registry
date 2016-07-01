@@ -28,7 +28,10 @@ module.exports.metricsIdPUT = function(args, res, next) {
         id: agreementId
     }).then((manager) => {
         manager.put('metrics', { metric: metricName, scope: metricValue.scope, window: metricValue.window}, metricValue.value).then((success) => {
-                res.json(success);
+                res.json(success.filter((element) => {
+                    manager.current(element);
+                    return true;
+                }));
             }, (err) => {
                 res.status(err.code).json(err);
             });
