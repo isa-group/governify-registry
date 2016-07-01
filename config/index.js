@@ -37,14 +37,14 @@ var logConfig = {
     colors: {
         error: 'red',
         warning: 'yellow',
-        agreement: 'green',
-        pricing: 'green',
+        agreement: 'magenta',
+        pricing: 'blue',
         quotas: 'green',
         rates: 'green',
         guarantees: 'green',
-        metrics: 'green',
-        sm: 'green',
-        info:'blue',
+        metrics: 'cyan',
+        sm: 'grey',
+        info:'white',
         debug:'black'
     }
 };
