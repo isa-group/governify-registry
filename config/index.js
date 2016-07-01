@@ -99,20 +99,20 @@ module.exports.db.connect = function() {
         setupModel('StateModel', './models/stateModel.json');
         module.exports.db.models = state.models;
     });
-}
+};
 
 module.exports.db.get = function() {
-    return state.db
-}
+    return state.db;
+};
 
 module.exports.db.close = function(done) {
     if (state.db) {
         state.db.close(function(err, result) {
             state.db = null;
             state.mode = null;
-        })
+        });
     }
-}
+};
 
 function setupModel(modelName, jsonModel) {
     var jsonModel = jsyaml.safeLoad(fs.readFileSync(jsonModel));

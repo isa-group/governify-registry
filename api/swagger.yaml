@@ -57,6 +57,22 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
+    delete:
+      tags:
+      - "agreement-registry"
+      description: "XXX"
+      operationId: "agreementsDELETE"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/agreement"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Agreementregistry"
     post:
       tags:
@@ -84,6 +100,26 @@ paths:
       - "agreement-registry"
       description: "XXX"
       operationId: "agreementsAgreementGET"
+      parameters:
+      - name: "agreement"
+        in: "path"
+        description: "XXX"
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/agreement"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/inline_response_400"
+    delete:
+      tags:
+      - "agreement-registry"
+      description: "XXX"
+      operationId: "agreementsAgreementDELETE"
       parameters:
       - name: "agreement"
         in: "path"
@@ -589,6 +625,22 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
+    delete:
+      tags:
+      - "state-registry"
+      description: "XXX"
+      operationId: "statesDELETE"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/agreement_state"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
   /states/{agreement}:
     get:
@@ -596,6 +648,26 @@ paths:
       - "state-registry"
       description: "XXX"
       operationId: "statesAgreementGET"
+      parameters:
+      - name: "agreement"
+        in: "path"
+        description: "XXX"
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/agreement_state"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/inline_response_400"
+    delete:
+      tags:
+      - "state-registry"
+      description: "XXX"
+      operationId: "statesAgreementDELETE"
       parameters:
       - name: "agreement"
         in: "path"

@@ -12,9 +12,13 @@ var agreements = require('./agreements/agreements.js');
 
 exports.agreementsGET = agreements.agreementsGET;
 
+exports.agreementsDELETE = agreements.agreementsDELETE;
+
 exports.agreementsPOST = agreements.agreementsPOST;
 
 exports.agreementsAgreementGET = agreements.agreementIdGET;
+
+exports.agreementsAgreementDELETE = agreements.agreementIdDELETE;
 
 
 exports.agreementsAgreementTermsGuaranteesGET = function(args, res, next) {

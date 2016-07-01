@@ -35,6 +35,10 @@ module.exports.agreementsAgreementGET = function agreementsAgreementGET (req, re
   Agreement.agreementsAgreementGET(req.swagger.params, res, next);
 };
 
+module.exports.agreementsAgreementDELETE = function agreementsAgreementDELETE (req, res, next) {
+  Agreement.agreementsAgreementDELETE(req.swagger.params, res, next);
+};
+
 module.exports.agreementsAgreementTermsGET = function agreementsAgreementTermsGET (req, res, next) {
   Agreement.agreementsAgreementTermsGET(req.swagger.params, res, next);
 };
@@ -89,6 +93,10 @@ module.exports.agreementsAgreementTermsRatesGET = function agreementsAgreementTe
 
 module.exports.agreementsGET = function agreementsGET (req, res, next) {
   Agreement.agreementsGET(req.swagger.params, res, next);
+};
+
+module.exports.agreementsDELETE = function agreementsDELETE (req, res, next) {
+  Agreement.agreementsDELETE(req.swagger.params, res, next);
 };
 
 module.exports.agreementsPOST = function agreementsPOST (req, res, next) {

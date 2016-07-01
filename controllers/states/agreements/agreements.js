@@ -11,9 +11,10 @@ var logger = config.logger;
 
 module.exports = {
     agreementIdGET: _agreementIdGET,
+    agreementIdDELETE: _agreementIdDELETE,
     guaranteesGET: require('../guarantees/guarantees.js').guaranteesGET,
     guaranteeIdGET: require('../guarantees/guarantees.js').guaranteeIdGET
-}
+};
 
 function _agreementIdGET(args, res, next) {
     /**
@@ -22,21 +23,21 @@ function _agreementIdGET(args, res, next) {
      * from (String)
      * to (String)
      **/
-    logger.info("New request to GET agreements");
+    logger.info("New request to GET agreements (states/agreements/agreements.js)");
     var agreementId = args.agreement.value;
     var from = args.from.value;
     var to = args.to.value;
 
     stateManager({
         id: agreeementId
-    }, function(state) {
-        state.get("agreement", function(agreement) {
+    }, function (state) {
+        state.get("agreement", function (agreement) {
             res.json(agreement);
-        }, function(err) {
+        }, function (err) {
             logger.error(err.message.toString());
             res.status(err.code).json(err);
         });
-    }, function(err) {
+    }, function (err) {
         logger.error(err.message.toString());
         res.status(err.code).json(err);
     });
@@ -63,4 +64,25 @@ function _agreementIdGET(args, res, next) {
     //     }
     // });
 
+}
+
+
+function _agreementIdDELETE(args, res, next) {
+    logger.info("New request to DELETE agreement state");
+    var agreementId = args.agreement.value;
+    if (agreementId) {
+       var StateModel = config.db.models.StateModel;
+        StateModel.findOneAndRemove({agreementId: agreementId}, function (err) {
+            if (!err) {
+                res.sendStatus(200);
+                logger.info("Deleted state for agreement " + agreementId);
+            } else {
+                res.sendStatus(404);
+                logger.warning("Can't delete state for agreement " + agreementId + " :" + err);;
+            }
+        });
+    } else {
+        res.sendStatus(400);
+        logger.warning("Can't delete state for agreement " + agreementId);
+    }
 }

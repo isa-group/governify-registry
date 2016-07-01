@@ -10,6 +10,10 @@ module.exports.statesAgreementGET = function statesAgreementGET (req, res, next)
   Stateregistry.statesAgreementGET(req.swagger.params, res, next);
 };
 
+module.exports.statesAgreementDELETE = function statesAgreementDELETE (req, res, next) {
+  Stateregistry.statesAgreementDELETE(req.swagger.params, res, next);
+};
+
 module.exports.statesAgreementGuaranteesGET = function statesAgreementGuaranteesGET (req, res, next) {
   Stateregistry.statesAgreementGuaranteesGET(req.swagger.params, res, next);
 };
@@ -69,4 +73,8 @@ module.exports.statesAgreementRatesRatePUT = function statesAgreementRatesRatePU
 
 module.exports.statesGET = function statesGET (req, res, next) {
   Stateregistry.statesGET(req.swagger.params, res, next);
+};
+
+module.exports.statesDELETE = function statesGET (req, res, next) {
+  Stateregistry.statesDELETE(req.swagger.params, res, next);
 };

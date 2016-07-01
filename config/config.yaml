@@ -6,6 +6,6 @@ development:
   logfile: "./logs/dev.log"
 production:
   database:
-    url: "mongodb://mongo/governify-registry"
+    url: "mongodb://sas-devel.governify.io:27017/prosas"
   port: 8080
   logfile: "./logs/prod.log"
