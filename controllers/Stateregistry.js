@@ -39,6 +39,10 @@ module.exports.statesAgreementPricingGET = function statesAgreementPricingGET (r
   Stateregistry.statesAgreementPricingGET(req.swagger.params, res, next);
 };
 
+module.exports.statesAgreementPricingBillingPenaltiePOST = function statesAgreementPricingBillingPenaltiePOST (req, res, next) {
+  Stateregistry.statesAgreementPricingBillingPenaltiePOST(req, res, next);
+};
+
 module.exports.statesAgreementQuotasGET = function statesAgreementQuotasGET (req, res, next) {
   Stateregistry.statesAgreementQuotasGET(req.swagger.params, res, next);
 };

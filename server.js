@@ -9,7 +9,6 @@ var fs = require('fs');
 var config = require('./config');
 var bodyParser = require('body-parser');
 
-app.use(bodyParser.json());
 // swaggerRouter configuration
 var options = {
   swaggerUi: '/swagger.json',
