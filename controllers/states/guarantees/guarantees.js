@@ -16,12 +16,13 @@ module.exports.guaranteesGET = function(args, res, next) {
      * from (String)
      * to (String)
      **/
-    logger.info("New request to GET guarantees");
+    logger.ctlState("New request to GET guarantees");
     var agreementId = args.agreement.value;
 
     stateManager({
         id: agreementId
     }).then((manager) => {
+        logger.ctlState("Getting state of guarantees...");
         var processGuarantees = [];
         manager.agreement.terms.guarantees.forEach(function(guarantee) {
             processGuarantees.push(manager.get('guarantees', {
@@ -52,16 +53,6 @@ module.exports.guaranteesGET = function(args, res, next) {
     }, (err) => {
         logger.error(err);
         res.status(500).json(new errorModel(500, err));
-    });
-
-
-    stateManager({
-        id: agreementId
-    }).get("guarantees", function(guarantees) {
-        res.json(guarantees);
-    }, function(err) {
-        logger.error(err.message.toString());
-        res.status(err.code).json(err);
     });
 }
 

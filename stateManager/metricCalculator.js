@@ -82,10 +82,7 @@ function processMetric(agreement, metricId, metricParameters) {
             }
 
             data.scope = scope ? scope : metricParameters.scope;
-            logger.info("Sending request to PPINOT Computer with data: " + JSON.stringify(data));
-
-            //var url = require('url');
-            //computerEndpoint = "http://10.188.20.20:8084/ppinot-juanlu" + url.parse(computerEndpoint).path;
+            logger.metrics("Sending request to computer with payload: " + JSON.stringify(data));
 
             request.post({
                 headers: {
@@ -94,7 +91,7 @@ function processMetric(agreement, metricId, metricParameters) {
                 url: computerEndpoint,
                 body: JSON.stringify(data)
             }, function(err, httpResponse, response) {
-                logger.metrics('- Processing metric ' + metricId + ' (' + JSON.stringify(metricParameters.scope) + ')');
+                logger.metrics('Processing metric ' + metricId + ' response from computer ');
                 if (err) {
                     logger.error("Error in PPINOT Computer response", err);
                     return reject(err);
@@ -108,6 +105,7 @@ function processMetric(agreement, metricId, metricParameters) {
                 try {
                     response = yaml.safeLoad(response);
                     var log;
+                    logger.metrics('Processing column name bindings from log...');
                     for (var logId in agreement.context.definitions.logs) {
                         var l = agreement.context.definitions.logs[logId];
                         if (l.default) {
@@ -134,6 +132,7 @@ function processMetric(agreement, metricId, metricParameters) {
                             }
                             metricState.scope = scope ? scope : metricState.scope;
                         });
+                        logger.metrics('Column name bindings processed');
                         return resolve({
                             metricId: metricId,
                             metricValues: response
