@@ -29,21 +29,18 @@ function processMetric(agreement, metricId, metricParameters) {
             data.parameters = metricParameters.parameters;
             data.window = metricParameters.window;
 
-            // if (metricParameters.evidences) {
-            //     data.evidences = [];
-
-            //     //console.log('\n\n\n evidences: ', metricParameters.evidences);
-
-            //     metricParameters.evidences.forEach(function(evidence) {
-            //         var evidenceId = Object.keys(evidence)[0];
-            //         if (evidence[evidenceId].computer) {
-            //             data.evidences.push({
-            //                 id: evidenceId,
-            //                 computer: evidence[evidenceId].computer
-            //             });
-            //         }
-            //     });
-            // }
+            if (metricParameters.evidences) {
+                data.evidences = [];
+                metricParameters.evidences.forEach(function(evidence) {
+                    var evidenceId = Object.keys(evidence)[0];
+                    if (evidence[evidenceId].computer) {
+                        data.evidences.push({
+                            id: evidenceId,
+                            computer: evidence[evidenceId].computer
+                        });
+                    }
+                });
+            }
 
             var scope = {};
             if (metric.log) {
@@ -82,7 +79,7 @@ function processMetric(agreement, metricId, metricParameters) {
             }
 
             data.scope = scope ? scope : metricParameters.scope;
-            logger.metrics("Sending request to computer with payload: " + JSON.stringify(data));
+            logger.metrics("Sending request to computer with payload: " + JSON.stringify(data, null, 2));
 
             request.post({
                 headers: {

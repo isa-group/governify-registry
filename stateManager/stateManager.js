@@ -7,8 +7,10 @@ var errorModel = require('../errors/index.js').errorModel;
 var iso8601 = require('iso8601');
 var calculators = require('../stateManager/calculators.js');
 var Promise = require("bluebird");
+var clone = require('clone');
 
 module.exports = initialize;
+var stateManager;
 
 function initialize(_agreement) {
     logger.sm('(initialize) Initializing state with agreement ID = ' + _agreement.id);
@@ -30,14 +32,15 @@ function initialize(_agreement) {
                     if (err) return reject(new errorModel(500, err));
                     else {
                         logger.sm("stateManager for agreementID = " + _agreement.id + " initialized");
-                        return resolve({
+                        stateManager = {
                             agreement: ag,
                             state: _state,
                             get: _get,
                             put: _put,
                             update: _update,
                             current: _current
-                        });
+                        };
+                        return resolve(stateManager);
                     }
                 });
             }
@@ -46,7 +49,6 @@ function initialize(_agreement) {
 }
 
 function _get(stateType, query) {
-    var stateManager = this;
     logger.sm('(_get) Retrieving state of ' + stateType);
     return new Promise((resolve, reject) => {
         logger.sm("Getting " + stateType + " state for query =  " + JSON.stringify(query));
@@ -74,7 +76,6 @@ function _get(stateType, query) {
 
 /** metadata = {logsState, evidences, parameters} **/
 function _put(stateType, query, value, metadata) {
-    var stateManager = this;
     logger.sm('(_put) Saving state of ' + stateType);
     return new Promise((resolve, reject) => {
         var StateModel = config.db.models.StateModel;
@@ -85,12 +86,14 @@ function _put(stateType, query, value, metadata) {
         if (elementStates.length > 0 && elementStates.length <= 1) {
             /** metadata = {logsState, evidences, parameters} **/
             elementStates[0].records.push(new record(value, metadata));
+            logger.sm("Updating " + stateType + " state...");
             StateModel.update({
                 "agreementId": stateManager.agreement.id
             }, stateManager.state, (err) => {
                 if (err) return reject(new errorModel(500, err));
                 else {
                     logger.sm("==>" + stateType + " updated with query = " + JSON.stringify(query));
+                    logger.sm(stateType + " state has been updated");
                     //RECALCULAR EL ESTADO DE LAS QUOTAS, RATES o GUARANTEES DESPUES DEL CAMBIO EN LA METRICA.
                     return resolve(stateManager.state[stateType].filter((element, index, array) => {
                         return checkQuery(element, query);
@@ -107,15 +110,12 @@ function _put(stateType, query, value, metadata) {
             /** metadata = {logsState, evidences, parameters} **/
             var newState = new state(value, query, metadata);
             stateManager.state[stateType].push(newState);
-
+            logger.sm("Updating " + stateType + " state...");
             StateModel.update({
                 "agreementId": stateManager.agreement.id
             }, stateManager.state, (err, state) => {
                 if (err) return reject(new errorModel(500, err));
                 else {
-
-                    logger.sm("==>Created new entry with query = " + JSON.stringify(query));
-
                     //RECALCULAR EL ESTADO DE LAS QUOTAS, RATES o GUARANTEES DESPUES DEL CAMBIO EN LA METRICA.
                     return resolve(stateManager.state[stateType].filter((element, index, array) => {
                         return checkQuery(element, query);
@@ -127,7 +127,6 @@ function _put(stateType, query, value, metadata) {
 }
 
 function _update(stateType, query, logsState) {
-    var stateManager = this;
     logger.sm('(_update) Updating state of ' + stateType);
     return new Promise((resolve, reject) => {
         switch (stateType) {
@@ -148,18 +147,21 @@ function _update(stateType, query, logsState) {
                 calculators.guaranteeCalculator.process(stateManager.agreement, query.guarantee, stateManager)
                     .then(function(guaranteeStates) {
                         logger.sm('Guarantee states for ' + guaranteeStates.guaranteeId + ' has been calculated (' + guaranteeStates.guaranteeValues.length + ') ');
+                        logger.debug('Guarantee states: ' + JSON.stringify(guaranteeStates, null, 2));
                         var processguarantees = [];
-                        for (var guaranteeState in guaranteeStates.guaranteeValues) {
+                        guaranteeStates.guaranteeValues.forEach(function(guaranteeState) {
+                            logger.debug('Guarantee state: ' + JSON.stringify(guaranteeState, null, 2));
                             processguarantees.push(stateManager.put(stateType, {
                                 guarantee: query.guarantee,
-                                period: guarantees[guaranteeState].period,
-                                scope: guarantees[guaranteeState].scope
-                            }, guarantees[guaranteeState].value, {
+                                period: guaranteeState.period,
+                                scope: guaranteeState.scope
+                            }, guaranteeState.value, {
                                 "logsState": logsState,
-                                metrics: guarantees[guaranteeState].metrics,
-                                penalties: guarantees[guaranteeState].penalties ? guarantees[guaranteeState].penalties : null
+                                metrics: guaranteeState.metrics,
+                                evidences: guaranteeState.evidences,
+                                penalties: guaranteeState.penalties ? guaranteeState.penalties : null
                             }));
-                        }
+                        });
                         logger.sm('Created parameters array for saving states of guarantee of length ' + processguarantees.length);
                         logger.sm('Persisting guarantee states...');
                         Promise.all(processguarantees).then((guarantees) => {
@@ -180,19 +182,19 @@ function _update(stateType, query, logsState) {
                     .then(function(metricStates) {
                         logger.sm('Metric states for ' + metricStates.metricId + ' has been calculated (' + metricStates.metricValues.length + ') ');
                         var processMetrics = [];
-                        for (var metricState in metricStates.metricValues) {
+                        metricStates.metricValues.forEach(function(metricValue) {
                             processMetrics.push(
                                 stateManager.put(stateType, {
                                     metric: query.metric,
-                                    scope: metricStates.metricValues[metricState].scope,
-                                    period: metricStates.metricValues[metricState].period,
+                                    scope: metricValue.scope,
+                                    period: metricValue.period,
                                     window: query.window
-                                }, metricStates.metricValues[metricState].value, {
+                                }, metricValue.value, {
                                     "logsState": logsState,
-                                    evidences: metricStates.metricValues[metricState].evidences,
-                                    parameters: metricStates.metricValues[metricState].parameters
+                                    evidences: metricValue.evidences,
+                                    parameters: metricValue.parameters
                                 }));
-                        }
+                        });
                         logger.sm('Created parameters array for saving states of metric of length ' + processMetrics.length);
                         logger.sm('Persisting metric states...');
                         Promise.all(processMetrics).then((metrics) => {
@@ -212,13 +214,13 @@ function _update(stateType, query, logsState) {
                 calculators.pricingCalculator.process(stateManager.agreement, query, stateManager).then((pricingStates) =>{
                     logger.sm('All pricing states (' + pricingStates.length + ') has been calculated ');
                     return resolve(pricingStates);
-                }, (err) =>{
+                }, (err) => {
                     logger.error(err.toString());
                     return reject(new errorModel(500, err));
                 });
                 break;
             default:
-                return reject(new errorModel(500, "There are not method implemented to calculate " + stateType +  " state"));
+                return reject(new errorModel(500, "There are not method implemented to calculate " + stateType + " state"));
                 break;
 
         }
@@ -251,6 +253,7 @@ function record(value, metadata) {
 
 function isUpdated(state, agreement, stateType, query) {
     return new Promise((resolve, reject) => {
+        logger.sm('Checking if ' + stateType + ' is updated...');
         var logUris = null;
         for (var log in agreement.context.definitions.logs) {
             if (agreement.context.definitions.logs[log].default) logUris = agreement.context.definitions.logs[log].stateUri;
@@ -259,13 +262,19 @@ function isUpdated(state, agreement, stateType, query) {
             return checkQuery(element, query);
         });
         var current = null
-        if (elementStates.length > 0)
+        if (elementStates && elementStates.length > 0)
             current = getCurrent(elementStates[0]);
+
+        logger.sm('Sending request to LOG state URI...');
         request.get({
             uri: logUris,
             json: true
         }, (err, response, body) => {
-            if (!err && response.statusCode == 200 && body) {
+            if (err) {
+                logger.error(err);
+                return reject("Error with Logs state URI this: " + err);
+            }
+            if (response.statusCode == 200 && body) {
                 if (current) {
                     if (current.logsState) {
                         if (current.logsState == body) {
@@ -320,11 +329,12 @@ function getCurrent(state) {
 }
 
 function _current(state) {
-    var currentRecord = getCurrent(state);
+    var newState = clone(state);
+    var currentRecord = getCurrent(newState);
     for (var v in currentRecord) {
         if (v != 'time' && v != 'logsState')
-            state[v] = currentRecord[v];
+            newState[v] = currentRecord[v];
     }
-    delete state.records;
-    return state;
+    delete newState.records;
+    return newState;
 }

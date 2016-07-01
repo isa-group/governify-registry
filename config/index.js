@@ -24,7 +24,7 @@ var logConfig = {
     levels: {
         error: 7,
         warning: 8,
-        agreement:9,
+        agreement: 9,
         ctlAgreement: 9,
         ctlState: 9,
         pricing: 9,
@@ -48,8 +48,8 @@ var logConfig = {
         guarantees: 'green',
         metrics: 'cyan',
         sm: 'grey',
-        info:'white',
-        debug:'black'
+        info: 'white',
+        debug: 'black'
     }
 };
 
@@ -72,13 +72,13 @@ module.exports.logger = new winston.Logger({
             handleExceptions: true,
             json: false,
             colorize: true,
-            timestamp:true
+            timestamp: true
         })
     ],
     exitOnError: false
 });
 module.exports.stream = {
-    write: function (message, encoding) {
+    write: function(message, encoding) {
         module.exports.logger.info(message);
     }
 };

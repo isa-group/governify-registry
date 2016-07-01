@@ -69,21 +69,23 @@ function processGuarantee(agreement, guaranteeId, manager) {
 
 
         var guaranteesValues = [];
-        var pre = "";
-        Promise.each(processScopedGuarantees, function(guaranteeParam) {
 
+        logger.guarantees('Processing scoped guarantee (' + guarantee.id + ')...');
+        Promise.each(processScopedGuarantees, function(guaranteeParam) {
             return processScopedGuarantee(guaranteeParam.agreement, guaranteeParam.guarantee, guaranteeParam.ofElement, guaranteeParam.manager).then(function(value) {
-                logger.guarantees(pre + 'End of guarantee ' + JSON.stringify(value));
-                pre += "==";
-                guaranteesValues.push(value);
+                logger.guarantees('Scoped guarantee has been processed');
+                guaranteesValues = guaranteesValues.concat(value);
             }).catch(function(err) {
-                logger.error('Error processing guarantee: ', err);
+                logger.error('Error processing scoped guarantee: ', err);
                 return reject(err);
             });
 
         }).then(function() {
-            logger.guarantees(pre + 'End of guarantees processing');
-            return resolve(guaranteesValues);
+            logger.guarantees('All scoped guarantees have been processed');
+            return resolve({
+                guaranteeId: guaranteeId,
+                guaranteeValues: guaranteesValues
+            });
         }).catch(function(err) {
             logger.error(err);
             return reject(err);
@@ -112,7 +114,6 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
             if (ofElement.with) {
                 var metrics = [];
                 for (var metricId in ofElement.with) {
-
                     processMetrics.push({
                         metric: metricId,
                         scope: scopeWithDefault,
@@ -128,21 +129,54 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
             }
 
             var guaranteesValues = [];
-            var pre = "";
-            logger.guarantees(pre + 'Processing guarantee ' + guarantee.id);
+
+            var timedScopes = [];
+            var metricValues = [];
+
+            logger.guarantees('Obtaining required metrics states for scoped guarantee ' + guarantee.id + '...');
             Promise.each(processMetrics, function(metricParam) {
-                return manager.get('metrics', metricParam).then(function(metricValues) {
-                    logger.guarantees(pre + 'End of metric ' + JSON.stringify(metricValues));
-                    pre += "==";
-                    metricValues.forEach(function(metricValue) {
-                        guaranteesValues.push(calculateAtomicPenalty(agreement, guarantee.id, metricValue, slo, penalties));
-                    });
+                return manager.get('metrics', metricParam).then(function(scopedMetricValues) {
+                    if (scopedMetricValues.length > 0) {
+                        logger.guarantees('Timed scoped metric values for ' + scopedMetricValues[0].metric + ' has been calculated (' + scopedMetricValues.length + ') ');
+                        logger.guarantees('Updating timed scope array for ' + scopedMetricValues[0].metric + '...');
+                        scopedMetricValues.forEach(function(metricValue) {
+                            var ts = {
+                                scope: metricValue.scope,
+                                period: metricValue.period
+                            }
+
+                            var tsIndex = timedScopes.indexOf(ts);
+
+                            if (tsIndex == -1) {
+                                tsIndex = timedScopes.push(ts) - 1;
+                            } else {
+                                logger.debug('####################################################################################');
+                            }
+                            if (metricValues[tsIndex] == null)
+                                metricValues[tsIndex] = {};
+
+                            metricValues[tsIndex][metricValue.metric] = manager.current(metricValue);
+                        });
+
+                        logger.guarantees('Timed scope array updated for ' + scopedMetricValues[0].metric);
+                        logger.debug('Timed scope: ' + JSON.stringify(timedScopes, null, 2));
+                        logger.debug('Metric value: ' + JSON.stringify(metricValues, null, 2));
+                    } else {
+                        logger.guarantees('No metrics found for parameters: ' + JSON.stringify(metricParam, null, 2));
+                    }
                 }).catch(function(err) {
                     logger.error('Error processing metric: ', err);
                     return reject(err);
                 });
             }).then(function(metricsValues) {
-                logger.guarantees(pre + 'End of metrics processing');
+                var guaranteesValues = [];
+                logger.guarantees('Calculating penalties for scoped guarantee ' + guarantee.id + '...');
+                for (var index = 0; index < timedScopes.length; index++) {
+                    var guaranteeValue = calculatePenalty(agreement, guarantee.id, timedScopes[index], metricValues[index], slo, penalties);
+                    guaranteesValues.push(guaranteeValue);
+                }
+                logger.guarantees('All penalties for scoped guarantee ' + guarantee.id + ' calculated.');
+                logger.debug('Guarantees values: ' + JSON.stringify(guaranteesValues, null, 2));
                 return resolve(guaranteesValues);
             }).catch(function(err) {
                 logger.error(err);
@@ -154,38 +188,38 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
     }
 }
 
-function calculateAtomicPenalty(agreement, guaranteeId, metricValue, slo, penalties) {
-    var metricId = metricValue.metric;
-    var metric = agreement.terms.metrics[metricId];
+function calculatePenalty(agreement, guaranteeId, timedScope, metricsValues, slo, penalties) {
+
     var guaranteeValue = {};
-    guaranteeValue.scope = metricValue.scope;
-    guaranteeValue.window = metricValue.window;
-    guaranteeValue.period = metricValue.period;
-    logger.guarantees('Metric records: ', metricValue.records);
-    if (metricValue.records) {
-        var lastRecord = metricValue.records[metricValue.records.length - 1];
-        guaranteeValue.guarantee = guaranteeId;
-        vm.runInThisContext(metricId + " = " + lastRecord.value);
-        var fulfilled = Boolean(vm.runInThisContext(slo));
-        guaranteeValue.value = fulfilled;
-        guaranteeValue.metrics = {};
-        guaranteeValue.metrics[metricId] = lastRecord.value;
-        if (!fulfilled && penalties.length > 0) {
-            guaranteeValue.penalties = {};
-            penalties.forEach(function(penalty) {
-                var penaltyVar = Object.keys(penalty.over)[0];
-                var penaltyFufilled = penalty.of.filter(function(compensationOf) {
-                    return vm.runInThisContext(compensationOf.condition);
-                });
-                if (penaltyFufilled.length > 0) {
-                    guaranteeValue.penalties[penaltyVar] = parseFloat(vm.runInThisContext(penaltyFufilled[0].value));
-                } else {
-                    logger.error('SLO not fulfilled and no penalty found: ');
-                    logger.error('\t- penalty: ', penalty.of);
-                    logger.error('\t- metric value: ', lastRecord.value);
-                }
+    guaranteeValue.scope = timedScope.scope;
+    guaranteeValue.period = timedScope.period;
+    guaranteeValue.guarantee = guaranteeId;
+    guaranteeValue.evidences = [];
+    guaranteeValue.metrics = {};
+
+    for (var metricId in metricsValues) {
+        vm.runInThisContext(metricId + " = " + metricsValues[metricId].value);
+        guaranteeValue.metrics[metricId] = metricsValues[metricId].value;
+        guaranteeValue.evidences = guaranteeValue.evidences.concat(metricsValues[metricId].evidences);
+    }
+    var fulfilled = Boolean(vm.runInThisContext(slo));
+    guaranteeValue.value = fulfilled;
+
+    if (!fulfilled && penalties.length > 0) {
+        guaranteeValue.penalties = {};
+        penalties.forEach(function(penalty) {
+            var penaltyVar = Object.keys(penalty.over)[0];
+            var penaltyFufilled = penalty.of.filter(function(compensationOf) {
+                return vm.runInThisContext(compensationOf.condition);
             });
-        }
+            if (penaltyFufilled.length > 0) {
+                guaranteeValue.penalties[penaltyVar] = parseFloat(vm.runInThisContext(penaltyFufilled[0].value));
+            } else {
+                logger.error('SLO not fulfilled and no penalty found: ');
+                logger.error('\t- penalty: ', penalty.of);
+                logger.error('\t- metric value: ', lastRecord.value);
+            }
+        });
     }
 
     return guaranteeValue;

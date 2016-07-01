@@ -115,6 +115,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
+      x-swagger-router-controller: "Agreementregistry"
     delete:
       tags:
       - "agreement-registry"

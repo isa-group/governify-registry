@@ -35,8 +35,7 @@ module.exports.guaranteesGET = function(args, res, next) {
             try {
                 guaranteesValues.forEach(function(guaranteeValues) {
                     var res = guaranteeValues.map(function(guaranteeValue) {
-                        manager.current(guaranteeValue);
-                        return guaranteeValue;
+                        return manager.current(guaranteeValue);
                     });
                     result = result.concat(res);
                 });
@@ -73,8 +72,7 @@ module.exports.guaranteeIdGET = function(args, res, next) {
             guarantee: guaranteeId
         }).then(function(success) {
             res.json(success.map((element) => {
-                manager.current(element);
-                return element;
+                return manager.current(element);
             }));
         }, function(err) {
             logger.error(err);
