@@ -28,9 +28,8 @@ module.exports.metricsIdPUT = function(args, res, next) {
         id: agreementId
     }).then((manager) => {
         manager.put('metrics', { metric: metricName, scope: metricValue.scope, window: metricValue.window}, metricValue.value).then((success) => {
-                res.json(success.filter((element) => {
-                    manager.current(element);
-                    return true;
+                res.json(success.map((element) => {
+                    return manager.current(element);
                 }));
             }, (err) => {
                 res.status(err.code).json(err);
@@ -66,8 +65,7 @@ module.exports.metricsPOST = function(req, res, next) {
               metricParams.metric = metricId;
               return manager.get('metrics', metricParams).then((results)=>{
                   for(var i in results){
-                      manager.current(results[i]);
-                      ret.push(results[i]);
+                      ret.push(manager.current(results[i]));
                   }
               }, (err)=>{
                   logger.error(err);
@@ -105,9 +103,8 @@ module.exports.metricsIdPOST = function(args, res, next) {
         id: agreementId
     }).then((manager) => {
         manager.get('metrics', metricParams).then((data) => {
-            res.json(data.filter((element) => {
-                manager.current(element);
-                return true;
+            res.json(data.map((element) => {
+                return manager.current(element);
             }));
         }, (err) => {
             logger.error(err);

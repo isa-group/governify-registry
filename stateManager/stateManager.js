@@ -204,6 +204,19 @@ function _update(stateType, query, logsState) {
                         return reject(new errorModel(500, err));
                     });
                 break;
+            case "pricing":
+                calculators.pricingCalculator.process(stateManager.agreement, query).then((pricingStates) =>{
+                    logger.sm('All pricing states (' + pricingStates.length + ') has been calculated ');
+                    return resolve(pricingStates);
+                }, (err) =>{
+                    logger.error(err.toString());
+                    return reject(new errorModel(500, err));
+                });
+                break;
+            default:
+                return reject(new errorModel(500, "There are not method implemented to calculate " + stateType +  " state"));
+                break;
+
         }
     });
 
@@ -309,4 +322,5 @@ function _current(state) {
             state[v] = currentRecord[v];
     }
     delete state.records;
+    return state;
 }
