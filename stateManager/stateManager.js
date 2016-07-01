@@ -146,24 +146,24 @@ function _update(stateType, query, logsState) {
                 break;
             case "guarantees":
                 calculators.guaranteeCalculator.process(stateManager.agreement, query.guarantee, stateManager)
-                    .then(function(guarantees) {
-                        logger.sm('All guarantees (' + guarantees.length + ') has been calculated ');
+                    .then(function(guaranteeStates) {
+                        logger.sm('Guarantee states for ' + guaranteeStates.guaranteeId + ' has been calculated (' + guaranteeStates.guaranteeValues.length + ') ');
                         var processguarantees = [];
-                        for (var g in guarantees) {
+                        for (var guaranteeState in guaranteeStates.guaranteeValues) {
                             processguarantees.push(stateManager.put(stateType, {
                                 guarantee: query.guarantee,
-                                period: guarantees[g].period,
-                                scope: guarantees[g].scope
-                            }, guarantees[g].value, {
+                                period: guarantees[guaranteeState].period,
+                                scope: guarantees[guaranteeState].scope
+                            }, guarantees[guaranteeState].value, {
                                 "logsState": logsState,
-                                metrics: guarantees[g].metrics,
-                                penalties: guarantees[g].penalties ? guarantees[g].penalties : null
+                                metrics: guarantees[guaranteeState].metrics,
+                                penalties: guarantees[guaranteeState].penalties ? guarantees[guaranteeState].penalties : null
                             }));
                         }
-                        logger.sm('Created parameters array for saving state of guarantees of length ' + processguarantees.length);
-                        logger.sm('Persisting guarantees...');
+                        logger.sm('Created parameters array for saving states of guarantee of length ' + processguarantees.length);
+                        logger.sm('Persisting guarantee states...');
                         Promise.all(processguarantees).then((guarantees) => {
-                            logger.sm('All guarantees has been persisted');
+                            logger.sm('All guarantee states has been persisted');
                             var result = [];
                             for (var a in guarantees) {
                                 result.push(guarantees[a][0]);
@@ -177,22 +177,26 @@ function _update(stateType, query, logsState) {
                 break;
             case "metrics":
                 calculators.metricCalculator.process(stateManager.agreement, query.metric, query)
-                    .then(function(metricState) {
+                    .then(function(metricStates) {
+                        logger.sm('Metric states for ' + metricStates.metricId + ' has been calculated (' + metricStates.metricValues.length + ') ');
                         var processMetrics = [];
-                        for (var m in metricState.metricValues) {
+                        for (var metricState in metricStates.metricValues) {
                             processMetrics.push(
                                 stateManager.put(stateType, {
                                     metric: query.metric,
-                                    scope: metricState.metricValues[m].scope,
-                                    period: metricState.metricValues[m].period,
+                                    scope: metricStates.metricValues[metricState].scope,
+                                    period: metricStates.metricValues[metricState].period,
                                     window: query.window
-                                }, metricState.metricValues[m].value, {
+                                }, metricStates.metricValues[metricState].value, {
                                     "logsState": logsState,
-                                    evidences: metricState.metricValues[m].evidences,
-                                    parameters: metricState.metricValues[m].parameters
+                                    evidences: metricStates.metricValues[metricState].evidences,
+                                    parameters: metricStates.metricValues[metricState].parameters
                                 }));
                         }
+                        logger.sm('Created parameters array for saving states of metric of length ' + processMetrics.length);
+                        logger.sm('Persisting metric states...');
                         Promise.all(processMetrics).then((metrics) => {
+                            logger.sm('All metric states has been persisted');
                             var result = [];
                             for (var a in metrics) {
                                 result.push(metrics[a][0]);
