@@ -6,7 +6,7 @@ var $RefParser = require('json-schema-ref-parser');
 var config = require('../config');
 var fs = require('fs');
 var errorModel = require('../errors/index.js').errorModel;
-var logger = config.state.logger;
+var logger = config.logger;
 
 var agreements = require('./agreements/agreements.js');
 

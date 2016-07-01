@@ -13,7 +13,7 @@ var Promise = require("bluebird");
 var request = require('request');
 const vm = require('vm');
 var config = require('../config');
-var logger = config.state.logger;
+var logger = config.logger;
 
 module.exports = {
     process: processMetric

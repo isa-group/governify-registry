@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 var mongoose = require('mongoose');
 var swaggerMongoose = require('swagger-mongoose');
 var $RefParser = require('json-schema-ref-parser');
@@ -10,7 +10,7 @@ var state = {
     logger: null,
     db: null,
     models: null
-}
+};
 
 var configString = fs.readFileSync('./config/config.yaml', 'utf8');
 var config = jsyaml.safeLoad(configString)[process.env.NODE_ENV ? process.env.NODE_ENV : 'development'];
@@ -18,32 +18,67 @@ config.state = state;
 module.exports = config;
 
 // Setup logger
-module.exports.logger = {};
-module.exports.logger.setup = function() {
-    if (state.logger) return;
-    if (!fs.existsSync('./logs')) {
-        fs.mkdirSync('./logs');
+winston.emitErrs = true;
+
+var logConfig = {
+    levels: {
+        error: 0,
+        warning: 1,
+        agreement:3,
+        pricing: 4,
+        quotas: 5,
+        rates: 6,
+        guarantees: 7,
+        metrics: 8,
+        sm: 9,
+        info: 10,
+        debug: 11
+    },
+    colors: {
+        error: 'red',
+        warning: 'yellow',
+        agreement: 'green',
+        pricing: 'green',
+        quotas: 'green',
+        rates: 'green',
+        guarantees: 'green',
+        metrics: 'green',
+        sm: 'green',
+        info:'blue',
+        debug:'black'
     }
-    if (process.env.NODE_ENV !== 'production') {
-        state.logger = new(winston.Logger)({
-            transports: [
-                new(winston.transports.Console)(),
-                new(winston.transports.File)({
-                    filename: config.logfile
-                })
-            ]
-        });
-        state.logger.transports.console.timestamp = true;
-    } else {
-        state.logger = new(winston.Logger)({
-            transports: [
-                new(winston.transports.File)({
-                    filename: config.logfile
-                })
-            ]
-        });
+};
+
+
+var logger = new winston.Logger({
+    levels: logConfig.levels,
+    colors: logConfig.colors,
+    transports: [
+        new winston.transports.File({
+            level: 'info',
+            filename: 'logs.log',
+            handleExceptions: true,
+            json: false,
+            maxsize: 5242880, //5MB
+            maxFiles: 5,
+            colorize: false
+        }),
+        new winston.transports.Console({
+            level: 'info',
+            handleExceptions: true,
+            json: false,
+            colorize: true,
+            timestamp:true
+        })
+    ],
+    exitOnError: false
+});
+module.exports = logger;
+module.exports.stream = {
+    write: function (message, encoding) {
+        logger.info(message);
     }
-}
+};
 
 // MongoDB configuration
 module.exports.db = {};

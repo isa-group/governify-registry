@@ -8,7 +8,7 @@ var request = require('request');
 const vm = require('vm');
 var clone = require('clone');
 var config = require('../config');
-var logger = config.state.logger;
+var logger = config.logger;
 var errorModel = require('../errors/index.js').errorModel;
 var stateManager = require('./stateManager.js');
 
