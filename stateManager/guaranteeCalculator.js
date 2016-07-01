@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 "use strict"
 
 var yaml = require('js-yaml');
@@ -65,22 +59,33 @@ function processGuarantee(agreement, guaranteeId, manager) {
         }
 
         guarantee.of.forEach(function(ofElement) {
-            processScopedGuarantees.push(processScopedGuarantee(agreement, guarantee, ofElement, manager));
+            processScopedGuarantees.push({
+                agreement: agreement,
+                guarantee: guarantee,
+                ofElement: ofElement,
+                manager: manager
+            });
         });
 
-        Promise.all(processScopedGuarantees).then(function(values) {
-            logger.info('Guarantee ' + guaranteeId + ' has been calculated');
-            var guaranteeValues = [];
-            values.forEach(function(scopedValues) {
-                if (scopedValues.length > 0) {
-                    scopedValues.forEach(function(scopedValue) {
-                        guaranteeValues.push(scopedValue);
-                    });
-                }
+
+        var guaranteesValues = [];
+        var pre = "";
+        Promise.each(processScopedGuarantees, function(guaranteeParam) {
+
+            return processScopedGuarantee(guaranteeParam.agreement, guaranteeParam.guarantee, guaranteeParam.ofElement, guaranteeParam.manager).then(function(value) {
+                logger.guarantees(pre + 'End of guarantee ' + JSON.stringify(value));
+                pre += "==";
+                guaranteesValues.push(value);
+            }).catch(function(err) {
+                logger.error('Error processing guarantee: ', err);
+                return reject(err);
             });
-            return resolve(guaranteeValues);
-        }, function(err) {
-            console.error(err);
+
+        }).then(function() {
+            logger.guarantees(pre + 'End of guarantees processing');
+            return resolve(guaranteesValues);
+        }).catch(function(err) {
+            logger.error(err);
             return reject(err);
         });
     });
@@ -92,7 +97,6 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
             var stateManager = require('./stateManager.js');
             var slo = ofElement.objective;
             var penalties = ofElement.penalties;
-            var guaranteesValues = [];
             var processMetrics = [];
 
             var scopeWithDefault = {};
@@ -108,7 +112,8 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
             if (ofElement.with) {
                 var metrics = [];
                 for (var metricId in ofElement.with) {
-                    processMetrics.push(manager.get('metrics', {
+
+                    processMetrics.push({
                         metric: metricId,
                         scope: scopeWithDefault,
                         parameters: ofElement.with[metricId],
@@ -118,23 +123,29 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                             from: '*',
                             to: '*'
                         }
-                    }));
+                    });
                 }
             }
 
-            Promise.all(processMetrics).then(function(metricsValues) {
-                var guaranteesValues = [];
-                try {
-                    metricsValues.forEach(function(metricValues) {
-                        metricValues.forEach(function(metricValue) {
-                            guaranteesValues.push(calculateAtomicPenalty(agreement, guarantee.id, metricValue.metric, metricValue, slo, penalties));
-                        });
+            var guaranteesValues = [];
+            var pre = "";
+            logger.guarantees(pre + 'Processing guarantee ' + guarantee.id);
+            Promise.each(processMetrics, function(metricParam) {
+                return manager.get('metrics', metricParam).then(function(metricValues) {
+                    logger.guarantees(pre + 'End of metric ' + JSON.stringify(metricValues));
+                    pre += "==";
+                    metricValues.forEach(function(metricValue) {
+                        guaranteesValues.push(calculateAtomicPenalty(agreement, guarantee.id, metricValue, slo, penalties));
                     });
-                    return resolve(guaranteesValues);
-                } catch (err) {
+                }).catch(function(err) {
+                    logger.error('Error processing metric: ', err);
                     return reject(err);
-                }
-            }, function(err) {
+                });
+            }).then(function(metricsValues) {
+                logger.guarantees(pre + 'End of metrics processing');
+                return resolve(guaranteesValues);
+            }).catch(function(err) {
+                logger.error(err);
                 return reject(err);
             });
         });
@@ -143,34 +154,39 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
     }
 }
 
-function calculateAtomicPenalty(agreement, guaranteeId, metricId, metricValue, slo, penalties) {
+function calculateAtomicPenalty(agreement, guaranteeId, metricValue, slo, penalties) {
+    var metricId = metricValue.metric;
     var metric = agreement.terms.metrics[metricId];
     var guaranteeValue = {};
     guaranteeValue.scope = metricValue.scope;
     guaranteeValue.window = metricValue.window;
     guaranteeValue.period = metricValue.period;
-    var lastRecord = metricValue.records[metricValue.records.length - 1];
-    guaranteeValue.guarantee = guaranteeId;
-    vm.runInThisContext(metricId + " = " + lastRecord.value);
-    var fulfilled = vm.runInThisContext(slo);
-    guaranteeValue.value = fulfilled;
-    guaranteeValue.metrics = {};
-    guaranteeValue.metrics[metricId] = lastRecord.value;
-    if (!fulfilled && penalties.length > 0) {
-        guaranteeValue.penalties = {};
-        penalties.forEach(function(penalty) {
-            var penaltyVar = Object.keys(penalty.over)[0];
-            var penaltyFufilled = penalty.of.filter(function(compensationOf) {
-                return vm.runInThisContext(compensationOf.condition);
+    logger.guarantees('Metric records: ', metricValue.records);
+    if (metricValue.records) {
+        var lastRecord = metricValue.records[metricValue.records.length - 1];
+        guaranteeValue.guarantee = guaranteeId;
+        vm.runInThisContext(metricId + " = " + lastRecord.value);
+        var fulfilled = Boolean(vm.runInThisContext(slo));
+        guaranteeValue.value = fulfilled;
+        guaranteeValue.metrics = {};
+        guaranteeValue.metrics[metricId] = lastRecord.value;
+        if (!fulfilled && penalties.length > 0) {
+            guaranteeValue.penalties = {};
+            penalties.forEach(function(penalty) {
+                var penaltyVar = Object.keys(penalty.over)[0];
+                var penaltyFufilled = penalty.of.filter(function(compensationOf) {
+                    return vm.runInThisContext(compensationOf.condition);
+                });
+                if (penaltyFufilled.length > 0) {
+                    guaranteeValue.penalties[penaltyVar] = parseFloat(vm.runInThisContext(penaltyFufilled[0].value));
+                } else {
+                    logger.error('SLO not fulfilled and no penalty found: ');
+                    logger.error('\t- penalty: ', penalty.of);
+                    logger.error('\t- metric value: ', lastRecord.value);
+                }
             });
-            if (penaltyFufilled.length > 0) {
-                guaranteeValue.penalties[penaltyVar] = parseFloat(vm.runInThisContext(penaltyFufilled[0].value));
-            } else {
-                logger.error('SLO not fulfilled and no penalty found: ');
-                logger.error('\t- penalty: ', penalty.of);
-                logger.error('\t- metric value: ', lastRecord.value);
-            }
-        });
+        }
     }
+
     return guaranteeValue;
 }

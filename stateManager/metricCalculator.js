@@ -31,6 +31,9 @@ function processMetric(agreement, metricId, metricParameters) {
 
             // if (metricParameters.evidences) {
             //     data.evidences = [];
+
+            //     //console.log('\n\n\n evidences: ', metricParameters.evidences);
+
             //     metricParameters.evidences.forEach(function(evidence) {
             //         var evidenceId = Object.keys(evidence)[0];
             //         if (evidence[evidenceId].computer) {
@@ -81,6 +84,9 @@ function processMetric(agreement, metricId, metricParameters) {
             data.scope = scope ? scope : metricParameters.scope;
             logger.info("Sending request to PPINOT Computer with data: " + JSON.stringify(data));
 
+            //var url = require('url');
+            //computerEndpoint = "http://10.188.20.20:8084/ppinot-juanlu" + url.parse(computerEndpoint).path;
+
             request.post({
                 headers: {
                     'Content-Type': 'application/json'
@@ -88,7 +94,7 @@ function processMetric(agreement, metricId, metricParameters) {
                 url: computerEndpoint,
                 body: JSON.stringify(data)
             }, function(err, httpResponse, response) {
-                //console.log('- Processing metric ' + metricId + ' (' + JSON.stringify(metricParameters.scope) + ')');
+                logger.metrics('- Processing metric ' + metricId + ' (' + JSON.stringify(metricParameters.scope) + ')');
                 if (err) {
                     logger.error("Error in PPINOT Computer response", err);
                     return reject(err);
@@ -101,8 +107,6 @@ function processMetric(agreement, metricId, metricParameters) {
 
                 try {
                     response = yaml.safeLoad(response);
-                    // PROCESAR VARIABLES DEL SCOPE NODO -> node
-                    // PROCESAR VARIABLES DEL SCOPE CENTRO -> center
                     var log;
                     for (var logId in agreement.context.definitions.logs) {
                         var l = agreement.context.definitions.logs[logId];
