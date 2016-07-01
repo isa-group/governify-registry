@@ -11,10 +11,10 @@ var Promise = require("bluebird");
 module.exports = initialize;
 
 function initialize(_agreement) {
+    logger.sm('(initialize) Initializing state with agreement ID = ' + _agreement.id);
     return new Promise((resolve, reject) => {
         var StateModel = config.db.models.StateModel;
         var AgreementModel = config.db.models.AgreementModel;
-        logger.sm("Initializing stateManager with agreement ID = " + _agreement.id);
         logger.sm("Searching agreement with agreementID = " + _agreement.id);
         AgreementModel.findOne({
             'id': _agreement.id
@@ -47,18 +47,18 @@ function initialize(_agreement) {
 
 function _get(stateType, query) {
     var stateManager = this;
+    logger.sm('(_get) Retrieving state of ' + stateType);
     return new Promise((resolve, reject) => {
         logger.sm("Getting " + stateType + " state for query =  " + JSON.stringify(query));
-        logger.sm("==>is updated?");
         isUpdated(stateManager.state, stateManager.agreement, stateType, query).then((data) => {
-            logger.sm("==>isUpdated = " + data.isUpdated);
+            logger.sm("Updated: " + (data.isUpdated ? 'YES' : 'NO'));
             if (data.isUpdated) {
-                logger.sm("==>Returning states");
+                logger.sm("Returning state of " + stateType);
                 return resolve(stateManager.state[stateType].filter((element, index, array) => {
                     return checkQuery(element, query);
                 }));
             } else {
-                logger.sm("==>Refreshing states");
+                logger.sm("Refreshing states of " + stateType);
                 stateManager.update(stateType, query, data.logsState).then((states) => {
                     return resolve(states);
                 }, (err) => {
@@ -75,6 +75,7 @@ function _get(stateType, query) {
 /** metadata = {logsState, evidences, parameters} **/
 function _put(stateType, query, value, metadata) {
     var stateManager = this;
+    logger.sm('(_put) Saving state of ' + stateType);
     return new Promise((resolve, reject) => {
         var StateModel = config.db.models.StateModel;
         var elementStates = stateManager.state[stateType].filter((element, index, array) => {
@@ -127,7 +128,7 @@ function _put(stateType, query, value, metadata) {
 
 function _update(stateType, query, logsState) {
     var stateManager = this;
-    logger.sm('(' + arguments.callee.name + ') Updating state of ' + stateType);
+    logger.sm('(_update) Updating state of ' + stateType);
     return new Promise((resolve, reject) => {
         switch (stateType) {
             case "agreement":
@@ -146,6 +147,7 @@ function _update(stateType, query, logsState) {
             case "guarantees":
                 calculators.guaranteeCalculator.process(stateManager.agreement, query.guarantee, stateManager)
                     .then(function(guarantees) {
+                        logger.sm('All guarantees (' + guarantees.length + ') has been calculated ');
                         var processguarantees = [];
                         for (var g in guarantees) {
                             processguarantees.push(stateManager.put(stateType, {
@@ -159,8 +161,9 @@ function _update(stateType, query, logsState) {
                             }));
                         }
                         logger.sm('Created parameters array for saving state of guarantees of length ' + processguarantees.length);
-                        logger.sm('Launching processguarantees...');
+                        logger.sm('Persisting guarantees...');
                         Promise.all(processguarantees).then((guarantees) => {
+                            logger.sm('All guarantees has been persisted');
                             var result = [];
                             for (var a in guarantees) {
                                 result.push(guarantees[a][0]);
