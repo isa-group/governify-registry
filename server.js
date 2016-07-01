@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 }));
 
 // Setup logger
-config.logger.setup();
+//config.logger.setup();
 
 // Connect to mongodb
 config.db.connect();
@@ -54,8 +54,8 @@ swaggerTools.initializeMiddleware(swaggerDoc, function(middleware) {
   // Start the server
   var serverPort = process.env.PORT || config.port;
   var server = app.listen(serverPort, function() {
-    config.state.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
-    config.state.logger.info('Swagger-ui is available on http://localhost:%d/docs', serverPort);
+    config.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
+    config.logger.info('Swagger-ui is available on http://localhost:%d/docs', serverPort);
   });
   server.timeout = 600000;
 });

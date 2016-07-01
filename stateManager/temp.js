@@ -1,7 +1,7 @@
 'use strict';
 
 var config = require('../config');
-var logger = config.state.logger;
+var logger = config.logger;
 var request = require('request');
 
 module.exports = initialize;
