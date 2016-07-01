@@ -84,8 +84,10 @@ terms:
               $ref: "#/context/definitions/schemas/porcentajePTOT"
           aggegatedBy: sum
           groupBy:
-            - $ref: "#/context/definitions/scopes/SPU/serviceLine"
-            - $ref: "#/context/definitions/scopes/SPU/activity"
+            serviceLine:
+              $ref: "#/context/definitions/scopes/SPU/serviceLine"
+            activity:
+              $ref: "#/context/definitions/scopes/SPU/activity"
   metrics:
     issue_typology:
       schema:

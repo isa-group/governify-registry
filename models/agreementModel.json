@@ -255,8 +255,8 @@
                 "type": "string"
             },
             "groupBy": {
-                "type": "array",
-                "items": {
+                "type": "object",
+                "additionalProperties": {
                     "$ref": "#/groupByObj"
                 }
             },

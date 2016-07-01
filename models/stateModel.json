@@ -9,16 +9,42 @@
     "type": "object"
   },
   "pricing": {
-    "type": "object",
-    "properties": {
-      "cost": {
-        "type": "object"
-      },
-      "period": {
-        "type": "object"
-      },
-      "penalties": {
-        "type": "object"
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "groupBy": {
+          "type": "object"
+        },
+        "period": {
+          "type": "object"
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "object",
+                "properties": {
+                  "penalties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "logsState": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            }
+          }
+        }
       }
     }
   },

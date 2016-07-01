@@ -1228,8 +1228,8 @@ definitions:
       aggegatedBy:
         type: string
       groupBy:
-        type: array
-        items:
+        type: object
+        additionalProperties:
           $ref: "#/definitions/groupByObj"
       upTo:
         type: number

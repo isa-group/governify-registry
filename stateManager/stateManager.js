@@ -205,7 +205,7 @@ function _update(stateType, query, logsState) {
                     });
                 break;
             case "pricing":
-                calculators.pricingCalculator.process(stateManager.agreement, query).then((pricingStates) =>{
+                calculators.pricingCalculator.process(stateManager.agreement, query, stateManager).then((pricingStates) =>{
                     logger.sm('All pricing states (' + pricingStates.length + ') has been calculated ');
                     return resolve(pricingStates);
                 }, (err) =>{
