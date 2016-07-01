@@ -26,14 +26,12 @@ module.exports.metricsIdPUT = function(args, res, next) {
 
     stateManager({
         id: agreementId
-    }, (manager) => {
-        manager.put('metrics', {
-                metric: metricName,
-                scope: metricValue.scope,
-                window: metricValue.window
-            }, metricValue.value,
-            (success) => {
-                res.json(success);
+    }).then((manager) => {
+        manager.put('metrics', { metric: metricName, scope: metricValue.scope, window: metricValue.window}, metricValue.value).then((success) => {
+                res.json(success.filter((element) => {
+                    manager.current(element);
+                    return true;
+                }));
             }, (err) => {
                 res.status(err.code).json(err);
             });
@@ -43,12 +41,6 @@ module.exports.metricsIdPUT = function(args, res, next) {
 }
 
 module.exports.metricsPOST = function(req, res, next) {
-    /*********************************
-    **********************************
-    Refactor with promise.each(...);
-    *********************************
-    ********************************/
-
     /**
      * parameters expected in the args:
      * agreement (String)
@@ -56,12 +48,6 @@ module.exports.metricsPOST = function(req, res, next) {
     var args = req.swagger.params;
     var agreementId = args.agreement.value;
     var AgreementModel = config.db.models.AgreementModel;
-    var processMetrics = [];
-    var metricParams = args.scope.value;
-    metricParams.period = metricParams.period ? metricParams.period : {
-        from: '*',
-        to: '*'
-    };
 
     logger.info("New request to GET metrics of agreement: " + agreementId);
 
@@ -97,7 +83,6 @@ module.exports.metricsPOST = function(req, res, next) {
       logger.error("ERROR processing metrics");
       res.status(500).json(new errorModel(500, err));
     });
-    //res.status(405).json(new errorModel(405, "Method Not Supported"))
 }
 
 module.exports.metricsIdPOST = function(args, res, next) {
