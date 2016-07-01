@@ -50,7 +50,7 @@ var logConfig = {
 };
 
 
-var logger = new winston.Logger({
+module.exports.logger = new winston.Logger({
     levels: logConfig.levels,
     colors: logConfig.colors,
     transports: [
@@ -73,10 +73,9 @@ var logger = new winston.Logger({
     ],
     exitOnError: false
 });
-module.exports = logger;
 module.exports.stream = {
     write: function (message, encoding) {
-        logger.info(message);
+        module.exports.logger.info(message);
     }
 };
 
@@ -89,7 +88,7 @@ module.exports.db.connect = function() {
     db.on('error', console.error.bind(console, 'connection error:'));
     db.on('open', function() {
         state.db = db;
-        state.logger.info('Connected to db!');
+        module.exports.logger.info('Connected to db!');
         if (state.models) return;
         state.models = {};
         setupModel('AgreementModel', './models/agreementModel.json');
