@@ -61,3 +61,5 @@ exports.statesAgreementPricingGET = function(args, res, next) {
   }
 
 }
+
+exports.statesAgreementPricingBillingPenaltiePOST = states.pricing.PricingBillingPenaltiePOST;

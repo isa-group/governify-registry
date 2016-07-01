@@ -2,7 +2,6 @@
 swagger: "2.0"
 info:
   description: >-
-    First paragraph of description.\\n\\nSecond paragraph of description\\n
     <div class="postman-run-button"
       data-postman-action="collection/import"
       data-postman-var-1="4cc14a96eab965c49970"
@@ -847,6 +846,37 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "Stateregistry"
+  /states/{agreementId}/pricing/billing/penalties:
+    post:
+      tags:
+      - "state-registry"
+      description: "XXX"
+      operationId: "statesAgreementPricingBillingPenaltiePOST"
+      parameters:
+      - name: "agreementId"
+        in: "path"
+        description: "XXX"
+        required: true
+        type: string
+      - name: "query"
+        in: "body"
+        description: "XXX"
+        required: true
+        schema:
+          type: object
+          properties:
+            period:
+              type: object
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/guarantees_state"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/inline_response_400"
+      x-swagger-router-controller: "Stateregistry"
   /states/{agreement}/quotas:
     get:
       tags:
@@ -1167,7 +1197,7 @@ definitions:
 
   window:
     type: object
-    required: 
+    required:
       - type
       - period
       - initial
