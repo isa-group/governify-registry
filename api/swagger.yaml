@@ -1081,11 +1081,9 @@ definitions:
       - initial
     properties:
       initial:
-        type: integer
-        format: int32
+        type: string
       end:
-        type: integer
-        format: int32
+        type: string
 
   infrastructure:
     type: object
@@ -1276,11 +1274,9 @@ definitions:
       - initial
     properties:
       initial:
-        type: integer
-        format: int32
+        type: string
       end:
-        type: integer
-        format: int32
+        type: string
       type:
         type: string
       period:

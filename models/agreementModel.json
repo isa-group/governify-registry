@@ -55,12 +55,10 @@
         "type": "object",
         "properties": {
             "initial": {
-                "type": "integer",
-                "format": "int32"
+                "type": "string"
             },
             "end": {
-                "type": "integer",
-                "format": "int32"
+                "type": "string"
             }
         }
     },
@@ -115,8 +113,7 @@
                 "type": "string"
             },
             "initial": {
-                "type": "integer",
-                "format": "int32"
+                "type": "string"
             },
             "penalties": {
                 "type": "array",
@@ -221,12 +218,10 @@
         "type": "object",
         "properties": {
             "initial": {
-                "type": "integer",
-                "format": "int32"
+                "type": "string"
             },
             "end": {
-                "type": "integer",
-                "format": "int32"
+                "type": "string"
             },
             "type": {
                 "type": "string"

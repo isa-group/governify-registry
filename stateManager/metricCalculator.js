@@ -43,14 +43,18 @@ function processMetric(agreement, metricId, metricParameters) {
             }
 
             var scope = {};
+            var log;
             if (metric.log) {
                 data.logs = {};
                 var logId = Object.keys(metric.log)[0];
-                data.logs[logId] = metric.log.uri;
+                data.logs[logId] = metric.log[logId].uri;
+                var scopeId = Object.keys(metric.scope)[0];
                 for (var metricScope in metricParameters.scope) {
-                    var logScope = log.scopes[metric.scope.id][metricScope];
-                    if (log.scopes[metric.scope.id] && logScope) {
+                    var logScope = metric.log[logId].scopes[scopeId][metricScope];
+                    if (metric.log[logId].scopes[scopeId] && logScope) {
                         scope[logScope] = metricParameters.scope[metricScope];
+                    } else {
+                        scope[metricScope] = metricParameters.scope[metricScope];
                     }
                 }
             } else {
@@ -101,23 +105,20 @@ function processMetric(agreement, metricId, metricParameters) {
 
                 try {
                     response = yaml.safeLoad(response);
-                    var log;
                     logger.metrics('Processing column name bindings from log...');
-                    for (var logId in agreement.context.definitions.logs) {
-                        var l = agreement.context.definitions.logs[logId];
-                        if (l.default) {
-                            log = l;
-                        }
-                    }
                     if (response && Array.isArray(response)) {
                         response.forEach(function(metricState) {
+                            var logId = Object.keys(metricState.logs)[0];
+                            var log = agreement.context.definitions.logs[logId];
                             var scope = {};
                             var scopeId = Object.keys(metric.scope)[0];
                             var logScopes = Object.keys(log.scopes[scopeId]).map(function(key) {
                                 return log.scopes[scopeId][key];
                             });
+                            logger.warning(logScopes);
                             for (var metricScope in metricState.scope) {
                                 if (logScopes.indexOf(metricScope) > -1) {
+                                    logger.warning(metricScope);
                                     for (var logScope in log.scopes[scopeId]) {
                                         if (log.scopes[scopeId][logScope] === metricScope) {
                                             scope[logScope] = metricState.scope[metricScope];

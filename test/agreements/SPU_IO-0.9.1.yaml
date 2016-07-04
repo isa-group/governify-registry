@@ -5,8 +5,7 @@ context:
   provider: Accenture
   consumer: SAS
   validity:
-    initial: "20141016"
-    end: ""
+    initial: 20141016
   infrastructure:
     designer: "http://designer.sas.governify.io/"
     portal: "http://portal.sas.governify.io/v1/"
@@ -19,8 +18,7 @@ context:
         unit: "%"
       deadline:
         description: Plazo de resolucion de una inicidencia
-        type: integer
-        format: int32
+        type: string
         unit: hours
       schedule:
         description: Horario del servicio
@@ -31,22 +29,27 @@ context:
           name: Prioridad
           description: Prioridad de la incidencia
           type: string
-          reported: true
+          metadata:
+            reported: true
         node:
           name: Nodo
           description: Provincia
           type: string
-          reported: true
-        nodeETC:
-          name: nodeETC
-          description: ETCs del nodo.
-          type: integer
-          format: int32
+          metadata:
+            reported: true
         center:
           name: Centro
           description: Centro
           type: string
-          reported: true
+          metadata:
+            reported: true
+        nodeETC:
+          name: Nodo ETC
+          description: ETCs del nodo
+          type: integer
+          format: int32
+          metadata:
+            reported: true
         serviceLine:
           name: LineaServicio
           description: Linea de Servicio
@@ -60,17 +63,21 @@ context:
     logs:
       casdm:
         default: true
-        uri: "https://casdm.log.sas.governify.io"
+        uri: "http://logs-devel.sas-devel.governify.io/api/v10.12/ca-sdm"
+        stateUri: "http://logs-devel.sas-devel.governify.io/api/v10.12/ca-sdm/count"
         scopes:
           SPU:
-            priority: Prioridad
-            node: Nodo
-            center: Centro
+            priority: priority
+            node: NODO
+            center: CENTRO
       jira:
-        uri: "https://jira.log.sas.governify.io"
+        uri: "http://logs-devel.sas-devel.governify.io/api/v01.03/jira"
+        stateUri: "http://logs-devel.sas-devel.governify.io/api/v01.03/jira/count"
         scopes:
           SPU:
-            node: Nodo
+            priority: priority
+            node: ASUNTO_NODO
+            center: CENTRO
 terms:
   pricing:
     billing:
@@ -82,30 +89,46 @@ terms:
               $ref: "#/context/definitions/schemas/porcentajePTOT"
           aggegatedBy: sum
           groupBy:
-            - $ref: "#/context/definitions/scopes/SPU/serviceLine"
-            - $ref: "#/context/definitions/scopes/SPU/activity"
+            serviceLine:
+              $ref: "#/context/definitions/scopes/SPU/serviceLine"
+            activity:
+              $ref: "#/context/definitions/scopes/SPU/activity"
   metrics:
-    issue_init:
+    issue_start:
       schema:
         description: Fecha de Inicio de incidencia
-        type: date
-      computer: "http://localhost:8081/api/v1/indicators/issue_init/"
+        type: string
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_start/"
     issue_end:
       schema:
         description: Fecha de Inicio de incidencia
-        type: date
-      computer: "http://localhost:8081/api/v1/indicators/issue_end/"
+        type: string
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_end/"
+    issue_typology:
+      schema:
+        description: Tipologia de la incidencia
+        type: string
+      computer: 'http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_typology/'
+    issue_source:
+      schema:
+        description: Origen de la incidencia
+        type: string
+      computer: 'http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_source/'
+    issue_subject:
+      schema:
+        description: Asunto de la incidencia
+        type: string
+      computer: 'http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_subject/'
     issue_duration:
       schema:
         description: Duracion de una incidencia
-        type: integer
-        format: int32
+        type: string
         unit: hours
-      computer: "http://localhost:8081/api/v1/indicators/issue_duration/"
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_duration/"
     SPU_IO_K00_evidence:
       schema:
         description: Penalización total
-        type: bool
+        type: string
       parameters:
         deadline:
           schema:
@@ -124,10 +147,16 @@ terms:
       scope:
         SPU:
           $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Penalización total del periodo
+        description: Penalización a aplicar en la factura del periodo.
+        kind: Penalizador
+        class: Totalizador
+        reportable: false
     SPU_IO_K01_evidence:
       schema:
         description: Incidencias resueltas en plazo
-        type: bool
+        type: string
       parameters:
         deadline:
           schema:
@@ -143,7 +172,7 @@ terms:
         description: Porcentaje incidencias resueltas en plazo
         type: double
         unit: "%"
-      computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K01/"
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/SPU_IO_K01/"
       parameters:
         deadline:
           schema:
@@ -154,10 +183,16 @@ terms:
       scope:
         SPU:
           $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Porcentaje incidencias resueltas en plazo
+        description: Porcentaje de incidencias resueltas en plazo respecto del total de incidencias comunicadas.
+        kind: Penalizador
+        class: Negocio
+        reportable: false
     SPU_IO_K05_evidence:
       schema:
         description: Incidencias sin categorizar el motivo de cierre
-        type: bool
+        type: string
       parameters:
         deadline:
           schema:
@@ -173,16 +208,24 @@ terms:
         description: Porcentaje incidencias sin categorizar el motivo de cierre
         type: double
         unit: "%"
-      computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K05/"
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/SPU_IO_K05/"
       scope:
         SPU:
           $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Porcentaje incidencias sin categorizar el motivo de cierre
+        description: >-
+          Porcentaje de incidencias cerradas sin indicar un motivo de cierre concreto y 
+          categorizado que muestre la solución aplicada para la incidencia.
+        kind: Penalizador
+        class: Negocio
+        reportable: false
     SPU_IO_K06_evidence:
       schema:
         description: >-
           Incidencias que no fueron correctamente solucionadas (e.d. mal
           cerradas)
-        type: bool
+        type: string
       parameters:
         deadline:
           schema:
@@ -198,10 +241,18 @@ terms:
         description: Porcentaje incidencias reabiertas
         type: double
         unit: "%"
-      computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K06/"
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/SPU_IO_K06/"
       scope:
         SPU:
           $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Porcentaje incidencias reabiertas
+        description: >-
+          Porcentaje de incidencias que se deben reabrir debido a que en su momento
+          no fueron correctamente solucionadas, es decir, mal cerradas.
+        kind: Penalizador
+        class: Negocio
+        reportable: false
     SPU_IO_K06_t_evidence:
       schema:
         description: Incidencias reabiertas (incluyendo el centro en el scope)
@@ -221,10 +272,18 @@ terms:
         description: Porcentaje incidencias reabiertas (incluyendo el centro en el scope)
         type: double
         unit: "%"
-      computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K06_t/"
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/SPU_IO_K06_t/"
       scope:
         SPU:
           $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Porcentaje incidencias reabiertas
+        description: >-
+          Porcentaje de incidencias que se deben reabrir debido a que en su momento
+          no fueron correctamente solucionadas, es decir, mal cerradas.
+        kind: Penalizador
+        class: Negocio
+        reportable: true
     SPU_IO_K06_last_penalty:
       schema:
         description: Penalizacion del mes anterior para SPU_IO_K06
@@ -254,7 +313,7 @@ terms:
     SPU_IO_K10_evidence:
       schema:
         description: Incidencias reclamadas con ANS finalizado
-        type: bool
+        type: string
       parameters:
         deadline:
           schema:
@@ -270,14 +329,22 @@ terms:
         description: Porcentaje de incidencias reclamadas con el ANS finalizado
         type: double
         unit: "%"
-      computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K10/"
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/SPU_IO_K10/"
       scope:
         SPU:
           $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Porcentaje incidencias reclamadas con el ANS cumplido
+        description: >-
+          Porcentaje de incidencias que son reclamadas por el SAS donde se han
+          superado los tiempos objetivos de resolución de los ANS
+        kind: Penalizador
+        class: Negocio
+        reportable: false
     SPU_IO_K14_evidence:
       schema:
         description: Incidencias pendientes de resolver con más de una semana
-        type: bool
+        type: string
       parameters:
         deadline:
           schema:
@@ -293,14 +360,22 @@ terms:
         description: Porcentaje de incidencias pendientes de resolver con más de una semana
         type: double
         unit: "%"
-      computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K14/"
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/SPU_IO_K14/"
       scope:
         SPU:
           $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Porcentaje incidencias pendientes de resolver > 1 semana
+        description: >-
+          Porcentaje de incidencias pendientes de resolver con más de una semana
+          desde que fueron registradas.
+        kind: Penalizador
+        class: Negocio
+        reportable: false
     SPU_IO_K18_evidence:
       schema:
         description: Factor de rotación del personal
-        type: bool
+        type: string
       parameters:
         deadline:
           schema:
@@ -315,13 +390,25 @@ terms:
       schema:
         description: Factor de rotación del personal
         type: int32
-      computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K18/"
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/SPU_IO_K18/"
+      scope:
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
       log:
-        $ref: "#/context/definitions/logs/jira"
+        jira:
+          $ref: "#/context/definitions/logs/jira"
+      metadata:
+        name: Factor de rotación del personal (FRP)
+        description: >-
+          Número de cambios de personal que no se han solicitado a la empresa
+          adjudicataria en el período de medida establecido.
+        kind: Penalizador
+        class: Negocio
+        reportable: false
     SPU_IO_K20_evidence:
       schema:
         description: Tiempo de parada respecto del total SLA
-        type: bool
+        type: string
       parameters:
         deadline:
           schema:
@@ -337,11 +424,20 @@ terms:
         description: Porcentaje tiempo de parada respecto del total SLA
         type: double
         unit: "%"
-      computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K20/"
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/SPU_IO_K20/"
+      scope:
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Porcentaje tiempo de parada respecto del total SLA
+        description: Tiempo que están las incidencias paradas respecto al tiempo total disponible por el proveedor
+        kind: Penalizador
+        class: Negocio
+        reportable: false
     SPU_IO_K80_evidence:
       schema:
         description: Incidencias nuevas dadas de alta
-        type: bool
+        type: string
       parameters:
         deadline:
           schema:
@@ -356,7 +452,16 @@ terms:
       schema:
         description: Numero de incidencias nuevas dadas de alta
         type: number
-      computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K80/"
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/SPU_IO_K80/"
+      scope:
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Demanda nueva solicitada de incidencias
+        description: Numero de incidencias nuevas dadas de alta
+        kind: Penalizador
+        class: Negocio
+        reportable: true
     SPU_IO_K81_evidence:
       schema:
         description: Incidencias resueltas
@@ -375,9 +480,18 @@ terms:
       schema:
         description: Numero de incidencias resueltas
         type: number
-      computer: "http://localhost:8081/api/v1/indicators/SPU_IO_K81/"
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/SPU_IO_K81/"
+      scope:
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Demanda resuelta incidencias
+        description: Numero de incidencias resueltas en el periodo
+        kind: Penalizador
+        class: Negocio
+        reportable: true
   guarantees:
-    - id: guarantee_SPU_IO_K01
+    - id: SPU_IO_K01
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -388,23 +502,29 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - scope:
-            priority: P3
+        - scope: 
+            priority: P1
             node: '*'
           objective: SPU_IO_K01 >= 95.00
           with:
             SPU_IO_K01:
-              deadline: 2
+              deadline: "<= 2"
               schedule: "L-DT00:00-23:59"
           window:
             type: static
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K01_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K01_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K01_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
@@ -416,23 +536,29 @@ terms:
                   condition: "SPU_IO_K01 >= 85.00 && SPU_IO_K01 < 90.00"
                 - value: "-5"
                   condition: "SPU_IO_K01 >= 0 && SPU_IO_K01 < 85.00"
-        - scope:
+        - scope: 
             priority: P2
             node: '*'
           objective: SPU_IO_K01 >= 90.00
           with:
             SPU_IO_K01:
-              deadline: 4
+              deadline: "<= 4"
               schedule: "L-VT08:00-20:00"
           window:
             type: static
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K01_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K01_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K01_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
@@ -444,23 +570,29 @@ terms:
                   condition: "SPU_IO_K01 >= 80.00 && SPU_IO_K01 < 85.00"
                 - value: "-3"
                   condition: "SPU_IO_K01 >= 0 && SPU_IO_K01 < 80.00"
-        - scope:
-            priority: P1
+        - scope: 
+            priority: P3
             node: '*'
           objective: SPU_IO_K01 >= 82.50
           with:
             SPU_IO_K01:
-              deadline: 17
+              deadline: "<= 17"
               schedule: "L-VT08:00-20:00"
           window:
             type: static
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K01_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K01_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K01_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
@@ -472,7 +604,7 @@ terms:
                   condition: "SPU_IO_K01 >= 72.50 && SPU_IO_K01 < 77.50"
                 - value: "-1.75"
                   condition: "SPU_IO_K01 >= 0 && SPU_IO_K01 < 72.50"
-    - id: guarantee_SPU_IO_K05
+    - id: SPU_IO_K05
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -484,9 +616,7 @@ terms:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
         - scope:
-            priority: '*'
             node: '*'
-            serviceLine: '*'
           objective: SPU_IO_K05 <= 1.00
           with:
             SPU_IO_K05: {}
@@ -494,11 +624,6 @@ terms:
             type: static
             period: monthly
             initial: 20141016
-          evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K01_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
           penalties:
             - over:
                 porcentajePTOT:
@@ -506,7 +631,7 @@ terms:
               of:
                 - value: "-1"
                   condition: "SPU_IO_K05 >= 1.00 && SPU_IO_K05 <= 100.00"
-    - id: guarantee_SPU_IO_K06
+    - id: SPU_IO_K06
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -517,8 +642,8 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - scope:
-            priority: P3
+        - scope: 
+            priority: P1
             node: '*'
           objective: SPU_IO_K06 <= 1.00
           with:
@@ -528,10 +653,16 @@ terms:
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K06_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K06_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K06_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
@@ -543,7 +674,7 @@ terms:
                   condition: "SPU_IO_K06 > 2.00 && SPU_IO_K06 <= 3.00"
                 - value: "-5"
                   condition: "SPU_IO_K06  > 3.00 && SPU_IO_K06  <= 100.00"
-        - scope:
+        - scope: 
             priority: P2
             node: '*'
           objective: SPU_IO_K06 <= 2.00
@@ -554,10 +685,16 @@ terms:
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K06_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K06_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K06_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
@@ -569,8 +706,8 @@ terms:
                   condition: "SPU_IO_K06 > 3.00 && SPU_IO_K06 <= 5.00"
                 - value: "-3"
                   condition: "SPU_IO_K06 > 5.00 && SPU_IO_K06 <= 100.00"
-        - scope:
-            priority: P1
+        - scope: 
+            priority: P3
             node: '*'
           objective: SPU_IO_K06 <= 7.50
           with:
@@ -580,10 +717,16 @@ terms:
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K06_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K06_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K06_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
@@ -595,7 +738,7 @@ terms:
                   condition: "SPU_IO_K06 > 11.00 && SPU_IO_K06 <= 14.50"
                 - value: "-1.75"
                   condition: "SPU_IO_K06 > 14.50 && SPU_IO_K06 <= 100.00"
-    - id: guarantee_SPU_IO_K06_t
+    - id: SPU_IO_K06_t
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -608,8 +751,8 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - scope:
-            priority: P3
+        - scope: 
+            priority: P1
             node: '*'
           objective: SPU_IO_K06_t <= 1.00
           with:
@@ -619,10 +762,16 @@ terms:
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K06_t_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K06_t_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K06_t_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
@@ -634,7 +783,7 @@ terms:
                   condition: "SPU_IO_K06_t > 2.00 && SPU_IO_K06_t <= 3.00"
                 - value: "-5"
                   condition: "SPU_IO_K06_t  > 3.00 && SPU_IO_K06_t  <= 100.00"
-        - scope:
+        - scope: 
             priority: P2
             node: '*'
           objective: SPU_IO_K06_t <= 2.00
@@ -645,10 +794,16 @@ terms:
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K06_t_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K06_t_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K06_t_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
@@ -660,8 +815,8 @@ terms:
                   condition: "SPU_IO_K06_t > 3.00 && SPU_IO_K06_t <= 5.00"
                 - value: "-3"
                   condition: "SPU_IO_K06_t > 5.00 && SPU_IO_K06_t <= 100.00"
-        - scope:
-            priority: P1
+        - scope: 
+            priority: P3
             node: '*'
           objective: SPU_IO_K06_t <= 7.50
           with:
@@ -671,10 +826,16 @@ terms:
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K06_t_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K06_t_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K06_t_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
@@ -686,7 +847,7 @@ terms:
                   condition: "SPU_IO_K06_t > 11.00 && SPU_IO_K06_t <= 14.50"
                 - value: "-1.75"
                   condition: "SPU_IO_K06_t > 14.50 && SPU_IO_K06_t <= 100.00"
-    - id: guarantee_SPU_IO_K06_C
+    - id: SPU_IO_K06_C
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -699,7 +860,7 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - scope:
+        - scope: 
             priority: '*'
             node: '*'
             center: '*'
@@ -718,7 +879,7 @@ terms:
               of:
                 - value: "-0.5"
                   condition: "SPU_IO_K06_current_penalty * SPU_IO_K06_last_penalty > 0"
-    - id: guarantee_SPU_IO_K10
+    - id: SPU_IO_K10
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -731,79 +892,97 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - scope:
+        - scope: 
             priority: P3
             node: '*'
           objective: SPU_IO_K10 <= 1.00
           with:
             SPU_IO_K10:
-              deadline: 2
+              deadline: "<= 2"
               schedule: "L-DT00:00-23:59"
           window:
             type: static
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K10_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K10_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K10_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
                   $ref: "#/context/definitions/schemas/porcentajePTOT"
               of:
                 - value: "-2"
-                  condition: "SPU_IO_K10 > 1.00 && SPU_IO_K10 <= 100.00"
-        - scope:
+                  condition: "SPU_IO_K10 >= 0.00 && SPU_IO_K10 <= 1.00"
+        - scope: 
             priority: P2
             node: '*'
           objective: SPU_IO_K10 <= 2.00
           with:
             SPU_IO_K10:
-              deadline: 4
+              deadline: "<= 4"
               schedule: "L-VT08:00-20:00"
           window:
             type: static
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K10_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K10_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K10_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
                   $ref: "#/context/definitions/schemas/porcentajePTOT"
               of:
                 - value: "-1.5"
-                  condition: "SPU_IO_K10 > 2.00 && SPU_IO_K10 <= 100.00"
-        - scope:
-            priority: P1
+                  condition: "SPU_IO_K10 >= 0.00 && SPU_IO_K10 <= 2.00"
+        - scope: 
+            priority: P3
             node: '*'
           objective: SPU_IO_K10 <= 7.50
           with:
             SPU_IO_K10:
-              deadline: 17
+              deadline: "<= 17"
               schedule: "L-VT08:00-20:00"
           window:
             type: static
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K10_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K10_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K10_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
                   $ref: "#/context/definitions/schemas/porcentajePTOT"
               of:
                 - value: "-1"
-                  condition: "SPU_IO_K10 >= 7.51 && SPU_IO_K10 <= 100.00"
-    - id: guarantee_SPU_IO_K14
+                  condition: "SPU_IO_K10 >= 0.00 && SPU_IO_K10 <= 7.50"
+    - id: SPU_IO_K14
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -816,22 +995,29 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - scope:
-            priority: P3
+        - scope: 
+            priority: P1
             node: '*'
           objective: SPU_IO_K14 <= 0.00
           with:
             SPU_IO_K14:
+              deadline: "<= 7"
               schedule: "L-DT00:00-23:59"
           window:
             type: static
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K14_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K14_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K14_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
@@ -839,22 +1025,29 @@ terms:
               of:
                 - value: "-2"
                   condition: "SPU_IO_K14 > 0.00 && SPU_IO_K14 <= 100.00"
-        - scope:
+        - scope: 
             priority: P2
             node: '*'
           objective: SPU_IO_K14 <= 0.00
           with:
             SPU_IO_K14:
+              deadline: "<= 5"
               schedule: "L-VT08:00-20:00"
           window:
             type: static
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K14_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K14_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K14_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
@@ -862,22 +1055,29 @@ terms:
               of:
                 - value: "-1.5"
                   condition: "SPU_IO_K14 > 0.00 && SPU_IO_K14 <= 100.00"
-        - scope:
-            priority: P1
+        - scope: 
+            priority: P3
             node: '*'
           objective: SPU_IO_K14 <= 8.50
           with:
             SPU_IO_K14:
+              deadline: "<= 5"
               schedule: "L-VT08:00-20:00"
           window:
             type: static
             period: monthly
             initial: 20141016
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K14_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K14_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K14_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
@@ -885,10 +1085,12 @@ terms:
               of:
                 - value: "-1"
                   condition: "SPU_IO_K14 > 8.50 && SPU_IO_K14 <= 100.00"
-    - id: guarantee_SPU_IO_K18
+    - id: SPU_IO_K18
       scope:
         node:
           $ref: "#/context/definitions/scopes/SPU/node"
+        nodeETC:
+          $ref: "#/context/definitions/scopes/SPU/nodeETC"
         serviceLine:
           $ref: "#/context/definitions/scopes/SPU/serviceLine"
         activity:
@@ -922,13 +1124,13 @@ terms:
             period: monthly
             initial: 20141016
           penalties:
-            - over:
-                porcentajePTOT:
-                  $ref: "#/context/definitions/schemas/porcentajePTOT"
-              of:
-                - value: "-1"
-                  condition: "SPU_IO_K18 >= 3"
-    - id: guarantee_SPU_IO_K20
+              - over:
+                  porcentajePTOT:
+                    $ref: "#/context/definitions/schemas/porcentajePTOT"
+                of:
+                  - value: "-1"
+                    condition: "SPU_IO_K18 >= 3"
+    - id: SPU_IO_K20
       scope:
         priority:
           $ref: "#/context/definitions/scopes/SPU/priority"
@@ -939,8 +1141,8 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - scope:
-            priority: P3
+        - scope: 
+            priority: P1
             node: '*'
           objective: SPU_IO_K20 <= 30.00
           with:
@@ -951,10 +1153,16 @@ terms:
             period: monthly
             initial: 20151116
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K20_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K20_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K20_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
@@ -962,7 +1170,7 @@ terms:
               of:
                 - value: "-((SPU_IO_K20 - 30.00) / 10.00) * 30.00"
                   condition: "SPU_IO_K20 > 30.00 && SPU_IO_K20 <= 100.00"
-        - scope:
+        - scope: 
             priority: P2
             node: '*'
           objective: SPU_IO_K20 <= 50.00
@@ -974,10 +1182,16 @@ terms:
             period: monthly
             initial: 20151116
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K20_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K20_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K20_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:
@@ -985,8 +1199,8 @@ terms:
               of:
                 - value: "-((SPU_IO_K20 - 50.00) / 10.00) * 20.00"
                   condition: "SPU_IO_K20 > 50.00 && SPU_IO_K20 <= 100.00"
-        - scope:
-            priority: P1
+        - scope: 
+            priority: P3
             node: '*'
           objective: SPU_IO_K20 <= 70.00
           with:
@@ -997,10 +1211,16 @@ terms:
             period: monthly
             initial: 20151116
           evidences:
-            - $ref: "#/terms/metrics/SPU_IO_K20_evidence"
-            - $ref: "#/terms/metrics/issue_init"
-            - $ref: "#/terms/metrics/issue_end"
-            - $ref: "#/terms/metrics/issue_duration"
+            - SPU_IO_K20_evidence:
+                $ref: "#/terms/metrics/SPU_IO_K20_evidence"
+            - issue_start:
+                $ref: "#/terms/metrics/issue_start"
+            - issue_end:
+                $ref: "#/terms/metrics/issue_end"
+            - issue_duration:
+                $ref: "#/terms/metrics/issue_duration"
+            - issue_subject:
+                $ref: "#/terms/metrics/issue_subject"
           penalties:
             - over:
                 porcentajePTOT:

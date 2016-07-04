@@ -119,7 +119,7 @@ terms:
         description: Duracion de una incidencia
         type: string
         unit: hours
-      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_subject/"
+      computer: "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_duration/"
     SPU_IO_K01_evidence:
       schema:
         description: Incidencias resueltas en plazo
