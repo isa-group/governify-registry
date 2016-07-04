@@ -11,6 +11,7 @@ var config = require('../config');
 var logger = config.logger;
 var errorModel = require('../errors/index.js').errorModel;
 var stateManager = require('./stateManager.js');
+var utils = require('../utils/utils.js');
 
 module.exports = {
     processAll: processGuarantees,
@@ -145,12 +146,13 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                                 period: metricValue.period
                             }
 
-                            var tsIndex = timedScopes.indexOf(ts);
+                            var tsIndex = utils.containsObject(ts,timedScopes);
 
                             if (tsIndex == -1) {
                                 tsIndex = timedScopes.push(ts) - 1;
+                                logger.guarantees('New TimedScope with index: ', tsIndex);
                             } else {
-                                logger.debug('####################################################################################');
+                                logger.guarantees('TimedScope already exists in array index: ', tsIndex);
                             }
                             if (metricValues[tsIndex] == null)
                                 metricValues[tsIndex] = {};

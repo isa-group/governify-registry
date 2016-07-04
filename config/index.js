@@ -59,7 +59,7 @@ module.exports.logger = new winston.Logger({
     colors: logConfig.colors,
     transports: [
         new winston.transports.File({
-            level: 'info',
+            level: 'debug',
             filename: 'logs.log',
             handleExceptions: true,
             json: false,
@@ -68,7 +68,7 @@ module.exports.logger = new winston.Logger({
             colorize: false
         }),
         new winston.transports.Console({
-            level: 'info',
+            level: 'debug',
             handleExceptions: true,
             json: false,
             colorize: true,

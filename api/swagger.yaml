@@ -73,7 +73,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
     post:
       tags:
       - "agreement-registry"
@@ -93,7 +93,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}:
     get:
       tags:
@@ -115,7 +115,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
     delete:
       tags:
       - "agreement-registry"
@@ -136,7 +136,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/context:
     get:
       tags:
@@ -158,7 +158,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/context/definitions:
     get:
       tags:
@@ -180,7 +180,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/context/definitions/logs:
     get:
       tags:
@@ -204,7 +204,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/context/definitions/schemas:
     get:
       tags:
@@ -228,7 +228,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/context/definitions/scopes:
     get:
       tags:
@@ -250,7 +250,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/context/infrastructure:
     get:
       tags:
@@ -272,7 +272,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/context/validity:
     get:
       tags:
@@ -294,7 +294,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/terms:
     get:
       tags:
@@ -316,7 +316,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/terms/guarantees:
     get:
       tags:
@@ -340,7 +340,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/terms/guarantees/{guarantee}:
     get:
       tags:
@@ -367,7 +367,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/terms/metrics:
     get:
       tags:
@@ -391,7 +391,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/terms/metrics/{metric}:
     get:
       tags:
@@ -418,7 +418,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/terms/pricing:
     get:
       tags:
@@ -440,7 +440,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/terms/pricing/billing:
     get:
       tags:
@@ -462,7 +462,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/terms/pricing/billing/penalties:
     get:
       tags:
@@ -486,7 +486,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/terms/pricing/billing/penalties/{penalty}:
     get:
       tags:
@@ -513,7 +513,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/terms/pricing/billing/rewards:
     get:
       tags:
@@ -537,7 +537,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/terms/pricing/billing/rewards/{reward}:
     get:
       tags:
@@ -564,7 +564,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/terms/quotas:
     get:
       tags:
@@ -586,7 +586,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /agreements/{agreement}/terms/rates:
     get:
       tags:
@@ -608,7 +608,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Agreementregistry"
+      x-swagger-router-controller: "AgreementRegistry"
   /states:
     get:
       tags:
@@ -642,7 +642,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Stateregistry"
+      x-swagger-router-controller: "StateRegistry"
   /states/{agreement}:
     get:
       tags:
@@ -684,7 +684,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Stateregistry"
+      x-swagger-router-controller: "StateRegistry"
   /states/{agreement}/guarantees:
     get:
       tags:
@@ -718,7 +718,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Stateregistry"
+      x-swagger-router-controller: "StateRegistry"
   /states/{agreement}/guarantees/{guarantee}:
     get:
       tags:
@@ -757,7 +757,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Stateregistry"
+      x-swagger-router-controller: "StateRegistry"
   /states/{agreement}/metrics:
     post:
       tags:
@@ -791,7 +791,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Stateregistry"
+      x-swagger-router-controller: "StateRegistry"
   /states/{agreement}/metrics/{metric}:
     post:
       tags:
@@ -825,7 +825,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Stateregistry"
+      x-swagger-router-controller: "StateRegistry"
     put:
       tags:
       - "state-registry"
@@ -857,7 +857,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Stateregistry"
+      x-swagger-router-controller: "StateRegistry"
   /states/{agreement}/metrics/{metric}/history:
     post:
       tags:
@@ -896,7 +896,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Stateregistry"
+      x-swagger-router-controller: "StateRegistry"
   /states/{agreement}/pricing:
     get:
       tags:
@@ -918,13 +918,13 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Stateregistry"
+      x-swagger-router-controller: "StateRegistry"
   /states/{agreementId}/pricing/billing/penalties:
     post:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "statesAgreementPricingBillingPenaltiePOST"
+      operationId: "statesAgreementPricingBillingPenaltiesPOST"
       parameters:
       - name: "agreementId"
         in: "path"
@@ -949,7 +949,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Stateregistry"
+      x-swagger-router-controller: "StateRegistry"
   /states/{agreement}/quotas:
     get:
       tags:
@@ -971,7 +971,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Stateregistry"
+      x-swagger-router-controller: "StateRegistry"
   /states/{agreement}/quotas/{quota}:
     get:
       tags:
@@ -998,7 +998,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Stateregistry"
+      x-swagger-router-controller: "StateRegistry"
 
   /states/{agreement}/rates:
     get:
@@ -1021,7 +1021,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
-      x-swagger-router-controller: "Stateregistry"
+      x-swagger-router-controller: "StateRegistry"
   /states/{agreement}/rates/{rate}:
     get:
       tags:
@@ -1044,7 +1044,7 @@ paths:
           description: "Success"
           schema:
             $ref: "#/definitions/rate_state"
-      x-swagger-router-controller: "Stateregistry"
+      x-swagger-router-controller: "StateRegistry"
 
 definitions:
   agreement:

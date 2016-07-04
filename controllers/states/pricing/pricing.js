@@ -9,7 +9,7 @@ var stateManager = require('../../../stateManager/stateManager.js')
 var Promise = require("bluebird");
 var request = require("request");
 
-module.exports.PricingBillingPenaltiePOST = function (req, res, next){
+module.exports.PricingBillingPenaltiesPOST = function (req, res, next){
       var args = req.swagger.params;
       var agreementId = args.agreementId.value;
       var query = args.query.value;

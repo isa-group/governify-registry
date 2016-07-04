@@ -61,15 +61,15 @@ context:
     logs:
       casdm:
         default: true
-        uri: "http://logs-devel.sas.governify.io/api/v10.12/ca-sdm"
-        stateUri: "http://logs-devel.sas.governify.io/api/v10.12/ca-sdm/count"
+        uri: "http://logs.sas-devel.governify.io/api/v10.12/ca-sdm"
+        stateUri: "http://logs.sas-devel.governify.io/api/v10.12/ca-sdm/count"
         scopes:
           SPU:
             priority: priority
             node: NODO
             center: CENTRO
       jira:
-        uri: "http://logs-devel.sas-devel.governify.io/api/v01.03/jira"
+        uri: "http://logs.sas-devel.governify.io/api/v01.03/jira"
         scopes:
           SPU:
             node: Nodo

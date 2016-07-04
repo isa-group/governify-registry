@@ -8,7 +8,7 @@ var agreementManager = require('governify-agreement-manager');
 var stateManager = agreementManager.operations.states;
 
 var agreementState = require('../states/agreements/agreements');
-var stateRegistySrv = require('../StateregistryService');
+var stateRegistySrv = require('../StateRegistryService');
 
 var fs = require('fs');
 var errorModel = require('../../errors/index.js').errorModel;

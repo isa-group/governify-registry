@@ -79,8 +79,8 @@
       "logs": {
         "casdm": {
           "default": true,
-          "uri": "http://logs-devel.sas.governify.io/api/v10.12/ca-sdm",
-          "stateUri": "http://logs-devel.sas.governify.io/api/v10.12/ca-sdm/count",
+          "uri": "http://logs.sas-devel.governify.io/api/v10.12/ca-sdm",
+          "stateUri": "http://logs.sas-devel.governify.io/api/v10.12/ca-sdm/count",
           "scopes": {
             "SPU": {
               "priority": "priority",
@@ -90,7 +90,7 @@
           }
         },
         "jira": {
-          "uri": "http://logs-devel.sas-devel.governify.io/api/v01.03/jira",
+          "uri": "http://logs.sas-devel.governify.io/api/v01.03/jira",
           "scopes": {
             "SPU": {
               "node": "Nodo"
@@ -129,35 +129,35 @@
           "description": "Fecha de Inicio de incidencia",
           "type": "string"
         },
-        "computer": "http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_start/"
+        "computer": "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_start/"
       },
       "issue_end": {
         "schema": {
           "description": "Fecha de Inicio de incidencia",
           "type": "string"
         },
-        "computer": "http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_end/"
+        "computer": "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_end/"
       },
       "issue_typology": {
         "schema": {
           "description": "Tipologia de la incidencia",
           "type": "string"
         },
-        "computer": "http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_typology/"
+        "computer": "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_typology/"
       },
       "issue_source": {
         "schema": {
           "description": "Origen de la incidencia",
           "type": "string"
         },
-        "computer": "http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_source/"
+        "computer": "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_source/"
       },
       "issue_subject": {
         "schema": {
           "description": "Asunto de la incidencia",
           "type": "string"
         },
-        "computer": "http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_subject/"
+        "computer": "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_subject/"
       },
       "issue_duration": {
         "schema": {
@@ -165,7 +165,7 @@
           "type": "string",
           "unit": "hours"
         },
-        "computer": "http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_subject/"
+        "computer": "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/issue_subject/"
       },
       "SPU_IO_K01_evidence": {
         "schema": {
@@ -196,7 +196,7 @@
           "type": "double",
           "unit": "%"
         },
-        "computer": "http://ppinot.computer.sas.governify.io/api/v1/indicators/SPU_IO_K01/",
+        "computer": "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/SPU_IO_K01/",
         "parameters": {
           "deadline": {
             "schema": {

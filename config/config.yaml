@@ -1,11 +1,11 @@
 ---
 development:
   database:
-    url: "mongodb://dockers/governify-registry"
-  port: 8080
+    url: "mongodb://sas-devel.governify.io:27017/prosas"
+  port: 8081
   logfile: "./logs/dev.log"
 production:
   database:
     url: "mongodb://sas-devel.governify.io:27017/prosas"
-  port: 8080
+  port: 8081
   logfile: "./logs/prod.log"
