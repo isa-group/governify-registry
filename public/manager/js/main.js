@@ -107,10 +107,14 @@ function constructSingleOption(value, text, disabled) {
 }
 
 function getAgreementContent(selectedAgVal, registryEndpoint, deleteIfExists) {
-        
+
     $.ajax({
         url: selectedAgVal,
-        type: "GET"
+        type: "GET",
+         beforeSend: function (request)
+            {
+                request.setRequestHeader("Content-Type", "text/plain; charset=utf-8");
+            }
     }).done(function (res) {
         var agreement = jsyaml.load(res);
         if (!deleteIfExists.val()) {
