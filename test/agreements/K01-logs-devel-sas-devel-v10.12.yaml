@@ -5,7 +5,7 @@ context:
   provider: Accenture
   consumer: SAS
   validity:
-    initial: 20141016
+    initial: 2014-10-16
   infrastructure:
     designer: "http://designer.sas-devel.governify.io/"
     portal: "http://portal.sas-devel.governify.io/v1/"
@@ -61,8 +61,8 @@ context:
     logs:
       casdm:
         default: true
-        uri: "http://logs.sas-devel.governify.io/api/v10.12/ca-sdm"
-        stateUri: "http://logs.sas-devel.governify.io/api/v10.12/ca-sdm/count"
+        uri: "http://logs-devel.sas-devel.governify.io/api/v10.12/ca-sdm"
+        stateUri: "http://logs-devel.sas-devel.governify.io/api/v10.12/ca-sdm/count"
         scopes:
           SPU:
             priority: priority
@@ -134,6 +134,20 @@ terms:
       scope:
         SPU:
           $ref: "#/context/definitions/scopes/SPU"
+    SPU_IO_K00:
+      schema:
+        description: Penalizacion total del periodo
+        type: double
+      computer: "http://registry.sas.governify.io/states/SPU/pricing/billing/penalty"
+      scope:
+        SPU:
+          $ref: "#/context/definitions/scopes/SPU"
+      metadata:
+        name: Penalización total del periodo
+        description: Penalización a aplicar en la factura del periodo.
+        kind: Penalizador
+        class: Totalizador
+        reportable: false
     SPU_IO_K01:
       schema:
         description: Porcentaje incidencias resueltas en plazo
@@ -179,7 +193,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: 20141016
+            initial: 2014-10-16
           evidences:
             - SPU_IO_K01_evidence:
                 $ref: "#/terms/metrics/SPU_IO_K01_evidence"
@@ -217,7 +231,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: 20141016
+            initial: 2014-10-16
           evidences:
             - SPU_IO_K01_evidence:
                 $ref: "#/terms/metrics/SPU_IO_K01_evidence"
@@ -255,7 +269,7 @@ terms:
           window:
             type: static
             period: monthly
-            initial: 20141016
+            initial: 2014-10-16
           evidences:
             - SPU_IO_K01_evidence:
                 $ref: "#/terms/metrics/SPU_IO_K01_evidence"

@@ -76,7 +76,7 @@ terms:
   pricing:
     billing:
       period: "monthly"
-      initial: "20160512T103536Z"
+      initial: "2016-05-12T10:35:36Z"
       penalties:
         - over:
             porcentajePTOT:
@@ -213,7 +213,7 @@ terms:
       metadata:
         name: Porcentaje incidencias sin categorizar el motivo de cierre
         description: >-
-          Porcentaje de incidencias cerradas sin indicar un motivo de cierre concreto y 
+          Porcentaje de incidencias cerradas sin indicar un motivo de cierre concreto y
           categorizado que muestre la solución aplicada para la incidencia.
         kind: Penalizador
         class: Negocio
@@ -487,7 +487,7 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - scope: 
+        - scope:
             priority: P3
             node: '*'
           objective: SPU_IO_K01 >= 95.00
@@ -515,7 +515,7 @@ terms:
                   condition: "SPU_IO_K01 >= 85.00 && SPU_IO_K01 < 90.00"
                 - value: "-5"
                   condition: "SPU_IO_K01 >= 0 && SPU_IO_K01 < 85.00"
-        - scope: 
+        - scope:
             priority: P2
             node: '*'
           objective: SPU_IO_K01 >= 90.00
@@ -543,7 +543,7 @@ terms:
                   condition: "SPU_IO_K01 >= 80.00 && SPU_IO_K01 < 85.00"
                 - value: "-3"
                   condition: "SPU_IO_K01 >= 0 && SPU_IO_K01 < 80.00"
-        - scope: 
+        - scope:
             priority: P1
             node: '*'
           objective: SPU_IO_K01 >= 82.50
@@ -609,7 +609,7 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - scope: 
+        - scope:
             priority: P3
             node: '*'
           objective: SPU_IO_K06 <= 1.00
@@ -635,7 +635,7 @@ terms:
                   condition: "SPU_IO_K06 > 2.00 && SPU_IO_K06 <= 3.00"
                 - value: "-5"
                   condition: "SPU_IO_K06  > 3.00 && SPU_IO_K06  <= 100.00"
-        - scope: 
+        - scope:
             priority: P2
             node: '*'
           objective: SPU_IO_K06 <= 2.00
@@ -661,7 +661,7 @@ terms:
                   condition: "SPU_IO_K06 > 3.00 && SPU_IO_K06 <= 5.00"
                 - value: "-3"
                   condition: "SPU_IO_K06 > 5.00 && SPU_IO_K06 <= 100.00"
-        - scope: 
+        - scope:
             priority: P1
             node: '*'
           objective: SPU_IO_K06 <= 7.50
@@ -700,7 +700,7 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - scope: 
+        - scope:
             priority: P3
             node: '*'
           objective: SPU_IO_K06_t <= 1.00
@@ -726,7 +726,7 @@ terms:
                   condition: "SPU_IO_K06_t > 2.00 && SPU_IO_K06_t <= 3.00"
                 - value: "-5"
                   condition: "SPU_IO_K06_t  > 3.00 && SPU_IO_K06_t  <= 100.00"
-        - scope: 
+        - scope:
             priority: P2
             node: '*'
           objective: SPU_IO_K06_t <= 2.00
@@ -752,7 +752,7 @@ terms:
                   condition: "SPU_IO_K06_t > 3.00 && SPU_IO_K06_t <= 5.00"
                 - value: "-3"
                   condition: "SPU_IO_K06_t > 5.00 && SPU_IO_K06_t <= 100.00"
-        - scope: 
+        - scope:
             priority: P1
             node: '*'
           objective: SPU_IO_K06_t <= 7.50
@@ -791,7 +791,7 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - scope: 
+        - scope:
             priority: '*'
             node: '*'
             center: '*'
@@ -823,7 +823,7 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - scope: 
+        - scope:
             priority: P3
             node: '*'
           objective: SPU_IO_K10 <= 1.00
@@ -847,7 +847,7 @@ terms:
               of:
                 - value: "-2"
                   condition: "SPU_IO_K10 >= 0.00 && SPU_IO_K10 <= 1.00"
-        - scope: 
+        - scope:
             priority: P2
             node: '*'
           objective: SPU_IO_K10 <= 2.00
@@ -871,7 +871,7 @@ terms:
               of:
                 - value: "-1.5"
                   condition: "SPU_IO_K10 >= 0.00 && SPU_IO_K10 <= 2.00"
-        - scope: 
+        - scope:
             priority: P1
             node: '*'
           objective: SPU_IO_K10 <= 7.50
@@ -908,7 +908,7 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - scope: 
+        - scope:
             priority: P3
             node: '*'
           objective: SPU_IO_K14 <= 0.00
@@ -931,7 +931,7 @@ terms:
               of:
                 - value: "-2"
                   condition: "SPU_IO_K14 > 0.00 && SPU_IO_K14 <= 100.00"
-        - scope: 
+        - scope:
             priority: P2
             node: '*'
           objective: SPU_IO_K14 <= 0.00
@@ -954,7 +954,7 @@ terms:
               of:
                 - value: "-1.5"
                   condition: "SPU_IO_K14 > 0.00 && SPU_IO_K14 <= 100.00"
-        - scope: 
+        - scope:
             priority: P1
             node: '*'
           objective: SPU_IO_K14 <= 8.50
@@ -1031,7 +1031,7 @@ terms:
         activity:
           $ref: "#/context/definitions/scopes/SPU/activity"
       of:
-        - scope: 
+        - scope:
             priority: P3
             node: '*'
           objective: SPU_IO_K20 <= 30.00
@@ -1054,7 +1054,7 @@ terms:
               of:
                 - value: "-((SPU_IO_K20 - 30.00) / 10.00) * 30.00"
                   condition: "SPU_IO_K20 > 30.00 && SPU_IO_K20 <= 100.00"
-        - scope: 
+        - scope:
             priority: P2
             node: '*'
           objective: SPU_IO_K20 <= 50.00
@@ -1077,7 +1077,7 @@ terms:
               of:
                 - value: "-((SPU_IO_K20 - 50.00) / 10.00) * 20.00"
                   condition: "SPU_IO_K20 > 50.00 && SPU_IO_K20 <= 100.00"
-        - scope: 
+        - scope:
             priority: P1
             node: '*'
           objective: SPU_IO_K20 <= 70.00

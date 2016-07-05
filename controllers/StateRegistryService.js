@@ -19,6 +19,8 @@ module.exports = {
 
     statesAgreementGuaranteesGET: states.guarantees.guaranteesGET,
     statesAgreementGuaranteesGuaranteeGET: states.guarantees.guaranteeIdGET,
+    statesAgreementGuaranteesGuaranteePenaltiyPOST: states.guarantees.guaranteeIdPenaltyPOST,
+
 // Quotas controllers
 
     statesAgreementQuotasGET: states.quotas.quotasGET,

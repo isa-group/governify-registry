@@ -22,6 +22,10 @@ module.exports.statesAgreementGuaranteesGuaranteeGET = function statesAgreementG
   Stateregistry.statesAgreementGuaranteesGuaranteeGET(req.swagger.params, res, next);
 };
 
+module.exports.statesAgreementGuaranteesGuaranteePenaltiyPOST = function statesAgreementGuaranteesGuaranteePenaltiyPOST (req, res, next) {
+  Stateregistry.statesAgreementGuaranteesGuaranteePenaltiyPOST(req.swagger.params, res, next);
+};
+
 module.exports.statesAgreementMetricsPOST = function statesAgreementMetricsPOST (req, res, next) {
   Stateregistry.statesAgreementMetricsPOST(req, res, next);
 };

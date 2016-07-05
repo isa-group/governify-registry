@@ -7,7 +7,7 @@ var stateManager = require('../../../stateManager/stateManager.js')
 var fs = require('fs');
 var errorModel = require('../../../errors/index.js').errorModel;
 var logger = config.logger;
-
+var Promise = require("bluebird");
 
 module.exports.guaranteesGET = function(args, res, next) {
     /**
@@ -61,7 +61,7 @@ module.exports.guaranteeIdGET = function(args, res, next) {
      * agreement (String)
      * guarantee (String)
      **/
-    logger.info("New request to GET guarantee");
+    logger.ctlState("New request to GET guarantee");
     var agreementId = args.agreement.value;
     var guaranteeId = args.guarantee.value;
 
@@ -82,4 +82,83 @@ module.exports.guaranteeIdGET = function(args, res, next) {
         logger.error(err);
         res.status(500).json(new errorModel(500, err));
     });
+}
+
+module.exports.guaranteeIdPenaltyPOST = function (args, res, next){
+    var guaranteeId = args.guarantee.value;
+    var agreementId = args.agreement.value;
+    var query = args.query.value;
+
+    logger.ctlState("New request to GET penalty of " + guaranteeId);
+
+    var offset = query.parameters.offset;
+    var periods = new getPeriods(query.window, offset);
+
+    console.log(periods);
+
+    stateManager({
+      id: agreementId
+    }).then((manager) => {
+
+        var resul = [];
+        Promise.each(periods, (element)=>{
+            var p = {
+                from: moment(element.from).subtract(Math.abs(offset), "months").format("YYYY-MM-DD"),
+                to: moment(element.to).subtract(Math.abs(offset), "months").format("YYYY-MM-DD")
+            };
+            return manager.get('guarantees', {
+                  guarantee: guaranteeId,
+                  scope: query.scope,
+                  period: p //,
+                //  window: query.window
+              }).then(function(success) {
+                  var ret = null;
+                  success.forEach((e)=>{
+                      if(moment(e.period.from).isSameOrAfter(moment(p.from)) && moment(e.period.to).isSameOrBefore(moment(p.to)) )
+                        ret = e;
+                  });
+                  if(ret)
+                    resul.push(new penaltyMetric( query.scope, query.parameters, element, manager.current(ret).penalties ));
+
+              }, function(err) {
+                  logger.error(err);
+//res.status(500).json(new errorModel(500, err));
+              });
+
+        }).then((result)=>{
+            res.json(resul);
+        }, (err)=>{
+            logger.error(err);
+            res.status(500).json(new errorModel(500, err));
+        });
+
+    }, (err)=>{
+        logger.error(err);
+        res.status(500).json(new errorModel(500, err));
+    });
+
+
+}
+
+var moment = require('moment');
+
+function getPeriods(window, offset){
+        var periods = [];
+        var Wfrom = moment(window.initial);
+        var Wto = moment();
+        var from = moment(Wfrom), to = moment(Wfrom).add(1, "months").subtract(1, "days");
+        while ( !to || to.isSameOrBefore(Wto) ) {
+            periods.push({from: from.format("YYYY-MM-DD"), to: to.format("YYYY-MM-DD")});
+            from = moment(from).add(1,"months");
+            to = moment(to).add(1, "months");
+        }
+        return periods;
+}
+
+//function
+function penaltyMetric (scope, parameters, period, value){
+    this.scope = scope;
+    this.parameters = parameters;
+    this.period = period;
+    this.value = value;
 }
