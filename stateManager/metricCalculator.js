@@ -115,10 +115,8 @@ function processMetric(agreement, metricId, metricParameters) {
                             var logScopes = Object.keys(log.scopes[scopeId]).map(function(key) {
                                 return log.scopes[scopeId][key];
                             });
-                            logger.warning(logScopes);
                             for (var metricScope in metricState.scope) {
                                 if (logScopes.indexOf(metricScope) > -1) {
-                                    logger.warning(metricScope);
                                     for (var logScope in log.scopes[scopeId]) {
                                         if (log.scopes[scopeId][logScope] === metricScope) {
                                             scope[logScope] = metricState.scope[metricScope];

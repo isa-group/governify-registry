@@ -8,6 +8,7 @@ var jsyaml = require('js-yaml');
 var fs = require('fs');
 var config = require('./config');
 var bodyParser = require('body-parser');
+var cors = require('cors');
 
 // swaggerRouter configuration
 var options = {
@@ -21,6 +22,7 @@ var options = {
 var spec = fs.readFileSync('./api/swagger.yaml', 'utf8');
 var swaggerDoc = jsyaml.safeLoad(spec);
 
+app.use(cors());
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies

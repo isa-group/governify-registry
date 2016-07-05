@@ -12,6 +12,7 @@
     "bluebird": "^3.4.1",
     "body-parser": "^1.15.1",
     "clone": "^1.0.2",
+    "cors": "^2.7.1",
     "deep-diff": "^0.3.4",
     "express": "^4.13.4",
     "governify-agreement-manager": "0.0.6",
