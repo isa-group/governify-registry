@@ -6,7 +6,7 @@
         "provider": "Accenture",
         "consumer": "SAS",
         "validity": {
-            "initial": "2014-10-16T00:00:00.000Z"
+            "initial": "2014-10-16"
         },
         "infrastructure": {
             "designer": "http://designer.sas.governify.io/",
@@ -82,8 +82,8 @@
             "logs": {
                 "casdm": {
                     "default": true,
-                    "uri": "http://logs-devel.sas.governify.io/api/v10.12/ca-sdm",
-                    "stateUri": "http://logs-devel.sas.governify.io/api/v10.12/ca-sdm/count",
+                    "uri": "http://logs-devel.sas-devel.governify.io/api/v10.12/ca-sdm",
+                    "stateUri": "http://logs-devel.sas-devel.governify.io/api/v10.12/ca-sdm/count",
                     "scopes": {
                         "SPU": {
                             "priority": "priority",
@@ -93,8 +93,8 @@
                     }
                 },
                 "jira": {
-                    "uri": "http://logs-devel.sas.governify.io/api/v01.03/jira",
-                    "stateUri": "http://logs-devel.sas.governify.io/api/v01.03/jira/count",
+                    "uri": "http://logs-devel.sas-devel.governify.io/api/v01.03/jira",
+                    "stateUri": "http://logs-devel.sas-devel.governify.io/api/v01.03/jira/count",
                     "scopes": {
                         "SPU": {
                             "priority": "priority",
@@ -110,7 +110,7 @@
         "pricing": {
             "billing": {
                 "period": "monthly",
-                "initial": "2016-05-12T10:35:36.000Z",
+                "initial": "2016-05-12T10:35:36Z",
                 "penalties": [{
                     "over": {
                         "porcentajePTOT": {
@@ -307,7 +307,7 @@
                 },
                 "metadata": {
                     "name": "Porcentaje incidencias sin categorizar el motivo de cierre",
-                    "description": "Porcentaje de incidencias cerradas sin indicar un motivo de cierre concreto y  categorizado que muestre la solución aplicada para la incidencia.",
+                    "description": "Porcentaje de incidencias cerradas sin indicar un motivo de cierre concreto y categorizado que muestre la solución aplicada para la incidencia.",
                     "kind": "Penalizador",
                     "class": "Negocio",
                     "reportable": false
@@ -532,49 +532,6 @@
                     "reportable": false
                 }
             },
-            "SPU_IO_K20_evidence": {
-                "schema": {
-                    "description": "Tiempo de parada respecto del total SLA",
-                    "type": "string"
-                },
-                "parameters": {
-                    "deadline": {
-                        "schema": {
-                            "$ref": "#/context/definitions/schemas/deadline"
-                        }
-                    },
-                    "schedule": {
-                        "schema": {
-                            "$ref": "#/context/definitions/schemas/schedule"
-                        }
-                    }
-                },
-                "scope": {
-                    "SPU": {
-                        "$ref": "#/context/definitions/scopes/SPU"
-                    }
-                }
-            },
-            "SPU_IO_K20": {
-                "schema": {
-                    "description": "Porcentaje tiempo de parada respecto del total SLA",
-                    "type": "double",
-                    "unit": "%"
-                },
-                "computer": "http://ppinot.computer.sas-devel.governify.io/api/v1/indicators/SPU_IO_K20/",
-                "scope": {
-                    "SPU": {
-                        "$ref": "#/context/definitions/scopes/SPU"
-                    }
-                },
-                "metadata": {
-                    "name": "Porcentaje tiempo de parada respecto del total SLA",
-                    "description": "Tiempo que están las incidencias paradas respecto al tiempo total disponible por el proveedor",
-                    "kind": "Penalizador",
-                    "class": "Negocio",
-                    "reportable": false
-                }
-            },
             "SPU_IO_K80_evidence": {
                 "schema": {
                     "description": "Incidencias nuevas dadas de alta",
@@ -691,7 +648,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K01_evidence": {
@@ -746,7 +703,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K01_evidence": {
@@ -801,7 +758,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K01_evidence": {
@@ -869,8 +826,29 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
+                "evidences": [{
+                    "SPU_IO_K05_evidence": {
+                        "$ref": "#/terms/metrics/SPU_IO_K05_evidence"
+                    }
+                }, {
+                    "issue_start": {
+                        "$ref": "#/terms/metrics/issue_start"
+                    }
+                }, {
+                    "issue_end": {
+                        "$ref": "#/terms/metrics/issue_end"
+                    }
+                }, {
+                    "issue_duration": {
+                        "$ref": "#/terms/metrics/issue_duration"
+                    }
+                }, {
+                    "issue_subject": {
+                        "$ref": "#/terms/metrics/issue_subject"
+                    }
+                }],
                 "penalties": [{
                     "over": {
                         "porcentajePTOT": {
@@ -911,7 +889,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K06_evidence": {
@@ -963,7 +941,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K06_evidence": {
@@ -1015,7 +993,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K06_evidence": {
@@ -1087,7 +1065,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K06_t_evidence": {
@@ -1139,7 +1117,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K06_t_evidence": {
@@ -1191,7 +1169,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K06_t_evidence": {
@@ -1266,7 +1244,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K10_evidence": {
@@ -1315,7 +1293,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K10_evidence": {
@@ -1364,7 +1342,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K10_evidence": {
@@ -1433,7 +1411,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K14_evidence": {
@@ -1482,7 +1460,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K14_evidence": {
@@ -1531,7 +1509,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "evidences": [{
                     "SPU_IO_K14_evidence": {
@@ -1594,7 +1572,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "penalties": [{
                     "over": {
@@ -1619,7 +1597,7 @@
                 "window": {
                     "type": "static",
                     "period": "monthly",
-                    "initial": "2014-10-16T00:00:00.000Z"
+                    "initial": "2014-10-16"
                 },
                 "penalties": [{
                     "over": {
@@ -1630,167 +1608,6 @@
                     "of": [{
                         "value": "-1",
                         "condition": "SPU_IO_K18 >= 3"
-                    }]
-                }]
-            }]
-        }, {
-            "id": "SPU_IO_K20",
-            "scope": {
-                "priority": {
-                    "$ref": "#/context/definitions/scopes/SPU/priority"
-                },
-                "node": {
-                    "$ref": "#/context/definitions/scopes/SPU/node"
-                },
-                "serviceLine": {
-                    "$ref": "#/context/definitions/scopes/SPU/serviceLine"
-                },
-                "activity": {
-                    "$ref": "#/context/definitions/scopes/SPU/activity"
-                }
-            },
-            "of": [{
-                "scope": {
-                    "priority": "P1",
-                    "node": "*"
-                },
-                "objective": "SPU_IO_K20 <= 30.00",
-                "with": {
-                    "SPU_IO_K20": {
-                        "schedule": "L-DT00:00-23:59"
-                    }
-                },
-                "window": {
-                    "type": "static",
-                    "period": "monthly",
-                    "initial": "2015-11-16T00:00:00.000Z"
-                },
-                "evidences": [{
-                    "SPU_IO_K20_evidence": {
-                        "$ref": "#/terms/metrics/SPU_IO_K20_evidence"
-                    }
-                }, {
-                    "issue_start": {
-                        "$ref": "#/terms/metrics/issue_start"
-                    }
-                }, {
-                    "issue_end": {
-                        "$ref": "#/terms/metrics/issue_end"
-                    }
-                }, {
-                    "issue_duration": {
-                        "$ref": "#/terms/metrics/issue_duration"
-                    }
-                }, {
-                    "issue_subject": {
-                        "$ref": "#/terms/metrics/issue_subject"
-                    }
-                }],
-                "penalties": [{
-                    "over": {
-                        "porcentajePTOT": {
-                            "$ref": "#/context/definitions/schemas/porcentajePTOT"
-                        }
-                    },
-                    "of": [{
-                        "value": "-((SPU_IO_K20 - 30.00) / 10.00) * 30.00",
-                        "condition": "SPU_IO_K20 > 30.00 && SPU_IO_K20 <= 100.00"
-                    }]
-                }]
-            }, {
-                "scope": {
-                    "priority": "P2",
-                    "node": "*"
-                },
-                "objective": "SPU_IO_K20 <= 50.00",
-                "with": {
-                    "SPU_IO_K20": {
-                        "schedule": "L-VT08:00-20:00"
-                    }
-                },
-                "window": {
-                    "type": "static",
-                    "period": "monthly",
-                    "initial": "2015-11-16T00:00:00.000Z"
-                },
-                "evidences": [{
-                    "SPU_IO_K20_evidence": {
-                        "$ref": "#/terms/metrics/SPU_IO_K20_evidence"
-                    }
-                }, {
-                    "issue_start": {
-                        "$ref": "#/terms/metrics/issue_start"
-                    }
-                }, {
-                    "issue_end": {
-                        "$ref": "#/terms/metrics/issue_end"
-                    }
-                }, {
-                    "issue_duration": {
-                        "$ref": "#/terms/metrics/issue_duration"
-                    }
-                }, {
-                    "issue_subject": {
-                        "$ref": "#/terms/metrics/issue_subject"
-                    }
-                }],
-                "penalties": [{
-                    "over": {
-                        "porcentajePTOT": {
-                            "$ref": "#/context/definitions/schemas/porcentajePTOT"
-                        }
-                    },
-                    "of": [{
-                        "value": "-((SPU_IO_K20 - 50.00) / 10.00) * 20.00",
-                        "condition": "SPU_IO_K20 > 50.00 && SPU_IO_K20 <= 100.00"
-                    }]
-                }]
-            }, {
-                "scope": {
-                    "priority": "P3",
-                    "node": "*"
-                },
-                "objective": "SPU_IO_K20 <= 70.00",
-                "with": {
-                    "SPU_IO_K20": {
-                        "schedule": "L-VT08:00-20:00"
-                    }
-                },
-                "window": {
-                    "type": "static",
-                    "period": "monthly",
-                    "initial": "2015-11-16T00:00:00.000Z"
-                },
-                "evidences": [{
-                    "SPU_IO_K20_evidence": {
-                        "$ref": "#/terms/metrics/SPU_IO_K20_evidence"
-                    }
-                }, {
-                    "issue_start": {
-                        "$ref": "#/terms/metrics/issue_start"
-                    }
-                }, {
-                    "issue_end": {
-                        "$ref": "#/terms/metrics/issue_end"
-                    }
-                }, {
-                    "issue_duration": {
-                        "$ref": "#/terms/metrics/issue_duration"
-                    }
-                }, {
-                    "issue_subject": {
-                        "$ref": "#/terms/metrics/issue_subject"
-                    }
-                }],
-                "penalties": [{
-                    "over": {
-                        "porcentajePTOT": {
-                            "$ref": "#/context/definitions/schemas/porcentajePTOT"
-                        }
-                    },
-                    "of": [{
-                        "value": "-((SPU_IO_K20 - 70.00) / 10.00) * 20.00",
-                        "condition": "SPU_IO_K20 > 70.00 && SPU_IO_K20 <= 100.00"
                     }]
                 }]
             }]

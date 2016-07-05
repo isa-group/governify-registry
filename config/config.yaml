@@ -1,11 +1,17 @@
 ---
 development:
   database:
-    url: "mongodb://sas-devel.governify.io:27017/prosas"
+    url: "mongodb://localhost:27017/prosas"
   port: 8081
   logfile: "./logs/dev.log"
+  async:
+    guarantees: true
+    metrics: true
 production:
   database:
     url: "mongodb://mongo/prosas"
   port: 8081
   logfile: "./logs/prod.log"
+  async:
+    guarantees: true
+    metrics: true
