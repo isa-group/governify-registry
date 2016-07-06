@@ -11,7 +11,6 @@ var clone = require('clone');
 
 module.exports = initialize;
 
-
 function initialize(_agreement) {
     logger.sm('(initialize) Initializing state with agreement ID = ' + _agreement.id);
     return new Promise((resolve, reject) => {
@@ -267,7 +266,7 @@ function isUpdated(state, agreement, stateType, query) {
         var current = null
         if (elementStates && elementStates.length > 0)
             current = getCurrent(elementStates[0]);
-            
+
         logger.sm('Sending request to LOG state URI...');
         request.get({
             uri: logUris,

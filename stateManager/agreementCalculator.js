@@ -15,18 +15,18 @@ const vm = require('vm');
 var calculators = require('./calculators.js')
 
 module.exports = {
-    process: processCompensations
+    process: _process
 }
 
-function processCompensations(agreement, from, to) {
+function _process(agreement, from, to) {
     return new Promise((resolve, reject) => {
         try {
 
             //Process metrics
-            
+
             //for each metric processMetric
             var processMetrics = [];
-            for(var metricId in agreement.terms.metrics){
+            for (var metricId in agreement.terms.metrics) {
                 processMetrics.push(calculators.metricCalculator.process(agreement, metricId))
             }
 
@@ -43,7 +43,6 @@ function processCompensations(agreement, from, to) {
 
             // Execute all promises
             Promise.settle(processGuarantees).then(function(results) {
-                console.log(results);
                 if (results.length > 0) {
                     var values = [];
                     for (var i = 0; i < results.length; i++) {

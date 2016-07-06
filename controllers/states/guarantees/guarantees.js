@@ -34,16 +34,26 @@ module.exports.guaranteesGET = function(args, res, next) {
                 }));
             });
 
-            Promise.all(processGuarantees).then(function(guaranteesValues) {
-                var result = [];
+            Promise.settle(processGuarantees).then(function(guaranteesValues) {
                 try {
-                    guaranteesValues.forEach(function(guaranteeValues) {
-                        var res = guaranteeValues.map(function(guaranteeValue) {
-                            return manager.current(guaranteeValue);
-                        });
-                        result = result.concat(res);
-                    });
-                    res.json(result);
+                    if (guaranteesValues.length > 0) {
+                        var result = [];
+                        for (var i = 0; i < guaranteesValues.length; i++) {
+                            if (guaranteesValues[i].isFulfilled()) {
+                                if (guaranteesValues[i].value().length > 0) {
+                                    var guaranteesResults = guaranteesValues[i].value().map(function(guaranteeValue) {
+                                        return manager.current(guaranteeValue);
+                                    });
+                                    result = result.concat(guaranteesResults);
+                                }
+                            }
+                        }
+                        res.json(result);
+                    } else {
+                        var err = 'Error processing guarantee: empty result';
+                        logger.error(err);
+                        res.status(500).json(new errorModel(500, err));
+                    }
                 } catch (err) {
                     logger.error(err);
                     res.status(500).json(new errorModel(500, err));
@@ -114,7 +124,7 @@ module.exports.guaranteeIdGET = function(args, res, next) {
     });
 }
 
-module.exports.guaranteeIdPenaltyPOST = function (args, res, next){
+module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
     var guaranteeId = args.guarantee.value;
     var agreementId = args.agreement.value;
     var query = args.query.value;
@@ -125,11 +135,11 @@ module.exports.guaranteeIdPenaltyPOST = function (args, res, next){
     var periods = new getPeriods(query.window, offset);
 
     stateManager({
-      id: agreementId
+        id: agreementId
     }).then((manager) => {
 
         var resul = [];
-        Promise.each(periods, (element)=>{
+        Promise.each(periods, (element) => {
             var p = {
                 from: moment(element.from).subtract(Math.abs(offset), "months"),
                 to: moment(element.to).subtract(Math.abs(offset), "months").add(24,"hours").add(59, "minutes").add(59, "seconds").add(999, "ms")
@@ -181,20 +191,19 @@ module.exports.guaranteeIdPenaltyPOST = function (args, res, next){
                     }
                   }
 
+            }, function(err) {
+                logger.error(err);
+                //res.status(500).json(new errorModel(500, err));
+            });
 
-              }, function(err) {
-                  logger.error(err);
-//res.status(500).json(new errorModel(500, err));
-              });
-
-        }).then((result)=>{
+        }).then((result) => {
             res.json(resul);
-        }, (err)=>{
+        }, (err) => {
             logger.error(err);
             res.status(500).json(new errorModel(500, err));
         });
 
-    }, (err)=>{
+    }, (err) => {
         logger.error(err);
         res.status(500).json(new errorModel(500, err));
     });
@@ -204,17 +213,21 @@ module.exports.guaranteeIdPenaltyPOST = function (args, res, next){
 
 var moment = require('moment');
 
-function getPeriods(window, offset){
-        var periods = [];
-        var Wfrom = moment(window.initial);
-        var Wto = moment();
-        var from = moment(Wfrom), to = moment(Wfrom).add(1, "months").subtract(1, "days");
-        while ( !to || to.isSameOrBefore(Wto) ) {
-            periods.push({from: from.format("YYYY-MM-DD"), to: to.format("YYYY-MM-DD")});
-            from = moment(from).add(1,"months");
-            to = moment(to).add(1, "months");
-        }
-        return periods;
+function getPeriods(window, offset) {
+    var periods = [];
+    var Wfrom = moment(window.initial);
+    var Wto = moment();
+    var from = moment(Wfrom),
+        to = moment(Wfrom).add(1, "months").subtract(1, "days");
+    while (!to || to.isSameOrBefore(Wto)) {
+        periods.push({
+            from: from.format("YYYY-MM-DD"),
+            to: to.format("YYYY-MM-DD")
+        });
+        from = moment(from).add(1, "months");
+        to = moment(to).add(1, "months");
+    }
+    return periods;
 }
 
 //function

@@ -27,8 +27,7 @@ $("#exec_button_pre").on("click", function () {
 $("#exec_button").on("click", function () {
     var selectedAg = $("#agreementSelector").find(":selected");
     var selectedAgVal = selectedAg.val();
-    var selectedAgOptGroup = selectedAg.closest('optgroup').attr('label');
-    var registryEndpoint = selectedAgOptGroup.indexOf("sas-devel") > 0 ? develRegistrtyAgreementsEndpoint : productionRegistrtyAgreementsEndpoint;
+    var registryEndpoint = selectedAg.attr("data-registry");
     var deleteIfExists = $("#forceDelete").parent().find(':checked');
     getAgreementContent(selectedAgVal, registryEndpoint, deleteIfExists);
 });
@@ -78,17 +77,19 @@ $(document).ready(function () {
             }
         });
 
+        //TODO: improve it later
+
         $.each(level1, function (index, agreement) {
-            optgroup1.append(constructSingleOption(this["agreement-url"], this["name"], this["protected"]));
+            optgroup1.append(constructSingleOption(this["agreement-url"], this["name"], this["protected"], this["registry-endpoint"]));
         });
         $.each(level2, function (index, agreement) {
-            optgroup2.append(constructSingleOption(this["agreement-url"], this["name"], this["protected"]));
+            optgroup2.append(constructSingleOption(this["agreement-url"], this["name"], this["protected"], this["registry-endpoint"]));
         });
         $.each(level3, function (index, agreement) {
-            optgroup3.append(constructSingleOption(this["agreement-url"], this["name"], this["protected"]));
+            optgroup3.append(constructSingleOption(this["agreement-url"], this["name"], this["protected"], this["registry-endpoint"]));
         });
         $.each(level4, function (index, agreement) {
-            optgroup4.append(constructSingleOption(this["agreement-url"], this["name"], this["protected"]));
+            optgroup4.append(constructSingleOption(this["agreement-url"], this["name"], this["protected"], this["registry-endpoint"]));
         });
 
         selectAgreement.material_select();
@@ -98,8 +99,8 @@ $(document).ready(function () {
     });
 });
 
-function constructSingleOption(value, text, disabled) {
-    var option = $("<option></option>").attr("value", value).text(text);
+function constructSingleOption(value, text, disabled, registryEndpoint) {
+    var option = $("<option></option>").attr("value", value).attr("data-registry", registryEndpoint).text(text);
     if (disabled) {
         option.attr("disabled", "disabled");
     }
@@ -111,10 +112,10 @@ function getAgreementContent(selectedAgVal, registryEndpoint, deleteIfExists) {
     $.ajax({
         url: selectedAgVal,
         type: "GET",
-         beforeSend: function (request)
-            {
-                request.setRequestHeader("Content-Type", "text/plain; charset=utf-8");
-            }
+        beforeSend: function (request)
+        {
+            request.setRequestHeader("Content-Type", "text/plain; charset=utf-8");
+        }
     }).done(function (res) {
         var agreement = jsyaml.load(res);
         if (!deleteIfExists.val()) {

@@ -174,8 +174,10 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                 var guaranteesValues = [];
                 logger.guarantees('Calculating penalties for scoped guarantee ' + guarantee.id + '...');
                 for (var index = 0; index < timedScopes.length; index++) {
+
                     var guaranteeValue = calculatePenalty(agreement, guarantee, timedScopes[index], metricValues[index], slo, penalties);
-                    guaranteesValues.push(guaranteeValue);
+                    if(guaranteeValue)
+                        guaranteesValues.push(guaranteeValue);
                 }
                 logger.guarantees('All penalties for scoped guarantee ' + guarantee.id + ' calculated.');
                 logger.debug('Guarantees values: ' + JSON.stringify(guaranteesValues, null, 2));
@@ -198,17 +200,24 @@ function calculatePenalty(agreement, guarantee, timedScope, metricsValues, slo, 
     guaranteeValue.guarantee = guarantee.id;
     guaranteeValue.evidences = [];
     guaranteeValue.metrics = {};
+    var values = [];
 
-
-    logger.guarantees("metrics: " + JSON.stringify(guarantee.of[0].with, null, 2));
     for (var metricId in guarantee.of[0].with) {
         var value = 0;
         if(metricsValues[metricId])
           value = metricsValues[metricId].value;
-        vm.runInThisContext(metricId + " = " + value);
+        if(value === 'NaN' || value === ''){
+            logger.warning('Unexpected value (' + value + ') for metric ' + metricId + ' ');
+            return;
+        }
+        vm.runInThisContext(metricId + " = " + metricsValues[metricId].value);
         guaranteeValue.metrics[metricId] = value;
         guaranteeValue.evidences = guaranteeValue.evidences.concat(metricsValues[metricId] &&  metricsValues[metricId].evidences ? metricsValues[metricId].evidences : [] );
+        var val = {};
+        val[metricId] = metricsValues[metricId].value;
+        values.push(val);
     }
+
     var fulfilled = Boolean(vm.runInThisContext(slo));
     guaranteeValue.value = fulfilled;
 
@@ -224,7 +233,7 @@ function calculatePenalty(agreement, guarantee, timedScope, metricsValues, slo, 
             } else {
                 logger.error('SLO not fulfilled and no penalty found: ');
                 logger.error('\t- penalty: ', penalty.of);
-                logger.error('\t- metric value: ', lastRecord.value);
+                logger.error('\t- metric value: ', values);
             }
         });
     }
