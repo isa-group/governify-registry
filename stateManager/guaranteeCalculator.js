@@ -210,11 +210,11 @@ function calculatePenalty(agreement, guarantee, timedScope, metricsValues, slo, 
             logger.warning('Unexpected value (' + value + ') for metric ' + metricId + ' ');
             return;
         }
-        vm.runInThisContext(metricId + " = " + metricsValues[metricId].value);
+        vm.runInThisContext(metricId + " = " + value);
         guaranteeValue.metrics[metricId] = value;
         guaranteeValue.evidences = guaranteeValue.evidences.concat(metricsValues[metricId] &&  metricsValues[metricId].evidences ? metricsValues[metricId].evidences : [] );
         var val = {};
-        val[metricId] = metricsValues[metricId].value;
+        val[metricId] = value;
         values.push(val);
     }
 
