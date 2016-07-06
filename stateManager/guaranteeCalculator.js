@@ -174,7 +174,7 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                 var guaranteesValues = [];
                 logger.guarantees('Calculating penalties for scoped guarantee ' + guarantee.id + '...');
                 for (var index = 0; index < timedScopes.length; index++) {
-                    var guaranteeValue = calculatePenalty(agreement, guarantee.id, timedScopes[index], metricValues[index], slo, penalties);
+                    var guaranteeValue = calculatePenalty(agreement, guarantee, timedScopes[index], metricValues[index], slo, penalties);
                     guaranteesValues.push(guaranteeValue);
                 }
                 logger.guarantees('All penalties for scoped guarantee ' + guarantee.id + ' calculated.');
@@ -190,19 +190,24 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
     }
 }
 
-function calculatePenalty(agreement, guaranteeId, timedScope, metricsValues, slo, penalties) {
+function calculatePenalty(agreement, guarantee, timedScope, metricsValues, slo, penalties) {
 
     var guaranteeValue = {};
     guaranteeValue.scope = timedScope.scope;
     guaranteeValue.period = timedScope.period;
-    guaranteeValue.guarantee = guaranteeId;
+    guaranteeValue.guarantee = guarantee.id;
     guaranteeValue.evidences = [];
     guaranteeValue.metrics = {};
 
-    for (var metricId in metricsValues) {
-        vm.runInThisContext(metricId + " = " + metricsValues[metricId].value);
-        guaranteeValue.metrics[metricId] = metricsValues[metricId].value;
-        guaranteeValue.evidences = guaranteeValue.evidences.concat(metricsValues[metricId].evidences);
+
+    logger.guarantees("metrics: " + JSON.stringify(guarantee.of[0].with, null, 2));
+    for (var metricId in guarantee.of[0].with) {
+        var value = 0;
+        if(metricsValues[metricId])
+          value = metricsValues[metricId].value;
+        vm.runInThisContext(metricId + " = " + value);
+        guaranteeValue.metrics[metricId] = value;
+        guaranteeValue.evidences = guaranteeValue.evidences.concat(metricsValues[metricId] &&  metricsValues[metricId].evidences ? metricsValues[metricId].evidences : [] );
     }
     var fulfilled = Boolean(vm.runInThisContext(slo));
     guaranteeValue.value = fulfilled;

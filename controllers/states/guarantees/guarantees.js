@@ -124,8 +124,6 @@ module.exports.guaranteeIdPenaltyPOST = function (args, res, next){
     var offset = query.parameters.offset;
     var periods = new getPeriods(query.window, offset);
 
-    console.log(periods);
-
     stateManager({
       id: agreementId
     }).then((manager) => {
@@ -133,22 +131,56 @@ module.exports.guaranteeIdPenaltyPOST = function (args, res, next){
         var resul = [];
         Promise.each(periods, (element)=>{
             var p = {
-                from: moment(element.from).subtract(Math.abs(offset), "months").format("YYYY-MM-DD"),
-                to: moment(element.to).subtract(Math.abs(offset), "months").format("YYYY-MM-DD")
+                from: moment(element.from).subtract(Math.abs(offset), "months"),
+                to: moment(element.to).subtract(Math.abs(offset), "months").add(24,"hours").add(59, "minutes").add(59, "seconds").add(999, "ms")
             };
+            //  logger.ctlState("Query before parse: " + JSON.stringify(query, null, 2));
+              var logId = Object.keys(query.logs)[0];
+              var log = manager.agreement.context.definitions.logs[logId];
+              var scope = {};
+              var scopeId = Object.keys(log.scopes)[0];
+              var logScopes = Object.keys(log.scopes[scopeId]).map(function(key) {
+                  return log.scopes[scopeId][key];
+              });
+              for (var queryScope in query.scope) {
+                  if (logScopes.indexOf(queryScope) > -1) {
+                      for (var logScope in log.scopes[scopeId]) {
+                          if (log.scopes[scopeId][logScope] === queryScope) {
+                              scope[logScope] = query.scope[queryScope];
+                          }
+                      }
+                  } else {
+                      scope[queryScope] = query.scope[queryScope];
+                  }
+              }
+              query.scope = scope ? scope : query.scope;
+
+            //  logger.ctlState("Query after parse: " + JSON.stringify(query, null, 2));
             return manager.get('guarantees', {
                   guarantee: guaranteeId,
                   scope: query.scope,
-                  period: p //,
+                //  period: p //,
                 //  window: query.window
               }).then(function(success) {
-                  var ret = null;
-                  success.forEach((e)=>{
-                      if(moment(e.period.from).isSameOrAfter(moment(p.from)) && moment(e.period.to).isSameOrBefore(moment(p.to)) )
-                        ret = e;
-                  });
-                  if(ret)
-                    resul.push(new penaltyMetric( query.scope, query.parameters, element, manager.current(ret).penalties ));
+                  var ret = [];
+                  for(var i in success){
+                    var e = success[i];
+                    //logger.ctlState("compare:  " + e.period.from + ">=" + p.from.toISOString() + " && " + e.period.to + "<=" + p.to.toISOString() );
+                    if(moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to)  && checkQuery(e, query)){
+                          ret.push( e );
+                    }
+                  }
+                  //logger.ctlState("Resultado para el periodo : " + JSON.stringify(element) + "=>\n" + JSON.stringify(ret, null, 2));
+
+                  for(var i in ret){
+                    if(manager.current(ret[i]).penalties){
+                        var penalties = manager.current(ret[i]).penalties
+                        for (var penaltyI in penalties){
+                            resul.push(new penaltyMetric( ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI] ));
+                        }
+                    }
+                  }
+
 
               }, function(err) {
                   logger.error(err);
@@ -186,9 +218,27 @@ function getPeriods(window, offset){
 }
 
 //function
-function penaltyMetric (scope, parameters, period, value){
+function penaltyMetric (scope, parameters, period, logs, penaltyName, penaltyValue){
     this.scope = scope;
     this.parameters = parameters;
     this.period = period;
-    this.value = value;
+    this.penalty = penaltyName;
+    this.value = penaltyValue;
+    this.logs = logs;
+}
+
+function checkQuery(element, query) {
+    var ret = true;
+    for (var v in query) {
+        if (v != "parameters" && v != "evidences" && v != "logs" && v != "window") {
+            if (query[v] instanceof Object) {
+                ret = ret && checkQuery(element[v], query[v]);
+            } else {
+                if (( element[v] !== query[v] && query[v] != "*" ) || !element[v]) {
+                    ret = ret && false;
+                }
+            }
+        }
+    }
+    return ret;
 }
