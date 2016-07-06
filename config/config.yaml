@@ -5,13 +5,13 @@ development:
   port: 8081
   logfile: "./logs/dev.log"
   async:
-    guarantees: true
-    metrics: true
+    guarantees: false
+    metrics: false
 production:
   database:
     url: "mongodb://mongo/prosas"
   port: 8081
   logfile: "./logs/prod.log"
   async:
-    guarantees: true
-    metrics: true
+    guarantees: false
+    metrics: false

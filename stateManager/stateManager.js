@@ -10,7 +10,6 @@ var Promise = require("bluebird");
 var clone = require('clone');
 
 module.exports = initialize;
-var stateManager;
 
 function initialize(_agreement) {
     logger.sm('(initialize) Initializing state with agreement ID = ' + _agreement.id);
@@ -32,7 +31,7 @@ function initialize(_agreement) {
                     if (err) return reject(new errorModel(500, err));
                     else {
                         logger.sm("stateManager for agreementID = " + _agreement.id + " initialized");
-                        stateManager = {
+                        var stateManager = {
                             agreement: ag,
                             state: _state,
                             get: _get,
@@ -49,6 +48,7 @@ function initialize(_agreement) {
 }
 
 function _get(stateType, query) {
+    var stateManager = this;
     logger.sm('(_get) Retrieving state of ' + stateType);
     return new Promise((resolve, reject) => {
         logger.sm("Getting " + stateType + " state for query =  " + JSON.stringify(query));
@@ -76,6 +76,7 @@ function _get(stateType, query) {
 
 /** metadata = {logsState, evidences, parameters} **/
 function _put(stateType, query, value, metadata) {
+    var stateManager = this;
     logger.sm('(_put) Saving state of ' + stateType);
     return new Promise((resolve, reject) => {
         var StateModel = config.db.models.StateModel;
@@ -127,6 +128,7 @@ function _put(stateType, query, value, metadata) {
 }
 
 function _update(stateType, query, logsState) {
+    var stateManager = this;
     logger.sm('(_update) Updating state of ' + stateType);
     return new Promise((resolve, reject) => {
         switch (stateType) {
