@@ -27,13 +27,17 @@ module.exports.metricsIdPUT = function(args, res, next) {
     stateManager({
         id: agreementId
     }).then((manager) => {
-        manager.put('metrics', { metric: metricName, scope: metricValue.scope, window: metricValue.window}, metricValue.value).then((success) => {
-                res.json(success.map((element) => {
-                    return manager.current(element);
-                }));
-            }, (err) => {
-                res.status(err.code).json(err);
-            });
+        manager.put('metrics', {
+            metric: metricName,
+            scope: metricValue.scope,
+            window: metricValue.window
+        }, metricValue.value).then((success) => {
+            res.json(success.map((element) => {
+                return manager.current(element);
+            }));
+        }, (err) => {
+            res.status(err.code).json(err);
+        });
     }, (err) => {
         res.status(err.code).json(err);
     });
@@ -53,33 +57,53 @@ module.exports.metricsPOST = function(req, res, next) {
     stateManager({
         id: agreementId
     }).then((manager) => {
-          logger.info("Preparing requests to /states/" + agreementId + "/metrics/{metricId} : ");
-          var ret= [];
-          Promise.each(Object.keys(manager.agreement.terms.metrics), (metricId)=>{
-              logger.info("==> metricId = " + metricId);
-              var metricParams = args.scope.value;
-              metricParams.period = metricParams.period ? metricParams.period : {
-                  from: '*',
-                  to: '*'
-              };
-              metricParams.metric = metricId;
-              return manager.get('metrics', metricParams).then((results)=>{
-                  for(var i in results){
-                      ret.push(manager.current(results[i]));
-                  }
-              }, (err)=>{
-                  logger.error(err);
-              });
-          }).then(function(results) {
-              res.json(ret);
-          }, (err)=>{
-              logger.error("ERROR processing metrics");
-              res.status(500).json(new errorModel(500, err));
-          });
+        logger.info("Preparing requests to /states/" + agreementId + "/metrics/{metricId} : ");
+        var ret = [];
+        if (config.async.metrics) {
+            var processMetrics = [];
+            for (var metricId in agreement.terms.metrics) {
+                var metricParams = args.scope.value;
+                metricParams.period = metricParams.period ? metricParams.period : {
+                    from: '*',
+                    to: '*'
+                };
+                metricParams.metric = metricId;
+                processMetrics.push(manager.get('metrics', metricParams));
+            }
+
+            Promise.all(processMetrics).then(function(metricsValues) {
+                for (var i in results) {
+                    ret.push(manager.current(results[i]));
+                }
+                res.json(ret);
+            });
+        } else {
+            Promise.each(Object.keys(manager.agreement.terms.metrics), (metricId) => {
+                logger.info("==> metricId = " + metricId);
+                var metricParams = args.scope.value;
+                metricParams.period = metricParams.period ? metricParams.period : {
+                    from: '*',
+                    to: '*'
+                };
+                metricParams.metric = metricId;
+                return manager.get('metrics', metricParams).then((results) => {
+                    for (var i in results) {
+                        ret.push(manager.current(results[i]));
+                    }
+                }, (err) => {
+                    logger.error(err);
+                });
+            }).then(function(results) {
+                res.json(ret);
+            }, (err) => {
+                logger.error("ERROR processing metrics");
+                res.status(500).json(new errorModel(500, err));
+            });
+        }
 
     }, (err) => {
-      logger.error("ERROR processing metrics");
-      res.status(500).json(new errorModel(500, err));
+        logger.error("ERROR processing metrics");
+        res.status(500).json(new errorModel(500, err));
     });
 }
 
@@ -111,7 +135,7 @@ module.exports.metricsIdPOST = function(args, res, next) {
             res.status(500).json(new errorModel(500, err));
         });
     }, (err) => {
-      logger.error(err);
-      res.status(500).json(new errorModel(500, err));
+        logger.error(err);
+        res.status(500).json(new errorModel(500, err));
     });
 }
