@@ -758,6 +758,41 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+  /states/{agreement}/guarantees/{guarantee}/penalty:
+    post:
+      tags:
+      - "state-registry"
+      description: "XXX"
+      operationId: "statesAgreementGuaranteesGuaranteePenaltiyPOST"
+      parameters:
+      - name: "agreement"
+        in: "path"
+        description: "XXX"
+        required: true
+        type: string
+      - name: "guarantee"
+        in: "path"
+        description: "XXX"
+        required: true
+        type: string
+      - name: "query"
+        in: "body"
+        description: "XXX"
+        required: true
+        schema:
+          type: object
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/guarantee_state"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/inline_response_400"
+      x-swagger-router-controller: "StateRegistry"
   /states/{agreement}/metrics:
     post:
       tags:
