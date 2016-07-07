@@ -316,11 +316,11 @@ function isUpdated(state, agreement, stateType, query) {
 function checkQuery(element, query) {
     var ret = true;
     for (var v in query) {
-        if (v != "parameters" && v != "evidences" && v != "logs") {
+        if (v != "parameters" && v != "evidences" && v != "logs" || (v == "window" && element.metric)) {
             if (query[v] instanceof Object) {
                 ret = ret && checkQuery(element[v], query[v]);
             } else {
-                if (element[v] !== query[v] && query[v] != "*") {
+                if ( ( element[v] !== query[v] && query[v] != "*" ) || !element[v]) {
                     ret = ret && false;
                 }
             }

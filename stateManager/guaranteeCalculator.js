@@ -174,7 +174,8 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                 var guaranteesValues = [];
                 logger.guarantees('Calculating penalties for scoped guarantee ' + guarantee.id + '...');
                 for (var index = 0; index < timedScopes.length; index++) {
-                    var guaranteeValue = calculatePenalty(agreement, guarantee.id, timedScopes[index], metricValues[index], slo, penalties);
+
+                    var guaranteeValue = calculatePenalty(agreement, guarantee, timedScopes[index], metricValues[index], slo, penalties);
                     if(guaranteeValue)
                         guaranteesValues.push(guaranteeValue);
                 }
@@ -191,28 +192,32 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
     }
 }
 
-function calculatePenalty(agreement, guaranteeId, timedScope, metricsValues, slo, penalties) {
+function calculatePenalty(agreement, guarantee, timedScope, metricsValues, slo, penalties) {
 
     var guaranteeValue = {};
     guaranteeValue.scope = timedScope.scope;
     guaranteeValue.period = timedScope.period;
-    guaranteeValue.guarantee = guaranteeId;
+    guaranteeValue.guarantee = guarantee.id;
     guaranteeValue.evidences = [];
     guaranteeValue.metrics = {};
     var values = [];
 
-    for (var metricId in metricsValues) {
-        if(metricsValues[metricId].value === 'NaN' || metricsValues[metricId].value === ''){
-            logger.warning('Unexpected value (' + metricsValues[metricId].value + ') for metric ' + metricId + ' ');
+    for (var metricId in guarantee.of[0].with) {
+        var value = 0;
+        if(metricsValues[metricId])
+          value = metricsValues[metricId].value;
+        if(value === 'NaN' || value === ''){
+            logger.warning('Unexpected value (' + value + ') for metric ' + metricId + ' ');
             return;
         }
-        vm.runInThisContext(metricId + " = " + metricsValues[metricId].value);
-        guaranteeValue.metrics[metricId] = metricsValues[metricId].value;
-        guaranteeValue.evidences = guaranteeValue.evidences.concat(metricsValues[metricId].evidences);
+        vm.runInThisContext(metricId + " = " + value);
+        guaranteeValue.metrics[metricId] = value;
+        guaranteeValue.evidences = guaranteeValue.evidences.concat(metricsValues[metricId] &&  metricsValues[metricId].evidences ? metricsValues[metricId].evidences : [] );
         var val = {};
-        val[metricId] = metricsValues[metricId].value;
+        val[metricId] = value;
         values.push(val);
     }
+
     var fulfilled = Boolean(vm.runInThisContext(slo));
     guaranteeValue.value = fulfilled;
 
