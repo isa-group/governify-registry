@@ -24,6 +24,9 @@ function initialize(_agreement) {
                 logger.error(err.toString());
                 return reject(new errorModel(500, err));
             } else {
+                if (!ag) {
+                    return reject(new errorModel(500, 'There is no agreement with id: ' + _agreement.id));
+                }
                 logger.sm("Searching state for agreementID = " + _agreement.id);
                 StateModel.findOne({
                     agreementId: _agreement.id
@@ -213,7 +216,7 @@ function _update(stateType, query, logsState) {
                     });
                 break;
             case "pricing":
-                calculators.pricingCalculator.process(stateManager.agreement, query, stateManager).then((pricingStates) =>{
+                calculators.pricingCalculator.process(stateManager.agreement, query, stateManager).then((pricingStates) => {
                     logger.sm('All pricing states (' + pricingStates.length + ') has been calculated ');
                     return resolve(pricingStates);
                 }, (err) => {

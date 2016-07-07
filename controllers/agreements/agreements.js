@@ -42,17 +42,17 @@ function _agreementsGET(args, res, next) {
 
 function _agreementsDELETE(args, res, next) {
   logger.info("New request to DELETE all agreements");
-      var AgreementModel = config.db.models.AgreementModel;
-        AgreementModel.remove({}, function (err) {
-            if (!err) {
-                logger.info("Deleted all agreements");
-                stateRegistySrv.statesDELETE(args, res, next);
-            } else {
-                res.sendStatus(404);
-                logger.warning("Can't delete all agreements: " + err);
-            }
-        });
-    
+  var AgreementModel = config.db.models.AgreementModel;
+  AgreementModel.remove({}, function(err) {
+    if (!err) {
+      logger.info("Deleted all agreements");
+      stateRegistySrv.statesDELETE(args, res, next);
+    } else {
+      res.sendStatus(404);
+      logger.warning("Can't delete all agreements: " + err);
+    }
+  });
+
 }
 
 function _agreementIdGET(args, res, next) {
@@ -67,31 +67,39 @@ function _agreementIdGET(args, res, next) {
   }, function(err, agreement) {
     if (err) {
       logger.error(err.toString());
-      res.json(new errorModel(500, err));
+      return res.status(500).json(new errorModel(500, err));
     }
+
+    if (!agreement) {
+      logger.error('There is no agreement with id: ' + args.agreement.value);
+      return res.status(404).json(new errorModel(404, 'There is no agreement with id: ' + args.agreement.value));
+    }
+
     logger.info("Agreement returned");
     res.json(agreement);
   });
 }
 
 function _agreementIdDELETE(args, res, next) {
-    logger.info("New request to DELETE agreement");
-    var agreementId = args.agreement.value;
-    if (agreementId) {
-      var AgreementModel = config.db.models.AgreementModel;
-        AgreementModel.findOneAndRemove({id: agreementId}, function (err) {
-            if (!err) {
-                logger.info("Deleted agreement with id " + agreementId);
-                agreementState.agreementIdDELETE(args, res, next);
-            } else {
-                res.sendStatus(404);
-                logger.warning("Can't delete agreement with id " + agreementId);
-            }
-        });
-    } else {
-        res.sendStatus(400);
+  logger.info("New request to DELETE agreement");
+  var agreementId = args.agreement.value;
+  if (agreementId) {
+    var AgreementModel = config.db.models.AgreementModel;
+    AgreementModel.findOneAndRemove({
+      id: agreementId
+    }, function(err) {
+      if (!err) {
+        logger.info("Deleted agreement with id " + agreementId);
+        agreementState.agreementIdDELETE(args, res, next);
+      } else {
+        res.sendStatus(404);
         logger.warning("Can't delete agreement with id " + agreementId);
-    }
+      }
+    });
+  } else {
+    res.sendStatus(400);
+    logger.warning("Can't delete agreement with id " + agreementId);
+  }
 }
 
 

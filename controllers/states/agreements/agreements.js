@@ -30,14 +30,14 @@ function _agreementIdGET(args, res, next) {
 
     stateManager({
         id: agreeementId
-    }, function (state) {
-        state.get("agreement", function (agreement) {
+    }).then(function(manager) {
+        manager.get("agreement").then(function(agreement) {
             res.json(agreement);
-        }, function (err) {
+        }, function(err) {
             logger.error(err.message.toString());
             res.status(err.code).json(err);
         });
-    }, function (err) {
+    }, function(err) {
         logger.error(err.message.toString());
         res.status(err.code).json(err);
     });
@@ -71,8 +71,10 @@ function _agreementIdDELETE(args, res, next) {
     logger.info("New request to DELETE agreement state");
     var agreementId = args.agreement.value;
     if (agreementId) {
-       var StateModel = config.db.models.StateModel;
-        StateModel.findOneAndRemove({agreementId: agreementId}, function (err) {
+        var StateModel = config.db.models.StateModel;
+        StateModel.findOneAndRemove({
+            agreementId: agreementId
+        }, function(err) {
             if (!err) {
                 res.sendStatus(200);
                 logger.info("Deleted state for agreement " + agreementId);

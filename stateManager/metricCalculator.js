@@ -109,25 +109,27 @@ function processMetric(agreement, metricId, metricParameters) {
                     logger.metrics('Processing column name bindings from log...');
                     if (response && Array.isArray(response)) {
                         response.forEach(function(metricState) {
-                            var logId = Object.keys(metricState.logs)[0];
-                            var log = agreement.context.definitions.logs[logId];
-                            var scope = {};
-                            var scopeId = Object.keys(metric.scope)[0];
-                            var logScopes = Object.keys(log.scopes[scopeId]).map(function(key) {
-                                return log.scopes[scopeId][key];
-                            });
-                            for (var metricScope in metricState.scope) {
-                                if (logScopes.indexOf(metricScope) > -1) {
-                                    for (var logScope in log.scopes[scopeId]) {
-                                        if (log.scopes[scopeId][logScope] === metricScope) {
-                                            scope[logScope] = metricState.scope[metricScope];
+                            if (metricState.logs) {
+                                var logId = Object.keys(metricState.logs)[0];
+                                var log = agreement.context.definitions.logs[logId];
+                                var scope = {};
+                                var scopeId = Object.keys(metric.scope)[0];
+                                var logScopes = Object.keys(log.scopes[scopeId]).map(function(key) {
+                                    return log.scopes[scopeId][key];
+                                });
+                                for (var metricScope in metricState.scope) {
+                                    if (logScopes.indexOf(metricScope) > -1) {
+                                        for (var logScope in log.scopes[scopeId]) {
+                                            if (log.scopes[scopeId][logScope] === metricScope) {
+                                                scope[logScope] = metricState.scope[metricScope];
+                                            }
                                         }
+                                    } else {
+                                        scope[metricScope] = metricState.scope[metricScope];
                                     }
-                                } else {
-                                    scope[metricScope] = metricState.scope[metricScope];
                                 }
+                                metricState.scope = scope ? scope : metricState.scope;
                             }
-                            metricState.scope = scope ? scope : metricState.scope;
                         });
                         logger.metrics('Column name bindings processed');
                         return resolve({
