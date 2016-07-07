@@ -4,7 +4,7 @@ development:
     url: "mongodb://dockers:27017/prosas"
   port: 8081
   logfile: "./logs/dev.log"
-  async:
+  asynchronous:
     guarantees: false
     metrics: false
 production:
@@ -12,6 +12,6 @@ production:
     url: "mongodb://mongo/prosas"
   port: 8081
   logfile: "./logs/prod.log"
-  async:
+  asynchronous:
     guarantees: false
     metrics: false

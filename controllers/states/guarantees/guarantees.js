@@ -25,7 +25,7 @@ module.exports.guaranteesGET = function(args, res, next) {
     }).then((manager) => {
         logger.ctlState("Getting state of guarantees...");
 
-        if (config.async.guarantees) {
+        if (config.asynchronous.guarantees) {
             logger.ctlState("Processing guarantees in async mode");
             var processGuarantees = [];
             manager.agreement.terms.guarantees.forEach(function(guarantee) {
