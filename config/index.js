@@ -14,11 +14,14 @@ var state = {
 
 var configString = fs.readFileSync('./config/config.yaml', 'utf8');
 var config = jsyaml.safeLoad(configString)[process.env.NODE_ENV ? process.env.NODE_ENV : 'development'];
-config.async = {};
-//config.async.guarantees = false;
-//config.async.metrics = false;
-// config.async.guarantees = process.env.GUARANTEES_PROCESS_MODE ? process.env.GUARANTEES_PROCESS_MODE : config.async.guarantees;
-// config.async.metrics = process.env.METRICS_PROCESS_MODE ? process.env.METRICS_PROCESS_MODE : config.async.metrics;
+
+
+config.parallelProcess.guarantees = process.env.GUARANTEES_PARALLEL_PROCESS ?
+                                            process.env.GUARANTEES_PARALLEL_PROCESS : config.parallelProcess.guarantees;
+
+config.parallelProcess.metrics = process.env.METRICS_PARALLEL_PROCESS ?
+                                            process.env.METRICS_PARALLEL_PROCESS : config.parallelProcess.metrics;
+
 config.state = state;
 module.exports = config;
 

@@ -59,7 +59,7 @@ module.exports.metricsPOST = function(req, res, next) {
     }).then((manager) => {
         logger.info("Preparing requests to /states/" + agreementId + "/metrics/{metricId} : ");
         var ret = [];
-        if (config.asynchronous.metrics) {
+        if (config.parallelProcess.metrics) {
             var processMetrics = [];
             for (var metricId in agreement.terms.metrics) {
                 var metricParams = args.scope.value;

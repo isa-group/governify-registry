@@ -25,8 +25,8 @@ module.exports.guaranteesGET = function(args, res, next) {
     }).then((manager) => {
         logger.ctlState("Getting state of guarantees...");
 
-        if (config.asynchronous.guarantees) {
-            logger.ctlState("Processing guarantees in async mode");
+        if (config.parallelProcess.guarantees) {
+            logger.ctlState("Processing guarantees in parallel mode");
             var processGuarantees = [];
             manager.agreement.terms.guarantees.forEach(function(guarantee) {
                 processGuarantees.push(manager.get('guarantees', {
@@ -63,7 +63,7 @@ module.exports.guaranteesGET = function(args, res, next) {
                 res.status(500).json(new errorModel(500, err));
             });
         } else {
-            logger.ctlState("Processing guarantees in sync mode");
+            logger.ctlState("Processing guarantees in sequential mode");
             var ret = [];
             Promise.each(manager.agreement.terms.guarantees, (guarantee) => {
                 logger.ctlState("- guaranteeId: " + guarantee.id);
