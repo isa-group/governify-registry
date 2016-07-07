@@ -25,7 +25,7 @@ function initialize(_agreement) {
                 return reject(new errorModel(500, err));
             } else {
                 if (!ag) {
-                    return reject(new errorModel(500, 'There is no agreement with id: ' + _agreement.id));
+                    return reject(new errorModel(404, 'There is no agreement with id: ' + _agreement.id));
                 }
                 logger.sm("Searching state for agreementID = " + _agreement.id);
                 StateModel.findOne({
@@ -316,11 +316,11 @@ function isUpdated(state, agreement, stateType, query) {
 function checkQuery(element, query) {
     var ret = true;
     for (var v in query) {
-        if (v != "parameters" && v != "evidences" && v != "logs" || (v == "window" && element.metric)) {
+        if (v != "parameters" && v != "evidences" && v != "logs") {
             if (query[v] instanceof Object) {
                 ret = ret && checkQuery(element[v], query[v]);
             } else {
-                if ( ( element[v] !== query[v] && query[v] != "*" ) || !element[v]) {
+                if (element[v] !== query[v] && query[v] != "*") {
                     ret = ret && false;
                 }
             }
