@@ -59,5 +59,5 @@ swaggerTools.initializeMiddleware(swaggerDoc, function(middleware) {
     config.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
     config.logger.info('Swagger-ui is available on http://localhost:%d/api/v1/docs', serverPort);
   });
-  server.timeout = 600000;
+  server.timeout = 24 * 3600 * 1000; // 24h
 });
