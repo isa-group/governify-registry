@@ -24,6 +24,9 @@ function processMetric(agreement, metricId, metricParameters) {
     return new Promise((resolve, reject) => {
         try {
             var metric = agreement.terms.metrics[metricId];
+            if(!metric){
+                return reject('Metric ' + metricId + ' not found.');
+            }
             var computerEndpoint = metric.computer;
 
             var data = {};
@@ -137,15 +140,17 @@ function processMetric(agreement, metricId, metricParameters) {
                             metricValues: response
                         });
                     } else {
-                        logger.error('Error in PPINOT Computer response. Response is not an array: ', response);
+                        logger.error('Error in computer response. Response is not an array: ', JSON.stringify(response, null, 2));
                         return reject('There was a problem retrieving indicator ' + metricId);
                     }
                 } catch (error) {
-                    logger.error("Error in PPINOT Computer response: ", error, response);
+                    logger.error("Error in computer response: " + JSON.stringify(error, null, 2) + "\nResponse: " + JSON.stringify(response, null, 2));
+                    return reject("Error in computer response: " + JSON.stringify(error, null, 2) + "\nResponse: " + JSON.stringify(response, null, 2));
                 }
             });
         } catch (err) {
-            logger.error('Error processing metric: ' + metricId + ': ', err);
+            logger.error('Error processing metric: ' + metricId + ': ', JSON.stringify(err, null, 2));
+            return reject('Error processing metric: ' + metricId + ': ' + JSON.stringify(err, null, 2));
         }
     });
 
