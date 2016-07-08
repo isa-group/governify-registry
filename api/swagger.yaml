@@ -685,6 +685,33 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+  /states/{agreementId}/reload:
+    post:
+      tags:
+      - "state-registry"
+      description: "XXX"
+      operationId: "statesAgreementRELOAD"
+      parameters:
+      - name: "agreementId"
+        in: "path"
+        description: "XXX"
+        required: true
+        type: string
+      - name: "notify"
+        in: "query"
+        description: "XXX"
+        required: false
+        type: string
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: string
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/inline_response_400"
+      x-swagger-router-controller: "StateRegistry"
   /states/{agreement}/guarantees:
     get:
       tags:

@@ -3,9 +3,7 @@
 var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
 var config = require('../../config');
-var agreementManager = require('governify-agreement-manager');
-
-var stateManager = agreementManager.operations.states;
+var agreementManager = require('governify-agreement-manager').operations.states;
 
 var agreementState = require('../states/agreements/agreements');
 var stateRegistySrv = require('../StateRegistryService');
@@ -63,7 +61,7 @@ function _agreementIdGET(args, res, next) {
   logger.info("New request to GET agreement with id = " + args.agreement.value);
   var AgreementModel = config.db.models.AgreementModel;
   AgreementModel.findOne({
-    'id': args.agreement.value
+    id: args.agreement.value
   }, function(err, agreement) {
     if (err) {
       logger.error(err.toString());
@@ -126,14 +124,14 @@ function _agreementsPOST(args, res, next) {
           logger.info('New agreement saved successfully!');
           logger.info('Initializing agreement state');
           //Initialize state
-          stateManager.initializeState(schema, (st) => {
+          agreementManager.initializeState(schema, (st) => {
             var state = new config.db.models.StateModel(st);
             state.save((err) => {
               if (err) {
                 logger.error("Mongo error saving state: " + err.toString());
                 res.json(new errorModel(500, err));
               } else {
-                logger.info("State initialized successfully!: ");
+                logger.info("State initialized successfully!");
                 res.json({
                   code: 200,
                   message: 'New agreement saved successfully!',

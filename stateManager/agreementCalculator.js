@@ -11,60 +11,80 @@ var fs = require('fs');
 var Promise = require("bluebird");
 var request = require('request');
 const vm = require('vm');
+var config = require('../config');
+var logger = config.logger;
 
-var calculators = require('./calculators.js')
+var calculators = require('./calculators.js');
 
 module.exports = {
     process: _process
 }
 
-function _process(agreement, from, to) {
+function _process(agreement, manager, from, to) {
     return new Promise((resolve, reject) => {
         try {
 
             //Process metrics
 
-            //for each metric processMetric
-            var processMetrics = [];
-            for (var metricId in agreement.terms.metrics) {
-                processMetrics.push(calculators.metricCalculator.process(agreement, metricId))
-            }
-
-            // Process guarantees compensations
-            var processGuarantees = [];
-            agreement.terms.guarantees.forEach(function(guarantee) {
-                processGuarantees.push(calculators.guaranteeCalculator.process(agreement, guarantee.id));
-            });
-
             //Process quotas
 
             //Process rates
 
+            // Process guarantees
 
-            // Execute all promises
-            Promise.settle(processGuarantees).then(function(results) {
-                if (results.length > 0) {
-                    var values = [];
-                    for (var i = 0; i < results.length; i++) {
-                        if (results[i].isFulfilled()) {
-                            if (results[i].value().length > 0) {
-                                results[i].value().forEach(function(guaranteeValue) {
-                                    values.push(guaranteeValue);
-                                });
+            if (config.parallelProcess.guarantees) {
+                logger.ctlState("Processing guarantees in parallel mode");
+                var processGuarantees = [];
+                agreement.terms.guarantees.forEach(function(guarantee) {
+                    processGuarantees.push(manager.get('guarantees', {
+                        guarantee: guarantee.id
+                    }));
+                });
+                
+                Promise.settle(processGuarantees).then(function(results) {
+                    if (results.length > 0) {
+                        var values = [];
+                        for (var i = 0; i < results.length; i++) {
+                            if (results[i].isFulfilled()) {
+                                if (results[i].value().length > 0) {
+                                    results[i].value().forEach(function(guaranteeValue) {
+                                        values.push(guaranteeValue);
+                                    });
+                                }
                             }
                         }
+                        return resolve(values);
+                    } else {
+                        return reject('Error processing compensations: empty result');
                     }
-                    return resolve(values);
-                } else {
-                    return reject('Error processing compensations: empty result');
-                }
-
-            }, function(err) {
-                console.error(err);
-                return reject(err);
-            });
+                }, function(err) {
+                    console.error(err);
+                    return reject(err);
+                });
+            } else {
+                logger.ctlState("Processing guarantees in sequential mode");
+                var ret = [];
+                Promise.each(manager.agreement.terms.guarantees, (guarantee) => {
+                    logger.ctlState("- guaranteeId: " + guarantee.id);
+                    return manager.get('guarantees', {
+                        guarantee: guarantee.id
+                    }).then((results) => {
+                        for (var i in results) {
+                            ret.push(manager.current(results[i]));
+                        }
+                    }, (err) => {
+                        logger.error(err);
+                        return reject(err);
+                    });
+                }).then(function(results) {
+                    return resolve(ret);
+                }, (err) => {
+                    logger.error("Error processing guarantees: ", err);
+                    return reject(err);
+                });
+            }
         } catch (e) {
-            console.error(e);
+            logger.error(e);
             return reject(e);
         }
     });

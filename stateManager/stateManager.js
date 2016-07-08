@@ -136,7 +136,7 @@ function _update(stateType, query, logsState) {
     return new Promise((resolve, reject) => {
         switch (stateType) {
             case "agreement":
-                calculators.agreementCalculator.process(stateManager.agreement)
+                calculators.agreementCalculator.process(stateManager.agreement, stateManager)
                     .then(function(agreementState) {
                         stateManager.put(stateType, agreementState).then((data) => {
                             return resolve(data);

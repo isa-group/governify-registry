@@ -3,7 +3,7 @@
 var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
 var config = require('../../../config');
-var stateManager = require('../../../stateManager/stateManager.js')
+var stateManager = require('../../../stateManager/stateManager.js');
 var Promise = require("bluebird");
 var fs = require('fs');
 var errorModel = require('../../../errors/index.js').errorModel;
@@ -67,12 +67,6 @@ module.exports.guaranteesGET = function(args, res, next) {
             var ret = [];
             Promise.each(manager.agreement.terms.guarantees, (guarantee) => {
                 logger.ctlState("- guaranteeId: " + guarantee.id);
-                // var guaranteeParams = args.scope.value;
-                // guaranteeParams.period = guaranteeParams.period ? guaranteeParams.period : {
-                //     from: '*',
-                //     to: '*'
-                // };
-                // guaranteeParams.guarantee = guarantee.id;
                 return manager.get('guarantees', {
                     guarantee: guarantee.id
                 }).then((results) => {
