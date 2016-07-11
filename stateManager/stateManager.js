@@ -46,17 +46,14 @@ function _get(stateType, query) {
     return new Promise((resolve, reject) => {
         logger.sm("Getting " + stateType + " state for query =  " + JSON.stringify(query));
         var StateModel = config.db.models.StateModel;
-        StateModel.aggregate([
-          {$match: {agreementId: stateManager.agreement.id}},
-          {$project: projectionBuilder(stateType, refineQuery(stateType, query))}
-        ], (err, result) => {
+        StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), (err, result) => {
             if(err){
                 logger.sm(JSON.stringify(err));
                 return reject(new errorModel(500, "Error while retrieving %s states: %s", stateType, err.toString()));
             }
-            if(result[0][stateType].length > 0){
+            if(result.length > 0){
                 logger.sm("There are " + stateType + " state for query =  " + JSON.stringify(query) + " in DB");
-                var states = result[0][stateType];
+                var states = result;
 
                 logger.sm('Checking if ' + stateType + ' is updated...');
                 isUpdated(stateManager.agreement, states).then((data)=>{
@@ -113,77 +110,50 @@ function _put(stateType, query, value, metadata) {
     return new Promise((resolve, reject) => {
           var StateModel = config.db.models.StateModel;
 
-          var dbQuery = {
-            agreementId: stateManager.agreement.id
-          };
-          dbQuery[stateType] = { $elemMatch: refineQuery(stateType, query) };
-          logger.sm("Updating " + stateType + " state...");
+          logger.sm("AGREEMENT: " +stateManager.agreement.id);
+          var dbQuery = projectionBuilder( stateType, refineQuery(stateManager.agreement.id, stateType, query) );
+          logger.sm("Updating " + stateType + " state... with refinedQuery = " + JSON.stringify(dbQuery, null, 2));
 
-          var push = {};
-          push[stateType + ".$.records"] = new record(value, metadata);
-
-          StateModel.update(dbQuery, {$push: push},(err, result)=>{
+          StateModel.update(dbQuery, {$push: {"records": new record(value, metadata)}}, (err, result)=>{
             if(err){
                 logger.sm("Error, Is not possible to update state with this query = " + JSON.stringify(query));
                 return reject(new errorModel(500, err));
             } else {
                 logger.sm("NMODIFIED record:  " + JSON.stringify(result) );
 
-
-                var idS = null;
-                if( query.guarantee){
-                  idS = "G_"+query.guarantee;
+                var stateSignature = "StateSignature ("+ result.nModified +") " + "[";
+                for(var v in dbQuery){
+                    stateSignature += dbQuery[v];
                 }
-                if( query.metric){
-                  idS = "M_"+query.metric;
-                }
-
-                logger.sm("StateSignature: (%d) [%s_%s_%s_%s_%s]",
-                      result.nModified,
-                      idS,
-                      query.scope.node,
-                      query.scope.priority,
-                      query.period ? query.period.to : undefined,
-                      query.period ? query.period.from : undefined);
+                stateSignature += "]";
+                logger.sm(stateSignature);
 
               // Check if there already is an stete
               if(result.nModified === 0){
                   // There is no state for Guarantee / Metric , ....
                   logger.sm("Creating new " + stateType + " state with the record...");
 
-                  var newState = new state(value, query, metadata);
-                  var updateQuery = {
-                     parm01: { agreementId: stateManager.agreement.id },
-                     parm02: {$push:{}}
-                  }
-                  updateQuery.parm02.$push[stateType] = newState;
-                  logger.sm("updateQuery = " + JSON.stringify(updateQuery, null, 2));
-                  StateModel.update(updateQuery.parm01, updateQuery.parm02 ,(err, result)=>{
+                  var newState = new state(value, refineQuery(stateManager.agreement.id, stateType, query), metadata);
+                  var stateModel = new StateModel(newState);
+
+                  stateModel.save(newState, (err, result)=>{
                     if(err){
                       logger.error(err.toString());
                       return  reject(new errorModel(500, err));
                     }
                     else {
                       logger.sm("Inserted new record in the new " + stateType + " state.");
-                      StateModel.aggregate([
-                        {$match: {agreementId: stateManager.agreement.id}},
-                        {$project: projectionBuilder(stateType, refineQuery(stateType, query))}
-                      ], (err, result) => {
+                      StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), (err, result) => {
                           if(err){
                             logger.error(err.toString());
                             return  reject(new errorModel(500, err));
                           }
                           if(result.length != 1){
-                              logger.error("Inconsistent DB: multiple agreement states " + JSON.stringify(  {agreementId: stateManager.agreement.id} , null, 2));
-                              return reject(new errorModel(500, "Inconsistent DB: multiple agreement states " + JSON.stringify(  {agreementId: stateManager.agreement.id} , null, 2)));
+                              logger.error("Inconsistent DB: multiple states for query = " + JSON.stringify(  refineQuery(stateManager.agreement.id, stateType, query) , null, 2));
+                              logger.error("DB result = " + JSON.stringify(  result , null, 2));
+                              return reject(new errorModel(500, "Inconsistent DB: multiple states for query " + JSON.stringify(  refineQuery(stateManager.agreement.id, stateType, query) , null, 2)));
                           }else{
-                              if(result[0][stateType].length != 1){
-                                  logger.error("Inconsistent DB: multiple " + stateType + " states for query: " + JSON.stringify( refineQuery(stateType, query), null, 2));
-                                  logger.error("   DB result: " + JSON.stringify( result[0][stateType], null, 2));
-                                  return reject(new errorModel(500, "Inconsistent DB: multiple " + stateType + " states for query: " + JSON.stringify( refineQuery(stateType, query), null, 2)));
-                              }else{
-                                  return resolve(result[0][stateType]);
-                              }
+                              return resolve(result);
                           }
                       });
                     }
@@ -192,25 +162,17 @@ function _put(stateType, query, value, metadata) {
                   // There is some state for Guarantee / Metric , ....
                   // Lets add a new record.
                   logger.sm("Inserted new record of " + stateType + " state.");
-                  StateModel.aggregate([
-                    {$match: {agreementId: stateManager.agreement.id}},
-                    {$project: projectionBuilder(stateType, refineQuery(stateType, query))}
-                  ], (err, result) => {
-
+                  StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), (err, result) => {
                       if(err){
                         logger.error(err.toString());
                         return  reject(new errorModel(500, err));
                       }
                       if(result.length != 1){
-                          logger.error("Inconsistent DB: multiple agreement states " + JSON.stringify(  {agreementId: stateManager.agreement.id} , null, 2));
-                          return reject(new errorModel(500, "Inconsistent DB: multiple agreement states " + JSON.stringify(  {agreementId: stateManager.agreement.id} , null, 2)));
+                          logger.error("Inconsistent DB: multiple states for query = " + JSON.stringify(  refineQuery(stateManager.agreement.id, stateType, query) , null, 2));
+                          logger.error("DB result = " + JSON.stringify(  result , null, 2));
+                          return reject(new errorModel(500, "Inconsistent DB: multiple states for query " + JSON.stringify(  refineQuery(stateManager.agreement.id, stateType, query) , null, 2)));
                       }else{
-                          if(result[0][stateType].length != 1){
-                              logger.error("Inconsistent DB: multiple " + stateType + " states for query: " + JSON.stringify( refineQuery(stateType, query), null, 2));
-                              return reject(new errorModel(500, "Inconsistent DB: multiple " + stateType + " states for query: " + JSON.stringify( refineQuery(stateType, query), null, 2)));
-                          }else{
-                              return resolve(result[0][stateType]);
-                          }
+                          return resolve(result);
                       }
                   });
               }
@@ -421,32 +383,47 @@ function getCurrent(state) {
 }
 
 function _current(state) {
-    var newState = clone(state);
-    var currentRecord = getCurrent(newState);
+
+    var newState = {
+        stateType: state.stateType,
+        agreementId: state.agreementId,
+        id: state.id,
+        scope: state.scope,
+        period: state.period,
+        window: state.window ? state.window: undefined,
+    };
+
+    var currentRecord = getCurrent(state);
+
     for (var v in currentRecord) {
         if (v != 'time' && v != 'logsState')
             newState[v] = currentRecord[v];
     }
-    delete newState.records;
+
     return newState;
 }
 
 // refines the query for a search in db
-function refineQuery(stateType, query){
+function refineQuery(agId, stateType, query){
     var refinedQuery = {};
+    refinedQuery.stateType = stateType;
+    refinedQuery.agreementId = agId;
+
     if(query.scope)
       refinedQuery.scope = query.scope;
+
     if(query.period)
       refinedQuery.period = query.period;
 
+    if(query.window)
+      refinedQuery.window= query.window;
+
     switch (stateType) {
       case 'metrics':
-        refinedQuery.metric = query.metric;
-        if(query.window)
-          refinedQuery.window= query.window;
+        refinedQuery.id = query.metric;
         break;
       case 'guarantees':
-        refinedQuery.guarantee = query.guarantee;
+        refinedQuery.id = query.guarantee;
         break;
     }
 
@@ -454,46 +431,33 @@ function refineQuery(stateType, query){
 }
 
 function projectionBuilder (stateType, query){
-    var singular = {guarantees: "guarantee", metrics: "metric", quotas: "quota", rates: "rate", pricing: "pricing"};
-    var conditionArray = [];
-    var projection = {};
-    var singularStateType = singular[stateType];
-    if(!singularStateType) return logger.error("projectionBuilder error: stateType '%s' is not expected", stateType);
+  var singular = {guarantees: "guarantee", metrics: "metric", quotas: "quota", rates: "rate", pricing: "pricing"};
+  var projection = {};
+  var singularStateType = singular[stateType];
+  if(!singularStateType) return logger.error("projectionBuilder error: stateType '%s' is not expected", stateType);
 
-    //iterate over element in the query (scope, period...)
-    for(var v in query){
-      if(query[v] instanceof Object){
-        var queryComponent = query[v];
-        //if it is an object we iterate over it (e.g. period.*)
-        for(var qC in queryComponent){
-          var propValue = null;
-          var propName = "$$" + singularStateType;
-          propName += "." + v + "." + qC;
-          propValue = queryComponent[qC];
-          var eq = {$eq: [propName, propValue]}
-          if(propValue != '*')
-            conditionArray.push(eq);
-        }
-      }else{
-        //if it is not an object we add it directly (e.g. guarantee.guarantee = "K01")
+  //iterate over element in the query (scope, period...)
+  for(var v in query){
+    if(query[v] instanceof Object){
+      var queryComponent = query[v];
+      //if it is an object we iterate over it (e.g. period.*)
+      for(var qC in queryComponent){
         var propValue = null;
-        var propName = "$$" + singularStateType;
-        propName += "." + v;
-        propValue = query[v];
-        var eq = {$eq: [propName, propValue]}
-        conditionArray.push(eq);
+        var propName = v + "." + qC;
+        propValue = queryComponent[qC];
+        if(propValue != '*')
+          projection[propName]=propValue;
       }
+    }else{
+      //if it is not an object we add it directly (e.g. guarantee.guarantee = "K01")
+      var propValue = null;
+      var propName =  v;
+      propValue = query[v];
+      if(propValue != '*')
+        projection[propName]=propValue;
     }
+  }
 
-    projection[stateType] = {
-      $filter: {
-        input: '$'+stateType,
-        as: singularStateType,
-        cond: {
-          $and: conditionArray
-        }
-      }
-    }
-    logger.sm("Mongo projection: " + JSON.stringify(projection, null, 2));
-    return projection;
+  logger.sm("Mongo projection: " + JSON.stringify(projection, null, 2));
+  return projection;
 }

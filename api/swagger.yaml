@@ -904,7 +904,7 @@ paths:
         description: "XXX"
         required: true
         type: string
-      - name: "query"
+      - name: "metricValue"
         in: "body"
         description: "XXX"
         required: true

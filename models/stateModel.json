@@ -2,223 +2,57 @@
   "agreementId": {
     "type": "string"
   },
-  "fulfilled": {
-    "type": "boolean"
+  "stateType": {
+    "type": "string"
+  },
+  "id": {
+    "type": "string"
+  },
+  "period": {
+    "type": "object",
+    "properties": {
+      "from": {
+        "type": "string"
+      },
+      "to": {
+        "type": "string"
+      }
+    }
   },
   "scope": {
     "type": "object"
   },
-  "pricing": {
-    "type": "array",
-    "items": {
-      "type": "object",
-      "properties": {
-        "groupBy": {
-          "type": "object"
-        },
-        "period": {
-          "type": "object"
-        },
-        "records": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "value": {
-                "type": "object",
-                "properties": {
-                  "penalties": {
-                    "type": "object"
-                  }
-                }
-              },
-              "logsState": {
-                "oneOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "number"
-                  }
-                ]
-              }
-            }
-          }
-        }
+  "window": {
+    "type": "object",
+    "properties": {
+      "_type": {
+        "type": "string"
+      },
+      "period": {
+        "type": "string"
       }
     }
   },
-  "metrics": {
+  "records": {
     "type": "array",
     "items": {
       "type": "object",
       "properties": {
-        "metric": {
-          "type": "string"
-        },
-        "scope": {
-          "type": "object"
-        },
-        "schema": {
-          "type": "object"
-        },
-        "window": {
-          "type": "object",
-          "properties": {
-            "_type": {
+        "value": {
+          "oneOf": [
+            {
               "type": "string"
             },
-            "period": {
-              "type": "string"
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
             }
-          }
+          ]
         },
-        "records": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "value": {
-                "oneOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "boolean"
-                  }
-                ]
-              },
-              "time": {
-                "type": "string"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "guarantees": {
-    "type": "array",
-    "items": {
-      "type": "object",
-      "properties": {
-        "guarantee": {
+        "time": {
           "type": "string"
-        },
-        "scope": {
-          "type": "object"
-        },
-        "logs": {
-          "type": "object"
-        },
-        "period": {
-          "type": "object"
-        },
-        "evidences": {
-          "type": "array",
-          "items": {
-            "type": "object"
-          }
-        },
-        "records": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "fulfilled": {
-                "type": "boolean"
-              },
-              "penalties": {
-                "type": "object"
-              },
-              "time": {
-                "type": "string"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "quotas": {
-    "type": "array",
-    "items": {
-      "type": "object",
-      "properties": {
-        "quota": {
-          "type": "string"
-        },
-        "scope": {
-          "type": "object"
-        },
-        "logs": {
-          "type": "object"
-        },
-        "period": {
-          "type": "object"
-        },
-        "evidences": {
-          "type": "array",
-          "items": {
-            "type": "object"
-          }
-        },
-        "records": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "fulfilled": {
-                "type": "boolean"
-              },
-              "time": {
-                "type": "string"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "rates": {
-    "type": "array",
-    "items": {
-      "type": "object",
-      "properties": {
-        "rate": {
-          "type": "string"
-        },
-        "scope": {
-          "type": "object"
-        },
-        "logs": {
-          "type": "object"
-        },
-        "period": {
-          "type": "object"
-        },
-        "evidences": {
-          "type": "array",
-          "items": {
-            "type": "object"
-          }
-        },
-        "records": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "fulfilled": {
-                "type": "boolean"
-              },
-              "time": {
-                "type": "string"
-              }
-            }
-          }
         }
       }
     }
