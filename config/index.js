@@ -32,17 +32,17 @@ var logConfig = {
     levels: {
         error: 7,
         warning: 8,
-        agreement: 9,
         ctlAgreement: 9,
         ctlState: 9,
-        pricing: 9,
-        quotas: 9,
-        rates: 9,
-        guarantees: 9,
-        metrics: 9,
-        sm: 9,
-        info: 10,
-        debug: 11
+        agreement: 10,
+        pricing: 10,
+        quotas: 10,
+        rates: 10,
+        guarantees: 10,
+        metrics: 10,
+        sm: 11,
+        info: 12,
+        debug: 13
     },
     colors: {
         error: 'red',
@@ -76,7 +76,7 @@ module.exports.logger = new winston.Logger({
             colorize: false
         }),
         new winston.transports.Console({
-            level: 'debug',
+            level: 'metrics',
             handleExceptions: true,
             json: false,
             colorize: true,
