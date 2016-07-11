@@ -425,7 +425,7 @@ function refineQuery(stateType, query){
 }
 
 function projectionBuilder (stateType, query){
-    var singular = {guarantees: "guarantee", metrics: "metric", quotas: "quota", rates: "rate"};
+    var singular = {guarantees: "guarantee", metrics: "metric", quotas: "quota", rates: "rate", pricing: "pricing"};
     var conditionArray = [];
     var projection = {};
     var singularStateType = singular[stateType];
