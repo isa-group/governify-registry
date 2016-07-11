@@ -83,7 +83,7 @@ function _get(stateType, query) {
             }else{
                 logger.sm("There are not " + stateType + " state for query =  " + JSON.stringify(query) + " in DB");
                 logger.sm("Adding states of " + stateType);
-                isUpdated(stateManager.agreement, states).then((data)=>{
+                isUpdated(stateManager.agreement).then((data)=>{
                     stateManager.update(stateType, query, data.logsState).then((states) => {
                         return resolve(states);
                     }, (err) => {
