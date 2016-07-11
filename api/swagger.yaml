@@ -904,7 +904,7 @@ paths:
         description: "XXX"
         required: true
         type: string
-      - name: "metricValue"
+      - name: "query"
         in: "body"
         description: "XXX"
         required: true
@@ -926,6 +926,45 @@ paths:
       - "state-registry"
       description: "XXX"
       operationId: "statesAgreementMetricsMetricHistoryPOST"
+      parameters:
+      - name: "agreement"
+        in: "path"
+        description: "XXX"
+        required: true
+        type: string
+      - name: "metric"
+        in: "path"
+        description: "XXX"
+        required: true
+        type: string
+      - name: scope
+        in: body
+        description: "XXX"
+        required: true
+        #PASS to definitions
+        schema:
+          type: object
+          properties:
+            scope:
+              type: object
+            window:
+              type: object
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/metric_state"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/inline_response_400"
+      x-swagger-router-controller: "StateRegistry"
+  /states/{agreement}/metrics/{metric}/increase:
+    post:
+      tags:
+      - "state-registry"
+      description: "XXX"
+      operationId: "statesAgreementMetricsMetricIncreasePOST"
       parameters:
       - name: "agreement"
         in: "path"
@@ -1227,6 +1266,10 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/guarantee"
+      configurations:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/configuration'
       metrics:
         $ref: "#/definitions/metric"
       pricing:
@@ -1235,6 +1278,23 @@ definitions:
         $ref: "#/definitions/quotas"
       rates:
         $ref: "#/definitions/rates"
+
+  configuration:
+    type: object
+    properties:
+      scope:
+        type: object
+      of:
+        type: array
+        items:
+          $ref: '#/definitions/scopedConfiguration'
+  scopedConfiguration:
+    type: object
+    properties:
+      scope:
+        type: object
+      value:
+        type: string
 
   pricing:
     type: object
@@ -1267,24 +1327,49 @@ definitions:
     type: object
 
   rates:
-    type: object
-    additionalProperties:
+    type: array
+    items:
       $ref: "#/definitions/rate"
 
   rate:
     type: object
-    additionalProperties:
-      type: string
 
   quotas:
-    type: object
-    additionalProperties:
+    type: array
+    items:
       $ref: "#/definitions/quota"
 
   quota:
     type: object
-    additionalProperties:
-      type: string
+    properties:
+      id:
+        type: string
+      scope:
+        type: object
+      over:
+        type: object
+      of:
+        type: array
+        items:
+          $ref: '#/definitions/scopedQuota'
+
+  scopedQuota:
+    type: object
+    properties:
+      scope:
+        type: object
+      limits:
+        type: array
+        items:
+          $ref: '#/definitions/limit'
+
+  limit:
+    type: object
+    properties:
+      max:
+        type: number
+      period:
+        type: string
 
   guarantee:
     type: object
@@ -1333,7 +1418,6 @@ definitions:
     required:
       - type
       - period
-      - initial
     properties:
       initial:
         type: string

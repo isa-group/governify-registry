@@ -42,6 +42,9 @@ module.exports.statesAgreementMetricsMetricHistoryPOST = function statesAgreemen
   Stateregistry.statesAgreementMetricsMetricHistoryPOST(req.swagger.params, res, next);
 };
 
+module.exports.statesAgreementMetricsMetricIncreasePOST = function statesAgreementMetricsMetricIncreasePOST(req, res, next) {
+  Stateregistry.statesAgreementMetricsMetricIncreasePOST(req.swagger.params, res, next);
+};
 
 module.exports.statesAgreementMetricsMetricPUT = function statesAgreementMetricsMetricPUT(req, res, next) {
   Stateregistry.statesAgreementMetricsMetricPUT(req.swagger.params, res, next);

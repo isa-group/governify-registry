@@ -10,6 +10,43 @@ var stateManager = require('../../../stateManager/stateManager.js')
 var Promise = require("bluebird");
 var request = require("request");
 
+
+module.exports.metricsIdIncrease = function (args, res, next){
+    var agreementId = args.agreement.value;
+    var metricId = args.metric.value;
+    var query = args.scope.value;
+
+    logger.ctlState("New request to increase metric = %s, with values = %s", metricId, JSON.stringify(query, null, 2) );
+
+    stateManager({
+        id: agreementId
+    }).then((manager) => {
+
+        query.metric = metricId;
+
+        manager.get('metrics', query).then((metric)=>{
+
+            logger.ctlState("Result of getting metricValues: " + JSON.stringify(metric, null, 2));
+
+            logger.ctlState("Query to put "+ JSON.stringify(query, null, 2));
+            manager.put('metrics', query, manager.current(metric[0]).value + 1).then((success) => {
+                res.json(success.map((element) => {
+                    return manager.current(element);
+                }));
+            }, (err) => {
+                res.status(err.code).json(err);
+            });
+
+        }, (err) => {
+            res.status(err.code).json(err);
+        });
+
+    }, (err) => {
+        res.status(err.code).json(err);
+    });
+
+}
+
 module.exports.metricsIdPUT = function(args, res, next) {
     /**
      * parameters expected in the args:

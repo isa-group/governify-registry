@@ -84,11 +84,17 @@ function _get(stateType, query) {
                 logger.sm("There are not " + stateType + " state for query =  " + JSON.stringify(query) + " in DB");
                 logger.sm("Adding states of " + stateType);
                 isUpdated(stateManager.agreement, states).then((data)=>{
-                    stateManager.update(stateType, query, data.logsState).then((states) => {
-                        return resolve(states);
-                    }, (err) => {
-                        return reject(err);
-                    });
+                    if(data.isUpdated){
+                        logger.sm("There is not state for this metric returnig initial values.")
+                        var newState = new state(0, query, {});
+                        return resolve([newState]);
+                    }else{
+                        stateManager.update(stateType, query, data.logsState).then((states) => {
+                            return resolve(states);
+                        }, (err) => {
+                            return reject(err);
+                        });
+                    }
                 }, (err)=>{
                     logger.sm(JSON.stringify(err));
                     return reject(new errorModel(500, "Error while checking if it is update: " + err));
@@ -113,11 +119,11 @@ function _put(stateType, query, value, metadata) {
           logger.sm("Updating " + stateType + " state...");
 
           var push = {};
-          push[stateType + ".0.records"] = new record(value, metadata);
+          push[stateType + ".$.records"] = new record(value, metadata);
 
           StateModel.update(dbQuery, {$push: push},(err, result)=>{
             if(err){
-                logger.sm("Error, Is not possible to updating state with this query = " + JSON.stringify(query));
+                logger.sm("Error, Is not possible to update state with this query = " + JSON.stringify(query));
                 return reject(new errorModel(500, err));
             } else {
                 logger.sm("NMODIFIED record:  " + JSON.stringify(result) );
@@ -131,7 +137,13 @@ function _put(stateType, query, value, metadata) {
                   idS = "M_"+query.metric;
                 }
 
-                logger.sm("StateSignature: (%d) [%s_%s_%s_%s_%s]",result.nModified,idS,query.scope.node, query.scope.priority, query.period.to, query.period.from );
+                logger.sm("StateSignature: (%d) [%s_%s_%s_%s_%s]",
+                      result.nModified,
+                      idS,
+                      query.scope.node,
+                      query.scope.priority,
+                      query.period ? query.period.to : undefined,
+                      query.period ? query.period.from : undefined);
 
               // Check if there already is an stete
               if(result.nModified === 0){
@@ -301,6 +313,17 @@ function _update(stateType, query, logsState) {
                     return reject(new errorModel(500, err));
                 });
                 break;
+
+            case "quotas":
+                calculators.quotasCalculator.process(stateManager, query).then((quotasStates) => {
+                    logger.sm('All quotas states (' + quotasStates.length + ') has been calculated ');
+                    //putting quotas
+                    return resolve(quotasStates);
+                }, (err) => {
+                    logger.error(err.toString());
+                    return reject(new errorModel(500, err));
+                });
+                break;
             default:
                 return reject(new errorModel(500, "There are not method implemented to calculate " + stateType + " state"));
                 break;
@@ -339,36 +362,41 @@ function isUpdated(agreement, states) {
         for (var log in agreement.context.definitions.logs) {
             if (agreement.context.definitions.logs[log].default) logUris = agreement.context.definitions.logs[log].stateUri;
         }
+        logger.sm("LogUris = " + logUris);
+        if(logUris){
+            var current = states;
+            if (current)
+                current = getCurrent(current[0]);
 
-        var current = states;
-        if (current)
-            current = getCurrent(current[0]);
-
-        logger.sm('Sending request to LOG state URI...');
-        request.get({ uri: logUris, json: true}, (err, response, body) => {
-            if (err) {
-                logger.error(err);
-                return reject("Error with Logs state URI this: " + err);
-            }
-            if (response.statusCode == 200 && body) {
-                if (current) {
-                    if (current.logsState) {
-                        if (current.logsState == body) {
-                            return resolve({isUpdated: true,  logsState: body});
+            logger.sm('Sending request to LOG state URI...');
+            request.get({ uri: logUris, json: true}, (err, response, body) => {
+                if (err) {
+                    logger.error(err);
+                    return reject("Error with Logs state URI this: " + err);
+                }
+                if (response.statusCode == 200 && body) {
+                    if (current) {
+                        if (current.logsState) {
+                            if (current.logsState == body) {
+                                return resolve({isUpdated: true,  logsState: body});
+                            } else {
+                                return resolve({  isUpdated: false,logsState: body  });
+                            }
                         } else {
-                            return resolve({  isUpdated: false,logsState: body  });
+                            return resolve({isUpdated: true,  logsState: body});
                         }
                     } else {
-                        return resolve({isUpdated: true,  logsState: body});
+                        return resolve({isUpdated: false, logsState: body});
                     }
                 } else {
-                    return resolve({isUpdated: false, logsState: body});
+                    return reject("Error with Logs state URI this: " + logUris + " is not correct");
                 }
-            } else {
-                return reject("Error with Logs state URI this: " + logUris + " is not correct");
-            }
-        });
-      });
+            });
+        }else{
+            logger.sm("This metric is not calculated from logs, please PUT values.")
+            return resolve({isUpdated: true});
+        }
+    });
 }
 
 function checkQuery(element, query) {

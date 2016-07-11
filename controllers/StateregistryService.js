@@ -34,6 +34,7 @@ module.exports = {
     statesAgreementMetricsPOST: states.metrics.metricsPOST,
     statesAgreementMetricsMetricPOST: states.metrics.metricsIdPOST,
     statesAgreementMetricsMetricPUT: states.metrics.metricsIdPUT,
+    statesAgreementMetricsMetricIncreasePOST: states.metrics.metricsIdIncrease,
 
     // Pricing
     statesAgreementPricingBillingPenaltiesPOST: states.pricing.PricingBillingPenaltiesPOST,
