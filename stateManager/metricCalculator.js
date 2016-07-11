@@ -34,16 +34,7 @@ function processMetric(agreement, metricId, metricParameters) {
             data.window = metricParameters.window;
 
             if (metricParameters.evidences) {
-                data.evidences = [];
-                metricParameters.evidences.forEach(function(evidence) {
-                    var evidenceId = Object.keys(evidence)[0];
-                    if (evidence[evidenceId].computer) {
-                        data.evidences.push({
-                            id: evidenceId,
-                            computer: evidence[evidenceId].computer
-                        });
-                    }
-                });
+                data.evidences = metricParameters.evidences;
             }
 
             var scope = {};

@@ -112,6 +112,19 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                 }
             }
 
+            var evidences = [];
+            if (ofElement.evidences) {
+                ofElement.evidences.forEach(function(evidence) {
+                    var evidenceId = Object.keys(evidence)[0];
+                    if (evidence[evidenceId].computer) {
+                        evidences.push({
+                            id: evidenceId,
+                            computer: evidence[evidenceId].computer
+                        });
+                    }
+                });
+            }
+
             if (ofElement.with) {
                 var metrics = [];
                 for (var metricId in ofElement.with) {
@@ -119,7 +132,7 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                         metric: metricId,
                         scope: scopeWithDefault,
                         parameters: ofElement.with[metricId],
-                        evidences: ofElement.evidences,
+                        evidences: evidences,
                         window: ofElement.window,
                         period: {
                             from: '*',
@@ -146,7 +159,7 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                                 period: metricValue.period
                             }
 
-                            var tsIndex = utils.containsObject(ts,timedScopes);
+                            var tsIndex = utils.containsObject(ts, timedScopes);
 
                             if (tsIndex == -1) {
                                 tsIndex = timedScopes.push(ts) - 1;
@@ -176,7 +189,7 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                 for (var index = 0; index < timedScopes.length; index++) {
 
                     var guaranteeValue = calculatePenalty(agreement, guarantee, timedScopes[index], metricValues[index], slo, penalties);
-                    if(guaranteeValue)
+                    if (guaranteeValue)
                         guaranteesValues.push(guaranteeValue);
                 }
                 logger.guarantees('All penalties for scoped guarantee ' + guarantee.id + ' calculated.');
@@ -204,15 +217,15 @@ function calculatePenalty(agreement, guarantee, timedScope, metricsValues, slo, 
 
     for (var metricId in guarantee.of[0].with) {
         var value = 0;
-        if(metricsValues[metricId])
-          value = metricsValues[metricId].value;
-        if(value === 'NaN' || value === ''){
+        if (metricsValues[metricId])
+            value = metricsValues[metricId].value;
+        if (value === 'NaN' || value === '') {
             logger.warning('Unexpected value (' + value + ') for metric ' + metricId + ' ');
             return;
         }
         vm.runInThisContext(metricId + " = " + value);
         guaranteeValue.metrics[metricId] = value;
-        guaranteeValue.evidences = guaranteeValue.evidences.concat(metricsValues[metricId] &&  metricsValues[metricId].evidences ? metricsValues[metricId].evidences : [] );
+        guaranteeValue.evidences = guaranteeValue.evidences.concat(metricsValues[metricId] && metricsValues[metricId].evidences ? metricsValues[metricId].evidences : []);
         var val = {};
         val[metricId] = value;
         values.push(val);
