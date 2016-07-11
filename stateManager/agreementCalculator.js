@@ -20,7 +20,7 @@ module.exports = {
     process: _process
 }
 
-function _process(agreement, manager, from, to) {
+function _process(manager, from, to) {
     return new Promise((resolve, reject) => {
         try {
 
@@ -35,12 +35,12 @@ function _process(agreement, manager, from, to) {
             if (config.parallelProcess.guarantees) {
                 logger.ctlState("Processing guarantees in parallel mode");
                 var processGuarantees = [];
-                agreement.terms.guarantees.forEach(function(guarantee) {
+                manager.agreement.terms.guarantees.forEach(function(guarantee) {
                     processGuarantees.push(manager.get('guarantees', {
                         guarantee: guarantee.id
                     }));
                 });
-                
+
                 Promise.settle(processGuarantees).then(function(results) {
                     if (results.length > 0) {
                         var values = [];
@@ -77,7 +77,18 @@ function _process(agreement, manager, from, to) {
                         return reject(err);
                     });
                 }).then(function(results) {
-                    return resolve(ret);
+                    if (manager.agreement.terms.metrics['SPU_IO_K00']) {
+                        manager.get('metrics', {
+                            metric: 'SPU_IO_K00'
+                        }).then((results) => {
+                            return resolve(ret);
+                        }, (err) => {
+                            logger.error(err);
+                            return reject(err);
+                        });
+                    } else {
+                        return resolve(ret);
+                    }
                 }, (err) => {
                     logger.error("Error processing guarantees: ", err);
                     return reject(err);
@@ -87,5 +98,7 @@ function _process(agreement, manager, from, to) {
             logger.error(e);
             return reject(e);
         }
+
+
     });
 }

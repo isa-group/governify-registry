@@ -135,7 +135,7 @@ function _agreementIdRELOAD(args, res, next) {
                         stateManager({
                             id: agreementId
                         }).then(function(manager) {
-                            calculators.agreementCalculator.process(agreement, manager).then(function(result) {
+                            calculators.agreementCalculator.process(manager).then(function(result) {
                                 if (errors.length > 0)
                                     logger.error("Agreement state reload has been finished with " + errors.length + " errors: \n" + JSON.stringify(errors));
                                 else {
@@ -165,7 +165,8 @@ function _agreementIdRELOAD(args, res, next) {
 function sendMail(to, agreement) {
     logger.ctlState("Sending email to " + to);
 
-    var mailContent = util.format(" State of SLA '%s' has been updated based on the log registered.<br/> Current log count is:<br/>", agreement.id);
+    //var mailContent = util.format(config.email.messages.reloadAgreement.mailContent, agreement.id);
+    var mailContent = util.format("State of SLA '%s' has been updated based on the log registered.<br/> Current log count is:<br/>", agreement.id);
 
     var logRequests = [];
     for (var logId in agreement.context.definitions.logs) {

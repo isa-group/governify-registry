@@ -83,7 +83,7 @@ function _get(stateType, query) {
             }else{
                 logger.sm("There are not " + stateType + " state for query =  " + JSON.stringify(query) + " in DB");
                 logger.sm("Adding states of " + stateType);
-                isUpdated(stateManager.agreement, states).then((data)=>{
+                isUpdated(stateManager.agreement).then((data)=>{
                     if(data.isUpdated){
                         logger.sm("There is not state for this metric returnig initial values.")
                         var newState = new state(0, query, {});
@@ -95,6 +95,7 @@ function _get(stateType, query) {
                             return reject(err);
                         });
                     }
+
                 }, (err)=>{
                     logger.sm(JSON.stringify(err));
                     return reject(new errorModel(500, "Error while checking if it is update: " + err));
@@ -240,7 +241,7 @@ function _update(stateType, query, logsState) {
             case "guarantees":
                 calculators.guaranteeCalculator.process(stateManager.agreement, query.guarantee, stateManager)
                     .then(function(guaranteeStates) {
-                        logger.sm('Guarantee states for ' + guaranteeStates.guaranteeId + ' has been calculated (' + guaranteeStates.guaranteeValues.length + ') ');
+                        logger.sm('Guarantee states for ' + guaranteeStates.guaranteeId + ' have been calculated (' + guaranteeStates.guaranteeValues.length + ') ');
                         logger.debug('Guarantee states: ' + JSON.stringify(guaranteeStates, null, 2));
                         var processguarantees = [];
                         guaranteeStates.guaranteeValues.forEach(function(guaranteeState) {
@@ -259,7 +260,7 @@ function _update(stateType, query, logsState) {
                         logger.sm('Created parameters array for saving states of guarantee of length ' + processguarantees.length);
                         logger.sm('Persisting guarantee states...');
                         Promise.all(processguarantees).then((guarantees) => {
-                            logger.sm('All guarantee states has been persisted');
+                            logger.sm('All guarantee states have been persisted');
                             var result = [];
                             for (var a in guarantees) {
                                 result.push(guarantees[a][0]);
@@ -274,7 +275,7 @@ function _update(stateType, query, logsState) {
             case "metrics":
                 calculators.metricCalculator.process(stateManager.agreement, query.metric, query)
                     .then(function(metricStates) {
-                        logger.sm('Metric states for ' + metricStates.metricId + ' has been calculated (' + metricStates.metricValues.length + ') ');
+                        logger.sm('Metric states for ' + metricStates.metricId + ' have been calculated (' + metricStates.metricValues.length + ') ');
                         var processMetrics = [];
                         metricStates.metricValues.forEach(function(metricValue) {
                             processMetrics.push(
@@ -292,7 +293,7 @@ function _update(stateType, query, logsState) {
                         logger.sm('Created parameters array for saving states of metric of length ' + processMetrics.length);
                         logger.sm('Persisting metric states...');
                         Promise.all(processMetrics).then((metrics) => {
-                            logger.sm('All metric states has been persisted');
+                            logger.sm('All metric states have been persisted');
                             var result = [];
                             for (var a in metrics) {
                                 result.push(metrics[a][0]);
@@ -306,7 +307,7 @@ function _update(stateType, query, logsState) {
                 break;
             case "pricing":
                 calculators.pricingCalculator.process(stateManager.agreement, query, stateManager).then((pricingStates) => {
-                    logger.sm('All pricing states (' + pricingStates.length + ') has been calculated ');
+                    logger.sm('All pricing states (' + pricingStates.length + ') have been calculated ');
                     return resolve(pricingStates);
                 }, (err) => {
                     logger.error(err.toString());
