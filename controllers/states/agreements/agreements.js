@@ -165,7 +165,8 @@ function _agreementIdRELOAD(args, res, next) {
 function sendMail(to, agreement) {
     logger.ctlState("Sending email to " + to);
 
-    var mailContent = util.format(config.email.messages.reloadAgreement.mailContent, agreement.id);
+    //var mailContent = util.format(config.email.messages.reloadAgreement.mailContent, agreement.id);
+    var mailContent = util.format("State of SLA '%s' has been updated based on the log registered.<br/> Current log count is:<br/>", agreement.id);
 
     var logRequests = [];
     for (var logId in agreement.context.definitions.logs) {
@@ -201,9 +202,9 @@ function sendMail(to, agreement) {
         }
 
         var mailOptions = {
-            from: config.email.defaultMailFrom,
+            from: '"ISA-Group" <no-reply@isa.us.es>',
             to: to,
-            subject: config.email.messages.reloadAgreement.mailSubject,
+            subject: '[Governify] SLA status has been updated',
             html: mailContent
         };
 
