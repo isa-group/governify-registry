@@ -151,8 +151,8 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
             Promise.each(processMetrics, function(metricParam) {
                 return manager.get('metrics', metricParam).then(function(scopedMetricValues) {
                     if (scopedMetricValues.length > 0) {
-                        logger.guarantees('Timed scoped metric values for ' + scopedMetricValues[0].metric + ' has been calculated (' + scopedMetricValues.length + ') ');
-                        logger.guarantees('Updating timed scope array for ' + scopedMetricValues[0].metric + '...');
+                        logger.guarantees('Timed scoped metric values for ' + scopedMetricValues[0].id + ' has been calculated (' + scopedMetricValues.length + ') ');
+                        logger.guarantees('Updating timed scope array for ' + scopedMetricValues[0].id + '...');
                         scopedMetricValues.forEach(function(metricValue) {
                             var ts = {
                                 scope: metricValue.scope,
@@ -170,10 +170,10 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                             if (metricValues[tsIndex] == null)
                                 metricValues[tsIndex] = {};
 
-                            metricValues[tsIndex][metricValue.metric] = manager.current(metricValue);
+                            metricValues[tsIndex][metricValue.id] = manager.current(metricValue);
                         });
 
-                        logger.guarantees('Timed scope array updated for ' + scopedMetricValues[0].metric);
+                        logger.guarantees('Timed scope array updated for ' + scopedMetricValues[0].id);
                         logger.debug('Timed scope: ' + JSON.stringify(timedScopes, null, 2));
                         logger.debug('Metric value: ' + JSON.stringify(metricValues, null, 2));
                     } else {
@@ -187,8 +187,7 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                 var guaranteesValues = [];
                 logger.guarantees('Calculating penalties for scoped guarantee ' + guarantee.id + '...');
                 for (var index = 0; index < timedScopes.length; index++) {
-
-                    var guaranteeValue = calculatePenalty(agreement, guarantee, timedScopes[index], metricValues[index], slo, penalties);
+                    var guaranteeValue = calculatePenalty(agreement, guarantee, ofElement, timedScopes[index], metricValues[index], slo, penalties);
                     if (guaranteeValue)
                         guaranteesValues.push(guaranteeValue);
                 }
@@ -205,7 +204,7 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
     }
 }
 
-function calculatePenalty(agreement, guarantee, timedScope, metricsValues, slo, penalties) {
+function calculatePenalty(agreement, guarantee, ofElement, timedScope, metricsValues, slo, penalties) {
 
     var guaranteeValue = {};
     guaranteeValue.scope = timedScope.scope;
@@ -215,7 +214,7 @@ function calculatePenalty(agreement, guarantee, timedScope, metricsValues, slo, 
     guaranteeValue.metrics = {};
     var values = [];
 
-    for (var metricId in guarantee.of[0].with) {
+    for (var metricId in ofElement.with) {
         var value = 0;
         if (metricsValues[metricId])
             value = metricsValues[metricId].value;
@@ -225,7 +224,12 @@ function calculatePenalty(agreement, guarantee, timedScope, metricsValues, slo, 
         }
         vm.runInThisContext(metricId + " = " + value);
         guaranteeValue.metrics[metricId] = value;
-        guaranteeValue.evidences = guaranteeValue.evidences.concat(metricsValues[metricId] && metricsValues[metricId].evidences ? metricsValues[metricId].evidences : []);
+        if (metricsValues[metricId] && metricsValues[metricId].evidences) {
+            guaranteeValue.evidences = guaranteeValue.evidences.concat(metricsValues[metricId].evidences);
+        } else {
+            logger.error('Metric without evidences: ' + JSON.stringify(metricsValues[metricId], null, 2));
+        }
+
         var val = {};
         val[metricId] = value;
         values.push(val);

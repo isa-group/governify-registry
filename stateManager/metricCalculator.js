@@ -37,9 +37,11 @@ function processMetric(agreement, metricId, metricParameters) {
                 data.evidences = metricParameters.evidences;
             }
 
+            // Binding of columns names in log
             var scope = {};
             var log;
             if (metric.log) {
+                // Binding of columns names in custom log
                 data.logs = {};
                 var logId = Object.keys(metric.log)[0];
                 data.logs[logId] = metric.log[logId].uri;
@@ -53,6 +55,7 @@ function processMetric(agreement, metricId, metricParameters) {
                     }
                 }
             } else {
+                // Binding of columns names in default log
                 for (var logId in agreement.context.definitions.logs) {
                     var log = agreement.context.definitions.logs[logId];
                     if (log.default) {
