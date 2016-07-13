@@ -62,8 +62,8 @@ module.exports.statesAgreementQuotasGET = function statesAgreementQuotasGET(req,
   Stateregistry.statesAgreementQuotasGET(req.swagger.params, res, next);
 };
 
-module.exports.statesAgreementQuotasQuotaGET = function statesAgreementQuotasQuotaGET(req, res, next) {
-  Stateregistry.statesAgreementQuotasQuotaGET(req.swagger.params, res, next);
+module.exports.statesAgreementQuotasQuotaPOST = function statesAgreementQuotasQuotaPOST(req, res, next) {
+  Stateregistry.statesAgreementQuotasQuotaPOST(req.swagger.params, res, next);
 };
 
 module.exports.statesAgreementQuotasQuotaPUT = function statesAgreementQuotasQuotaPUT(req, res, next) {

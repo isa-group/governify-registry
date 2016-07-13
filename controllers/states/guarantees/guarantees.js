@@ -162,7 +162,7 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
             //  logger.ctlState("Query after parse: " + JSON.stringify(query, null, 2));
             return manager.get('guarantees', {
                   guarantee: guaranteeId,
-                  scope: query.scope,
+                //  scope: query.scope,
                 //  period: p //,
                 //  window: query.window
               }).then(function(success) {

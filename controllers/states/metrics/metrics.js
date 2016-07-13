@@ -26,13 +26,11 @@ module.exports.metricsIdIncrease = function (args, res, next){
 
         manager.get('metrics', query).then((metric)=>{
 
-            logger.ctlState("Result of getting metricValues: " + JSON.stringify(metric, null, 2));
-
-            logger.ctlState("Query to put "+ JSON.stringify(query, null, 2));
             manager.put('metrics', query, manager.current(metric[0]).value + 1).then((success) => {
                 res.json(success.map((element) => {
                     return manager.current(element);
                 }));
+                console.log("New noLogsStatus:  " + manager.changeNoLogsState());
             }, (err) => {
                 res.status(err.code).json(err);
             });
@@ -72,6 +70,7 @@ module.exports.metricsIdPUT = function(args, res, next) {
             res.json(success.map((element) => {
                 return manager.current(element);
             }));
+
         }, (err) => {
             res.status(err.code).json(err);
         });

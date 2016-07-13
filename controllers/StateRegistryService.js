@@ -24,7 +24,7 @@ module.exports = {
     // Quotas controllers
 
     statesAgreementQuotasGET: states.quotas.quotasGET,
-    statesAgreementQuotasQuotaGET: states.quotas.quotasQuotaGET,
+    statesAgreementQuotasQuotaPOST: states.quotas.quotasQuotaPOST,
     // Rates controllers
 
     statesAgreementRatesGET: states.rates.ratesGET,

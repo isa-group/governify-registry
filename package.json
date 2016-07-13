@@ -20,6 +20,7 @@
     "json-schema-ref-parser": "^3.1.2",
     "moment": "^2.14.1",
     "mongoose": "^4.5.0",
+    "node-uuid": "^1.4.7",
     "nodemailer": "^2.4.2",
     "nodemailer-sendgrid-transport": "^0.2.0",
     "swagger-mongoose": "^0.1.3",

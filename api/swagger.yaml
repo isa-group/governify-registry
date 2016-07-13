@@ -1074,11 +1074,11 @@ paths:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
   /states/{agreement}/quotas/{quota}:
-    get:
+    post:
       tags:
       - "state-registry"
       description: "XXX"
-      operationId: "statesAgreementQuotasQuotaGET"
+      operationId: "statesAgreementQuotasQuotaPOST"
       parameters:
       - name: "agreement"
         in: "path"
@@ -1090,6 +1090,12 @@ paths:
         description: "XXX"
         required: true
         type: string
+      - name: "query"
+        in: "body"
+        description: "XXX"
+        required: true
+        schema:
+          type: object
       responses:
         200:
           description: "Success"

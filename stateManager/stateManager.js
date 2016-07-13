@@ -8,8 +8,15 @@ var iso8601 = require('iso8601');
 var calculators = require('../stateManager/calculators.js');
 var Promise = require("bluebird");
 var clone = require('clone');
+var uuid = require('node-uuid');
+var moment = require('moment');
+var utils = require('../utils/utils.js');
+
+var updateStateCascade = config.updateStateCascade;
+var updateStateOnGet = config.updateStateOnGet;
 
 module.exports = initialize;
+var noLogsStatus = {};
 
 function initialize(_agreement) {
     logger.sm('(initialize) Initializing state with agreement ID = ' + _agreement.id);
@@ -32,7 +39,11 @@ function initialize(_agreement) {
                     get: _get,
                     put: _put,
                     update: _update,
-                    current: _current
+                    current: _current,
+                    changeNoLogsState : function () {
+                        noLogsStatus[this.agreement.id] = uuid.v1();
+                        return noLogsStatus[this.agreement.id];
+                    }
                 };
                 return resolve(stateManager);
             }
@@ -43,20 +54,33 @@ function initialize(_agreement) {
 function _get(stateType, query) {
     var stateManager = this;
     logger.sm('(_get) Retrieving state of ' + stateType);
+
     return new Promise((resolve, reject) => {
-        logger.sm("Getting " + stateType + " state for query =  " + JSON.stringify(query));
         var StateModel = config.db.models.StateModel;
-        StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), (err, result) => {
-            if(err){
-                logger.sm(JSON.stringify(err));
-                return reject(new errorModel(500, "Error while retrieving %s states: %s", stateType, err.toString()));
+        logger.sm("Getting " + stateType + " state for query =  " + JSON.stringify(query));
+        logger.sm("Update " + stateType + " on GET: " + (updateStateOnGet[stateType] ? "YES" : "NO"));
+
+        if( updateStateOnGet[stateType] ){
+            logger.sm("Update on GET.");
+            var logUris = null;
+            logger.sm("Getting logUris from agreement to get logsState");
+            for (var log in stateManager.agreement.context.definitions.logs) {
+                if (stateManager.agreement.context.definitions.logs[log].default)
+                  logUris = stateManager.agreement.context.definitions.logs[log].stateUri;
             }
-            if(result.length > 0){
-                logger.sm("There are " + stateType + " state for query =  " + JSON.stringify(query) + " in DB");
+
+            logger.sm("Searching on DB current state...");
+            StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), (err, result) => {
+                if(err){
+                    logger.sm(JSON.stringify(err));
+                    return reject(new errorModel(500, "Error while retrieving %s states: %s", stateType, err.toString()));
+                }
+                logger.sm("Searching on DB " + stateType + " state(s) for query =  " + JSON.stringify(query) );
                 var states = result;
 
                 logger.sm('Checking if ' + stateType + ' is updated...');
-                isUpdated(stateManager.agreement, states).then((data)=>{
+                isUpdated(logUris, stateManager.agreement, states).then((data)=>{
+
                     logger.sm("Updated: " + (data.isUpdated ? 'YES' : 'NO'));
                     if (data.isUpdated) {
 
@@ -65,40 +89,42 @@ function _get(stateType, query) {
 
                     } else {
 
-                        logger.sm("Refreshing states of " + stateType);
-                        stateManager.update(stateType, query, data.logsState).then((states) => {
-                            return resolve(states);
-                        }, (err) => {
-                            return reject(err);
-                        });
+                          logger.sm("Refreshing states of " + stateType);
+                          stateManager.update(stateType, query, data.logsState).then((states) => {
+                              return resolve(states);
+                          }, (err) => {
+                              return reject(err);
+                          });
 
-                    }
-                }, (err)=>{
-                    logger.sm(JSON.stringify(err));
-                    return reject(new errorModel(500, "Error while checking if it is update: " + err));
-                });
-            }else{
-                logger.sm("There are not " + stateType + " state for query =  " + JSON.stringify(query) + " in DB");
-                logger.sm("Adding states of " + stateType);
-                isUpdated(stateManager.agreement).then((data)=>{
-                    if(data.isUpdated){
+                      }
+
+                  }, (err)=>{
+                      logger.sm(JSON.stringify(err));
+                      return reject(new errorModel(500, "Error while checking if it is update: " + err));
+                  });
+            });
+
+        }else{
+            //NO UPDATE
+            logger.sm("No Update on GET.");
+            StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), (err, states) => {
+                if(states.length > 0){
+                    logger.sm("Returning state of " + stateType);
+                    return resolve(states);
+                }else{
+                    if(stateType == "metrics"){
                         logger.sm("There is not state for this metric returnig initial values.")
-                        var newState = new state(0, query, {});
-                        return resolve([newState]);
-                    }else{
-                        stateManager.update(stateType, query, data.logsState).then((states) => {
-                            return resolve(states);
-                        }, (err) => {
-                            return reject(err);
-                        });
-                    }
+                        //var newState = new state(0, query, {});
 
-                }, (err)=>{
-                    logger.sm(JSON.stringify(err));
-                    return reject(new errorModel(500, "Error while checking if it is update: " + err));
-                });
-            }
-        });
+                        stateManager.put(stateType, query, 0).then(resolve, reject);
+                        //return resolve([newState]);
+                    }else{
+                        logger.sm("Not found " + stateType +  " state, for query = " + JSON.stringify(query));
+                        return reject(new errorModel(404, "Not found " + stateType +  " state."))
+                    }
+                }
+            });
+        }
 
     });
 }
@@ -110,7 +136,6 @@ function _put(stateType, query, value, metadata) {
     return new Promise((resolve, reject) => {
           var StateModel = config.db.models.StateModel;
 
-          logger.sm("AGREEMENT: " +stateManager.agreement.id);
           var dbQuery = projectionBuilder( stateType, refineQuery(stateManager.agreement.id, stateType, query) );
           logger.sm("Updating " + stateType + " state... with refinedQuery = " + JSON.stringify(dbQuery, null, 2));
 
@@ -123,7 +148,7 @@ function _put(stateType, query, value, metadata) {
 
                 var stateSignature = "StateSignature ("+ result.nModified +") " + "[";
                 for(var v in dbQuery){
-                    stateSignature += dbQuery[v];
+                    stateSignature += "|" + dbQuery[v];
                 }
                 stateSignature += "]";
                 logger.sm(stateSignature);
@@ -175,6 +200,12 @@ function _put(stateType, query, value, metadata) {
                           return resolve(result);
                       }
                   });
+              }
+
+              //logger.sm("Update cascade: " + updateStateCascade[stateType]);
+              if( updateStateCascade[stateType] ){
+                  // logger.sm("Update cascade: ");
+                  // stateManager.update("quotas", query, noLogsStatus[stateManager.agreement.id]);
               }
 
             }
@@ -281,7 +312,29 @@ function _update(stateType, query, logsState) {
                 calculators.quotasCalculator.process(stateManager, query).then((quotasStates) => {
                     logger.sm('All quotas states (' + quotasStates.length + ') has been calculated ');
                     //putting quotas
-                    return resolve(quotasStates);
+                    var processQuotas = [];
+                    quotasStates.forEach(function(quotasState) {
+                        logger.debug('Quota state: ' + JSON.stringify(quotasState, null, 2));
+                        processQuotas.push(stateManager.put(stateType, {
+                            quota: query.quota,
+                            scope: quotasState.scope,
+                            window: quotasState.window
+                        }, quotasState.value, {
+                            metrics: quotasState.metrics,
+                            max: quotasState.max,
+                            logsState: logsState
+                        }));
+                    });
+                    logger.sm('Created parameters array for saving states of quotas of length ' + quotasStates.length);
+                    logger.sm('Persisting quotas states...');
+                    Promise.all(processQuotas).then((quotas) => {
+                        //logger.sm('QUOTAS RETURNED: ' + JSON.stringify(quotas, null, 2));
+                        logger.sm('All guarantee states have been persisted');
+                        var StateModel = config.db.models.StateModel;
+                        StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), (err, result) => {
+                          return resolve(result);
+                        });
+                    });
                 }, (err) => {
                     logger.error(err.toString());
                     return reject(new errorModel(500, err));
@@ -319,18 +372,16 @@ function record(value, metadata) {
 }
 
 
-function isUpdated(agreement, states) {
+function isUpdated(logUris, agreement, states) {
     return new Promise((resolve, reject) => {
-        var logUris = null;
-        for (var log in agreement.context.definitions.logs) {
-            if (agreement.context.definitions.logs[log].default) logUris = agreement.context.definitions.logs[log].stateUri;
-        }
-        logger.sm("LogUris = " + logUris);
-        if(logUris){
-            var current = states;
-            if (current)
-                current = getCurrent(current[0]);
+        logger.sm("Checking if logUris has value...");
 
+        var current = states;
+        if(current && current.length > 0)
+          current = getCurrent(current[0]);
+
+        if(logUris){
+            logger.sm("logUris = " + logUris);
             logger.sm('Sending request to LOG state URI...');
             request.get({ uri: logUris, json: true}, (err, response, body) => {
                 if (err) {
@@ -339,14 +390,10 @@ function isUpdated(agreement, states) {
                 }
                 if (response.statusCode == 200 && body) {
                     if (current) {
-                        if (current.logsState) {
-                            if (current.logsState == body) {
-                                return resolve({isUpdated: true,  logsState: body});
-                            } else {
-                                return resolve({  isUpdated: false,logsState: body  });
-                            }
+                        if (current.logsState == body) {
+                            return resolve({ isUpdated: true,  logsState: body });
                         } else {
-                            return resolve({isUpdated: true,  logsState: body});
+                            return resolve({ isUpdated: false, logsState: body });
                         }
                     } else {
                         return resolve({isUpdated: false, logsState: body});
@@ -356,8 +403,18 @@ function isUpdated(agreement, states) {
                 }
             });
         }else{
-            logger.sm("This metric is not calculated from logs, please PUT values.")
-            return resolve({isUpdated: true});
+            logger.sm("No logUris, checking with noLogsStatus");
+            if(!current || current.length == 0)
+              return resolve({isUpdated: false,  logsState: noLogsStatus[agreement.id]});
+            else{
+                logger.sm(current.logsState + " => " + noLogsStatus[agreement.id]);
+                if( current.logsState == noLogsStatus[agreement.id] && utils.isInTime(current.time, states[0].window) ){
+                    return resolve({isUpdated: true,  logsState: noLogsStatus[agreement.id]});
+                }else {
+                    return resolve({isUpdated: false,  logsState: noLogsStatus[agreement.id]});
+                }
+
+            }
         }
     });
 }
@@ -424,6 +481,9 @@ function refineQuery(agId, stateType, query){
         break;
       case 'guarantees':
         refinedQuery.id = query.guarantee;
+        break;
+      case 'quotas':
+        refinedQuery.id = query.quota;
         break;
     }
 

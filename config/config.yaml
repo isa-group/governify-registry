@@ -7,6 +7,18 @@ development:
   parallelProcess:
     guarantees: false
     metrics: false
+  updateStateOnGet:
+    agreement: false
+    metrics: false
+    guarantees: false
+    quotas: true
+    rates: true
+  updateStateCascade:
+    agreement: false
+    metrics: true
+    guarantees: false
+    quotas: false
+    rates: false
   email:
     defaultMailFrom: '"ISA-Group" <no-reply@isa.us.es>'
     messages:
@@ -22,6 +34,18 @@ production:
   parallelProcess:
     guarantees: false
     metrics: false
+  updateStateOnGet:
+    agreement: false
+    metrics: false
+    guarantees: false
+    quotas: true
+    rates: true
+  updateStateCascade:
+    agreement: false
+    metrics: true
+    guarantees: false
+    quotas: false
+    rates: false
   email:
     defaultMailFrom: '"ISA-Group" <no-reply@isa.us.es>'
     messages:
