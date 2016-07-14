@@ -74,7 +74,7 @@ function processQuotas (stateManager, query){
                 delete queries[index].query.window.initial;
 
                 queries[index].metric = metricValue;
-                if(metricValue.value <= queries[index].max){
+                if(metricValue.value < queries[index].max){
                     queries[index].value = true;
                 }else{
                     queries[index].value = false;
