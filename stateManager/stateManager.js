@@ -45,6 +45,8 @@ function initialize(_agreement) {
                         return noLogsStatus[this.agreement.id];
                     }
                 };
+
+                if(!noLogsStatus[stateManager.agreement.id]) stateManager.changeNoLogsState();
                 return resolve(stateManager);
             }
         });
@@ -408,7 +410,7 @@ function isUpdated(logUris, agreement, states) {
               return resolve({isUpdated: false,  logsState: noLogsStatus[agreement.id]});
             else{
                 logger.sm(current.logsState + " => " + noLogsStatus[agreement.id]);
-                if( current.logsState == noLogsStatus[agreement.id] && utils.isInTime(current.time, states[0].window) ){
+                if( current.logsState == noLogsStatus[agreement.id] &&  (states[0].window ? utils.isInTime(current.time, states[0].window) : true)){
                     return resolve({isUpdated: true,  logsState: noLogsStatus[agreement.id]});
                 }else {
                     return resolve({isUpdated: false,  logsState: noLogsStatus[agreement.id]});

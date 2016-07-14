@@ -9,6 +9,7 @@ var logger = config.logger;
 var errorModel = require('../errors/index.js').errorModel;
 var utils = require('../utils/utils.js');
 var moment = require('moment');
+var clone = require('clone');
 
 module.exports = {
     process: processQuotas
@@ -47,7 +48,7 @@ function processQuotas (stateManager, query){
               queries[index] = {
                   max: scopedQ.limits[l].max,
                   query: {
-                    metric: overId, scope: queryScope, window: window
+                    metric: overId, scope: queryScope,  window: window.period ? clone(window) : undefined
                   }
                 };
               index ++;
@@ -58,20 +59,25 @@ function processQuotas (stateManager, query){
         var initial =  moment().toISOString();
         Promise.each(Object.keys(queries), (index)=>{
             return stateManager.get('metrics', queries[index].query).then((data)=>{
-                if(!window.initial)
-                    window.initial = initial;
-                var metricValue = data[0];
-                var value = 0;
-                for (var r in metricValue.records){
-                    var record = metricValue.records[r];
-                    if( r > 0 && record.time && utils.isInTime(record.time, window)){
-                        value ++; //Modify the logic to accept quotas without periods.
+                var sMQuery = queries[index].query;
+                if(sMQuery.window){
+                    if(!sMQuery.window.initial)
+                        sMQuery.window.initial = initial;
+                    var metricValue = data[0];
+                    var value = 0;
+                    for (var r in metricValue.records){
+                        var record = metricValue.records[r];
+                        if( r > 0 && record.time && utils.isInTime(record.time, sMQuery.window)){
+                            value ++; //Modify the logic to accept quotas without periods.
+                        }
                     }
-                }
-                metricValue = stateManager.current(data[0]);
-                metricValue.value = value;
+                    metricValue = stateManager.current(data[0]);
+                    metricValue.value = value;
 
-                delete queries[index].query.window.initial;
+                    delete sMQuery.window.initial;
+                }else{
+                    metricValue = stateManager.current(data[0]);
+                }
 
                 queries[index].metric = metricValue;
                 if(metricValue.value < queries[index].max){

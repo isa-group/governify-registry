@@ -30,7 +30,7 @@ module.exports.metricsIdIncrease = function (args, res, next){
                 res.json(success.map((element) => {
                     return manager.current(element);
                 }));
-                console.log("New noLogsStatus:  " + manager.changeNoLogsState());
+                logger.info("New noLogsStatus:  " + manager.changeNoLogsState());
             }, (err) => {
                 res.status(err.code).json(err);
             });
@@ -57,7 +57,7 @@ module.exports.metricsIdPUT = function(args, res, next) {
     var metricValue = args.metricValue.value;
     var metricName = args.metric.value;
 
-    logger.info("New request to PUT metrics over: " + metricName + " with value: " + metricValue);
+    logger.ctlState("New request to PUT metrics over: " + metricName + " with value: " + metricValue);
 
     stateManager({
         id: agreementId
@@ -70,7 +70,7 @@ module.exports.metricsIdPUT = function(args, res, next) {
             res.json(success.map((element) => {
                 return manager.current(element);
             }));
-
+            logger.info("New noLogsStatus:  " + manager.changeNoLogsState());
         }, (err) => {
             res.status(err.code).json(err);
         });

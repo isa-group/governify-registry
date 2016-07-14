@@ -15,15 +15,26 @@ module.exports.quotasGET = function(args, res, next) {
 
     logger.ctlState("New request to GET quotas");
     var agreementId = args.agreement.value;
-    var quotaId = args.quota.value;
 
     stateManager({id: agreementId}).then((manager) => {
-
-        manager.get('quotas', { quota: quotaId }).then((quotas)=>{
-            res.json(quotas);
+        var ret = [];
+        Promise.each(manager.agreement.terms.quotas, (quotaDef)=>{
+            var quotaId = quotaDef.id;
+            return manager.get('quotas', { quota: quotaId }).then((quotas)=>{
+                quotas.forEach((element)=>{
+                    ret.push(element);
+                });
+            }, (err)=>{
+                logger.error(err.message.toString());
+                return res.status(err.code).json(err);
+            });
+        }).then((success)=>{
+            return res.json(ret.map((element)=>{
+                return manager.current(element);
+            }));
         }, (err)=>{
             logger.error(err.message.toString());
-            res.status(err.code).json(err);
+            return res.status(err.code).json(err);
         });
 
     }, (err) => {
