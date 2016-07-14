@@ -227,7 +227,7 @@ function calculatePenalty(agreement, guarantee, ofElement, timedScope, metricsVa
         if (metricsValues[metricId] && metricsValues[metricId].evidences) {
             guaranteeValue.evidences = guaranteeValue.evidences.concat(metricsValues[metricId].evidences);
         } else {
-            logger.error('Metric without evidences: ' + JSON.stringify(metricsValues[metricId], null, 2));
+            logger.warning('Metric without evidences: ' + JSON.stringify(metricsValues[metricId], null, 2));
         }
 
         var val = {};

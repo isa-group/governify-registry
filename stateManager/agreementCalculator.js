@@ -77,6 +77,9 @@ function _process(manager, from, to) {
                         return reject(err);
                     });
                 }).then(function(results) {
+
+                    // Promise each por cada metrica de components (param)
+
                     if (manager.agreement.terms.metrics['SPU_IO_K00']) {
                         manager.get('metrics', {
                             metric: 'SPU_IO_K00'

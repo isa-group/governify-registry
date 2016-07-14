@@ -9,6 +9,7 @@ var fs = require('fs');
 var errorModel = require('../../../errors/index.js').errorModel;
 var logger = config.logger;
 var Promise = require("bluebird");
+var moment = require('moment');
 
 module.exports.guaranteesGET = function(args, res, next) {
     /**
@@ -126,7 +127,7 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
     logger.ctlState("New request to GET penalty of " + guaranteeId);
 
     var offset = query.parameters.offset;
-    var periods = new getPeriods(query.window, offset);
+    var periods = new getPeriods(query.window);
 
     stateManager({
         id: agreementId
@@ -135,55 +136,55 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
         var resul = [];
         Promise.each(periods, (element) => {
             var p = {
-                from: moment(element.from).subtract(Math.abs(offset), "months"),
-                to: moment(element.to).subtract(Math.abs(offset), "months").add(24,"hours").add(59, "minutes").add(59, "seconds").add(999, "ms")
+                from: moment.utc(element.from).subtract(Math.abs(offset), "months").toISOString(),
+                to: moment.utc(element.to).subtract(Math.abs(offset), "months").toISOString()
             };
             //  logger.ctlState("Query before parse: " + JSON.stringify(query, null, 2));
-              var logId = Object.keys(query.logs)[0];
-              var log = manager.agreement.context.definitions.logs[logId];
-              var scope = {};
-              var scopeId = Object.keys(log.scopes)[0];
-              var logScopes = Object.keys(log.scopes[scopeId]).map(function(key) {
-                  return log.scopes[scopeId][key];
-              });
-              for (var queryScope in query.scope) {
-                  if (logScopes.indexOf(queryScope) > -1) {
-                      for (var logScope in log.scopes[scopeId]) {
-                          if (log.scopes[scopeId][logScope] === queryScope) {
-                              scope[logScope] = query.scope[queryScope];
-                          }
-                      }
-                  } else {
-                      scope[queryScope] = query.scope[queryScope];
-                  }
-              }
-              query.scope = scope ? scope : query.scope;
+            var logId = Object.keys(query.logs)[0];
+            var log = manager.agreement.context.definitions.logs[logId];
+            var scope = {};
+            var scopeId = Object.keys(log.scopes)[0];
+            var logScopes = Object.keys(log.scopes[scopeId]).map(function(key) {
+                return log.scopes[scopeId][key];
+            });
+            for (var queryScope in query.scope) {
+                if (logScopes.indexOf(queryScope) > -1) {
+                    for (var logScope in log.scopes[scopeId]) {
+                        if (log.scopes[scopeId][logScope] === queryScope) {
+                            scope[logScope] = query.scope[queryScope];
+                        }
+                    }
+                } else {
+                    scope[queryScope] = query.scope[queryScope];
+                }
+            }
+            query.scope = scope ? scope : query.scope;
 
             //  logger.ctlState("Query after parse: " + JSON.stringify(query, null, 2));
             return manager.get('guarantees', {
-                  guarantee: guaranteeId,
-                  scope: query.scope,
+                guarantee: guaranteeId,
+                scope: query.scope,
                 //  period: p //,
                 //  window: query.window
-              }).then(function(success) {
-                  var ret = [];
-                  for(var i in success){
+            }).then(function(success) {
+                var ret = [];
+                for (var i in success) {
                     var e = success[i];
                     //logger.ctlState("compare:  " + e.period.from + ">=" + p.from.toISOString() + " && " + e.period.to + "<=" + p.to.toISOString() );
-                    if(moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to)  && checkQuery(e, query)){
-                          ret.push( e );
+                    if (moment.utc(e.period.from).isSameOrAfter(p.from) && moment.utc(e.period.to).isSameOrBefore(p.to) && checkQuery(e, query)) {
+                        ret.push(e);
                     }
-                  }
-                  //logger.ctlState("Resultado para el periodo : " + JSON.stringify(element) + "=>\n" + JSON.stringify(ret, null, 2));
+                }
+                //logger.ctlState("Resultado para el periodo : " + JSON.stringify(element) + "=>\n" + JSON.stringify(ret, null, 2));
 
-                  for(var i in ret){
-                    if(manager.current(ret[i]).penalties){
+                for (var i in ret) {
+                    if (manager.current(ret[i]).penalties) {
                         var penalties = manager.current(ret[i]).penalties
-                        for (var penaltyI in penalties){
-                            resul.push(new penaltyMetric( ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI] ));
+                        for (var penaltyI in penalties) {
+                            resul.push(new penaltyMetric(ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI]));
                         }
                     }
-                  }
+                }
 
             }, function(err) {
                 logger.error(err);
@@ -205,27 +206,26 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
 
 }
 
-var moment = require('moment');
-
-function getPeriods(window, offset) {
+function getPeriods(window) {
     var periods = [];
-    var Wfrom = moment(window.initial);
+    var Wfrom = moment.utc(window.initial);
     var Wto = moment();
-    var from = moment(Wfrom),
-        to = moment(Wfrom).add(1, "months").subtract(1, "days");
+    var from = moment.utc(Wfrom),
+        to = moment.utc(Wfrom).add(1, "months").subtract(1, "milliseconds");
     while (!to || to.isSameOrBefore(Wto)) {
         periods.push({
-            from: from.format("YYYY-MM-DD"),
-            to: to.format("YYYY-MM-DD")
+            from: from.toISOString(),
+            to: to.toISOString()
         });
-        from = moment(from).add(1, "months");
-        to = moment(to).add(1, "months");
+        from = moment.utc(from).add(1, "months");
+        to = moment.utc(to).add(1, "months");
     }
+
     return periods;
 }
 
 //function
-function penaltyMetric (scope, parameters, period, logs, penaltyName, penaltyValue){
+function penaltyMetric(scope, parameters, period, logs, penaltyName, penaltyValue) {
     this.scope = scope;
     this.parameters = parameters;
     this.period = period;
@@ -241,7 +241,7 @@ function checkQuery(element, query) {
             if (query[v] instanceof Object) {
                 ret = ret && checkQuery(element[v], query[v]);
             } else {
-                if (( element[v] !== query[v] && query[v] != "*" ) || !element[v]) {
+                if ((element[v] !== query[v] && query[v] != "*") || !element[v]) {
                     ret = ret && false;
                 }
             }

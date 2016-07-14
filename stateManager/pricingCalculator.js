@@ -6,6 +6,7 @@ const vm = require('vm');
 var config = require('../config');
 var utils = require('../utils/utils.js');
 var logger = config.logger;
+var moment = require('moment');
 
 module.exports = {
     process: processPricing
@@ -23,7 +24,7 @@ function processPricing(agreement, query, manager) {
         var classifiers = [];
         var penalties = [];
 
-        if(config.parallelProcess.guarantees){
+        if (config.parallelProcess.guarantees) {
             agreement.terms.guarantees.forEach(function(guarantee) {
                 processGuarantees.push(manager.get('guarantees', {
                     guarantee: guarantee.id
@@ -33,8 +34,6 @@ function processPricing(agreement, query, manager) {
             Promise.all(processGuarantees).then(function(guaranteesStates) {
 
                 guaranteesStates.forEach(function(guaranteeStates) {
-
-                    logger.pricing("guaranteeStates: " + JSON.stringify(guaranteeStates, null, 2));
 
                     pricingPenaltiesDef.forEach((penalty) => {
 
@@ -93,9 +92,9 @@ function processPricing(agreement, query, manager) {
                 res.status(500).json(new errorModel(500, err));
             });
 
-        }else {
-          var guaranteesStates = [];
-          Promise.each(agreement.terms.guarantees, (guarantee) => {
+        } else {
+            var guaranteesStates = [];
+            Promise.each(agreement.terms.guarantees, (guarantee) => {
                 logger.pricing("Getting state for guarantee = " + guarantee.id);
                 return manager.get('guarantees', {
                     guarantee: guarantee.id
@@ -108,8 +107,6 @@ function processPricing(agreement, query, manager) {
                     return reject(err);
                 });
             }).then((results) => {
-
-                logger.pricing("guaranteesStates: " + JSON.stringify(guaranteesStates, null, 2));
 
                 var pricingPenaltiesDef = agreement.terms.pricing.billing.penalties;
 
@@ -125,13 +122,21 @@ function processPricing(agreement, query, manager) {
 
 
                     for (var i = 0; i < guaranteesStates.length; i++) {
-                        var guaranteeState =  manager.current(guaranteesStates[i]);
+                        var guaranteeState = manager.current(guaranteesStates[i]);
 
 
                         logger.info("Processing guaranteeState " + i + " node: " + guaranteeState.scope.node);
+
+                        var periodFrom = moment.utc(guaranteeState.period.from);
+                        var periodTo = moment.utc(guaranteeState.period.to);
+                        var period = {
+                            from: periodFrom.format("YYYY-MM-DD"),
+                            to: periodTo.format("YYYY-MM-DD")
+                        }
+
                         var classifier = {};
                         classifier.scope = {};
-                        classifier.period = guaranteeState.period;
+                        classifier.period = period;
                         classifier.penalty = penaltyId;
 
                         groupBy.forEach(function(group) {
