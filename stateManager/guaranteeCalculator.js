@@ -11,6 +11,7 @@ var config = require('../config');
 var logger = config.logger;
 var errorModel = require('../errors/index.js').errorModel;
 var stateManager = require('./stateManager.js');
+var moment = require('moment-timezone');
 var utils = require('../utils/utils.js');
 
 module.exports = {
@@ -127,13 +128,16 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
 
             if (ofElement.with) {
                 var metrics = [];
+                var window = ofElement.window;
+                window.initial = moment.utc(moment.tz(ofElement.window.initial, agreement.context.validity.timeZone)).format();
+                window.timeZone = agreement.context.validity.timeZone;
                 for (var metricId in ofElement.with) {
                     processMetrics.push({
                         metric: metricId,
                         scope: scopeWithDefault,
                         parameters: ofElement.with[metricId],
                         evidences: evidences,
-                        window: ofElement.window,
+                        window: window,
                         period: {
                             from: '*',
                             to: '*'

@@ -124,19 +124,11 @@ function processPricing(agreement, query, manager) {
                     for (var i = 0; i < guaranteesStates.length; i++) {
                         var guaranteeState = manager.current(guaranteesStates[i]);
 
-
                         logger.info("Processing guaranteeState " + i + " node: " + guaranteeState.scope.node);
-
-                        var periodFrom = moment.utc(guaranteeState.period.from);
-                        var periodTo = moment.utc(guaranteeState.period.to);
-                        var period = {
-                            from: periodFrom.format("YYYY-MM-DD"),
-                            to: periodTo.format("YYYY-MM-DD")
-                        }
 
                         var classifier = {};
                         classifier.scope = {};
-                        classifier.period = period;
+                        classifier.period = guaranteeState.period;
                         classifier.penalty = penaltyId;
 
                         groupBy.forEach(function(group) {
@@ -145,11 +137,9 @@ function processPricing(agreement, query, manager) {
 
                         var cIndex = utils.containsObject(classifier, classifiers);
 
-
                         if (cIndex == -1) {
                             //logger.info("New classifier... ");
                             cIndex = classifiers.push(classifier) - 1;
-
 
                             penalties[cIndex] = {
                                 "scope": classifier.scope,
@@ -157,12 +147,14 @@ function processPricing(agreement, query, manager) {
                                 "value": 0,
                                 "penalty": classifier.penalty
                             }
-
-
                         }
                         if (guaranteeState.penalties) {
                             //logger.info("SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier:\n " + JSON.stringify(classifier));
                             penalties[cIndex].value += guaranteeState.penalties[penaltyId]
+                        }
+
+                        if(penalty.upTo && (Math.abs(penalties[cIndex].value) > Math.abs(penalty.upTo))){
+                            penalties[cIndex].value = penalty.upTo;
                         }
 
                     }

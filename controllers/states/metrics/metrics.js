@@ -98,7 +98,7 @@ module.exports.metricsPOST = function(req, res, next) {
         var ret = [];
         if (config.parallelProcess.metrics) {
             var processMetrics = [];
-            for (var metricId in agreement.terms.metrics) {
+            for (var metricId in manager.agreement.terms.metrics) {
                 var metricParams = args.scope.value;
                 metricParams.period = metricParams.period ? metricParams.period : {
                     from: '*',

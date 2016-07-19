@@ -76,7 +76,7 @@ module.exports.logger = new winston.Logger({
             colorize: false
         }),
         new winston.transports.Console({
-            level: 'metrics',
+            level: 'sm',
             handleExceptions: true,
             json: false,
             colorize: true,

@@ -131,7 +131,11 @@ function _agreementIdRELOAD(args, res, next) {
                         stateManager({
                             id: agreementId
                         }).then(function(manager) {
-                            calculators.agreementCalculator.process(manager).then(function(result) {
+                            var components = {
+                                metrics: args.metrics ? args.metrics.value : 'all',
+                                guarantees: args.guarantees ? args.guarantees.value : 'all'
+                            }
+                            calculators.agreementCalculator.process(manager, components).then(function(result) {
                                 if (errors.length > 0)
                                     logger.error("Agreement state reload has been finished with " + errors.length + " errors: \n" + JSON.stringify(errors));
                                 else {

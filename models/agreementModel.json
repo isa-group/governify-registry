@@ -81,17 +81,13 @@
         "type": "object"
       },
       "value": {
-        "oneOf": [
-          {
-            "type": "string"
-          },
-          {
-            "type": "number"
-          },
-          {
-            "type": "boolean"
-          }
-        ]
+        "oneOf": [{
+          "type": "string"
+        }, {
+          "type": "number"
+        }, {
+          "type": "boolean"
+        }]
       }
     }
   },
@@ -99,6 +95,9 @@
     "type": "object",
     "properties": {
       "initial": {
+        "type": "string"
+      },
+      "timeZone": {
         "type": "string"
       },
       "end": {
