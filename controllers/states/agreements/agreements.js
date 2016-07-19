@@ -78,9 +78,7 @@ function _agreementIdDELETE(args, res, next) {
     var agreementId = args.agreement.value;
     if (agreementId) {
         var StateModel = config.db.models.StateModel;
-        StateModel.findOneAndRemove({
-            agreementId: agreementId
-        }, function(err) {
+        StateModel.find({ "agreementId":agreementId }).remove(function(err) {
             if (!err) {
                 res.sendStatus(200);
                 logger.ctlState("Deleted state for agreement " + agreementId);
@@ -102,9 +100,7 @@ function _agreementIdRELOAD(args, res, next) {
     logger.ctlState("New request to reload state of agreement " + agreementId);
 
     var StateModel = config.db.models.StateModel;
-    StateModel.findOneAndRemove({
-        agreementId: agreementId
-    }, function(err) {
+    StateModel.find({ "agreementId":agreementId }).remove(function(err) {
         var errors = [];
         if (!err) {
             var message = 'Reloading state of agreement ' + agreementId + '. ' +
