@@ -5,5 +5,6 @@ module.exports = {
   guaranteeCalculator: require('./guaranteeCalculator.js'),
   metricCalculator: require('./metricCalculator.js'),
   pricingCalculator: require('./pricingCalculator.js'),
-  quotasCalculator: require('./quotasCalculator')
+  quotasCalculator: require('./quotasCalculator'),
+  ratesCalculator: require('./ratesCalculator')
 }

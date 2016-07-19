@@ -12,44 +12,44 @@ var moment = require('moment');
 var clone = require('clone');
 
 module.exports = {
-    process: processQuotas
+    process: processRates
 }
 
 
-function processQuotas (stateManager, query){
+function processRates (stateManager, query){
 
     return new Promise((resolve, reject)=>{
-        logger.quotas("Calculating quotas for query = " + JSON.stringify(query, null, 2));
+        logger.rates("Calculating rates for query = " + JSON.stringify(query, null, 2));
 
         var agreement = stateManager.agreement;
 
-        var quotaDef = null;
-        for(var q in agreement.terms.quotas){
-            var indexQuota = agreement.terms.quotas[q];
-            if(indexQuota.id === query.quota){
-                quotaDef = indexQuota
+        var rateDef = null;
+        for(var r in agreement.terms.rates){
+            var indexRate = agreement.terms.rates[r];
+            if(indexRate.id === query.rate){
+                rateDef = indexRate;
             }
         }
-        if(!quotaDef){
-            logger.error("Not found quota definition for id = %s", query.quota);
-            return reject(new errorModel(404, "Not found quota definition for id = " + query.quota));
+        if(!rateDef){
+            logger.error("Not found rate definition for id = %s", query.rate);
+            return reject(new errorModel(404, "Not found rate definition for id = " + query.rate));
         }
 
         var queries = [];
-        var overId = Object.keys(quotaDef.over)[0];
-        var window = { type: "static" };
-        var scopedQuotas = quotaDef.of;
+        var overId = Object.keys(rateDef.over)[0];
+        var window = { type: "dynamic" };
+        var scopedRates = rateDef.of;
         var index = 0;
-        for(var o in scopedQuotas){
-            var scopedQ = scopedQuotas[o];
-            var queryScope = scopedQ.scope;
+        for(var o in scopedRates){
+            var scopedR = scopedRates[o];
+            var queryScope = scopedR.scope;
             for(var v in queryScope){
                 if(queryScope[v] == "*" && query.scope[v]) queryScope[v] = query.scope[v];
             }
-            for (var l in scopedQ.limits){
-              window.period = scopedQ.limits[l].period;
+            for (var l in scopedR.limits){
+              window.period = scopedR.limits[l].period;
               queries[index] = {
-                  max: scopedQ.limits[l].max,
+                  max: scopedR.limits[l].max,
                   query: {
                     metric: overId, scope: queryScope,  window: window.period ? clone(window) : undefined
                   }
@@ -103,8 +103,8 @@ function processQuotas (stateManager, query){
                 }
 
             }, (err)=>{
-                logger.error("Error processing metric from quotas calculator = %s " + err.toString(),  JSON.stringify(queries[index].query, null, 2));
-                return reject(new errorModel(404, "Error processing metric from quotas calculator = %s" + JSON.stringify(queries[index].query, null, 2)));
+                logger.error("Error processing metric from rates calculator = %s " + err.toString(),  JSON.stringify(queries[index].query, null, 2));
+                return reject(new errorModel(404, "Error processing metric from rates calculator = %s" + JSON.stringify(queries[index].query, null, 2)));
             });
         }).then((success) => {
             console.log(JSON.stringify(queries, null, 2));
@@ -114,23 +114,23 @@ function processQuotas (stateManager, query){
                     var query = queries[q];
                     for (var val in query.values){
                         var scopedValue = query.values[val];
-                        var newQuota = new quota( quotaDef.id, scopedValue, query );
-                        response.push(newQuota);
+                        var newRate = new rate( rateDef.id, scopedValue, query );
+                        response.push(newRate);
                     }
                 }
             }
             resolve(response);
         }, (err) => {
-            logger.error("Error processing metrics from quotas calculator " + err.toString());
-            return reject(new errorModel(404, "Error processing metrics from quotas calculator"));
+            logger.error("Error processing metrics from rates calculator " + err.toString());
+            return reject(new errorModel(404, "Error processing metrics from rates calculator"));
         });
 
     });
 
 }
 
-function quota(quotaId, scopedValue, query){
-    this.quota = quotaId;
+function rate(rateId, scopedValue, query){
+    this.rate = rateId;
     this.scope = scopedValue.metric.scope;
     this.window = query.query.window;
     this.metrics = {};

@@ -31,6 +31,10 @@ module.exports.isInTime = function(time, window){
         return moment(time).isBetween(now, end);
 
     }else if(window.type == "dynamic"){
-        //TO DO
+
+        var now = moment(window.initial);
+        var init = moment(now).subtract(1, periodToAdd[window.period]);
+
+        return moment(time).isBetween(init, now);
     }
 }

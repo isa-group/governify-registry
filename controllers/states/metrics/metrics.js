@@ -26,7 +26,12 @@ module.exports.metricsIdIncrease = function (args, res, next){
 
         manager.get('metrics', query).then((metric)=>{
 
-            manager.put('metrics', query, manager.current(metric[0]).value + 1).then((success) => {
+            var newValue = 0;
+            if(metric[0])
+              newValue = manager.current(metric[0]).value + 1
+            else
+              newValue ++;
+            manager.put('metrics', query, newValue).then((success) => {
                 res.json(success.map((element) => {
                     return manager.current(element);
                 }));

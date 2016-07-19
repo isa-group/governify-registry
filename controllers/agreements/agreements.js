@@ -30,10 +30,10 @@ function _agreementsGET(args, res, next) {
   AgreementModel.find(function(err, agreements) {
     if (err) {
       logger.error(err.toString());
-      res.json(new errorModel(500, err));
+      return res.json(new errorModel(500, err));
     }
     logger.info("Agreements returned");
-    res.json(agreements);
+    return res.json(agreements);
   });
 }
 
@@ -115,34 +115,18 @@ function _agreementsPOST(args, res, next) {
       logger.error(err.toString());
       res.json(new errorModel(500, err));
     } else {
-      var agreement = new config.db.models.AgreementModel(schema);
-      agreement.save(function(err) {
+      var Agreement = config.db.models.AgreementModel;
+      Agreement.update({id: schema.id}, schema, {upsert: true}, function(err) {
         if (err) {
           logger.error("Mongo error saving agreement: " + err.toString());
           res.json(new errorModel(500, err));
         } else {
-          logger.info('New agreement saved successfully!');
-          logger.info('Initializing agreement state');
-          //Initialize state
-          agreementManager.initializeState(schema, (st) => {
-            var state = new config.db.models.StateModel(st);
-            state.save((err) => {
-              if (err) {
-                logger.error("Mongo error saving state: " + err.toString());
-                res.json(new errorModel(500, err));
-              } else {
-                logger.info("State initialized successfully!");
-                res.json({
-                  code: 200,
-                  message: 'New agreement saved successfully!',
-                  data: agreement
-                });
-              }
+            logger.info('New agreement saved successfully!');
+            res.json({
+              code: 200,
+              message: 'New agreement saved successfully!',
+              data: schema
             });
-          }, (err) => {
-            logger.error("Mongo error saving state: " + err.toString());
-            res.json(new errorModel(500, err));
-          });
         }
       });
     }

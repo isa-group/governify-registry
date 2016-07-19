@@ -7,7 +7,7 @@ var logger = config.logger;
 var stateManager = require('../../../stateManager/stateManager.js')
 var Promise = require("bluebird");
 
-module.exports.quotasGET = function(args, res, next) {
+module.exports.quotasPOST = function(args, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
@@ -15,12 +15,12 @@ module.exports.quotasGET = function(args, res, next) {
 
     logger.ctlState("New request to GET quotas");
     var agreementId = args.agreement.value;
-
+    var query = args.query.value
     stateManager({id: agreementId}).then((manager) => {
         var ret = [];
         Promise.each(manager.agreement.terms.quotas, (quotaDef)=>{
             var quotaId = quotaDef.id;
-            return manager.get('quotas', { quota: quotaId }).then((quotas)=>{
+            return manager.get('quotas', { quota: quotaId, scope: query.scope }).then((quotas)=>{
                 quotas.forEach((element)=>{
                     ret.push(element);
                 });

@@ -118,7 +118,8 @@ function _get(stateType, query) {
                         logger.sm("There is not state for this metric returnig initial values.")
                         //var newState = new state(0, query, {});
 
-                        stateManager.put(stateType, query, 0).then(resolve, reject);
+                        //stateManager.put(stateType, query, 0).then(resolve, reject);
+                        return resolve([]);
                         //return resolve([newState]);
                     }else{
                         logger.sm("Not found " + stateType +  " state, for query = " + JSON.stringify(query));
@@ -331,7 +332,39 @@ function _update(stateType, query, logsState) {
                     logger.sm('Persisting quotas states...');
                     Promise.all(processQuotas).then((quotas) => {
                         //logger.sm('QUOTAS RETURNED: ' + JSON.stringify(quotas, null, 2));
-                        logger.sm('All guarantee states have been persisted');
+                        logger.sm('All quota states have been persisted');
+                        var StateModel = config.db.models.StateModel;
+                        StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), (err, result) => {
+                          return resolve(result);
+                        });
+                    });
+                }, (err) => {
+                    logger.error(err.toString());
+                    return reject(new errorModel(500, err));
+                });
+                break;
+            case "rates":
+                calculators.ratesCalculator.process(stateManager, query).then((ratesStates) => {
+                    logger.sm('All rates states (' + ratesStates.length + ') has been calculated ');
+                    //putting rates
+                    var processRates = [];
+                    ratesStates.forEach(function(ratesState) {
+                        logger.debug('Rates state: ' + JSON.stringify(ratesState, null, 2));
+                        processRates.push(stateManager.put(stateType, {
+                            rate: query.rate,
+                            scope: ratesState.scope,
+                            window: ratesState.window
+                        }, ratesState.value, {
+                            metrics: ratesState.metrics,
+                            max: ratesState.max,
+                            logsState: logsState
+                        }));
+                    });
+                    logger.sm('Created parameters array for saving states of rates of length ' + ratesStates.length);
+                    logger.sm('Persisting rates states...');
+                    Promise.all(processRates).then((rates) => {
+                        //logger.sm('RATES RETURNED: ' + JSON.stringify(rates, null, 2));
+                        logger.sm('All rate states have been persisted');
                         var StateModel = config.db.models.StateModel;
                         StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), (err, result) => {
                           return resolve(result);
@@ -410,7 +443,7 @@ function isUpdated(logUris, agreement, states) {
               return resolve({isUpdated: false,  logsState: noLogsStatus[agreement.id]});
             else{
                 logger.sm(current.logsState + " => " + noLogsStatus[agreement.id]);
-                if( current.logsState == noLogsStatus[agreement.id] &&  (states[0].window ? utils.isInTime(current.time, states[0].window) : true)){
+                if( current.logsState == noLogsStatus[agreement.id] &&  (states[0].window ? utils.isInTime(current.time, states[0].window) : true) && states[0].window.type != "dynamic" ){
                     return resolve({isUpdated: true,  logsState: noLogsStatus[agreement.id]});
                 }else {
                     return resolve({isUpdated: false,  logsState: noLogsStatus[agreement.id]});
@@ -486,6 +519,9 @@ function refineQuery(agId, stateType, query){
         break;
       case 'quotas':
         refinedQuery.id = query.quota;
+        break;
+      case 'rates':
+        refinedQuery.id = query.rate;
         break;
     }
 

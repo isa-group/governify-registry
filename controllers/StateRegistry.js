@@ -58,8 +58,8 @@ module.exports.statesAgreementPricingBillingPenaltiesPOST = function statesAgree
   Stateregistry.statesAgreementPricingBillingPenaltiesPOST(req, res, next);
 };
 
-module.exports.statesAgreementQuotasGET = function statesAgreementQuotasGET(req, res, next) {
-  Stateregistry.statesAgreementQuotasGET(req.swagger.params, res, next);
+module.exports.statesAgreementQuotasPOST = function statesAgreementQuotasPOST(req, res, next) {
+  Stateregistry.statesAgreementQuotasPOST(req.swagger.params, res, next);
 };
 
 module.exports.statesAgreementQuotasQuotaPOST = function statesAgreementQuotasQuotaPOST(req, res, next) {
@@ -70,12 +70,12 @@ module.exports.statesAgreementQuotasQuotaPUT = function statesAgreementQuotasQuo
   Stateregistry.statesAgreementQuotasQuotaPUT(req.swagger.params, res, next);
 };
 
-module.exports.statesAgreementRatesGET = function statesAgreementRatesGET(req, res, next) {
-  Stateregistry.statesAgreementRatesGET(req.swagger.params, res, next);
+module.exports.statesAgreementRatesPOST = function statesAgreementRatesPOST(req, res, next) {
+  Stateregistry.statesAgreementRatesPOST(req.swagger.params, res, next);
 };
 
-module.exports.statesAgreementRatesRateGET = function statesAgreementRatesRateGET(req, res, next) {
-  Stateregistry.statesAgreementRatesRateGET(req.swagger.params, res, next);
+module.exports.statesAgreementRatesRatePOST = function statesAgreementRatesRatePOST(req, res, next) {
+  Stateregistry.statesAgreementRatesRatePOST(req.swagger.params, res, next);
 };
 
 module.exports.statesAgreementRatesRatePUT = function statesAgreementRatesRatePUT(req, res, next) {
