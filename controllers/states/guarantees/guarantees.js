@@ -137,8 +137,8 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
         var resul = [];
         Promise.each(periods, (element) => {
             var p = {
-                from: moment(element.from).subtract(Math.abs(offset), "months").toISOString(),
-                to: moment(element.to).subtract(Math.abs(offset), "months").toISOString()
+                from: moment.utc(moment.tz(element.from.subtract(Math.abs(offset), "months"), manager.agreement.context.validity.timeZone)).toISOString(),
+                to: moment.utc(moment.tz(element.to.subtract(Math.abs(offset), "months"), manager.agreement.context.validity.timeZone)).toISOString()
             };
             //  logger.ctlState("Query before parse: " + JSON.stringify(query, null, 2));
             var logId = Object.keys(query.logs)[0];
@@ -171,8 +171,8 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
                 var ret = [];
                 for (var i in success) {
                     var e = success[i];
-                    //logger.ctlState("compare:  " + e.period.from + ">=" + p.from + " && " + e.period.to + "<=" + p.to );
-                    if (moment.utc(e.period.from).isSameOrAfter(p.from) && moment.utc(e.period.to).isSameOrBefore(p.to) && checkQuery(e, query)) {
+                    //logger.ctlState("Comparing period:  " + e.period.from + ">=" + p.from + " && " + e.period.to + "<=" + p.to);
+                    if (moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to) && checkQuery(e, query)) {
                         ret.push(e);
                     }
                 }
@@ -210,16 +210,16 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
 function getPeriods(agreement, window) {
     var periods = [];
     var Wfrom = moment.utc(moment.tz(window.initial, agreement.context.validity.timeZone));
-    var Wto = moment();
-    var from = moment(Wfrom),
-        to = moment(Wfrom).add(1, "months").subtract(1, "milliseconds");
-    while (!to || to.isSameOrBefore(Wto)) {
+    var current = moment.utc();
+    var from = moment.utc(Wfrom),
+        to = moment.utc(Wfrom).add(1, "months").subtract(1, "milliseconds");
+    while (!to || to.isSameOrBefore(current)) {
         periods.push({
-            from: from.toISOString(),
-            to: to.toISOString()
+            from: from,
+            to: to
         });
-        from = moment(from).add(1, "months");
-        to = moment(to).add(1, "months");
+        from = moment.utc(moment.tz(from, agreement.context.validity.timeZone).add(1, "months"));
+        to = moment.utc(moment.tz(from, agreement.context.validity.timeZone).add(1, "months").subtract(1, "milliseconds"));
     }
 
     return periods;

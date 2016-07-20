@@ -24,7 +24,7 @@ function processMetric(agreement, metricId, metricParameters) {
     return new Promise((resolve, reject) => {
         try {
             var metric = agreement.terms.metrics[metricId];
-            if(!metric){
+            if (!metric) {
                 return reject('Metric ' + metricId + ' not found.');
             }
             var computerEndpoint = metric.computer;
@@ -81,7 +81,7 @@ function processMetric(agreement, metricId, metricParameters) {
             }
 
             data.scope = scope ? scope : metricParameters.scope;
-            logger.metrics("Sending request to computer with payload: " + JSON.stringify(data, null, 2));
+            logger.metrics("Sending request to computer (" + computerEndpoint + ") with payload: " + JSON.stringify(data, null, 2));
 
             request.post({
                 headers: {
@@ -91,6 +91,7 @@ function processMetric(agreement, metricId, metricParameters) {
                 body: JSON.stringify(data)
             }, function(err, httpResponse, response) {
                 logger.metrics('Processing metric ' + metricId + ' response from computer ');
+                logger.metrics('response from computer: ' + JSON.stringify(response, null, 2));
                 if (err) {
                     logger.error("Error in PPINOT Computer response", err);
                     return reject(err);

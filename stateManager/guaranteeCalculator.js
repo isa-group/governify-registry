@@ -52,9 +52,13 @@ function processGuarantee(agreement, guaranteeId, manager) {
 
     return new Promise((resolve, reject) => {
 
+        logger.debug("Searching guarantee '%s' in array:\n %s",guaranteeId,JSON.stringify(agreement.terms.guarantees, null, 2));
+
         var guarantee = agreement.terms.guarantees.find(function(guarantee) {
             return guarantee.id === guaranteeId
         });
+
+        logger.debug('Processing guarantee: ' + guaranteeId);
 
         if (!guarantee) {
             return reject('Guarantee ' + guaranteeId + ' not found.');
