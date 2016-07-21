@@ -712,6 +712,12 @@ paths:
         description: "XXX"
         required: false
         type: string
+      - name: "parameters"
+        in: "body"
+        description: "XXX"
+        required: false
+        schema:
+          $ref: "#/definitions/parameters"
       responses:
         200:
           description: "Success"
@@ -1542,6 +1548,9 @@ definitions:
         type: string
 
   penalty_state:
+    type: object
+
+  parameters:
     type: object
 
   inline_response_400:

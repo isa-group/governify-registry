@@ -20,15 +20,15 @@ module.exports = {
     process: _process
 }
 
-function _process(manager, components, from, to) {
+function _process(manager, parameters, from, to) {
     return new Promise((resolve, reject) => {
         try {
 
             //Process metrics
-            processMetrics(manager, components).then(function(results) {
+            processMetrics(manager, parameters).then(function(results) {
 
                 // Process guarantees
-                processGuarantees(manager, components).then(function(results) {
+                processGuarantees(manager, parameters).then(function(results) {
                     return resolve(results);
                 }, function(err) {
                     return reject(err);
@@ -47,15 +47,15 @@ function _process(manager, components, from, to) {
     });
 }
 
-function processMetrics(manager, components) {
+function processMetrics(manager, parameters) {
     return new Promise(function(respolve, reject) {
 
         var metrics = [];
-        if (components.metrics == 'all') {
+        if (!parameters.metrics) {
             metrics = Object.keys(manager.agreement.terms.metrics);
         } else {
             for (var metricId in manager.agreement.terms.metrics) {
-                if (components.metrics.split(',').indexOf(metricId) != -1) {
+                if (Object.keys(parameters.metrics).indexOf(metricId) != -1) {
                     metrics.push(metricId);
                 }
             }
@@ -63,6 +63,8 @@ function processMetrics(manager, components) {
 
         if (config.parallelProcess.metrics) {
             logger.agreement("Processing metrics in parallel mode");
+            logger.agreement("- metrics: " + metrics);
+
             var processMetrics = [];
             metrics.forEach(function(metricId) {
                 var priorities = ['P1', 'P2', 'P3'];
@@ -70,27 +72,9 @@ function processMetrics(manager, components) {
                     priorities = [''];
                 }
 
-                // FALTA CREAR METRIC PARAMETERS (prioridad, scope...)
-
                 priorities.forEach(function(priority) {
-                    processMetrics.push(manager.get('metrics', {
-                        metric: metricId,
-                        scope: {
-                            priority: priority,
-                            NODO: '*',
-                            CENTRO: '*'
-                        },
-                        window: {
-                            type: 'static',
-                            period: 'monthly',
-                            initial: agreement.context.validity.initial,
-                            timeZone: agreement.context.validity.timeZone
-                        },
-                        period: {
-                            from: '*',
-                            to: '*'
-                        }
-                    }));
+                    parameters.metrics[metricId].scope.priority = priority;
+                    processMetrics.push(manager.get('metrics', parameters.metrics[metricId]));
                 })
             });
 
@@ -116,51 +100,79 @@ function processMetrics(manager, components) {
             });
         } else {
             logger.agreement("Processing metrics in sequential mode");
-            logger.agreement("- guarantees: " + components.guarantees);
-            logger.agreement("- metrics: " + components.metrics);
-            Promise.each(metrics, (metricId) => {
-                logger.agreement("- metricId: " + metricId);
-                return manager.get('metrics', {
-                    metric: metricId,
-                    scope: scopeWithDefault,
-                    window: window,
-                    period: {
-                        from: '*',
-                        to: '*'
-                    }
-                }).then((results) => {
-                    for (var i in results) {
-                        ret.push(manager.current(results[i]));
-                    }
-                }, (err) => {
-                    logger.error(err);
-                    return reject(err);
+            logger.agreement("- metrics: " + metrics);
+
+            var processMetrics = [];
+            metrics.forEach(function(metricId) {
+                var priorities = ['P1', 'P2', 'P3'];
+                if (metricId == 'SPU_IO_K00') {
+                    priorities = [''];
+                }
+
+                priorities.forEach(function(priority) {
+                    parameters.metrics[metricId].scope.priority = priority;
+                    processMetrics.push({
+                        metric: metricId,
+                        scope: parameters.metrics[metricId].scope,
+                        parameters: parameters.metrics[metricId].parameters,
+                        evidences: parameters.metrics[metricId].evidences,
+                        window: parameters.metrics[metricId].window,
+                        period: {
+                            from: '*',
+                            to: '*'
+                        }
+                    });
                 });
+            });
+
+            Promise.each(processMetrics, function(metricParam) {
+                return manager.get('metrics', metricParam);
             }).then(function(results) {
-                return resolve(ret);
-            }, (err) => {
-                logger.error("Error processing metrics: ", err);
+                if (results.length > 0) {
+                    var values = [];
+                    for (var i = 0; i < results.length; i++) {
+                        if (results[i].isFulfilled()) {
+                            if (results[i].value().length > 0) {
+                                results[i].value().forEach(function(metricValue) {
+                                    values.push(manager.current(metricValue));
+                                });
+                            }
+                        }
+                    }
+                    return resolve(values);
+                } else {
+                    return reject('Error processing metric: empty result');
+                }
+            }, function(err) {
+                console.error(err);
                 return reject(err);
             });
+
+
+
         }
+
+
     });
 }
 
 
-function processGuarantees(manager, components) {
+function processGuarantees(manager, parameters) {
     return new Promise(function(resolve, reject) {
 
         var guarantees = [];
-        if (components.guarantees == 'all') {
+        if (!parameters.guarantees) {
             guarantees = manager.agreement.terms.guarantees;
         } else {
             guarantees = manager.agreement.terms.guarantees.filter(function(guarantee) {
-                return components.guarantees.indexOf(guarantee.id) != -1;
+                return Object.keys(parameters.guarantees).indexOf(guarantee.id) != -1;
             });
         }
 
         if (config.parallelProcess.guarantees) {
             logger.agreement("Processing guarantees in parallel mode");
+            logger.agreement("- guarantees: " + guarantees);
+
             var processGuarantees = [];
             guarantees.forEach(function(guarantee) {
                 processGuarantees.push(manager.get('guarantees', {
@@ -190,6 +202,8 @@ function processGuarantees(manager, components) {
             });
         } else {
             logger.agreement("Processing guarantees in sequential mode");
+            logger.agreement("- guarantees: " + guarantees);
+
             var ret = [];
 
             Promise.each(guarantees, (guarantee) => {

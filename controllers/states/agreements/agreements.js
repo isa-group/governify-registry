@@ -96,6 +96,7 @@ function _agreementIdDELETE(args, res, next) {
 function _agreementIdRELOAD(args, res, next) {
     var agreementId = args.agreementId.value;
     var notify = args.notify.value;
+    var parameters = args.parameters.value;
 
     logger.ctlState("New request to reload state of agreement " + agreementId);
 
@@ -131,11 +132,7 @@ function _agreementIdRELOAD(args, res, next) {
                         stateManager({
                             id: agreementId
                         }).then(function(manager) {
-                            var components = {
-                                metrics: args.metrics ? args.metrics.value : 'all',
-                                guarantees: args.guarantees ? args.guarantees.value : 'all'
-                            }
-                            calculators.agreementCalculator.process(manager, components).then(function(result) {
+                            calculators.agreementCalculator.process(manager, parameters).then(function(result) {
                                 if (errors.length > 0)
                                     logger.error("Agreement state reload has been finished with " + errors.length + " errors: \n" + JSON.stringify(errors));
                                 else {
