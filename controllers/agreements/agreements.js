@@ -83,7 +83,7 @@ function _agreementIdDELETE(args, res, next) {
   var agreementId = args.agreement.value;
   if (agreementId) {
     var AgreementModel = config.db.models.AgreementModel;
-    AgreementModel.find({ "agreementId":agreementId }).remove( function(err) {
+    AgreementModel.find({"id" : agreementId}).remove( function(err) {
       if (!err) {
         logger.info("Deleted agreement with id " + agreementId);
         agreementState.agreementIdDELETE(args, res, next);

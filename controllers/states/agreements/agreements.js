@@ -74,8 +74,8 @@ function _agreementIdGET(args, res, next) {
 
 
 function _agreementIdDELETE(args, res, next) {
-    logger.info("New request to DELETE agreement state");
     var agreementId = args.agreement.value;
+    logger.info("New request to DELETE agreement state for agreement " + agreementId);
     if (agreementId) {
         var StateModel = config.db.models.StateModel;
         StateModel.find({ "agreementId":agreementId }).remove(function(err) {
