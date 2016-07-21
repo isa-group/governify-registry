@@ -17,7 +17,8 @@ module.exports = {
   agreementsDELETE: _agreementsDELETE,
   agreementsGET: _agreementsGET,
   agreementIdGET: _agreementIdGET,
-  agreementIdDELETE: _agreementIdDELETE
+  agreementIdDELETE: _agreementIdDELETE,
+  agreementIdPUT:  _agreementsIdPUT
 }
 
 function _agreementsGET(args, res, next) {
@@ -124,7 +125,7 @@ function _agreementsPOST(args, res, next) {
           }else{
               if(result){
                   logger.warning("Agreement already exists");
-                  res.json(new errorModel(403, "Agreement already exists"));
+                  res.status(403).json(new errorModel(403, "Agreement already exists"));
               }else{
                   var agreement = new config.db.models.AgreementModel(schema);
                   agreement.save((err, result)=>{
@@ -142,6 +143,41 @@ function _agreementsPOST(args, res, next) {
                   });
               }
           }
+      });
+    }
+  });
+}
+
+
+function _agreementsIdPUT(args, res, next) {
+  /**
+   * parameters expected in the args:
+   * agreement (Agreement)
+   **/
+  // no response value expected for this operation
+
+  //console.log(config.db.models.agreement);
+
+  $RefParser.dereference(args.agreementObject.value, function(err, schema) {
+    logger.info("New request to UPDATE agreement with id = %s", schema.id);
+    if (err) {
+      logger.error(err.toString());
+      res.json(new errorModel(500, err));
+    } else {
+      var Agreement = config.db.models.AgreementModel;
+      Agreement.update({id: schema.id}, schema, {upsert: true}, function(err, result) {
+        if (err) {
+          logger.error("Mongo error updating agreement: " + err.toString());
+          res.json(new errorModel(500, err));
+        } else {
+            logger.info(JSON.stringify(result, null, 2));
+            logger.info('New agreement saved successfully!');
+            res.json({
+              code: 200,
+              message: 'New agreement saved successfully!',
+              data: schema
+            });
+        }
       });
     }
   });

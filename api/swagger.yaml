@@ -117,6 +117,31 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "AgreementRegistry"
+    put:
+      tags:
+      - "agreement-registry"
+      description: "XXX"
+      operationId: "agreementsAgreementPUT"
+      parameters:
+      - name: "agreement"
+        in: "path"
+        description: "XXX"
+        required: true
+        type: string
+      - name: "agreementObject"
+        in: "body"
+        description: "XXX"
+        required: true
+        schema:
+          type: object
+      responses:
+        200:
+          description: "Success"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/inline_response_400"
+      x-swagger-router-controller: "AgreementRegistry"
     delete:
       tags:
       - "agreement-registry"

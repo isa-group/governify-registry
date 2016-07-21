@@ -20,6 +20,7 @@ exports.agreementsAgreementGET = agreements.agreementIdGET;
 
 exports.agreementsAgreementDELETE = agreements.agreementIdDELETE;
 
+exports.agreementsAgreementPUT = agreements.agreementIdPUT;
 
 exports.agreementsAgreementTermsGuaranteesGET = function(args, res, next) {
   /**

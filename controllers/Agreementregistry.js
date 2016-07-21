@@ -37,6 +37,10 @@ module.exports.agreementsAgreementGET = function agreementsAgreementGET (req, re
   Agreement.agreementsAgreementGET(req.swagger.params, res, next);
 };
 
+module.exports.agreementsAgreementPUT = function agreementsAgreementPUT (req, res, next) {
+  Agreement.agreementsAgreementPUT(req.swagger.params, res, next);
+};
+
 module.exports.agreementsAgreementDELETE = function agreementsAgreementDELETE (req, res, next) {
   Agreement.agreementsAgreementDELETE(req.swagger.params, res, next);
 };
