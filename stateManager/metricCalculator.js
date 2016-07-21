@@ -91,7 +91,7 @@ function processMetric(agreement, metricId, metricParameters) {
                 body: JSON.stringify(data)
             }, function(err, httpResponse, response) {
                 logger.metrics('Processing metric ' + metricId + ' response from computer ');
-                logger.metrics('response from computer: ' + JSON.stringify(response, null, 2));
+                //logger.metrics('response from computer: ' + JSON.stringify(response, null, 2));
                 if (err) {
                     logger.error("Error in PPINOT Computer response", err);
                     return reject(err);

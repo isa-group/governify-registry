@@ -137,8 +137,8 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
         var resul = [];
         Promise.each(periods, (element) => {
             var p = {
-                from: moment.utc(moment.tz(element.from.subtract(Math.abs(offset), "months"), manager.agreement.context.validity.timeZone)).toISOString(),
-                to: moment.utc(moment.tz(element.to.subtract(Math.abs(offset), "months"), manager.agreement.context.validity.timeZone)).toISOString()
+                from: moment.utc(moment.tz(element.from, manager.agreement.context.validity.timeZone).subtract(Math.abs(offset), "months")).toISOString(),
+                to: moment.utc(moment.tz(element.to, manager.agreement.context.validity.timeZone).subtract(Math.abs(offset), "months")).toISOString()
             };
             //  logger.ctlState("Query before parse: " + JSON.stringify(query, null, 2));
             var logId = Object.keys(query.logs)[0];
