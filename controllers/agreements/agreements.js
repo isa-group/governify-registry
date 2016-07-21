@@ -109,25 +109,39 @@ function _agreementsPOST(args, res, next) {
   // no response value expected for this operation
 
   //console.log(config.db.models.agreement);
-  logger.info("New request to CREATE agreement");
+
   $RefParser.dereference(args.agreement.value, function(err, schema) {
+    logger.info("New request to CREATE agreement with id = %s", schema.id);
     if (err) {
       logger.error(err.toString());
       res.json(new errorModel(500, err));
     } else {
       var Agreement = config.db.models.AgreementModel;
-      Agreement.update({id: schema.id}, schema, {upsert: true}, function(err) {
-        if (err) {
-          logger.error("Mongo error saving agreement: " + err.toString());
-          res.json(new errorModel(500, err));
-        } else {
-            logger.info('New agreement saved successfully!');
-            res.json({
-              code: 200,
-              message: 'New agreement saved successfully!',
-              data: schema
-            });
-        }
+      Agreement.findOne({id: schema.id}, (err, result) => {
+          if(err){
+              logger.error("Mongo error finding agreement: " + err.toString());
+              res.json(new errorModel(500, "Mongo error finding agreement" + err.toString()));
+          }else{
+              if(result){
+                  logger.warning("Agreement already exists");
+                  res.json(new errorModel(403, "Agreement already exists"));
+              }else{
+                  var agreement = new config.db.models.AgreementModel(schema);
+                  agreement.save((err, result)=>{
+                      if(err){
+                          logger.error("Mongo error saving agreement: " + err.toString());
+                          res.json(new errorModel(500, "Mongo error saving agreement: " + err.toString()));
+                      }else{
+                          logger.info('New agreement saved successfully!');
+                          res.json({
+                            code: 200,
+                            message: 'New agreement saved successfully!',
+                            data: schema
+                          });
+                      }
+                  });
+              }
+          }
       });
     }
   });
