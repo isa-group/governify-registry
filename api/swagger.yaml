@@ -697,21 +697,6 @@ paths:
         description: "XXX"
         required: true
         type: string
-      - name: "notify"
-        in: "query"
-        description: "XXX"
-        required: false
-        type: string
-      - name: "guarantees"
-        in: "query"
-        description: "XXX"
-        required: false
-        type: string
-      - name: "metrics"
-        in: "query"
-        description: "XXX"
-        required: false
-        type: string
       - name: "parameters"
         in: "body"
         description: "XXX"

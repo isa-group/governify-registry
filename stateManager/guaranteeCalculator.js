@@ -256,6 +256,7 @@ function calculatePenalty(agreement, guarantee, ofElement, timedScope, metricsVa
             if (penaltyFufilled.length > 0) {
                 guaranteeValue.penalties[penaltyVar] = parseFloat(vm.runInThisContext(penaltyFufilled[0].value));
             } else {
+                guaranteeValue.penalties[penaltyVar] = 0;
                 logger.error('SLO not fulfilled and no penalty found: ');
                 logger.error('\t- penalty: ', penalty.of);
                 logger.error('\t- metric value: ', values);

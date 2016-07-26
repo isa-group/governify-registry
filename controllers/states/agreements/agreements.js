@@ -78,7 +78,9 @@ function _agreementIdDELETE(args, res, next) {
     logger.info("New request to DELETE agreement state for agreement " + agreementId);
     if (agreementId) {
         var StateModel = config.db.models.StateModel;
-        StateModel.find({ "agreementId":agreementId }).remove(function(err) {
+        StateModel.find({
+            "agreementId": agreementId
+        }).remove(function(err) {
             if (!err) {
                 res.sendStatus(200);
                 logger.ctlState("Deleted state for agreement " + agreementId);
@@ -95,17 +97,18 @@ function _agreementIdDELETE(args, res, next) {
 
 function _agreementIdRELOAD(args, res, next) {
     var agreementId = args.agreementId.value;
-    var notify = args.notify.value;
     var parameters = args.parameters.value;
 
     logger.ctlState("New request to reload state of agreement " + agreementId);
 
     var StateModel = config.db.models.StateModel;
-    StateModel.find({ "agreementId":agreementId }).remove(function(err) {
+    StateModel.find({
+        "agreementId": agreementId
+    }).remove(function(err) {
         var errors = [];
         if (!err) {
             var message = 'Reloading state of agreement ' + agreementId + '. ' +
-                (notify ? 'An email will be sent to ' + notify + ' when the process ends' : '');
+                (parameters.mail ? 'An email will be sent to ' + parameters.mail.to + ' when the process ends' : '');
             res.end(message);
 
             logger.ctlState("Deleted state for agreement " + agreementId);
@@ -119,37 +122,27 @@ function _agreementIdRELOAD(args, res, next) {
                     errors.push(err);
                 }
 
-                agreementManager.initializeState(agreement, (st) => {
-                    var state = new config.db.models.StateModel(st);
-                    state.save((err) => {
-                        if (err) {
-                            logger.error("Mongo error saving state: " + err.toString());
-                            errors.push(err);
+                stateManager({
+                    id: agreementId
+                }).then(function(manager) {
+                    logger.ctlState("Calculating agreement state...");
+                    calculators.agreementCalculator.process(manager, parameters.requestedState).then(function(result) {
+                        logger.debug("Agreement state has been calculated successfully");
+                        if (errors.length > 0)
+                            logger.error("Agreement state reload has been finished with " + errors.length + " errors: \n" + JSON.stringify(errors));
+                        else {
+                            logger.ctlState("Agreement state reload has been finished successfully");
+
+                            if (parameters.mail)
+                                sendMail(agreement, parameters.mail);
                         }
-
-                        logger.ctlState("State initialized successfully!");
-
-                        stateManager({
-                            id: agreementId
-                        }).then(function(manager) {
-                            calculators.agreementCalculator.process(manager, parameters).then(function(result) {
-                                if (errors.length > 0)
-                                    logger.error("Agreement state reload has been finished with " + errors.length + " errors: \n" + JSON.stringify(errors));
-                                else {
-                                    logger.ctlState("Agreement state reload has been finished successfully");
-
-                                    if (notify)
-                                        sendMail(notify, agreement);
-                                }
-                            }, function(err) {
-                                logger.error(err.message.toString());
-                                errors.push(err);
-                            });
-                        }, function(err) {
-                            logger.error(err.message.toString());
-                            errors.push(err);
-                        });
-                    })
+                    }, function(err) {
+                        logger.error(err.message.toString());
+                        errors.push(err);
+                    });
+                }, function(err) {
+                    logger.error(err.message.toString());
+                    errors.push(err);
                 });
             });
         } else {
@@ -159,11 +152,8 @@ function _agreementIdRELOAD(args, res, next) {
     });
 }
 
-function sendMail(to, agreement) {
-    logger.ctlState("Sending email to " + to);
-
-    //var mailContent = util.format(config.email.messages.reloadAgreement.mailContent, agreement.id);
-    var mailContent = util.format("State of SLA '%s' has been updated based on the log registered.<br/> Current log count is:<br/>", agreement.id);
+function sendMail(agreement, mail) {
+    logger.ctlState("Sending email to " + mail.to);
 
     var logRequests = [];
     for (var logId in agreement.context.definitions.logs) {
@@ -191,25 +181,27 @@ function sendMail(to, agreement) {
         });
     }).then(function(results) {
         if (logStates.length > 0) {
-            mailContent += '<ul>';
+            mail.content += '<ul>';
             logStates.forEach(function(logState) {
-                mailContent += '<li>' + logState.id + ' (' + logState.state + ')</li>';
+                mail.content += '<li>' + logState.id + ' (' + logState.state + ')</li>';
             });
-            mailContent += '<ul/>';
+            mail.content += '<ul/>';
         }
 
         var mailOptions = {
-            from: '"ISA-Group" <no-reply@isa.us.es>',
-            to: to,
-            subject: '[Governify] SLA status has been updated',
-            html: mailContent
+            from: mail.from,
+            to: mail.to,
+            subject: mail.subject,
+            html: mail.content
         };
 
         mailer.sendMail(mailOptions, function(error, info) {
             if (error) {
                 return logger.error(error);
             }
-            logger.ctlState('Email to ' + to + ' has been sent');
+            logger.ctlState('Email to ' + mail.to + ' has been sent');
+            logger.ctlState('Summer is coming');
         });
     });
+
 }

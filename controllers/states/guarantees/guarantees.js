@@ -10,6 +10,7 @@ var errorModel = require('../../../errors/index.js').errorModel;
 var logger = config.logger;
 var Promise = require("bluebird");
 var moment = require('moment');
+var utils = require('../../../utils/utils');
 
 module.exports.guaranteesGET = function(args, res, next) {
     /**
@@ -132,6 +133,8 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
         id: agreementId
     }).then((manager) => {
 
+        var billingCycle = manager.agreement.terms.pricing.billing.period;
+        var guaranteeCycle = query.window.period;
         var periods = getPeriods(manager.agreement, query.window);
 
         var resul = [];
@@ -169,20 +172,36 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
                 //  window: query.window
             }).then(function(success) {
                 var ret = [];
+
                 for (var i in success) {
                     var e = success[i];
                     //logger.ctlState("Comparing period:  " + e.period.from + ">=" + p.from + " && " + e.period.to + "<=" + p.to);
-                    if (moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to) && checkQuery(e, query)) {
+
+                    // If guarantee.from >= period.from && guarantee.to <= period.to or KPIs with periods greater than monthly
+
+                    // habría que almacenar el valor para añadirlo en la siguiente iteración y así no introducir un periodo de 4 meses en la salida del K00.
+
+                    // if (utils.periods[guaranteeCycle] > utils.periods[billingCycle] && moment(e.period.to).isSame(p.to, utils.convertPeriod(billingCycle))) {
+                    //     e.value += p.value;
+                    //     logger.error("e.value: " + e.value + ", p.value: " + p.value);
+
+                    // }
+
+                    if ((moment(e.period.from).isSameOrAfter(p.from, utils.convertPeriod(billingCycle)) && moment(e.period.to).isSameOrBefore(p.to, utils.convertPeriod(billingCycle)) && checkQuery(e, query))) {
+                        logger.info("e.period: " + JSON.stringify(e.period, null, 2));
                         ret.push(e);
                     }
                 }
-                //logger.ctlState("Resultado para el periodo : " + JSON.stringify(element) + "=>\n" + JSON.stringify(ret, null, 2));
+
+
+
+                //logger.ctlState("Results in period : " + JSON.stringify(element) + "=>\n" + JSON.stringify(ret, null, 2));
 
                 for (var i in ret) {
                     if (manager.current(ret[i]).penalties) {
                         var penalties = manager.current(ret[i]).penalties
-                        for (var penaltyI in penalties) {
-                            resul.push(new penaltyMetric(ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI]));
+                        for (var penaltyId in penalties) {
+                            resul.push(new penaltyMetric(ret[i].scope, query.parameters, element, query.logs, penaltyId, penalties[penaltyId]));
                         }
                     }
                 }
@@ -208,18 +227,21 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
 }
 
 function getPeriods(agreement, window) {
+    var billingCycle = agreement.terms.pricing.billing.period;
+    var offset = utils.convertPeriod(billingCycle);
+
     var periods = [];
     var Wfrom = moment.utc(moment.tz(window.initial, agreement.context.validity.timeZone));
     var current = moment.utc();
     var from = moment.utc(Wfrom),
-        to = moment.utc(Wfrom).add(1, "months").subtract(1, "milliseconds");
+        to = moment.utc(Wfrom).add(1, offset).subtract(1, "milliseconds");
     while (!to || to.isSameOrBefore(current)) {
         periods.push({
             from: from,
             to: to
         });
-        from = moment.utc(moment.tz(from, agreement.context.validity.timeZone).add(1, "months"));
-        to = moment.utc(moment.tz(from, agreement.context.validity.timeZone).add(1, "months").subtract(1, "milliseconds"));
+        from = moment.utc(moment.tz(from, agreement.context.validity.timeZone).add(1, offset));
+        to = moment.utc(moment.tz(from, agreement.context.validity.timeZone).add(1, offset).subtract(1, "milliseconds"));
     }
 
     return periods;

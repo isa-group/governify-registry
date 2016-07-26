@@ -24,12 +24,12 @@ function _process(manager, parameters, from, to) {
     return new Promise((resolve, reject) => {
         try {
 
-            //Process metrics
-            processMetrics(manager, parameters).then(function(results) {
+            //Process guarantees
+            processGuarantees(manager, parameters).then(function(guaranteeResults) {
 
-                // Process guarantees
-                processGuarantees(manager, parameters).then(function(results) {
-                    return resolve(results);
+                // Process metrics
+                processMetrics(manager, parameters).then(function(metricResults) {
+                    return resolve(guaranteeResults);
                 }, function(err) {
                     return reject(err);
                 });
@@ -43,12 +43,11 @@ function _process(manager, parameters, from, to) {
             return reject(e);
         }
 
-
     });
 }
 
 function processMetrics(manager, parameters) {
-    return new Promise(function(respolve, reject) {
+    return new Promise(function(resolve, reject) {
 
         var metrics = [];
         if (!parameters.metrics) {
@@ -125,21 +124,21 @@ function processMetrics(manager, parameters) {
                 });
             });
 
+            var ret = [];
+
             Promise.each(processMetrics, function(metricParam) {
-                return manager.get('metrics', metricParam);
+                logger.agreement("- metricId: " + metricParam.metric);
+                return manager.get('metrics', metricParam).then((results) => {
+                    for (var i in results) {
+                        ret.push(manager.current(results[i]));
+                    }
+                }, (err) => {
+                    logger.error(err);
+                    return reject(err);
+                });
             }).then(function(results) {
                 if (results.length > 0) {
-                    var values = [];
-                    for (var i = 0; i < results.length; i++) {
-                        if (results[i].isFulfilled()) {
-                            if (results[i].value().length > 0) {
-                                results[i].value().forEach(function(metricValue) {
-                                    values.push(manager.current(metricValue));
-                                });
-                            }
-                        }
-                    }
-                    return resolve(values);
+                    return resolve(ret);
                 } else {
                     return reject('Error processing metric: empty result');
                 }
