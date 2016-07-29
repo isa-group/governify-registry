@@ -15,14 +15,14 @@ module.exports.containsObject = function(obj, array) {
 }
 
 module.exports.periods = {
-    "secondly": 1,
-    "minutely": 60,
-    "hourly": 3600,
-    "daily": 86400,
-    "weekly": 604800,
-    "monthly": 2628000,
-    "quarterly": 7884000,
-    "yearly": 31540000
+    "secondly": 1000,
+    "minutely": 60000,
+    "hourly": 3600000,
+    "daily": 86400000,
+    "weekly": 604800000,
+    "monthly": 2628000000,
+    "quarterly": 7884000000,
+    "yearly": 31540000000
 }
 
 

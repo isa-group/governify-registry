@@ -17,10 +17,10 @@ var config = jsyaml.safeLoad(configString)[process.env.NODE_ENV ? process.env.NO
 
 
 config.parallelProcess.guarantees = process.env.GUARANTEES_PARALLEL_PROCESS ?
-    process.env.GUARANTEES_PARALLEL_PROCESS : config.parallelProcess.guarantees;
+                                            process.env.GUARANTEES_PARALLEL_PROCESS : config.parallelProcess.guarantees;
 
 config.parallelProcess.metrics = process.env.METRICS_PARALLEL_PROCESS ?
-    process.env.METRICS_PARALLEL_PROCESS : config.parallelProcess.metrics;
+                                            process.env.METRICS_PARALLEL_PROCESS : config.parallelProcess.metrics;
 
 config.state = state;
 module.exports = config;

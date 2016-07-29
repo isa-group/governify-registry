@@ -22,15 +22,20 @@ module.exports = {
 function processGuarantees(agreement) {
     return new Promise((resolve, reject) => {
         var processGuarantees = [];
+
+        // processGuarantee is called for each guarantee of the agreement guarantees definition
         agreement.terms.guarantees.forEach(function(guarantee) {
             processGuarantees.push(processGuarantee(agreement, guarantee.id));
         });
         Promise.settle(processGuarantees).then(function(results) {
+            // Once we have all guarantees states calculated, we store them
             if (results.length > 0) {
                 var values = [];
                 for (var i = 0; i < results.length; i++) {
+                    // We check if the promise has been successfully resolved
                     if (results[i].isFulfilled()) {
                         if (results[i].value().length > 0) {
+                            // For each guarantee state, we push it in the array 'values'
                             results[i].value().forEach(function(guaranteeValue) {
                                 values.push(guaranteeValue);
                             });
@@ -54,6 +59,7 @@ function processGuarantee(agreement, guaranteeId, manager) {
 
         logger.debug("Searching guarantee '%s' in array:\n %s",guaranteeId,JSON.stringify(agreement.terms.guarantees, null, 2));
 
+        // We retrieve the guarantee definition from the agreement that matches with the provided ID
         var guarantee = agreement.terms.guarantees.find(function(guarantee) {
             return guarantee.id === guaranteeId
         });
@@ -64,6 +70,7 @@ function processGuarantee(agreement, guaranteeId, manager) {
             return reject('Guarantee ' + guaranteeId + ' not found.');
         }
 
+        // We prepare the parameters needed by the processScopedGuarantee function
         guarantee.of.forEach(function(ofElement) {
             processScopedGuarantees.push({
                 agreement: agreement,
@@ -77,6 +84,8 @@ function processGuarantee(agreement, guaranteeId, manager) {
         var guaranteesValues = [];
 
         logger.guarantees('Processing scoped guarantee (' + guarantee.id + ')...');
+
+        // processScopedGuarantee is called for each scope (priority, node, serviceLine, activity, etc.) of the guarantee
         Promise.each(processScopedGuarantees, function(guaranteeParam) {
             return processScopedGuarantee(guaranteeParam.agreement, guaranteeParam.guarantee, guaranteeParam.ofElement, guaranteeParam.manager).then(function(value) {
                 logger.guarantees('Scoped guarantee has been processed');

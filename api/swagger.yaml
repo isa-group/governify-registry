@@ -790,7 +790,7 @@ paths:
     post:
       tags:
       - "state-registry"
-      description: "XXX"
+      description: "** PLEASE NOTE: Currently, this method is only supported over Guarantees defined with a MONTHLY period **"
       operationId: "statesAgreementGuaranteesGuaranteePenaltiyPOST"
       parameters:
       - name: "agreement"
