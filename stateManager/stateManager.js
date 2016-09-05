@@ -11,22 +11,36 @@ var clone = require('clone');
 
 module.exports = initialize;
 
+/**
+ * Intialize the StateManager for an agreement.
+ *
+ * @param {String} agreement identifier
+ * @return {Promise} Promise that will return a StateManager object
+ * @api public
+ */
 function initialize(_agreement) {
     logger.sm('(initialize) Initializing state with agreement ID = ' + _agreement.id);
     return new Promise((resolve, reject) => {
         var AgreementModel = config.db.models.AgreementModel;
         logger.sm("Searching agreement with agreementID = " + _agreement.id);
+        //Executes a mongodb query to search Agreement file with id = _agreement
         AgreementModel.findOne({
             'id': _agreement.id
         }, function(err, ag) {
             if (err) {
+                //something fail on mongodb query and error is returned
                 logger.error(err.toString());
                 return reject(new errorModel(500, err));
             } else {
                 if (!ag) {
+                    //Not found agreement with id = _agreement
                     return reject(new errorModel(404, 'There is no agreement with id: ' + _agreement.id));
                 }
                 logger.sm("StateManager for agreementID = " + _agreement.id + " initialized");
+                //Building stateManager object with agreement definitions and stateManager method
+                //get ==> gets one or more states, put ==> save an scoped state,
+                //update ==> calculates one or more states and save them,
+                //current ==> do a map over state an returns the current record for this state.
                 var stateManager = {
                     agreement: ag,
                     get: _get,
@@ -40,18 +54,31 @@ function initialize(_agreement) {
     });
 }
 
+/**
+ * Gets one or more states by an specific query.
+ *
+ * @param {String} state type enum: {guarantees, pricing, agreement, metrics}
+ * @param {StateManagerQuery} query will be matched with an state.
+ * @return {Promise} Promise that will return an array of state objects
+ * @api public
+ */
 function _get(stateType, query) {
     var stateManager = this;
     logger.sm('(_get) Retrieving state of ' + stateType);
     return new Promise((resolve, reject) => {
         logger.sm("Getting " + stateType + " state for query =  " + JSON.stringify(query));
         var StateModel = config.db.models.StateModel;
+        //Executes a mongodb query to search States file that match with query
+        // projectionBuilder(...) builds a mongodb query from StateManagerQuery
+        // refineQuery(...) ensures that the query is well formed, chooses and renames fields to make a well formed query.
         StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), (err, result) => {
-            if (err) {
+            if(err){
+                //something fail on mongodb query and error is returned
                 logger.sm(JSON.stringify(err));
                 return reject(new errorModel(500, "Error while retrieving %s states: %s", stateType, err.toString()));
             }
-            if (result.length > 0) {
+            //If there are states in mongodb match the query, checks if it's updated and returns.
+            if(result.length > 0){
                 logger.sm("There are " + stateType + " state for query =  " + JSON.stringify(query) + " in DB");
                 var states = result;
 
@@ -59,12 +86,12 @@ function _get(stateType, query) {
                 isUpdated(stateManager.agreement, states).then((data) => {
                     logger.sm("Updated: " + (data.isUpdated ? 'YES' : 'NO'));
                     if (data.isUpdated) {
-
+                        //States are updated, returns.
                         logger.sm("Returning state of " + stateType);
                         return resolve(states);
 
                     } else {
-
+                        //States are updated, returns.
                         logger.sm("Refreshing states of " + stateType);
                         // Register agreement to progress list
                         config.state.agreementsInProgress.push(stateManager.agreement.id);
