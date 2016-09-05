@@ -28,6 +28,6 @@
     "winston": "^2.2.0"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node --max-old-space-size=20480 server.js"
   }
 }

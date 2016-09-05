@@ -1,3 +1,2 @@
-FROM node:6-onbuild
-# replace this with your application's default port
+FROM node:6.5.0-onbuild
 EXPOSE 8081
