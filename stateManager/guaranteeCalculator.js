@@ -28,20 +28,22 @@ function processGuarantees(agreement) {
             processGuarantees.push(processGuarantee(agreement, guarantee.id));
         });
         Promise.settle(processGuarantees).then(function(results) {
-            // Once we have all guarantees states calculated, we store them
+            // Once we have all guarantees states calculated...
             if (results.length > 0) {
                 var values = [];
                 for (var i = 0; i < results.length; i++) {
                     // We check if the promise has been successfully resolved
                     if (results[i].isFulfilled()) {
                         if (results[i].value().length > 0) {
-                            // For each guarantee state, we push it in the array 'values'
+                            // For each guarantee state, we store it in the array 'values'
                             results[i].value().forEach(function(guaranteeValue) {
                                 values.push(guaranteeValue);
                             });
                         }
                     }
                 }
+
+                // We return all guarantee values calculated
                 return resolve(values);
             } else {
                 return reject('Error processing guarantee: empty result');
@@ -89,6 +91,7 @@ function processGuarantee(agreement, guaranteeId, manager) {
         Promise.each(processScopedGuarantees, function(guaranteeParam) {
             return processScopedGuarantee(guaranteeParam.agreement, guaranteeParam.guarantee, guaranteeParam.ofElement, guaranteeParam.manager).then(function(value) {
                 logger.guarantees('Scoped guarantee has been processed');
+                // Once we have calculated the scoped guarantee state, we add it to the array 'guaranteeValues'
                 guaranteesValues = guaranteesValues.concat(value);
             }).catch(function(err) {
                 logger.error('Error processing scoped guarantee: ', err);
@@ -97,6 +100,7 @@ function processGuarantee(agreement, guaranteeId, manager) {
 
         }).then(function() {
             logger.guarantees('All scoped guarantees have been processed');
+            // Once we have calculated all scoped guarantees, we return guarantee ID and guarantee states values
             return resolve({
                 guaranteeId: guaranteeId,
                 guaranteeValues: guaranteesValues
@@ -111,11 +115,14 @@ function processGuarantee(agreement, guaranteeId, manager) {
 function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
     try {
         return new Promise((resolve, reject) => {
-            var stateManager = require('./stateManager.js');
+
+            // We retrieve the SLO from the scoped guarantee and the penalties to apply
             var slo = ofElement.objective;
             var penalties = ofElement.penalties;
+
             var processMetrics = [];
 
+            // If some scope is not specified, we set it with default values
             var scopeWithDefault = {};
             var definedScopes = Object.keys(ofElement.scope);
             for (var guaranteeScope in guarantee.scope) {
@@ -126,6 +133,8 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                 }
             }
 
+
+            // We collect the evidences that will be send to computer
             var evidences = [];
             if (ofElement.evidences) {
                 ofElement.evidences.forEach(function(evidence) {
@@ -139,11 +148,13 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                 });
             }
 
+            // We get the metrics to calculate from the with section of the scoped guarantee
             if (ofElement.with) {
                 var metrics = [];
                 var window = ofElement.window;
                 window.initial = moment.utc(moment.tz(ofElement.window.initial, agreement.context.validity.timeZone)).format();
                 window.timeZone = agreement.context.validity.timeZone;
+                // For each metric, we create an object with the parameters needed by the manager to be able to calculate the metric state
                 for (var metricId in ofElement.with) {
                     processMetrics.push({
                         metric: metricId,
@@ -161,32 +172,41 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
 
             var guaranteesValues = [];
 
+            // timedScope array will group all metric values by the same scope and period
             var timedScopes = [];
             var metricValues = [];
 
             logger.guarantees('Obtaining required metrics states for scoped guarantee ' + guarantee.id + '...');
             Promise.each(processMetrics, function(metricParam) {
                 return manager.get('metrics', metricParam).then(function(scopedMetricValues) {
+                    // Once we have all metrics involved in the scoped guarantee calculated...
                     if (scopedMetricValues.length > 0) {
                         logger.guarantees('Timed scoped metric values for ' + scopedMetricValues[0].id + ' has been calculated (' + scopedMetricValues.length + ') ');
                         logger.guarantees('Updating timed scope array for ' + scopedMetricValues[0].id + '...');
+
+                        // For each scoped metric value...
                         scopedMetricValues.forEach(function(metricValue) {
                             var ts = {
                                 scope: metricValue.scope,
                                 period: metricValue.period
                             }
 
+                            // We check if a timedScope exists
                             var tsIndex = utils.containsObject(ts, timedScopes);
 
                             if (tsIndex == -1) {
+                                // If no exists, we create it
                                 tsIndex = timedScopes.push(ts) - 1;
                                 logger.guarantees('New TimedScope with index: ', tsIndex);
                             } else {
                                 logger.guarantees('TimedScope already exists in array index: ', tsIndex);
                             }
+
+                            // If array metricValues has no values for the index yet, we initialize it 
                             if (metricValues[tsIndex] == null)
                                 metricValues[tsIndex] = {};
 
+                            // Finally, we store current value (most recent value) of the metric
                             metricValues[tsIndex][metricValue.id] = manager.current(metricValue);
                         });
 

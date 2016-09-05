@@ -626,6 +626,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
+      x-swagger-router-controller: "StateRegistry"
     delete:
       tags:
       - "state-registry"
@@ -664,6 +665,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
+      x-swagger-router-controller: "StateRegistry"
     delete:
       tags:
       - "state-registry"
@@ -685,14 +687,14 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
-  /states/{agreementId}/reload:
+  /states/{agreement}/reload:
     post:
       tags:
       - "state-registry"
       description: "XXX"
       operationId: "statesAgreementRELOAD"
       parameters:
-      - name: "agreementId"
+      - name: "agreement"
         in: "path"
         description: "XXX"
         required: true
@@ -1021,14 +1023,14 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
-  /states/{agreementId}/pricing/billing/penalties:
+  /states/{agreement}/pricing/billing/penalties:
     post:
       tags:
       - "state-registry"
       description: "XXX"
       operationId: "statesAgreementPricingBillingPenaltiesPOST"
       parameters:
-      - name: "agreementId"
+      - name: "agreement"
         in: "path"
         description: "XXX"
         required: true
