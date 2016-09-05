@@ -96,7 +96,7 @@ function _agreementIdDELETE(args, res, next) {
 }
 
 function _agreementIdRELOAD(args, res, next) {
-    var agreementId = args.agreementId.value;
+    var agreementId = args.agreement.value;
     var parameters = args.parameters.value;
 
     logger.ctlState("New request to reload state of agreement " + agreementId);

@@ -9,12 +9,12 @@ var winston = require('winston');
 var state = {
     logger: null,
     db: null,
-    models: null
+    models: null,
+    agreementsInProgress: []
 };
 
 var configString = fs.readFileSync('./config/config.yaml', 'utf8');
 var config = jsyaml.safeLoad(configString)[process.env.NODE_ENV ? process.env.NODE_ENV : 'development'];
-
 
 config.parallelProcess.guarantees = process.env.GUARANTEES_PARALLEL_PROCESS ?
                                             process.env.GUARANTEES_PARALLEL_PROCESS : config.parallelProcess.guarantees;
@@ -76,7 +76,7 @@ module.exports.logger = new winston.Logger({
             colorize: false
         }),
         new winston.transports.Console({
-            level: 'sm',
+            level: 'info',
             handleExceptions: true,
             json: false,
             colorize: true,
@@ -117,7 +117,7 @@ module.exports.db.close = function(done) {
     if (state.db) {
         state.db.close(function(err, result) {
             state.db = null;
-            state.mode = null;
+            state.models = null;
         });
     }
 };
