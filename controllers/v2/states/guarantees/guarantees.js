@@ -11,6 +11,9 @@ var logger = config.logger;
 var Promise = require("bluebird");
 var moment = require('moment');
 
+var JSONStream = require('JSONStream');
+var stream = require('stream');
+
 module.exports.guaranteesGET = function(args, res, next) {
     /**
      * parameters expected in the args:
@@ -65,7 +68,7 @@ module.exports.guaranteesGET = function(args, res, next) {
             });
         } else {
             logger.ctlState("Processing guarantees in sequential mode");
-            var ret = [];
+            var ret = new stream.Readable({ objectMode: true });
             Promise.each(manager.agreement.terms.guarantees, (guarantee) => {
                 logger.ctlState("- guaranteeId: " + guarantee.id);
                 return manager.get('guarantees', {
@@ -74,11 +77,13 @@ module.exports.guaranteesGET = function(args, res, next) {
                     for (var i in results) {
                         ret.push(manager.current(results[i]));
                     }
+
                 }, (err) => {
                     logger.error(err);
                 });
             }).then(function(results) {
-                res.json(ret);
+                ret.push(null);
+                ret.pipe(JSONStream.stringify()).pipe(res) //.json(ret);
             }, (err) => {
                 logger.error("ERROR processing guarantees: ", err);
                 res.status(500).json(new errorModel(500, err));

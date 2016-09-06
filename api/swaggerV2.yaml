@@ -1055,7 +1055,7 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
-      
+
   /states/{agreement}/quotas:
     get:
       tags:
