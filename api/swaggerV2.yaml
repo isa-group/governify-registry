@@ -15,8 +15,8 @@ info:
         ));
       }(window, document, "_pm", "PostmanRunObject", "https://run.pstmn.io/button.js"));
     </script>
-  version: "0.0.1"
-  title: "Governify Registry V2"
+  version: "2.0.0"
+  title: "Governify Registry"
   termsOfService: "www.isa.us.es"
   contact:
     name: "ISA Research Group"
@@ -612,6 +612,10 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "AgreementRegistry"
+
+
+## AGREEMENT STATE ##
+  # GET ALL AGREEMENTS STATES OF ALL AGREEMENTS
   /states:
     get:
       tags:
@@ -630,6 +634,8 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+
+    # DELETE ALL AGREEMENTS STATES OF ALL AGREEMENTS
     delete:
       tags:
       - "state-registry"
@@ -638,15 +644,13 @@ paths:
       responses:
         200:
           description: "Success"
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/agreement_state"
         400:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+
+  # GET ALL STATES OF AN AGREEMENTS
   /states/{agreement}:
     get:
       tags:
@@ -669,6 +673,8 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+
+    # DELETE ALL STATES OF AN AGREEMENTS
     delete:
       tags:
       - "state-registry"
@@ -683,13 +689,13 @@ paths:
       responses:
         200:
           description: "Success"
-          schema:
-            $ref: "#/definitions/agreement_state"
         400:
           description: "Bad request"
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+
+  # RELOAD STATES OF AN AGREEMENTS
   /states/{agreement}/reload:
     post:
       tags:
@@ -718,6 +724,8 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+
+  # GET ALL GUARANTEES STATES OF AN AGREEMENTS
   /states/{agreement}/guarantees:
     get:
       tags:
@@ -752,6 +760,8 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+
+  # GET A GUARANTEES STATES OF AN AGREEMENTS
   /states/{agreement}/guarantees/{guarantee}:
     get:
       tags:
@@ -791,6 +801,7 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+
   /states/{agreement}/guarantees/{guarantee}/penalty:
     post:
       tags:
@@ -813,7 +824,7 @@ paths:
         description: "XXX"
         required: true
         schema:
-          type: object
+          $ref: "#/definitions/query"
       responses:
         200:
           description: "Success"
@@ -826,6 +837,7 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+
   /states/{agreement}/metrics:
     post:
       tags:
@@ -844,12 +856,7 @@ paths:
         required: true
         #PASS to definitions
         schema:
-          type: object
-          properties:
-            scope:
-              type: object
-            window:
-              type: object
+          $ref: "#/definitions/query"
       responses:
         200:
           description: "Success"
@@ -860,6 +867,7 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+
   /states/{agreement}/metrics/{metric}:
     post:
       tags:
@@ -881,9 +889,8 @@ paths:
         in: body
         description: "XXX"
         required: true
-        #PASS to definitions
         schema:
-          type: object
+          $ref: "#/definitions/query"
       responses:
         200:
           description: "Success"
@@ -894,6 +901,7 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+
     put:
       tags:
       - "state-registry"
@@ -915,7 +923,7 @@ paths:
         description: "XXX"
         required: true
         schema:
-          type: object
+          $ref: "#/definitions/query"
       responses:
         200:
           description: "Success"
@@ -926,6 +934,7 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+
   /states/{agreement}/metrics/{metric}/history:
     post:
       tags:
@@ -949,12 +958,7 @@ paths:
         required: true
         #PASS to definitions
         schema:
-          type: object
-          properties:
-            scope:
-              type: object
-            window:
-              type: object
+          $ref: "#/definitions/query"
       responses:
         200:
           description: "Success"
@@ -965,6 +969,7 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+
   /states/{agreement}/metrics/{metric}/increase:
     post:
       tags:
@@ -988,12 +993,7 @@ paths:
         required: true
         #PASS to definitions
         schema:
-          type: object
-          properties:
-            scope:
-              type: object
-            window:
-              type: object
+          $ref: "#/definitions/query"
       responses:
         200:
           description: "Success"
@@ -1004,6 +1004,7 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+
   /states/{agreement}/pricing:
     get:
       tags:
@@ -1043,10 +1044,7 @@ paths:
         description: "XXX"
         required: true
         schema:
-          type: object
-          properties:
-            period:
-              type: object
+          $ref: "#/definitions/query"
       responses:
         200:
           description: "Success"
@@ -1057,6 +1055,7 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "StateRegistry"
+      
   /states/{agreement}/quotas:
     get:
       tags:
@@ -1154,6 +1153,10 @@ paths:
       x-swagger-router-controller: "StateRegistry"
 
 definitions:
+
+  query:
+    type: object
+
   agreement:
     type: object
     properties:

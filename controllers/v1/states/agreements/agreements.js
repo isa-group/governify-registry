@@ -2,16 +2,16 @@
 
 var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
-var config = require('../../../config');
+var config = require('../../../../config');
 var logger = config.logger;
-var stateManager = require('../../../stateManager/stateManager.js');
+var stateManager = require('../../../../stateManager/stateManager.js');
 var agreementManager = require('governify-agreement-manager').operations.states;
 var Promise = require("bluebird");
 var request = require('request');
 var fs = require('fs');
-var errorModel = require('../../../errors/index.js').errorModel;
-var mailer = require('../../../mailer');
-var calculators = require('../../../stateManager/calculators.js');
+var errorModel = require('../../../../errors/index.js').errorModel;
+var mailer = require('../../../../mailer');
+var calculators = require('../../../../stateManager/calculators.js');
 const util = require('util');
 
 module.exports = {

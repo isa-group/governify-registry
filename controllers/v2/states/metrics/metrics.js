@@ -2,11 +2,11 @@
 
 var agreementManager = require('governify-agreement-manager');
 var metricsRecords = agreementManager.operations.states.recordsManager.metrics;
-var errorModel = require('../../../errors/index.js').errorModel;
+var errorModel = require('../../../../errors/index.js').errorModel;
 
-var config = require('../../../config');
+var config = require('../../../../config');
 var logger = config.logger;
-var stateManager = require('../../../stateManager/stateManager.js')
+var stateManager = require('../../../../stateManager/stateManager.js')
 var Promise = require("bluebird");
 var request = require("request");
 

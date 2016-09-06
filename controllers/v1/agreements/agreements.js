@@ -2,7 +2,7 @@
 
 var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
-var config = require('../../../config');
+var config = require('../../../config/index');
 var agreementManager = require('governify-agreement-manager').operations.states;
 
 var agreementState = require('../states/agreements/agreements');

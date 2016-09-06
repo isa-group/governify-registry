@@ -2,11 +2,11 @@
 
 var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
-var config = require('../../../config');
-var stateManager = require('../../../stateManager/stateManager.js');
+var config = require('../../../../config');
+var stateManager = require('../../../../stateManager/stateManager.js');
 var Promise = require("bluebird");
 var fs = require('fs');
-var errorModel = require('../../../errors/index.js').errorModel;
+var errorModel = require('../../../../errors/index.js').errorModel;
 var logger = config.logger;
 var Promise = require("bluebird");
 var moment = require('moment');
