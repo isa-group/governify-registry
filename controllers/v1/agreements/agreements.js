@@ -2,14 +2,14 @@
 
 var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
-var config = require('../../config');
+var config = require('../../../config');
 var agreementManager = require('governify-agreement-manager').operations.states;
 
 var agreementState = require('../states/agreements/agreements');
 var stateRegistySrv = require('../StateRegistryService');
 
 var fs = require('fs');
-var errorModel = require('../../errors/index.js').errorModel;
+var errorModel = require('../../../errors/index.js').errorModel;
 var logger = config.logger;
 
 module.exports = {

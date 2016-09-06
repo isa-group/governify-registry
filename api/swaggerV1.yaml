@@ -40,6 +40,7 @@ consumes:
 produces:
 - "application/json"
 paths:
+
   /agreements:
     get:
       tags:
@@ -94,6 +95,7 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "AgreementRegistry"
+
   /agreements/{agreement}:
     get:
       tags:
@@ -137,6 +139,7 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "AgreementRegistry"
+      
   /agreements/{agreement}/context:
     get:
       tags:
