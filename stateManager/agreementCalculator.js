@@ -107,15 +107,17 @@ function processMetrics(manager, parameters) {
                 if (metricId == 'SPU_IO_K00') {
                     priorities = [''];
                 }
-
+                
                 priorities.forEach(function(priority) {
-                    parameters.metrics[metricId].scope.priority = priority;
+                    var scp = JSON.parse(JSON.stringify(parameters.metrics[metricId].scope));
+                    scp.priority = priority;
                     processMetrics.push({
                         metric: metricId,
-                        scope: parameters.metrics[metricId].scope,
+                        scope: scp,
                         parameters: parameters.metrics[metricId].parameters,
                         evidences: parameters.metrics[metricId].evidences,
                         window: parameters.metrics[metricId].window,
+                        logs: parameters.metrics[metricId].logs,
                         period: {
                             from: '*',
                             to: '*'

@@ -10,6 +10,7 @@ var state = {
     logger: null,
     db: null,
     models: null,
+    statusBouncer: false,
     agreementsInProgress: []
 };
 

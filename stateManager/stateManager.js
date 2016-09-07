@@ -72,13 +72,13 @@ function _get(stateType, query) {
         // projectionBuilder(...) builds a mongodb query from StateManagerQuery
         // refineQuery(...) ensures that the query is well formed, chooses and renames fields to make a well formed query.
         StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), (err, result) => {
-            if(err){
+            if (err) {
                 //something fail on mongodb query and error is returned
                 logger.sm(JSON.stringify(err));
                 return reject(new errorModel(500, "Error while retrieving %s states: %s", stateType, err.toString()));
             }
             //If there are states in mongodb match the query, checks if it's updated and returns.
-            if(result.length > 0){
+            if (result.length > 0) {
                 logger.sm("There are " + stateType + " state for query =  " + JSON.stringify(query) + " in DB");
                 var states = result;
 
@@ -94,10 +94,12 @@ function _get(stateType, query) {
                         //States are updated, returns.
                         logger.sm("Refreshing states of " + stateType);
                         // Register agreement to progress list
-                        config.state.agreementsInProgress.push(stateManager.agreement.id);
+                        if (config.state.statusBouncer)
+                            config.state.agreementsInProgress.push(stateManager.agreement.id);
                         stateManager.update(stateType, query, data.logsState).then((states) => {
                             // Remove agreement from progress list
-                            config.state.agreementsInProgress.splice(config.state.agreementsInProgress.indexOf(stateManager.agreement.id), 1);
+                            if (config.state.statusBouncer)
+                                config.state.agreementsInProgress.splice(config.state.agreementsInProgress.indexOf(stateManager.agreement.id), 1);
                             return resolve(states);
                         }, (err) => {
                             return reject(err);
@@ -113,15 +115,17 @@ function _get(stateType, query) {
                 logger.sm("Adding states of " + stateType);
                 isUpdated(stateManager.agreement).then((data) => {
                     if (data.isUpdated) {
-                        logger.sm("There is not state for this metric returnig initial values.")
+                        logger.sm("There is no state for this metric. Returning initial values.")
                         var newState = new state(0, query, {});
                         return resolve([newState]);
                     } else {
                         // Register agreement to progress list
-                        config.state.agreementsInProgress.push(stateManager.agreement.id);
+                        if (config.state.statusBouncer)
+                            config.state.agreementsInProgress.push(stateManager.agreement.id);
                         stateManager.update(stateType, query, data.logsState).then((states) => {
                             // Remove agreement from progress list
-                            config.state.agreementsInProgress.splice(config.state.agreementsInProgress.indexOf(stateManager.agreement.id), 1);
+                            if (config.state.statusBouncer)
+                                config.state.agreementsInProgress.splice(config.state.agreementsInProgress.indexOf(stateManager.agreement.id), 1);
                             return resolve(states);
                         }, (err) => {
                             return reject(err);
@@ -369,6 +373,7 @@ function isUpdated(agreement, states) {
                 current = getCurrent(current[0]);
 
             logger.sm('Sending request to LOG state URI...');
+
             request.get({
                 uri: logUris,
                 json: true
