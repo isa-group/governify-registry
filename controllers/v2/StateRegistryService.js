@@ -1,0 +1,58 @@
+'use strict';
+
+var request = require('request');
+var config = require('../../config');
+
+// Requiring states controllers
+var states = require("./states/states.js");
+
+var logger = config.logger;
+
+module.exports = {
+    // Agreement controllers
+
+    statesAgreementGET: states.agreements.agreementIdGET,
+    statesAgreementDELETE: states.agreements.agreementIdDELETE,
+    statesAgreementRELOAD: states.agreements.agreementIdRELOAD,
+
+    // Guarantees controllers
+
+    statesAgreementGuaranteesGET: states.guarantees.guaranteesGET,
+    statesAgreementGuaranteesGuaranteeGET: states.guarantees.guaranteeIdGET,
+    statesAgreementGuaranteesGuaranteePenaltiyPOST: states.guarantees.guaranteeIdPenaltyPOST,
+
+    // Quotas controllers
+
+    statesAgreementQuotasGET: states.quotas.quotasGET,
+    statesAgreementQuotasQuotaGET: states.quotas.quotasQuotaGET,
+    // Rates controllers
+
+    statesAgreementRatesGET: states.rates.ratesGET,
+    statesAgreementRatesRateGET: states.rates.ratesRateGET,
+    // Metrics controllers
+
+    statesAgreementMetricsPOST: states.metrics.metricsPOST,
+    statesAgreementMetricsMetricPOST: states.metrics.metricsIdPOST,
+    statesAgreementMetricsMetricPUT: states.metrics.metricsIdPUT,
+    statesAgreementMetricsMetricIncreasePOST: states.metrics.metricsIdIncrease,
+
+    // Pricing
+    statesAgreementPricingBillingPenaltiesPOST: states.pricing.PricingBillingPenaltiesPOST,
+
+    // Delete
+    statesDELETE: _statesDELETE,
+};
+
+function _statesDELETE(args, res, next) {
+    logger.ctlState("New request to DELETE all agreement states");
+    var StateModel = config.db.models.StateModel;
+    StateModel.remove(function(err) {
+        if (!err) {
+            res.sendStatus(200);
+            logger.info("Deleted state for all agreements");
+        } else {
+            res.sendStatus(404);
+            logger.warning("Can't delete state for all agreements: " + err);
+        }
+    });
+}

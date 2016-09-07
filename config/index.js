@@ -42,6 +42,7 @@ var logConfig = {
         guarantees: 10,
         metrics: 10,
         sm: 11,
+        streaming: 11,
         info: 12,
         debug: 13
     },
@@ -57,6 +58,7 @@ var logConfig = {
         guarantees: 'green',
         metrics: 'cyan',
         sm: 'grey',
+        streaming: 'green',
         info: 'white',
         debug: 'black'
     }

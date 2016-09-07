@@ -1,11 +1,11 @@
 'use strict';
 
-var config = require('../../../config');
+var config = require('../../../../config');
 var logger = config.logger;
 var iso8601 = require('iso8601');
 var Promise = require("bluebird");
-var errorModel = require('../../../errors/index.js').errorModel;
-var stateManager = require('../../../stateManager/stateManager.js')
+var errorModel = require('../../../../errors/index.js').errorModel;
+var stateManager = require('../../../../stateManager/stateManager.js')
 var Promise = require("bluebird");
 var request = require("request");
 

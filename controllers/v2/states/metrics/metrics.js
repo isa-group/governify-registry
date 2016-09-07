@@ -2,14 +2,16 @@
 
 var agreementManager = require('governify-agreement-manager');
 var metricsRecords = agreementManager.operations.states.recordsManager.metrics;
-var errorModel = require('../../../errors/index.js').errorModel;
+var errorModel = require('../../../../errors/index.js').errorModel;
 
-var config = require('../../../config');
+var config = require('../../../../config');
 var logger = config.logger;
-var stateManager = require('../../../stateManager/stateManager.js')
+var stateManager = require('../../../../stateManager/stateManager.js')
 var Promise = require("bluebird");
 var request = require("request");
 
+var JSONStream = require('JSONStream');
+var stream = require('stream');
 
 module.exports.metricsIdIncrease = function (args, res, next){
     var agreementId = args.agreement.value;
@@ -85,6 +87,8 @@ module.exports.metricsPOST = function(req, res, next) {
      * parameters expected in the args:
      * agreement (String)
      **/
+
+    res.setHeader('content-type', 'application/json; charset=utf-8');
     var args = req.swagger.params;
     var agreementId = args.agreement.value;
     var AgreementModel = config.db.models.AgreementModel;
@@ -108,13 +112,40 @@ module.exports.metricsPOST = function(req, res, next) {
                 processMetrics.push(manager.get('metrics', metricParams));
             }
 
+            var result;
+            if(config.streaming){
+                logger.ctlState("### Streaming mode ###");
+                result = new stream.Readable({ objectMode: true });
+                result.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
+                result.on('data', (data)=>{logger.streaming("Streaming data...")});
+                result.pipe(JSONStream.stringify()).pipe(res);
+            }else{
+                logger.ctlState("### NO Streaming mode ###");
+                result = [];
+            }
+
             Promise.all(processMetrics).then(function(metricsValues) {
                 for (var i in results) {
-                    ret.push(manager.current(results[i]));
+                    result.push(manager.current(results[i]));
                 }
-                res.json(ret);
+                if(config.streaming)
+                  result.push(null);
+                else
+                  result.json(ret);
             });
         } else {
+
+            var ret;
+            if(config.streaming){
+                logger.ctlState("### Streaming mode ###");
+                ret = new stream.Readable({ objectMode: true });
+                ret.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
+                ret.on('data', (data)=>{logger.streaming("Streaming data...")});
+                ret.pipe(JSONStream.stringify()).pipe(res);
+            }else{
+                logger.ctlState("### NO Streaming mode ###");
+                ret = [];
+            }
             Promise.each(Object.keys(manager.agreement.terms.metrics), (metricId) => {
                 logger.info("==> metricId = " + metricId);
                 var metricParams = args.scope.value;
@@ -125,13 +156,18 @@ module.exports.metricsPOST = function(req, res, next) {
                 metricParams.metric = metricId;
                 return manager.get('metrics', metricParams).then((results) => {
                     for (var i in results) {
+                        //feeding stream
                         ret.push(manager.current(results[i]));
                     }
                 }, (err) => {
                     logger.error(err);
                 });
             }).then(function(results) {
-                res.json(ret);
+                //end stream
+                if(config.streaming)
+                    ret.push(null);
+                else
+                    res.json(ret);
             }, (err) => {
                 logger.error("ERROR processing metrics");
                 res.status(500).json(new errorModel(500, err));
@@ -160,13 +196,29 @@ module.exports.metricsIdPOST = function(args, res, next) {
         to: '*'
     };
 
+    var ret;
+    if(config.streaming){
+        logger.ctlState("### Streaming mode ###");
+        ret = new stream.Readable({ objectMode: true });
+        ret.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
+        ret.on('data', (data)=>{logger.streaming("Streaming data...")});
+        ret.pipe(JSONStream.stringify()).pipe(res);
+    }
+
     stateManager({
         id: agreementId
     }).then((manager) => {
         manager.get('metrics', metricParams).then((data) => {
-            res.json(data.map((element) => {
-                return manager.current(element);
-            }));
+            if(config.streaming){
+                res.json(data.map((element) => {
+                    return manager.current(element);
+                }));
+            }else{
+              data.forEach((element) => {
+                  ret.push(manager.current(element));
+              });
+              ret.push(null);
+            }
         }, (err) => {
             logger.error(err);
             res.status(500).json(new errorModel(500, err));

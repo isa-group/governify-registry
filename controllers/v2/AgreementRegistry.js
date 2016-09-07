@@ -1,7 +1,7 @@
 'use strict';
 
 var url = require('url');
-var utils = require('../utils/utils');
+var utils = require('../../utils/utils');
 
 var Agreement = require('./AgreementRegistryService');
 

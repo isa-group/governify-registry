@@ -7,6 +7,7 @@ development:
   parallelProcess:
     guarantees: false
     metrics: false
+  streaming: true
   email:
     defaultMailFrom: '"ISA-Group" <no-reply@isa.us.es>'
     messages:
@@ -22,6 +23,7 @@ production:
   parallelProcess:
     guarantees: false
     metrics: false
+  streaming: true
   email:
     defaultMailFrom: '"ISA-Group" <no-reply@isa.us.es>'
     messages:
