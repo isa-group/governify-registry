@@ -44,8 +44,8 @@ module.exports.guaranteesGET = function(args, res, next) {
             if(config.streaming){
                 logger.ctlState("### Streaming mode ###");
                 result = new stream.Readable({ objectMode: true });
-                result.on('error', (err)=>{logger.warning("waiting data from stateManager...")});
-                result.on('data', (data)=>{logger.warning("Streaming data...")});
+                result.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
+                result.on('data', (data)=>{logger.streaming("Streaming data...")});
                 result.pipe(JSONStream.stringify()).pipe(res);
             }else{
                 logger.ctlState("### NO Streaming mode ###");
@@ -97,8 +97,8 @@ module.exports.guaranteesGET = function(args, res, next) {
             if(config.streaming){
                 logger.ctlState("### Streaming mode ###");
                 ret = new stream.Readable({ objectMode: true });
-                ret.on('error', (err)=>{logger.warning("waiting data from stateManager...")});
-                ret.on('data', (data)=>{logger.warning("Streaming data...")});
+                ret.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
+                ret.on('data', (data)=>{logger.streaming("Streaming data...")});
                 ret.pipe(JSONStream.stringify()).pipe(res);
             }else{
                 logger.ctlState("### NO Streaming mode ###");
@@ -153,8 +153,8 @@ module.exports.guaranteeIdGET = function(args, res, next) {
         if(config.streaming){
             logger.ctlState("### Streaming mode ###");
             ret = new stream.Readable({ objectMode: true });
-            ret.on('error', (err)=>{logger.warning("waiting data from stateManager...")});
-            ret.on('data', (data)=>{logger.warning("Streaming data...")});
+            ret.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
+            ret.on('data', (data)=>{logger.streaming("Streaming data...")});
             ret.pipe(JSONStream.stringify()).pipe(res);
         }
         manager.get('guarantees', {
