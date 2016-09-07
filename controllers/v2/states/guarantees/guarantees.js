@@ -21,6 +21,8 @@ module.exports.guaranteesGET = function(args, res, next) {
      * from (String)
      * to (String)
      **/
+
+    res.setHeader('content-type', 'application/json; charset=utf-8');
     logger.ctlState("New request to GET guarantees");
     var agreementId = args.agreement.value;
 
@@ -38,21 +40,43 @@ module.exports.guaranteesGET = function(args, res, next) {
                 }));
             });
 
+            var result;
+            if(config.streaming){
+                logger.ctlState("### Streaming mode ###");
+                result = new stream.Readable({ objectMode: true });
+                result.on('error', (err)=>{logger.warning("waiting data from stateManager...")});
+                result.on('data', (data)=>{logger.warning("Streaming data...")});
+                result.pipe(JSONStream.stringify()).pipe(res);
+            }else{
+                logger.ctlState("### NO Streaming mode ###");
+                result = [];
+            }
+
             Promise.settle(processGuarantees).then(function(guaranteesValues) {
                 try {
                     if (guaranteesValues.length > 0) {
-                        var result = [];
+
                         for (var i = 0; i < guaranteesValues.length; i++) {
                             if (guaranteesValues[i].isFulfilled()) {
                                 if (guaranteesValues[i].value().length > 0) {
-                                    var guaranteesResults = guaranteesValues[i].value().map(function(guaranteeValue) {
-                                        return manager.current(guaranteeValue);
-                                    });
-                                    result = result.concat(guaranteesResults);
+                                    if(config.streaming){
+                                        guaranteesValues[i].value().forEach(function(guaranteeValue) {
+                                            result.push(manager.current(guaranteeValue));
+                                        });
+                                    }else{
+                                        var guaranteesResults = guaranteesValues[i].value().map(function(guaranteeValue) {
+                                            return manager.current(guaranteeValue);
+                                        });
+                                        result = result.concat(guaranteesResults);
+                                    }
                                 }
                             }
                         }
-                        res.json(result);
+                        if(config.streaming){
+                            result.push(null);
+                        }else{
+                            res.json(result);
+                        }
                     } else {
                         var err = 'Error processing guarantee: empty result';
                         logger.error(err);
@@ -68,22 +92,37 @@ module.exports.guaranteesGET = function(args, res, next) {
             });
         } else {
             logger.ctlState("Processing guarantees in sequential mode");
-            var ret = new stream.Readable({ objectMode: true });
+            //Build stream when it's required
+            var ret;
+            if(config.streaming){
+                logger.ctlState("### Streaming mode ###");
+                ret = new stream.Readable({ objectMode: true });
+                ret.on('error', (err)=>{logger.warning("waiting data from stateManager...")});
+                ret.on('data', (data)=>{logger.warning("Streaming data...")});
+                ret.pipe(JSONStream.stringify()).pipe(res);
+            }else{
+                logger.ctlState("### NO Streaming mode ###");
+                ret = [];
+            }
             Promise.each(manager.agreement.terms.guarantees, (guarantee) => {
                 logger.ctlState("- guaranteeId: " + guarantee.id);
                 return manager.get('guarantees', {
                     guarantee: guarantee.id
                 }).then((results) => {
                     for (var i in results) {
+                        //feeding stream
                         ret.push(manager.current(results[i]));
                     }
-
                 }, (err) => {
                     logger.error(err);
                 });
             }).then(function(results) {
-                ret.push(null);
-                ret.pipe(JSONStream.stringify()).pipe(res) //.json(ret);
+                //end stream
+                if(config.streaming)
+                    ret.push(null);
+                else
+                    res.json(ret);
+
             }, (err) => {
                 logger.error("ERROR processing guarantees: ", err);
                 res.status(500).json(new errorModel(500, err));
@@ -105,15 +144,32 @@ module.exports.guaranteeIdGET = function(args, res, next) {
     var agreementId = args.agreement.value;
     var guaranteeId = args.guarantee.value;
 
+    res.setHeader('content-type', 'application/json; charset=utf-8');
+
     stateManager({
         id: agreementId
     }).then((manager) => {
+        var ret;
+        if(config.streaming){
+            logger.ctlState("### Streaming mode ###");
+            ret = new stream.Readable({ objectMode: true });
+            ret.on('error', (err)=>{logger.warning("waiting data from stateManager...")});
+            ret.on('data', (data)=>{logger.warning("Streaming data...")});
+            ret.pipe(JSONStream.stringify()).pipe(res);
+        }
         manager.get('guarantees', {
             guarantee: guaranteeId
         }).then(function(success) {
-            res.json(success.map((element) => {
-                return manager.current(element);
-            }));
+            if(config.streaming){
+                res.json(success.map((element) => {
+                    return manager.current(element);
+                }));
+            }else{
+              success.forEach((element) => {
+                  ret.push(manager.current(element));
+              });
+              ret.push(null);
+            }
         }, function(err) {
             logger.error(err);
             res.status(500).json(new errorModel(500, err));

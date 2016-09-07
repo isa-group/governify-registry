@@ -11,9 +11,10 @@ var request = require("request");
 
 module.exports.PricingBillingPenaltiesPOST = function (req, res, next){
       var args = req.swagger.params;
-      var agreementId = args.agreementId.value;
-      var query = args.query.value;
 
+      logger.warning(JSON.stringify(args));
+      var agreementId = args.agreement.value;
+      var query = args.query.value;
       logger.ctlState("New request to get pricing state for agreementId = " + agreementId);
 
       stateManager({id: agreementId}).then((manager)=>{
