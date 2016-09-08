@@ -58,19 +58,29 @@ app.use('/api/v1/states/:agreement', function(req, res, next) {
   }
   config.logger.info('\n######################################################################\n\n');
 });
-
+**/
 app.use('/api/v2/states/:agreement', function(req, res, next) {
   config.logger.info('\n\n######################################################################');
   config.logger.info('New request to retrieve state for agreement %s', JSON.stringify(req.params.agreement, null, 2));
+  config.logger.warning('Agreements in progress %s', JSON.stringify(config.state.agreementsInProgress, null, 2));
   if (config.state.agreementsInProgress.indexOf(req.params.agreement) != -1) {
     config.logger.info('State for agreement %s is already in progress', req.params.agreement);
     res.json(new errorModel(202, "Job in progress: calculating state for agreement " + req.params.agreement));
   } else {
     config.logger.info('Retrieving state for agreement %s', req.params.agreement);
+    if (config.state.statusBouncer)
+      config.state.agreementsInProgress.push(req.params.agreement);
+
+    res.on('finish', function() {
+      config.logger.warning('Removing agreement from progress list');
+      if (config.state.statusBouncer)
+        config.state.agreementsInProgress.splice(config.state.agreementsInProgress.indexOf(req.params.agreement), 1);
+    });
+
     next();
   }
   config.logger.info('\n######################################################################\n\n');
-});**/
+});
 
 
 swaggerTools.initializeMiddleware(swaggerDocV1, function(middleware) {
@@ -91,28 +101,28 @@ swaggerTools.initializeMiddleware(swaggerDocV1, function(middleware) {
 
   // Initialize the Swagger middleware for API V2
   swaggerTools.initializeMiddleware(swaggerDocV2, function(middlewareV2) {
-      // Interpret Swagger resources and attach metadata to request - must be first in swagger-tools middleware chain
-      app.use(middlewareV2.swaggerMetadata());
+    // Interpret Swagger resources and attach metadata to request - must be first in swagger-tools middleware chain
+    app.use(middlewareV2.swaggerMetadata());
 
-      // Validate Swagger requests
-      app.use(middlewareV2.swaggerValidator());
+    // Validate Swagger requests
+    app.use(middlewareV2.swaggerValidator());
 
-      // Route validated requests to appropriate controller
-      app.use(middlewareV2.swaggerRouter(optionsV2));
+    // Route validated requests to appropriate controller
+    app.use(middlewareV2.swaggerRouter(optionsV2));
 
-      // Serve the Swagger documents and Swagger UI
-      app.use(middlewareV2.swaggerUi({
-        apiDocs: swaggerDocV2.basePath + '/api-docs',
-        swaggerUi: swaggerDocV2.basePath + '/docs'
-      }));
+    // Serve the Swagger documents and Swagger UI
+    app.use(middlewareV2.swaggerUi({
+      apiDocs: swaggerDocV2.basePath + '/api-docs',
+      swaggerUi: swaggerDocV2.basePath + '/docs'
+    }));
 
-      // Start the server
-      var serverPort = process.env.PORT || config.port;
-      var server = app.listen(serverPort, function() {
-        config.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
-        config.logger.info('Swagger-ui is available on http://localhost:%d/api/v1/docs', serverPort);
-      });
-      server.timeout = 24 * 3600 * 1000; // 24h
+    // Start the server
+    var serverPort = process.env.PORT || config.port;
+    var server = app.listen(serverPort, function() {
+      config.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
+      config.logger.info('Swagger-ui is available on http://localhost:%d/api/v1/docs', serverPort);
+    });
+    server.timeout = 24 * 3600 * 1000; // 24h
 
   });
 
