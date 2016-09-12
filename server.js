@@ -39,26 +39,11 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
   extended: true
 }));
 
-// Setup logger
-//config.logger.setup();
 
 // Connect to mongodb
 config.db.connect();
 
-/**
-app.use('/api/v1/states/:agreement', function(req, res, next) {
-  config.logger.info('\n\n######################################################################');
-  config.logger.info('New request to retrieve state for agreement %s', JSON.stringify(req.params.agreement, null, 2));
-  if (config.state.agreementsInProgress.indexOf(req.params.agreement) != -1) {
-    config.logger.info('State for agreement %s is already in progress', req.params.agreement);
-    res.json(new errorModel(202, "Job in progress: calculating state for agreement " + req.params.agreement));
-  } else {
-    config.logger.info('Retrieving state for agreement %s', req.params.agreement);
-    next();
-  }
-  config.logger.info('\n######################################################################\n\n');
-});
-**/
+// middleware to control when an agreement state process is already in progress
 app.use('/api/v2/states/:agreement', function(req, res, next) {
   config.logger.info('\n\n######################################################################');
   config.logger.info('New request to retrieve state for agreement %s', JSON.stringify(req.params.agreement, null, 2));
@@ -67,14 +52,16 @@ app.use('/api/v2/states/:agreement', function(req, res, next) {
     config.logger.info('State for agreement %s is already in progress', req.params.agreement);
     res.json(new errorModel(202, "Job in progress: calculating state for agreement " + req.params.agreement));
   } else {
-    config.logger.info('Retrieving state for agreement %s', req.params.agreement);
-    if (config.state.statusBouncer)
+    if (config.statusBouncer) {
+      config.logger.warning('Adding agreement to progress list');
       config.state.agreementsInProgress.push(req.params.agreement);
+    }
 
     res.on('finish', function() {
-      config.logger.warning('Removing agreement from progress list');
-      if (config.state.statusBouncer)
+      if (config.statusBouncer) {
+        config.logger.warning('Removing agreement from progress list');
         config.state.agreementsInProgress.splice(config.state.agreementsInProgress.indexOf(req.params.agreement), 1);
+      }
     });
 
     next();

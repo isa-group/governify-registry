@@ -8,6 +8,9 @@ development:
     guarantees: false
     metrics: false
   streaming: true
+  statusBouncer: false
+  maxAttempts: 20
+  retryDelay: 5000
   email:
     defaultMailFrom: '"ISA-Group" <no-reply@isa.us.es>'
     messages:
@@ -24,6 +27,9 @@ production:
     guarantees: false
     metrics: false
   streaming: true
+  statusBouncer: false
+  maxAttempts: 20
+  retryDelay: 5000
   email:
     defaultMailFrom: '"ISA-Group" <no-reply@isa.us.es>'
     messages:

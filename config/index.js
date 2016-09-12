@@ -10,7 +10,6 @@ var state = {
     logger: null,
     db: null,
     models: null,
-    statusBouncer: false,
     agreementsInProgress: []
 };
 
@@ -42,7 +41,7 @@ var logConfig = {
         guarantees: 10,
         metrics: 10,
         sm: 11,
-        streaming: 11,
+        streaming: 13,
         info: 12,
         debug: 13
     },

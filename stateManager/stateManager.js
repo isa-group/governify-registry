@@ -2,7 +2,7 @@
 
 var config = require('../config');
 var logger = config.logger;
-var request = require('request');
+var request = require('requestretry');
 var errorModel = require('../errors/index.js').errorModel;
 var iso8601 = require('iso8601');
 var calculators = require('../stateManager/calculators.js');
@@ -26,7 +26,7 @@ function initialize(_agreement) {
         //Executes a mongodb query to search Agreement file with id = _agreement
         AgreementModel.findOne({
             'id': _agreement.id
-        }, function (err, ag) {
+        }, function(err, ag) {
             if (err) {
                 //something fail on mongodb query and error is returned
                 logger.error(err.toString());
@@ -219,35 +219,35 @@ function _update(stateType, query, logsState) {
         switch (stateType) {
             case "agreement":
                 calculators.agreementCalculator.process(stateManager.agreement, stateManager)
-                    .then(function (agreementState) {
+                    .then(function(agreementState) {
                         stateManager.put(stateType, agreementState).then((data) => {
                             return resolve(data);
                         }, (err) => {
                             return reject(err);
                         });
-                    }, function (err) {
+                    }, function(err) {
                         logger.error(err.toString());
                         return reject(new errorModel(500, err));
                     });
                 break;
             case "guarantees":
                 calculators.guaranteeCalculator.process(stateManager.agreement, query.guarantee, stateManager)
-                    .then(function (guaranteeStates) {
+                    .then(function(guaranteeStates) {
                         logger.sm('Guarantee states for ' + guaranteeStates.guaranteeId + ' have been calculated (' + guaranteeStates.guaranteeValues.length + ') ');
                         logger.debug('Guarantee states: ' + JSON.stringify(guaranteeStates, null, 2));
                         var processguarantees = [];
-                        guaranteeStates.guaranteeValues.forEach(function (guaranteeState) {
+                        guaranteeStates.guaranteeValues.forEach(function(guaranteeState) {
                             logger.debug('Guarantee state: ' + JSON.stringify(guaranteeState, null, 2));
                             processguarantees.push(stateManager.put(stateType, {
                                 guarantee: query.guarantee,
                                 period: guaranteeState.period,
                                 scope: guaranteeState.scope
                             }, guaranteeState.value, {
-                                    "logsState": logsState,
-                                    metrics: guaranteeState.metrics,
-                                    evidences: guaranteeState.evidences,
-                                    penalties: guaranteeState.penalties ? guaranteeState.penalties : null
-                                }));
+                                "logsState": logsState,
+                                metrics: guaranteeState.metrics,
+                                evidences: guaranteeState.evidences,
+                                penalties: guaranteeState.penalties ? guaranteeState.penalties : null
+                            }));
                         });
                         logger.sm('Created parameters array for saving states of guarantee of length ' + processguarantees.length);
                         logger.sm('Persisting guarantee states...');
@@ -259,17 +259,17 @@ function _update(stateType, query, logsState) {
                             }
                             return resolve(result);
                         });
-                    }, function (err) {
+                    }, function(err) {
                         logger.error(err.toString());
                         return reject(new errorModel(500, err));
                     });
                 break;
             case "metrics":
                 calculators.metricCalculator.process(stateManager.agreement, query.metric, query)
-                    .then(function (metricStates) {
+                    .then(function(metricStates) {
                         logger.sm('Metric states for ' + metricStates.metricId + ' have been calculated (' + metricStates.metricValues.length + ') ');
                         var processMetrics = [];
-                        metricStates.metricValues.forEach(function (metricValue) {
+                        metricStates.metricValues.forEach(function(metricValue) {
                             processMetrics.push(
                                 stateManager.put(stateType, {
                                     metric: query.metric,
@@ -277,10 +277,10 @@ function _update(stateType, query, logsState) {
                                     period: metricValue.period,
                                     window: query.window
                                 }, metricValue.value, {
-                                        "logsState": logsState,
-                                        evidences: metricValue.evidences,
-                                        parameters: metricValue.parameters
-                                    }));
+                                    "logsState": logsState,
+                                    evidences: metricValue.evidences,
+                                    parameters: metricValue.parameters
+                                }));
                         });
                         logger.sm('Created parameters array for saving states of metric of length ' + processMetrics.length);
                         logger.sm('Persisting metric states...');
@@ -292,7 +292,7 @@ function _update(stateType, query, logsState) {
                             }
                             return resolve(result);
                         })
-                    }, function (err) {
+                    }, function(err) {
                         logger.error(err.toString());
                         return reject(new errorModel(500, err));
                     });
@@ -364,11 +364,18 @@ function isUpdated(agreement, states) {
 
             request.get({
                 uri: logUris,
-                json: true
+                json: true,
+                // The below parameters are specific to request-retry 
+                maxAttempts: config.maxAttempts,
+                retryDelay: config.retryDelay,
+                retryStrategy: request.RetryStrategies.HTTPOrNetworkError // retry on 5xx or network errors
             }, (err, response, body) => {
                 if (err) {
                     logger.error(err);
                     return reject("Error with Logs state URI this: " + err);
+                }
+                if (response) {
+                    logger.info('Number of request attempts to Logs state URI: ' + response.attempts);
                 }
                 if (response.statusCode == 200 && body) {
                     if (current) {
