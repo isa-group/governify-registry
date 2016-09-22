@@ -170,13 +170,21 @@ function _agreementsIdPUT(args, res, next) {
           logger.error("Mongo error updating agreement: " + err.toString());
           res.json(new errorModel(500, err));
         } else {
-            logger.info(JSON.stringify(result, null, 2));
-            logger.info('New agreement saved successfully!');
-            res.json({
-              code: 200,
-              message: 'New agreement saved successfully!',
-              data: schema
+            var states = config.db.models.StateModel;
+            states.remove({agreementId: schema.id}, (err) => {
+                if (err) {
+                  logger.error("Mongo error deleting states of agreement: " + err.toString());
+                  return res.json(new errorModel(500, err));
+                }
+                logger.info(JSON.stringify(result, null, 2));
+                logger.info('Agreement saved successfully!');
+                res.json({
+                  code: 200,
+                  message: 'Agreement saved successfully!',
+                  data: schema
+                });
             });
+
         }
       });
     }
