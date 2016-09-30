@@ -9,8 +9,8 @@ development:
     metrics: false
   streaming: true
   statusBouncer: false
-  maxAttempts: 20
-  retryDelay: 5000
+  maxAttempts: 10
+  retryDelay: 2000
   email:
     defaultMailFrom: '"ISA-Group" <no-reply@isa.us.es>'
     messages:

@@ -45,28 +45,25 @@ config.db.connect();
 
 // middleware to control when an agreement state process is already in progress
 app.use('/api/v2/states/:agreement', function(req, res, next) {
-  config.logger.info('\n\n######################################################################');
   config.logger.info('New request to retrieve state for agreement %s', JSON.stringify(req.params.agreement, null, 2));
-  config.logger.warning('Agreements in progress %s', JSON.stringify(config.state.agreementsInProgress, null, 2));
   if (config.state.agreementsInProgress.indexOf(req.params.agreement) != -1) {
-    config.logger.info('State for agreement %s is already in progress', req.params.agreement);
-    res.json(new errorModel(202, "Job in progress: calculating state for agreement " + req.params.agreement));
+    config.logger.info('Agreement %s status: In-Progress. Ignoring request...', req.params.agreement);
+    res.json(new errorModel(202, "Agreement %s status: In-Progress. Try again when the agreement calculation has finished", req.params.agreement));
   } else {
     if (config.statusBouncer) {
-      config.logger.warning('Adding agreement to progress list');
       config.state.agreementsInProgress.push(req.params.agreement);
+      config.logger.info('Agreement status has been changed to: In-Progress');
     }
 
     res.on('finish', function() {
       if (config.statusBouncer) {
-        config.logger.warning('Removing agreement from progress list');
         config.state.agreementsInProgress.splice(config.state.agreementsInProgress.indexOf(req.params.agreement), 1);
+        config.logger.info('Agreement status has been changed to: Idle');
       }
     });
 
     next();
   }
-  config.logger.info('\n######################################################################\n\n');
 });
 
 
