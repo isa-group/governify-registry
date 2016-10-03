@@ -1,19 +1,33 @@
 'use strict';
 
-var jsyaml = require('js-yaml');
-var $RefParser = require('json-schema-ref-parser');
-var config = require('../../../../config');
-var stateManager = require('../../../../stateManager/stateManager.js');
-var Promise = require("bluebird");
-var fs = require('fs');
-var errorModel = require('../../../../errors/index.js').errorModel;
-var logger = config.logger;
-var Promise = require("bluebird");
-var moment = require('moment');
+/** Configuration an model dependencies **/
+var config          = require('../../../../config'),
+    logger          = config.logger,
+    errorModel      = require('../../../../errors/index.js').errorModel,
+    moment          = require('moment'),
+    gUtils          = require('./gUtils'),
 
-var JSONStream = require('JSONStream');
-var stream = require('stream');
+/** StateManager dependencies**/
+    stateManager    = require('../../../../stateManager/stateManager.js'),
 
+/** Promise dependencies**/
+    Promise         = require("bluebird"),
+
+/** Streaming dependencies**/
+    JSONStream      = require('JSONStream'),
+    stream          = require('stream');
+
+
+/**
+ * Controller for GET /guarantees
+ *
+ * @param {Object} args {agreement: String, from: String, to: String}
+ * @param {ResponseObject} res
+ * @param {NextFunction} next to follow the chain
+ *
+ * @return Nothing to return
+ * @api public
+ */
 module.exports.guaranteesGET = function(args, res, next) {
     /**
      * parameters expected in the args:
@@ -21,7 +35,6 @@ module.exports.guaranteesGET = function(args, res, next) {
      * from (String)
      * to (String)
      **/
-
     res.setHeader('content-type', 'application/json; charset=utf-8');
     logger.ctlState("New request to GET guarantees");
     var agreementId = args.agreement.value;
@@ -193,7 +206,7 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
         id: agreementId
     }).then((manager) => {
 
-        var periods = getPeriods(manager.agreement, query.window);
+        var periods = gUtils.getPeriods(manager.agreement, query.window);
 
         var resul = [];
         Promise.each(periods, (element) => {
@@ -233,7 +246,7 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
                 for (var i in success) {
                     var e = success[i];
                     //logger.ctlState("Comparing period:  " + e.period.from + ">=" + p.from + " && " + e.period.to + "<=" + p.to);
-                    if (moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to) && checkQuery(e, query)) {
+                    if (moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to) && gUtils.checkQuery(e, query)) {
                         ret.push(e);
                     }
                 }
@@ -243,7 +256,7 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
                     if (manager.current(ret[i]).penalties) {
                         var penalties = manager.current(ret[i]).penalties
                         for (var penaltyI in penalties) {
-                            resul.push(new penaltyMetric(ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI]));
+                            resul.push(new gUtils.penaltyMetric(ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI]));
                         }
                     }
                 }
@@ -266,48 +279,4 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
     });
 
 
-}
-
-function getPeriods(agreement, window) {
-    var periods = [];
-    var Wfrom = moment.utc(moment.tz(window.initial, agreement.context.validity.timeZone));
-    var current = moment.utc();
-    var from = moment.utc(Wfrom),
-        to = moment.utc(Wfrom).add(1, "months").subtract(1, "milliseconds");
-    while (!to || to.isSameOrBefore(current)) {
-        periods.push({
-            from: from,
-            to: to
-        });
-        from = moment.utc(moment.tz(from, agreement.context.validity.timeZone).add(1, "months"));
-        to = moment.utc(moment.tz(from, agreement.context.validity.timeZone).add(1, "months").subtract(1, "milliseconds"));
-    }
-
-    return periods;
-}
-
-//function
-function penaltyMetric(scope, parameters, period, logs, penaltyName, penaltyValue) {
-    this.scope = scope;
-    this.parameters = parameters;
-    this.period = period;
-    this.penalty = penaltyName;
-    this.value = penaltyValue;
-    this.logs = logs;
-}
-
-function checkQuery(element, query) {
-    var ret = true;
-    for (var v in query) {
-        if (v != "parameters" && v != "evidences" && v != "logs" && v != "window") {
-            if (query[v] instanceof Object) {
-                ret = ret && checkQuery(element[v], query[v]);
-            } else {
-                if ((element[v] !== query[v] && query[v] != "*") || !element[v]) {
-                    ret = ret && false;
-                }
-            }
-        }
-    }
-    return ret;
 }
