@@ -93,7 +93,7 @@ module.exports.checkQuery = function(state, query) {
     return ret;
 }
 
-module.exports.processMode = function(mode, stateType, query, manager, ret) {
+module.exports.processMode = function(mode, stateType, query, manager, resolve, reject) {
     /** if mode is 'true' processMode is parallel **/
     var managerGetPromise = [];
     manager.agreement.terms[stateType].forEach(function(guarantee) {
@@ -116,11 +116,16 @@ module.exports.processMode = function(mode, stateType, query, manager, ret) {
                         } );
                     }
                 }
-                resolve()
+                return resolve(results);
             }else{
-
+                var err = 'Error processing guarantee: empty result';
+                logger.error(err);
+                return reject(err);
             }
-        }, reject);
+        }, (err) => {
+            logger.error(err);
+            return reject(err);
+        });
 
     }else{
         logger.ctlState("### Process mode = SEQUENTIAL ###");
