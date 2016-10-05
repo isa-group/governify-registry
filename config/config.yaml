@@ -3,6 +3,13 @@ development:
   database:
     url: "mongodb://dockers:27017"
     db_name: registry
+  models:
+    agreement:
+      name: "AgreementModel"
+      path: "./models/agreementModel.json"
+    agreement:
+      name: "StateModel"
+      path: "./models/stateModel.json"
   port: 8081
   logfile: "./logs/dev.log"
   parallelProcess:
@@ -23,6 +30,13 @@ production:
   database:
     url: "mongodb://mongo"
     db_name: registry
+  models:
+    agreement:
+      name: "AgreementModel"
+      path: "./models/agreementModel.json"
+    agreement:
+      name: "StateModel"
+      path: "./models/stateModel.json"
   port: 8081
   logfile: "./logs/prod.log"
   parallelProcess:

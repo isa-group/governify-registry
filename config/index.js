@@ -1,6 +1,5 @@
 'use strict';
 var mongoose = require('mongoose');
-var swaggerMongoose = require('swagger-mongoose');
 var $RefParser = require('json-schema-ref-parser');
 var jsyaml = require('js-yaml');
 var fs = require('fs');
@@ -16,11 +15,8 @@ var state = {
 var configString = fs.readFileSync('./config/config.yaml', 'utf8');
 var config = jsyaml.safeLoad(configString)[process.env.NODE_ENV ? process.env.NODE_ENV : 'development'];
 
-config.parallelProcess.guarantees = process.env.GUARANTEES_PARALLEL_PROCESS ?
-                                            process.env.GUARANTEES_PARALLEL_PROCESS : config.parallelProcess.guarantees;
-
-config.parallelProcess.metrics = process.env.METRICS_PARALLEL_PROCESS ?
-                                            process.env.METRICS_PARALLEL_PROCESS : config.parallelProcess.metrics;
+config.parallelProcess.guarantees = process.env.GUARANTEES_PARALLEL_PROCESS ? process.env.GUARANTEES_PARALLEL_PROCESS : config.parallelProcess.guarantees;
+config.parallelProcess.metrics = process.env.METRICS_PARALLEL_PROCESS ? process.env.METRICS_PARALLEL_PROCESS : config.parallelProcess.metrics;
 
 config.state = state;
 module.exports = config;
@@ -63,7 +59,6 @@ var logConfig = {
     }
 };
 
-
 module.exports.logger = new winston.Logger({
     levels: logConfig.levels,
     colors: logConfig.colors,
@@ -88,52 +83,55 @@ module.exports.logger = new winston.Logger({
     exitOnError: false
 });
 module.exports.stream = {
-    write: function(message, encoding) {
+    write: function (message, encoding) {
         module.exports.logger.info(message);
     }
 };
 
 // MongoDB configuration
 module.exports.db = {};
-module.exports.db.connect = function() {
-    if (state.db) return;
-    var url = config.database.url[config.database.url.length - 1] === "/" ? config.database.url: config.database.url + '/';
-    mongoose.connect(url + config.database.db_name);
-    var db = mongoose.connection;
-    db.on('error', console.error.bind(console, 'connection error:'));
-    db.on('open', function() {
-        state.db = db;
-        module.exports.logger.info('Connected to db!');
-        if (state.models) return;
-        state.models = {};
-        setupModel('AgreementModel', './models/agreementModel.json');
-        setupModel('StateModel', './models/stateModel.json');
-        module.exports.db.models = state.models;
-    });
+module.exports.db.connect = function () {
+    if (!state.db) {
+        var url = config.database.url[config.database.url.length - 1] === "/" ? config.database.url : config.database.url + '/';
+        mongoose.connect(url + config.database.db_name);
+        mongoose.connect(config.database.url);
+        var db = mongoose.connection;
+        db.on('error', console.error.bind(console, 'connection error:'));
+        db.on('open', function () {
+            state.db = db;
+            module.exports.logger.info('Connected to db!');
+            if (!state.models) {
+                state.models = {};
+                setupModel(config.models.agreement.name, config.models.agreement.path);
+                setupModel(config.models.state.name, config.models.state.path);
+                module.exports.db.models = state.models;
+            }
+        });
+    }
 };
 
-module.exports.db.get = function() {
+module.exports.db.get = function () {
     return state.db;
 };
 
-module.exports.db.close = function(done) {
+module.exports.db.close = function (done) {
     if (state.db) {
-        state.db.close(function(err, result) {
+        state.db.close(function (err, result) {
             state.db = null;
             state.models = null;
         });
     }
 };
 
-function setupModel(modelName, jsonModel) {
-    var jsonModel = jsyaml.safeLoad(fs.readFileSync(jsonModel));
-    $RefParser.dereference(jsonModel, function(err, model) {
+function setupModel(modelName, jsonModelUri) {
+    var referencedJsonModel = jsyaml.safeLoad(fs.readFileSync(jsonModelUri));
+    $RefParser.dereference(referencedJsonModel, function (err, dereferencedJsonModel) {
         if (err)
             console.log(err);
-        var modelSchema = new mongoose.Schema(model, {
+        var mongooseSchema = new mongoose.Schema(dereferencedJsonModel, {
             minimize: false
         });
-        var Model = mongoose.model(modelName, modelSchema);
-        state.models[modelName] = Model;
+        var mongooseModel = mongoose.model(modelName, mongooseSchema);
+        state.models[modelName] = mongooseModel;
     });
 }
