@@ -90,14 +90,17 @@ module.exports.stream = {
 
 // MongoDB configuration
 module.exports.db = {};
-module.exports.db.connect = function () {
+module.exports.db.connect = function (callback) {
     if (!state.db) {
         var databaseURL = config.database.url[config.database.url.length - 1] === "/" ? config.database.url : config.database.url + '/';
         var databaseFullURL = databaseURL + config.database.db_name;
         module.exports.logger.info('Connecting to ' + databaseFullURL);
         mongoose.connect(databaseFullURL);
         var db = mongoose.connection;
-        db.on('error', console.error.bind(console, 'connection error:'));
+        db.on('error', (err) => {
+            module.exports.logger.error(err);
+            if (callback) callback(err);
+        });
         db.on('open', function () {
             state.db = db;
             module.exports.logger.info('Connected to db!');
@@ -106,6 +109,7 @@ module.exports.db.connect = function () {
                 setupModel(config.models.agreement.name, config.models.agreement.path);
                 setupModel(config.models.state.name, config.models.state.path);
                 module.exports.db.models = state.models;
+                if (callback) callback();
             }
         });
     }

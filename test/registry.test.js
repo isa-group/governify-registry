@@ -6,24 +6,22 @@ var expect = require('chai').expect,
     registry = require('../index'),
     agreement = require('./expected/agreements');
 
-describe("Integration TEST", function() {
+describe("Integration TEST", function () {
     before((done) => {
         ppinot.listen(5000, () => {
             registry.listen(5001, () => {
-                setTimeout(() => {
-                    request.post({
-                        url: 'http://localhost:5001/api/v2/agreements',
-                        body: agreement,
-                        json: true
-                    }, (err, res, body) => {
-                        if (!err) {
-                            console.log(body);
-                        } else {
-                            console.log(err);
-                        }
-                        done();
-                    });
-                }, 1000);
+                request.post({
+                    url: 'http://localhost:5001/api/v2/agreements',
+                    body: agreement,
+                    json: true
+                }, (err, res, body) => {
+                    if (!err) {
+                        console.log(body);
+                    } else {
+                        console.log(err);
+                    }
+                    done();
+                });
             });
         });
     });
