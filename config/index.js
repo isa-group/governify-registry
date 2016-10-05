@@ -5,24 +5,36 @@ var jsyaml = require('js-yaml');
 var fs = require('fs');
 var winston = require('winston');
 
-var state = {
+/**
+ * Confiuration module.
+ * @module config
+ * @alias module.exports
+ */
+
+
+var configString = fs.readFileSync('./config/config.yaml', 'utf8');
+/** Configurarion object initialized with a YAML file. */
+var config = jsyaml.safeLoad(configString)[process.env.NODE_ENV ? process.env.NODE_ENV : 'development'];
+
+config.parallelProcess.guarantees = process.env.GUARANTEES_PARALLEL_PROCESS ? process.env.GUARANTEES_PARALLEL_PROCESS : config.parallelProcess.guarantees;
+config.parallelProcess.metrics = process.env.METRICS_PARALLEL_PROCESS ? process.env.METRICS_PARALLEL_PROCESS : config.parallelProcess.metrics;
+
+config.state = {
     logger: null,
     db: null,
     models: null,
     agreementsInProgress: []
 };
 
-var configString = fs.readFileSync('./config/config.yaml', 'utf8');
-var config = jsyaml.safeLoad(configString)[process.env.NODE_ENV ? process.env.NODE_ENV : 'development'];
-
-config.parallelProcess.guarantees = process.env.GUARANTEES_PARALLEL_PROCESS ? process.env.GUARANTEES_PARALLEL_PROCESS : config.parallelProcess.guarantees;
-config.parallelProcess.metrics = process.env.METRICS_PARALLEL_PROCESS ? process.env.METRICS_PARALLEL_PROCESS : config.parallelProcess.metrics;
-
-config.state = state;
 module.exports = config;
 
 // Setup logger
 winston.emitErrs = true;
+
+/**
+ * Logger module.
+ * @module logger
+ */
 
 var logConfig = {
     levels: {
@@ -59,6 +71,8 @@ var logConfig = {
     }
 };
 
+
+/** Create a new logger instance with previous configuration. */
 module.exports.logger = new winston.Logger({
     levels: logConfig.levels,
     colors: logConfig.colors,
@@ -82,48 +96,77 @@ module.exports.logger = new winston.Logger({
     ],
     exitOnError: false
 });
+
+/**
+ * Stream module.
+ * @module stream
+ */
 module.exports.stream = {
+    /** Print an info message on logger. 
+     * @param {string} message message to print
+     * @param {string} encoding message enconding
+     * @alias module:stream.write
+     * */
     write: function (message, encoding) {
         module.exports.logger.info(message);
     }
 };
 
-// MongoDB configuration
-module.exports.db = {};
-module.exports.db.connect = function () {
-    if (!state.db) {
-        var databaseURL = config.database.url[config.database.url.length - 1] === "/" ? config.database.url : config.database.url + '/';
-        var databaseFullURL = databaseURL + config.database.db_name;
-        module.exports.logger.info('Connecting to ' + databaseFullURL);
-        mongoose.connect(databaseFullURL);
-        var db = mongoose.connection;
-        db.on('error', console.error.bind(console, 'connection error:'));
-        db.on('open', function () {
-            state.db = db;
-            module.exports.logger.info('Connected to db!');
-            if (!state.models) {
-                state.models = {};
-                setupModel(config.models.agreement.name, config.models.agreement.path);
-                setupModel(config.models.state.name, config.models.state.path);
-                module.exports.db.models = state.models;
-            }
-        });
-    }
-};
+/**
+ * Database module.
+ * @module db
+ */
+module.exports.db = {
+    /** 
+     * Create a new database connection. 
+     * @alias module:db.connect
+     * */
+    connect: function () {
+        if (!config.state.db) {
+            var databaseURL = config.database.url[config.database.url.length - 1] === "/" ? config.database.url : config.database.url + '/';
+            var databaseFullURL = databaseURL + config.database.db_name;
+            module.exports.logger.info('Connecting to ' + databaseFullURL);
+            mongoose.connect(databaseFullURL);
+            var db = mongoose.connection;
+            db.on('error', console.error.bind(console, 'connection error:'));
+            db.on('open', function () {
+                config.state.db = db;
+                module.exports.logger.info('Connected to db!');
+                if (!config.state.models) {
+                    config.state.models = {};
+                    setupModel(config.models.agreement.name, config.models.agreement.path);
+                    setupModel(config.models.state.name, config.models.state.path);
+                    module.exports.db.models = config.state.models;
+                }
+            });
+        }
+    },
+    /** 
+     * Get existing database connection. 
+     * @alias module:db.get
+     * */
+    get: function () {
+        return config.state.db;
+    },
+    /** 
+     * Close existing database connection. 
+     * @param {callback} done callback function when connection closes
+     * @alias module:db.close
+     * */
+    close: function (done) {
+        if (config.state.db) {
+            config.state.db.close(function (err, result) {
+                config.state.db = null;
+                config.state.models = null;
+            });
+        }
+    }};
 
-module.exports.db.get = function () {
-    return state.db;
-};
-
-module.exports.db.close = function (done) {
-    if (state.db) {
-        state.db.close(function (err, result) {
-            state.db = null;
-            state.models = null;
-        });
-    }
-};
-
+/** 
+ * Close existing database connection. 
+ * @param {string} modelName model name
+ * @param {string} jsonModelUri model URI
+ * */
 function setupModel(modelName, jsonModelUri) {
     var referencedJsonModel = jsyaml.safeLoad(fs.readFileSync(jsonModelUri));
     $RefParser.dereference(referencedJsonModel, function (err, dereferencedJsonModel) {
@@ -133,6 +176,6 @@ function setupModel(modelName, jsonModelUri) {
             minimize: false
         });
         var mongooseModel = mongoose.model(modelName, mongooseSchema);
-        state.models[modelName] = mongooseModel;
+        config.state.models[modelName] = mongooseModel;
     });
 }
