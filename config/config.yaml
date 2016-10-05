@@ -7,7 +7,7 @@ development:
     agreement:
       name: "AgreementModel"
       path: "./models/agreementModel.json"
-    agreement:
+    state:
       name: "StateModel"
       path: "./models/stateModel.json"
   port: 8081
@@ -34,7 +34,7 @@ production:
     agreement:
       name: "AgreementModel"
       path: "./models/agreementModel.json"
-    agreement:
+    state:
       name: "StateModel"
       path: "./models/stateModel.json"
   port: 8081
