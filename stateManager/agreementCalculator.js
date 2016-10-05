@@ -1,9 +1,3 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 "use strict"
 
 var yaml = require('js-yaml');
@@ -107,7 +101,7 @@ function processMetrics(manager, parameters) {
                 if (metricId == 'SPU_IO_K00') {
                     priorities = [''];
                 }
-                
+
                 priorities.forEach(function(priority) {
                     var scp = JSON.parse(JSON.stringify(parameters.metrics[metricId].scope));
                     scp.priority = priority;

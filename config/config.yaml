@@ -1,7 +1,7 @@
 ---
 development:
   database:
-    url: "mongodb://dockers:27017"
+    url: "mongodb://localhost:27017"
     db_name: registry
   models:
     agreement:

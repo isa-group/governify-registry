@@ -2,11 +2,11 @@
 
 var diff = require("deep-diff");
 
-module.exports.containsObject = function(obj, array) {
+module.exports.containsObject = function (obj, array) {
     var i;
 
     for (i = 0; i < array.length; i++) {
-        if (diff(array[i],obj) == null) {
+        if (diff(array[i], obj) == null) {
             return i;
         }
     }
@@ -26,7 +26,7 @@ module.exports.periods = {
 }
 
 
-module.exports.convertPeriod = function(billingCycle) {
+module.exports.convertPeriod = function (billingCycle) {
     switch (billingCycle) {
         case "yearly":
             return "years";

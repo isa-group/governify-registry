@@ -15,7 +15,7 @@ module.exports.errorModel = Error;
  * @return {Error} Object
  * @api public
  */
-function Error(code, message){
+function Error(code, message) {
     this.code = code;
     this.message = message;
 }

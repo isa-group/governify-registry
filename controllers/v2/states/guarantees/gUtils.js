@@ -3,8 +3,8 @@
  * Utils that are required in guarantees controllers.
  */
 
- /** Promise dependencies**/
-var Promise         = require("bluebird");
+/** Promise dependencies**/
+var Promise = require("bluebird");
 
 /**
  * This method return a set of periods which are based on a window parameter.
@@ -19,7 +19,7 @@ var Promise         = require("bluebird");
  * @return {Set} periods
  * @api public
  */
-module.exports.getPeriods = function (agreement, window) {
+module.exports.getPeriods = function(agreement, window) {
     var periods = [];
     var Wfrom = moment.utc(moment.tz(window.initial, agreement.context.validity.timeZone));
     var current = moment.utc();
@@ -102,22 +102,22 @@ module.exports.processMode = function(mode, stateType, query, manager, resolve, 
         }));
     });
 
-    var results  =  [];
-    if(mode){
+    var results = [];
+    if (mode) {
         logger.ctlState("### Process mode = PARALLEL ###");
 
-        return Promise.settle(managerGetPromise).then( (promisesResults) => {
-            if(promisesResults.length > 0){
-                for(var r in promisesResults){
+        return Promise.settle(managerGetPromise).then((promisesResults) => {
+            if (promisesResults.length > 0) {
+                for (var r in promisesResults) {
                     var onePromiseResults = promisesResults[r];
-                    if(onePromiseResults.isFulfilled()){
-                        onePromiseResults.value().forEach( (value) =>{
+                    if (onePromiseResults.isFulfilled()) {
+                        onePromiseResults.value().forEach((value) => {
                             results.push(manager.current(value));
-                        } );
+                        });
                     }
                 }
                 return resolve(results);
-            }else{
+            } else {
                 var err = 'Error processing guarantee: empty result';
                 logger.error(err);
                 return reject(err);
@@ -127,7 +127,7 @@ module.exports.processMode = function(mode, stateType, query, manager, resolve, 
             return reject(err);
         });
 
-    }else{
+    } else {
         logger.ctlState("### Process mode = SEQUENTIAL ###");
         return Promise.each(managerGetPromise, (promise) => {
 

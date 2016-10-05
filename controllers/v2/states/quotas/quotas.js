@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports.quotasGET = function(args, res, next) {
+module.exports.quotasGET = function (args, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
@@ -11,16 +11,16 @@ module.exports.quotasGET = function(args, res, next) {
 
     stateManager({
         id: agreementId
-    }).get("quotas", function(quotas) {
+    }).get("quotas", function (quotas) {
         res.json(quotas);
-    }, function(err) {
+    }, function (err) {
         logger.error(err.message.toString());
         res.status(err.code).json(err);
     });
 
 }
 
-module.exports.quotasQuotaGET = function(args, res, next) {
+module.exports.quotasQuotaGET = function (args, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
@@ -35,9 +35,9 @@ module.exports.quotasQuotaGET = function(args, res, next) {
         id: agreementId
     }).get("quotas", {
         id: quotaId
-    }, function(quota) {
+    }, function (quota) {
         res.json(quota);
-    }, function(err) {
+    }, function (err) {
         logger.error(err.message.toString());
         res.status(err.code).json(err);
     });

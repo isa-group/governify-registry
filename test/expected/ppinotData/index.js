@@ -1,9 +1,9 @@
 'use strict';
 
-var express       = require('express'),
-    bodyParser    = require('body-parser'),
+var express = require('express'),
+    bodyParser = require('body-parser'),
 
-    app           = express();
+    app = express();
 
 
 app.use(bodyParser.json());

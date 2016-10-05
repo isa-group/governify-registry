@@ -13,21 +13,21 @@ module.exports = {
 }
 
 
-function processQuotas (stateManager, query){
+function processQuotas(stateManager, query) {
 
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
         logger.quotas("Calculating quotas for query = " + JSON.stringify(query, null, 2));
 
         var agreement = stateManager.agreement;
 
         var quotaDef = null;
-        for(var q in agreement.term.quotas){
+        for (var q in agreement.term.quotas) {
             var indexQuota = agreement.term.quotas[q];
-            if(indexQuota.id === query.quota){
+            if (indexQuota.id === query.quota) {
                 quotaDef = indexQuota
             }
         }
-        if(!quotaDef){
+        if (!quotaDef) {
             logger.error("Not found quota for id = %s", query.quotas);
             return reject(new errorModel(404, "Not found quota for id = %s", query.quotas));
         }

@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports.ratesGET = function(args, res, next) {
+module.exports.ratesGET = function (args, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
@@ -10,16 +10,16 @@ module.exports.ratesGET = function(args, res, next) {
 
     stateManager({
         id: agreementId
-    }).get("rates", function(rates) {
+    }).get("rates", function (rates) {
         res.json(rates);
-    }, function(err) {
+    }, function (err) {
         logger.error(err.message.toString());
         res.status(err.code).json(err);
     });
 
 }
 
-module.exports.ratesRateGET = function(args, res, next) {
+module.exports.ratesRateGET = function (args, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
@@ -34,9 +34,9 @@ module.exports.ratesRateGET = function(args, res, next) {
         id: agreementId
     }).get("rates", {
         id: rateId
-    }, function(rate) {
+    }, function (rate) {
         res.json(rate);
-    }, function(err) {
+    }, function (err) {
         logger.error(err.message.toString());
         res.status(err.code).json(err);
     });

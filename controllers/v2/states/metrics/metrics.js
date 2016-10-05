@@ -13,12 +13,12 @@ var request = require("request");
 var JSONStream = require('JSONStream');
 var stream = require('stream');
 
-module.exports.metricsIdIncrease = function (args, res, next){
+module.exports.metricsIdIncrease = function(args, res, next) {
     var agreementId = args.agreement.value;
     var metricId = args.metric.value;
     var query = args.scope.value;
 
-    logger.ctlState("New request to increase metric = %s, with values = %s", metricId, JSON.stringify(query, null, 2) );
+    logger.ctlState("New request to increase metric = %s, with values = %s", metricId, JSON.stringify(query, null, 2));
 
     stateManager({
         id: agreementId
@@ -26,11 +26,11 @@ module.exports.metricsIdIncrease = function (args, res, next){
 
         query.metric = metricId;
 
-        manager.get('metrics', query).then((metric)=>{
+        manager.get('metrics', query).then((metric) => {
 
             logger.ctlState("Result of getting metricValues: " + JSON.stringify(metric, null, 2));
 
-            logger.ctlState("Query to put "+ JSON.stringify(query, null, 2));
+            logger.ctlState("Query to put " + JSON.stringify(query, null, 2));
             manager.put('metrics', query, manager.current(metric[0]).value + 1).then((success) => {
                 res.json(success.map((element) => {
                     return manager.current(element);
@@ -113,13 +113,19 @@ module.exports.metricsPOST = function(req, res, next) {
             }
 
             var result;
-            if(config.streaming){
+            if (config.streaming) {
                 logger.ctlState("### Streaming mode ###");
-                result = new stream.Readable({ objectMode: true });
-                result.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
-                result.on('data', (data)=>{logger.streaming("Streaming data...")});
+                result = new stream.Readable({
+                    objectMode: true
+                });
+                result.on('error', (err) => {
+                    logger.streaming("waiting data from stateManager...")
+                });
+                result.on('data', (data) => {
+                    logger.streaming("Streaming data...")
+                });
                 result.pipe(JSONStream.stringify()).pipe(res);
-            }else{
+            } else {
                 logger.ctlState("### NO Streaming mode ###");
                 result = [];
             }
@@ -128,21 +134,27 @@ module.exports.metricsPOST = function(req, res, next) {
                 for (var i in results) {
                     result.push(manager.current(results[i]));
                 }
-                if(config.streaming)
-                  result.push(null);
+                if (config.streaming)
+                    result.push(null);
                 else
-                  result.json(ret);
+                    result.json(ret);
             });
         } else {
 
             var ret;
-            if(config.streaming){
+            if (config.streaming) {
                 logger.ctlState("### Streaming mode ###");
-                ret = new stream.Readable({ objectMode: true });
-                ret.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
-                ret.on('data', (data)=>{logger.streaming("Streaming data...")});
+                ret = new stream.Readable({
+                    objectMode: true
+                });
+                ret.on('error', (err) => {
+                    logger.streaming("waiting data from stateManager...")
+                });
+                ret.on('data', (data) => {
+                    logger.streaming("Streaming data...")
+                });
                 ret.pipe(JSONStream.stringify()).pipe(res);
-            }else{
+            } else {
                 logger.ctlState("### NO Streaming mode ###");
                 ret = [];
             }
@@ -164,7 +176,7 @@ module.exports.metricsPOST = function(req, res, next) {
                 });
             }).then(function(results) {
                 //end stream
-                if(config.streaming)
+                if (config.streaming)
                     ret.push(null);
                 else
                     res.json(ret);
@@ -197,11 +209,17 @@ module.exports.metricsIdPOST = function(args, res, next) {
     };
 
     var ret;
-    if(config.streaming){
+    if (config.streaming) {
         logger.ctlState("### Streaming mode ###");
-        ret = new stream.Readable({ objectMode: true });
-        ret.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
-        ret.on('data', (data)=>{logger.streaming("Streaming data...")});
+        ret = new stream.Readable({
+            objectMode: true
+        });
+        ret.on('error', (err) => {
+            logger.streaming("waiting data from stateManager...")
+        });
+        ret.on('data', (data) => {
+            logger.streaming("Streaming data...")
+        });
         ret.pipe(JSONStream.stringify()).pipe(res);
     }
 
@@ -209,15 +227,15 @@ module.exports.metricsIdPOST = function(args, res, next) {
         id: agreementId
     }).then((manager) => {
         manager.get('metrics', metricParams).then((data) => {
-            if(config.streaming){
+            if (config.streaming) {
                 res.json(data.map((element) => {
                     return manager.current(element);
                 }));
-            }else{
-              data.forEach((element) => {
-                  ret.push(manager.current(element));
-              });
-              ret.push(null);
+            } else {
+                data.forEach((element) => {
+                    ret.push(manager.current(element));
+                });
+                ret.push(null);
             }
         }, (err) => {
             logger.error(err);

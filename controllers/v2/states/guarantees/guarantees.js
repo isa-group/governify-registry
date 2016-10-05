@@ -1,21 +1,21 @@
 'use strict';
 
 /** Configuration an model dependencies **/
-var config          = require('../../../../config'),
-    logger          = config.logger,
-    errorModel      = require('../../../../errors/index.js').errorModel,
-    moment          = require('moment'),
-    gUtils          = require('./gUtils'),
+var config = require('../../../../config'),
+    logger = config.logger,
+    errorModel = require('../../../../errors/index.js').errorModel,
+    moment = require('moment'),
+    gUtils = require('./gUtils'),
 
-/** StateManager dependencies**/
-    stateManager    = require('../../../../stateManager/stateManager.js'),
+    /** StateManager dependencies**/
+    stateManager = require('../../../../stateManager/stateManager.js'),
 
-/** Promise dependencies**/
-    Promise         = require("bluebird"),
+    /** Promise dependencies**/
+    Promise = require("bluebird"),
 
-/** Streaming dependencies**/
-    JSONStream      = require('JSONStream'),
-    stream          = require('stream');
+    /** Streaming dependencies**/
+    JSONStream = require('JSONStream'),
+    stream = require('stream');
 
 
 /**
@@ -54,13 +54,19 @@ module.exports.guaranteesGET = function(args, res, next) {
             });
 
             var result;
-            if(config.streaming){
+            if (config.streaming) {
                 logger.ctlState("### Streaming mode ###");
-                result = new stream.Readable({ objectMode: true });
-                result.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
-                result.on('data', (data)=>{logger.streaming("Streaming data...")});
+                result = new stream.Readable({
+                    objectMode: true
+                });
+                result.on('error', (err) => {
+                    logger.streaming("waiting data from stateManager...")
+                });
+                result.on('data', (data) => {
+                    logger.streaming("Streaming data...")
+                });
                 result.pipe(JSONStream.stringify()).pipe(res);
-            }else{
+            } else {
                 logger.ctlState("### NO Streaming mode ###");
                 result = [];
             }
@@ -72,11 +78,11 @@ module.exports.guaranteesGET = function(args, res, next) {
                         for (var i = 0; i < guaranteesValues.length; i++) {
                             if (guaranteesValues[i].isFulfilled()) {
                                 if (guaranteesValues[i].value().length > 0) {
-                                    if(config.streaming){
+                                    if (config.streaming) {
                                         guaranteesValues[i].value().forEach(function(guaranteeValue) {
                                             result.push(manager.current(guaranteeValue));
                                         });
-                                    }else{
+                                    } else {
                                         var guaranteesResults = guaranteesValues[i].value().map(function(guaranteeValue) {
                                             return manager.current(guaranteeValue);
                                         });
@@ -85,9 +91,9 @@ module.exports.guaranteesGET = function(args, res, next) {
                                 }
                             }
                         }
-                        if(config.streaming){
+                        if (config.streaming) {
                             result.push(null);
-                        }else{
+                        } else {
                             res.json(result);
                         }
                     } else {
@@ -107,13 +113,19 @@ module.exports.guaranteesGET = function(args, res, next) {
             logger.ctlState("Processing guarantees in sequential mode");
             //Build stream when it's required
             var ret;
-            if(config.streaming){
+            if (config.streaming) {
                 logger.ctlState("### Streaming mode ###");
-                ret = new stream.Readable({ objectMode: true });
-                ret.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
-                ret.on('data', (data)=>{logger.streaming("Streaming data...")});
+                ret = new stream.Readable({
+                    objectMode: true
+                });
+                ret.on('error', (err) => {
+                    logger.streaming("waiting data from stateManager...")
+                });
+                ret.on('data', (data) => {
+                    logger.streaming("Streaming data...")
+                });
                 ret.pipe(JSONStream.stringify()).pipe(res);
-            }else{
+            } else {
                 logger.ctlState("### NO Streaming mode ###");
                 ret = [];
             }
@@ -131,7 +143,7 @@ module.exports.guaranteesGET = function(args, res, next) {
                 });
             }).then(function(results) {
                 //end stream
-                if(config.streaming)
+                if (config.streaming)
                     ret.push(null);
                 else
                     res.json(ret);
@@ -163,25 +175,31 @@ module.exports.guaranteeIdGET = function(args, res, next) {
         id: agreementId
     }).then((manager) => {
         var ret;
-        if(config.streaming){
+        if (config.streaming) {
             logger.ctlState("### Streaming mode ###");
-            ret = new stream.Readable({ objectMode: true });
-            ret.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
-            ret.on('data', (data)=>{logger.streaming("Streaming data...")});
+            ret = new stream.Readable({
+                objectMode: true
+            });
+            ret.on('error', (err) => {
+                logger.streaming("waiting data from stateManager...")
+            });
+            ret.on('data', (data) => {
+                logger.streaming("Streaming data...")
+            });
             ret.pipe(JSONStream.stringify()).pipe(res);
         }
         manager.get('guarantees', {
             guarantee: guaranteeId
         }).then(function(success) {
-            if(config.streaming){
+            if (config.streaming) {
                 res.json(success.map((element) => {
                     return manager.current(element);
                 }));
-            }else{
-              success.forEach((element) => {
-                  ret.push(manager.current(element));
-              });
-              ret.push(null);
+            } else {
+                success.forEach((element) => {
+                    ret.push(manager.current(element));
+                });
+                ret.push(null);
             }
         }, function(err) {
             logger.error(err);

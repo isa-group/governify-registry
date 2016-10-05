@@ -59,7 +59,7 @@ function processGuarantee(agreement, guaranteeId, manager) {
 
     return new Promise((resolve, reject) => {
 
-        logger.debug("Searching guarantee '%s' in array:\n %s",guaranteeId,JSON.stringify(agreement.terms.guarantees, null, 2));
+        logger.debug("Searching guarantee '%s' in array:\n %s", guaranteeId, JSON.stringify(agreement.terms.guarantees, null, 2));
 
         // We retrieve the guarantee definition from the agreement that matches with the provided ID
         var guarantee = agreement.terms.guarantees.find(function(guarantee) {
