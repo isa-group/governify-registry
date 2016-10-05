@@ -1,7 +1,7 @@
 {
     "name": "governify-registry",
     "version": "0.0.1",
-    "description": "First paragraph of description.  Second paragraph of description ",
+    "description": "Central repository for agreements",
     "main": "index.js",
     "keywords": [
         "swagger"
@@ -37,6 +37,8 @@
     "scripts": {
         "eslint": "eslint lib/**/*.js test/**/*.js",
         "test": "./node_modules/.bin/mocha --reporter spec --require test/bootstrap/node test/*.test.js test/**/*.test.js",
-        "start": "node --max-old-space-size=20480 index.js"
+        "start": "node --max-old-space-size=20480 index.js",
+		"docs": "cmd /k generateDocs.bat",
+		"dockerhub": "cmd /k buildAndPushToDockerhub.bat"
     }
 }
