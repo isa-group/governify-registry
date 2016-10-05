@@ -97,7 +97,8 @@ module.exports.stream = {
 module.exports.db = {};
 module.exports.db.connect = function() {
     if (state.db) return;
-    mongoose.connect(config.database.url);
+    var url = config.database.url[config.database.url.length - 1] === "/" ? config.database.url: config.database.url + '/';
+    mongoose.connect(url + config.database.db_name);
     var db = mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error:'));
     db.on('open', function() {
