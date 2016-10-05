@@ -1,7 +1,8 @@
 ---
 development:
   database:
-    url: "mongodb://localhost:27017/prosas"
+    url: "mongodb://dockers:27017"
+    db_name: registry
   port: 8081
   logfile: "./logs/dev.log"
   parallelProcess:
@@ -20,7 +21,8 @@ development:
 
 production:
   database:
-    url: "mongodb://mongo/prosas"
+    url: "mongodb://mongo"
+    db_name: registry
   port: 8081
   logfile: "./logs/prod.log"
   parallelProcess:

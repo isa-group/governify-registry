@@ -37,6 +37,6 @@
   "scripts": {
     "eslint": "eslint lib/**/*.js test/**/*.js",
     "test": "./node_modules/.bin/mocha --reporter spec --require test/bootstrap/node test/*.test.js test/**/*.test.js",
-    "start": "node --max-old-space-size=20480 server.js"
+    "start": "node --max-old-space-size=20480 index.js"
   }
 }

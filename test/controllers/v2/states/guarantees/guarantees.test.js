@@ -23,7 +23,7 @@ describe("Guarantees GET", function () {
             expect(arr).to.be.a('array');
 
             // returns valid models
-            
+
             // TODO validate guarantees
 
             done();

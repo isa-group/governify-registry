@@ -112,3 +112,5 @@ swaggerTools.initializeMiddleware(swaggerDocV1, function(middleware) {
 
 
 });
+
+module.exports = app;
