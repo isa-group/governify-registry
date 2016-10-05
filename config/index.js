@@ -92,9 +92,10 @@ module.exports.stream = {
 module.exports.db = {};
 module.exports.db.connect = function () {
     if (!state.db) {
-        var url = config.database.url[config.database.url.length - 1] === "/" ? config.database.url : config.database.url + '/';
-        mongoose.connect(url + config.database.db_name);
-        mongoose.connect(config.database.url);
+        var databaseURL = config.database.url[config.database.url.length - 1] === "/" ? config.database.url : config.database.url + '/';
+        var databaseFullURL = databaseURL + config.database.db_name;
+        module.exports.logger.info('Connecting to ' + databaseFullURL);
+        mongoose.connect(databaseFullURL);
         var db = mongoose.connection;
         db.on('error', console.error.bind(console, 'connection error:'));
         db.on('open', function () {
