@@ -118,17 +118,22 @@ module.exports.stream = {
  */
 module.exports.db = {
     /** 
-     * Create a new database connection. 
+     * Create a new database connection.
+     * @param {callback} callback callback connect function
      * @alias module:db.connect
      * */
-    connect: function () {
+    connect: function (callback) {
         if (!config.state.db) {
             var databaseURL = config.database.url[config.database.url.length - 1] === "/" ? config.database.url : config.database.url + '/';
             var databaseFullURL = databaseURL + config.database.db_name;
             module.exports.logger.info('Connecting to ' + databaseFullURL);
             mongoose.connect(databaseFullURL);
             var db = mongoose.connection;
-            db.on('error', console.error.bind(console, 'connection error:'));
+            db.on('error', function (err) {
+                module.exports.logger.error(err);
+                if (callback)
+                    callback(err);
+            });
             db.on('open', function () {
                 config.state.db = db;
                 module.exports.logger.info('Connected to db!');
@@ -137,6 +142,8 @@ module.exports.db = {
                     setupModel(config.models.agreement.name, config.models.agreement.path);
                     setupModel(config.models.state.name, config.models.state.path);
                     module.exports.db.models = config.state.models;
+                    if (callback)
+                        callback();
                 }
             });
         }
