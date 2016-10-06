@@ -2,22 +2,48 @@
 
 var diff = require("deep-diff");
 
-module.exports.swagger = require('./swagger.js');
-module.exports.middlewares = require('./middlewares.js');
+/**
+ * Utils module.
+ * @module utils
+ * @requires deep-diff
+ * */
 
-module.exports.containsObject = function (obj, array) {
-    var i;
+module.exports = {
+    /** 
+     * TODO.
+     * @see module:swagger
+     * */
+    swagger: require('./swagger.js'),
+    /** 
+     * TODO.
+     * @see module:middlewares
+     * */
+    middlewares: require('./middlewares.js'),
+    containsObject: _containsObject,
+    periods: periods,
+    convertPeriod: _convertPeriod
+};
 
-    for (i = 0; i < array.length; i++) {
+/** 
+ * Check if an array contains a given object
+ * @param {object} obj object to seach for
+ * @param {array} array array to search into
+ * @alias module:utils.containsObject
+ * */
+function _containsObject(obj, array) {
+    for (var i = 0; i < array.length; i++) {
         if (diff(array[i], obj) == null) {
             return i;
         }
     }
-
     return -1;
 }
 
-module.exports.periods = {
+/** 
+ * Periods in miliseconds
+ * @alias module:utils.periods
+ * */
+var periods = {
     "secondly": 1000,
     "minutely": 60000,
     "hourly": 3600000,
@@ -26,10 +52,14 @@ module.exports.periods = {
     "monthly": 2628000000,
     "quarterly": 7884000000,
     "yearly": 31540000000
-}
+};
 
-
-module.exports.convertPeriod = function (billingCycle) {
+/** 
+ * Convert a given billing cycle into a period string
+ * @param {object} billingCycle object billing cycle to convert
+ * @alias module:utils.convertPeriod
+ * */
+function _convertPeriod(billingCycle) {
     switch (billingCycle) {
     case "yearly":
         return "years";

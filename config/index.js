@@ -5,14 +5,16 @@ var fs = require('fs');
 var winston = require('winston');
 
 /**
- * Confiuration module.
+ * Configuration module.
  * @module config
- * @alias module.exports
- */
+ * @requires js-yaml
+ * @requires fs
+ * @requires winston
+ * */
 
 
 var configString = fs.readFileSync('./config/config.yaml', 'utf8');
-/** Configurarion object initialized with a YAML file. */
+/** Properties dynamically acquired by a YAML file. */
 var config = jsyaml.safeLoad(configString)[process.env.NODE_ENV ? process.env.NODE_ENV : 'development'];
 
 config.parallelProcess.guarantees = process.env.GUARANTEES_PARALLEL_PROCESS ? process.env.GUARANTEES_PARALLEL_PROCESS : config.parallelProcess.guarantees;
@@ -28,11 +30,6 @@ config.state = {
 module.exports = config;
 
 
-
-/**
- * Logger module.
- * @module logger
- */
 
 var logConfig = {
     levels: {
@@ -71,7 +68,7 @@ var logConfig = {
 
 winston.emitErrs = true;
 
-/** Create a new logger instance with previous configuration. */
+/** Logger instance with default configuration. */
 module.exports.logger = new winston.Logger({
     levels: logConfig.levels,
     colors: logConfig.colors,
@@ -96,15 +93,12 @@ module.exports.logger = new winston.Logger({
     exitOnError: false
 });
 
-/**
- * Stream module.
- * @module stream
- */
+ /** Write info messages on logger.*/
 module.exports.stream = {
     /** Print an info message on logger.
      * @param {string} message message to print
      * @param {string} encoding message enconding
-     * @alias module:stream.write
+     * @alias module:config.stream.write
      * */
     write: function (message, encoding) {
         module.exports.logger.info(message);
