@@ -2,7 +2,7 @@
 
 var Promise = require("bluebird");
 var request = require('request');
-const vm = require('vm');
+var vm = require('vm');
 var config = require('../config');
 var utils = require('../utils/utils.js');
 var logger = config.logger;
@@ -15,7 +15,7 @@ module.exports = {
 
 function processQuotas(stateManager, query) {
 
-    return new Promise((resolve, reject) => {
+    return new Promise(function (resolve, reject) {
         logger.quotas("Calculating quotas for query = " + JSON.stringify(query, null, 2));
 
         var agreement = stateManager.agreement;

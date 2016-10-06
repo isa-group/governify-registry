@@ -2,7 +2,7 @@
 
 var Promise = require("bluebird");
 var request = require('request');
-const vm = require('vm');
+var vm = require('vm');
 var config = require('../config');
 var utils = require('../utils/utils.js');
 var logger = config.logger;
@@ -14,7 +14,7 @@ module.exports = {
 
 function processPricing(agreementDef, query, manager) {
     logger.pricing("Preparing Promise to calculate pricing states");
-    return new Promise((resolve, reject) => {
+    return new Promise(function (resolve, reject) {
 
 
         // Get pricing definition
@@ -42,7 +42,7 @@ function processPricing(agreementDef, query, manager) {
 
                 guaranteesStates.forEach(function (guaranteeStates) {
 
-                    pricingPenaltiesDef.forEach((penalty) => {
+                    pricingPenaltiesDef.forEach(function (penalty) {
 
                         var penaltyId = Object.keys(penalty.over)[0];
                         var groupBy = Object.keys(penalty.groupBy);
@@ -106,22 +106,22 @@ function processPricing(agreementDef, query, manager) {
             var guaranteesStates = [];
 
             // Harvest (sequentially) all states of all guarantees
-            Promise.each(agreementDef.terms.guarantees, (guarantee) => {
+            Promise.each(agreementDef.terms.guarantees, function (guarantee) {
                 logger.pricing("Getting state for guarantee = " + guarantee.id);
                 return manager.get('guarantees', {
                     guarantee: guarantee.id
-                }).then((results) => {
+                }).then(function (results) {
                     // store array of guarantee states
                     logger.pricing("States retrieved from guarantee '" + guarantee.id + "' : " + results.length);
-                    results.forEach((element) => {
+                    results.forEach(function (element) {
                         // Store single guarantee state
                         guaranteesStates.push(element);
                     });
-                }, (err) => {
+                }, function (err) {
                     logger.pricing("Has ocurred an error getting guarantee = " + guarantee.id + ": " + err.toString());
                     return reject(err);
                 });
-            }).then((results) => {
+            }).then(function (results) {
 
                 //Once we have all guarantee States...
 
@@ -130,7 +130,7 @@ function processPricing(agreementDef, query, manager) {
                 // Generar una entrada en el array penalties por cada serviceLine, por cada activity, por cada period
                 var classifiers = [];
 
-                pricingPenaltiesDef.forEach((penalty) => {
+                pricingPenaltiesDef.forEach(function (penalty) {
 
                     // initialize Id of penalty (e.g. PTOT)
                     var penaltyId = Object.keys(penalty.over)[0];
@@ -168,7 +168,7 @@ function processPricing(agreementDef, query, manager) {
 
                         var classifier = classifiers.find(function (classif) {
                             return moment.utc(guaranteeState.period.to).isSameOrAfter(classif.period.from) &&
-                                moment.utc(guaranteeState.period.to).isSameOrBefore(classif.period.to);
+                                    moment.utc(guaranteeState.period.to).isSameOrBefore(classif.period.to);
                         });
 
 
@@ -190,17 +190,17 @@ function processPricing(agreementDef, query, manager) {
                                 if (guaranteeState.penalties) {
                                     // Calculate aggregated values of penalty
                                     switch (penalty.aggregatedBy) {
-                                    case 'sum':
-                                        logger.pricing("SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
-                                        classifier.value += guaranteeState.penalties[penaltyId];
-                                        break;
-                                    case 'prod':
-                                        logger.pricing("PROD " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
-                                        classifier.value *= guaranteeState.penalties[penaltyId];
-                                        break;
-                                    default:
-                                        logger.pricing("(DEFAULT) SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
-                                        classifier.value += guaranteeState.penalties[penaltyId];
+                                        case 'sum':
+                                            logger.pricing("SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
+                                            classifier.value += guaranteeState.penalties[penaltyId];
+                                            break;
+                                        case 'prod':
+                                            logger.pricing("PROD " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
+                                            classifier.value *= guaranteeState.penalties[penaltyId];
+                                            break;
+                                        default:
+                                            logger.pricing("(DEFAULT) SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
+                                            classifier.value += guaranteeState.penalties[penaltyId];
                                     }
                                 }
 
@@ -232,7 +232,7 @@ function processPricing(agreementDef, query, manager) {
 
                 return resolve(classifiers);
 
-            }, (err) => {
+            }, function (err) {
                 logger.pricing(err.toString());
                 return reject(err);
             });
@@ -248,7 +248,7 @@ function getPeriods(agreement) {
     var Wfrom = moment.utc(moment.tz(initial, agreement.context.validity.timeZone));
     var current = moment.utc();
     var from = moment.utc(Wfrom),
-        to = moment.utc(Wfrom).add(1, frequency).subtract(1, "milliseconds");
+            to = moment.utc(Wfrom).add(1, frequency).subtract(1, "milliseconds");
     while (!to || to.isSameOrBefore(current)) {
         periods.push({
             from: from,
