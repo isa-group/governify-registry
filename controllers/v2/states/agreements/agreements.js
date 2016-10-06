@@ -25,14 +25,15 @@ module.exports = {
     agreementIdGET: _agreementIdGET,
     agreementIdDELETE: _agreementIdDELETE,
     agreementIdRELOAD: _agreementIdRELOAD,
+    statesDELETE: _statesDELETE,
     guaranteesGET: require('../guarantees/guarantees.js').guaranteesGET,
     guaranteeIdGET: require('../guarantees/guarantees.js').guaranteeIdGET
 };
 
 
 /**
- * Get an agreement by ID.
- * @param {object} args {agreement: String, from: String, to: String}
+ * Get an agreement state by agreement ID.
+ * @param {object} args {agreement: String}
  * @param {object} res response
  * @param {object} next next function
  * @alias module:agreements.agreementIdGET
@@ -40,8 +41,6 @@ module.exports = {
 function _agreementIdGET(args, res, next) {
     logger.info("New request to GET agreements (states/agreements/agreements.js)");
     var agreementId = args.agreements.value;
-    var from = args.from.value;
-    var to = args.to.value;
 
     stateManager({
         id: agreementId
@@ -60,7 +59,7 @@ function _agreementIdGET(args, res, next) {
 
 
 /**
- * Delete an agreement by ID.
+ * Delete an agreement state by agreement ID.
  * @param {object} args {agreement: String, from: String, to: String}
  * @param {object} res response
  * @param {object} next next function
@@ -90,7 +89,29 @@ function _agreementIdDELETE(args, res, next) {
 
 
 /**
- * Reload an agreement by ID.
+ * Delete all agreement states
+ * @param {object} args {agreement: String}
+ * @param {object} res response
+ * @param {object} next next function
+ * @alias module:agreements.statesDELETE
+ * */
+function _statesDELETE(args, res, next) {
+    logger.ctlState("New request to DELETE all agreement states");
+    var StateModel = db.models.StateModel;
+    StateModel.remove(function (err) {
+        if (!err) {
+            res.sendStatus(200);
+            logger.info("Deleted state for all agreements");
+        } else {
+            res.sendStatus(404);
+            logger.warning("Can't delete state for all agreements: " + err);
+        }
+    });
+}
+
+
+/**
+ * Reload an agreement state by agreement ID.
  * @param {object} args {agreement: String, from: String, to: String}
  * @param {object} res response
  * @param {object} next next function

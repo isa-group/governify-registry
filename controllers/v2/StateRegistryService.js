@@ -1,54 +1,52 @@
 'use strict';
 
-var config = require('../../config');
-var db = require('../../database');
-
-// Requiring states controllers
 var states = require("./states/states.js");
 
-var logger = config.logger;
 
+/**
+ * Registry states service module.
+ * @module StateRegistryService
+ * @see module:states
+ * @see module:StateRegistry
+ * @requires states
+ * */
 module.exports = {
-    // Agreement controllers
-
+    /** agreementIdGET. */
     statesAgreementGET: states.agreements.agreementIdGET,
+    /** agreementIdDELETE. */
     statesAgreementDELETE: states.agreements.agreementIdDELETE,
+    /** agreementIdRELOAD. */
     statesAgreementRELOAD: states.agreements.agreementIdRELOAD,
-    // Guarantees controllers
 
+    /** guaranteesGET. */
     statesAgreementGuaranteesGET: states.guarantees.guaranteesGET,
+    /** guaranteeIdGET. */
     statesAgreementGuaranteesGuaranteeGET: states.guarantees.guaranteeIdGET,
+    /** guaranteeIdPenaltyPOST. */
     statesAgreementGuaranteesGuaranteePenaltiyPOST: states.guarantees.guaranteeIdPenaltyPOST,
-    // Quotas controllers
-
+    
+    /** quotasGET. */
     statesAgreementQuotasGET: states.quotas.quotasGET,
+    /** quotasQuotaGET. */
     statesAgreementQuotasQuotaGET: states.quotas.quotasQuotaGET,
-    // Rates controllers
 
+    /** ratesGET. */
     statesAgreementRatesGET: states.rates.ratesGET,
+    /** ratesRateGET. */
     statesAgreementRatesRateGET: states.rates.ratesRateGET,
-    // Metrics controllers
 
+    /** metricsPOST. */
     statesAgreementMetricsPOST: states.metrics.metricsPOST,
+    /** metricsIdPOST. */
     statesAgreementMetricsMetricPOST: states.metrics.metricsIdPOST,
+    /** metricsIdPUT. */
     statesAgreementMetricsMetricPUT: states.metrics.metricsIdPUT,
+    /** metricsIdIncrease. */
     statesAgreementMetricsMetricIncreasePOST: states.metrics.metricsIdIncrease,
-    // Pricing
+    
+    /** PricingBillingPenaltiesPOST. */
     statesAgreementPricingBillingPenaltiesPOST: states.pricing.PricingBillingPenaltiesPOST,
-    // Delete
-    statesDELETE: _statesDELETE
+    
+    /** statesDELETE. */
+    statesDELETE: states.agreements.statesDELETE
 };
-
-function _statesDELETE(args, res, next) {
-    logger.ctlState("New request to DELETE all agreement states");
-    var StateModel = db.models.StateModel;
-    StateModel.remove(function (err) {
-        if (!err) {
-            res.sendStatus(200);
-            logger.info("Deleted state for all agreements");
-        } else {
-            res.sendStatus(404);
-            logger.warning("Can't delete state for all agreements: " + err);
-        }
-    });
-}

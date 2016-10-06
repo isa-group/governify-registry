@@ -3,6 +3,8 @@
 /**
  * States module.
  * @module states
+ * @see module:StateRegistry
+ * @see module:StateRegistryService
  */
 module.exports = {
     /** 
