@@ -1,0 +1,7 @@
+{
+	"port": 5001,
+	"database":{
+		"url":"mongodb://dockers:27017",
+		"db_name": "registry-tests"
+	} 
+}

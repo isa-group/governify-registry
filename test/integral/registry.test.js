@@ -7,16 +7,10 @@ var expect = require('chai').expect,
     agreement = require('./expected/agreements'),
     utils = require('../../utils/utils');
 
-describe("Integration TEST", function () {
+describe("Integral TEST", function () {
     before((done) => {
         ppinot.listen(5000, () => {
-            registry.deploy({
-                port: 5001,
-                database: {
-                    url: "mongodb://dockers:27017",
-                    db_name: "registry-tests"
-                }
-            }, (server) => {
+            registry.deploy(require('../config.json'), (server) => {
                 request.post({
                     url: 'http://localhost:5001/api/v2/agreements',
                     body: agreement,
@@ -41,8 +35,9 @@ describe("Integration TEST", function () {
             }, (err, res, body) => {
                 if (err)
                     console.log(err);
-
-                registry.undeploy(done);
+                registry.undeploy(() => {
+                    done();
+                });
             });
         });
     })

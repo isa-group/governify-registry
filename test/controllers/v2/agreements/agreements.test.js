@@ -5,11 +5,11 @@ var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
 var fs = require('fs');
 
-var config = require('../../../../config/index');
+var config = require('../../../config.json');
 var registry = require('../../../../index');
 
 var server = "localhost";
-var port = config.port || 8081;
+var port = 5001;
 
 describe("Agreements POST unit tests", function () {
 
@@ -22,77 +22,80 @@ describe("Agreements POST unit tests", function () {
     };
 
     before((done) => {
-        registry.deploy({
-            port: port,
-            database: {
-                url: "mongodb://" + server + ":27017",
-                db_name: "registry-tests"
-            }
-        }, () => { done() });
+        registry.deploy(
+            config,
+            () => { done(); });
     });
 
     after((done) => {
-        registry.undeploy(done);
+       request.delete({
+            url: 'http://localhost:5001/api/v2/agreements'
+        }, (err, res, body) => {
+            if (err)
+                console.log(err);
+
+            request.delete({
+                url: 'http://localhost:5001/api/v2/states'
+            }, (err, res, body) => {
+                if (err)
+                    console.log(err);
+                registry.undeploy(() => {
+                    done();
+                });
+            });
+        });
     });
 
-    it("returns new contract", (done) => {
-        request(options, (error, response, body) => {
+    describe("Agreements", function () {
+        it("returns new contract", (done) => {
+            request(options, (error, response, body) => {
 
-            // return status 200
-            expect(response.statusCode).to.equal(200);
+                // return status 200
+                expect(response.statusCode).to.equal(200);
 
-            // return JSON content
-            expect(body.data).to.be.ok;
+                // return JSON content
+                expect(body.data).to.be.ok;
 
 
 
-            // return JSON valid contract in body.data
-            expect(isValidContract(body.data)).to.be.ok;
+                // return JSON valid contract in body.data
+                expect(isValidContract(body.data)).to.be.ok;
 
-            done();
+                done();
+            });
         });
     });
 });
 
 var isValidContract = (contract) => {
 
-    // Contract keys by level
-    let simpleKeys = ["id", "version", "type", "context", "terms"];
-    let contextKeys = ["definitions", "infrastructure", "validity", "consumer", "provider"];
-    let termsKeys = ["guarantees", "metrics", "pricing"];
-
-    // let contextDefinitionsKeys = ["logs", "scopes", "schemas"];
-    // let contextDefinitionsLogsKeys = ["jira", "casdm"];
-    // let jiraContextDefinitionsLogsKeys = ["scopes", "stateUri", "uri"];
-
     let isValid = true;
+    // let obj = {
+    //     "" : ["id", "version", "type", "context", "terms"],
+    //     "context": ["definitions", "infrastructure", "validity", "consumer", "provider"],
+    //     "context.definitions": ["logs", "scopes", "schemas"],
+    //     "context.definitions.logs": ["jira", "casdm"],
+    //     "context.definitions.logs.jira": ["scopes", "stateUri", "uri"],
+    //     "context.definitions.logs.jira.scopes": ["SPU"],
+    //     "context.definitions.logs.jira.scopes.SPU": ["center", "node", "priority"],
+    //     "terms" : ["guarantees", "metrics", "pricing"]
+    // };
 
-    simpleKeys.forEach((k) => {
-        if (Object.keys(contract).indexOf(k) === -1) {
-            isValid = false;
-            return false;
-        }
-    });
+    // for (keyPath in obj) {
+    //     if (obj.hasOwnProperty(keyPath)) {
+    //         obj[keyPath].forEach((k) => {
+    //             console.log(k);
+    //             isValid = (keyPath === "") ? 
+    //                 k in contract: 
+    //                 k in eval("contract." + keyPath.split(".").toString().replace(",","."));
 
-    if (!isValid) return isValid;
+    //             // Stop forEach
+    //             if (!isValid) return false;
 
-    contextKeys.forEach((k) => {
-        if (Object.keys(contract.context).indexOf(k) === -1) {
-            isValid = false;
-            return false;
-        }
-    });
+    //         });
+    //     }
+    // }
 
-    if (!isValid) return isValid;
-
-    termsKeys.forEach((k) => {
-        if (Object.keys(contract.terms).indexOf(k) === -1) {
-            isValid = false;
-            return false;
-        }
-    });
-
-    if (!isValid) return isValid;
 
     return isValid;
 };
