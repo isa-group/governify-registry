@@ -12,6 +12,7 @@ development:
       path: "./models/stateModel.json"
   port: 8081
   logfile: "./logs/dev.log"
+  loggerLevel: error
   parallelProcess:
     guarantees: false
     metrics: false
@@ -39,6 +40,7 @@ production:
       path: "./models/stateModel.json"
   port: 8081
   logfile: "./logs/prod.log"
+  loggerLevel: debug
   parallelProcess:
     guarantees: false
     metrics: false
