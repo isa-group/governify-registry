@@ -1,6 +1,7 @@
 'use strict';
 
 var config = require('../config');
+
 var jsyaml = require('js-yaml');
 var fs = require('fs');
 var mongoose = require('mongoose');

@@ -2,6 +2,7 @@
 
 var config = require('../../../../config');
 var logger = config.logger;
+
 var Promise = require("bluebird");
 var moment = require('moment');
 

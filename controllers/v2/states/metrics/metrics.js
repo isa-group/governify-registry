@@ -2,11 +2,12 @@
 
 var config = require('../../../../config');
 var logger = config.logger;
+var errorModel = require('../../../../errors/index.js').errorModel;
+var stateManager = require('../../../../stateManager/stateManager.js');
+
 var Promise = require("bluebird");
 var JSONStream = require('JSONStream');
 var stream = require('stream');
-var errorModel = require('../../../../errors/index.js').errorModel;
-var stateManager = require('../../../../stateManager/stateManager.js');
 
 
 /**
