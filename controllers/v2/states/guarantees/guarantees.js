@@ -1,37 +1,43 @@
 'use strict';
 
-/** Configuration an model dependencies **/
 var config = require('../../../../config');
 var logger = config.logger;
-var errorModel = require('../../../../errors/index.js').errorModel;
-var moment = require('moment');
-var gUtils = require('./gUtils');
-/** StateManager dependencies**/
-var stateManager = require('../../../../stateManager/stateManager.js');
-/** Promise dependencies**/
 var Promise = require("bluebird");
-/** Streaming dependencies**/
 var JSONStream = require('JSONStream');
 var stream = require('stream');
+var moment = require('moment');
+var errorModel = require('../../../../errors/index.js').errorModel;
+var stateManager = require('../../../../stateManager/stateManager.js');
+var gUtils = require('./gUtils');
 
 
 /**
- * Controller for GET /guarantees
- *
+ * Guarantees module
+ * @module guarantees
+ * @see module:states
+ * @requires config
+ * @requires bluebird
+ * @requires JSONStream
+ * @requires stream
+ * @requires errors
+ * @requires stateManager
+ * @requires gUtils
+ * */
+module.exports = {
+    guaranteesGET: _guaranteesGET,
+    guaranteeIdGET: _guaranteeIdGET,
+    guaranteeIdPenaltyPOST: _guaranteeIdPenaltyPOST
+};
+
+
+/** 
+ * Get all guarantees.
  * @param {Object} args {agreement: String, from: String, to: String}
- * @param {ResponseObject} res
- * @param {NextFunction} next to follow the chain
- *
- * @return Nothing to return
- * @api public
- */
-module.exports.guaranteesGET = function (args, res, next) {
-    /**
-     * parameters expected in the args:
-     * agreement (String)
-     * from (String)
-     * to (String)
-     **/
+ * @param {object} res response
+ * @param {object} next next function
+ * @alias module:guarantees.guaranteesGET
+ * */
+function _guaranteesGET(args, res, next) {
     res.setHeader('content-type', 'application/json; charset=utf-8');
     logger.ctlState("New request to GET guarantees");
     var agreementId = args.agreement.value;
@@ -57,10 +63,10 @@ module.exports.guaranteesGET = function (args, res, next) {
                     objectMode: true
                 });
                 result.on('error', function (err) {
-                    logger.streaming("waiting data from stateManager...")
+                    logger.streaming("waiting data from stateManager...");
                 });
                 result.on('data', function (data) {
-                    logger.streaming("Streaming data...")
+                    logger.streaming("Streaming data...");
                 });
                 result.pipe(JSONStream.stringify()).pipe(res);
             } else {
@@ -116,10 +122,10 @@ module.exports.guaranteesGET = function (args, res, next) {
                     objectMode: true
                 });
                 ret.on('error', function (err) {
-                    logger.streaming("waiting data from stateManager...")
+                    logger.streaming("waiting data from stateManager...");
                 });
                 ret.on('data', function (data) {
-                    logger.streaming("Streaming data...")
+                    logger.streaming("Streaming data...");
                 });
                 ret.pipe(JSONStream.stringify()).pipe(res);
             } else {
@@ -156,12 +162,15 @@ module.exports.guaranteesGET = function (args, res, next) {
     });
 }
 
-module.exports.guaranteeIdGET = function (args, res, next) {
-    /**
-     * parameters expected in the args:
-     * agreement (String)
-     * guarantee (String)
-     **/
+
+/** 
+ * Get guarantees by ID.
+ * @param {Object} args {agreement: String, guarantee: String}
+ * @param {object} res response
+ * @param {object} next next function
+ * @alias module:guarantees.guaranteeIdGET
+ * */
+function _guaranteeIdGET(args, res, next) {
     logger.ctlState("New request to GET guarantee");
     var agreementId = args.agreement.value;
     var guaranteeId = args.guarantee.value;
@@ -178,10 +187,10 @@ module.exports.guaranteeIdGET = function (args, res, next) {
                 objectMode: true
             });
             ret.on('error', function (err) {
-                logger.streaming("waiting data from stateManager...")
+                logger.streaming("waiting data from stateManager...");
             });
             ret.on('data', function (data) {
-                logger.streaming("Streaming data...")
+                logger.streaming("Streaming data...");
             });
             ret.pipe(JSONStream.stringify()).pipe(res);
         }
@@ -208,7 +217,15 @@ module.exports.guaranteeIdGET = function (args, res, next) {
     });
 }
 
-module.exports.guaranteeIdPenaltyPOST = function (args, res, next) {
+
+/** 
+ * Post gurantee penalty by ID.
+ * @param {Object} args {agreement: String, guarantee: String}
+ * @param {object} res response
+ * @param {object} next next function
+ * @alias module:guarantees.guaranteeIdPenaltyPOST
+ * */
+function _guaranteeIdPenaltyPOST(args, res, next) {
     var guaranteeId = args.guarantee.value;
     var agreementId = args.agreement.value;
     var query = args.query.value;
@@ -253,9 +270,9 @@ module.exports.guaranteeIdPenaltyPOST = function (args, res, next) {
             //  logger.ctlState("Query after parse: " + JSON.stringify(query, null, 2));
             return manager.get('guarantees', {
                 guarantee: guaranteeId,
-                scope: query.scope,
-                //  period: p //,
-                //  window: query.window
+                scope: query.scope
+                        //  period: p //,
+                        //  window: query.window
             }).then(function (success) {
                 var ret = [];
                 for (var i in success) {
@@ -269,7 +286,7 @@ module.exports.guaranteeIdPenaltyPOST = function (args, res, next) {
 
                 for (var i in ret) {
                     if (manager.current(ret[i]).penalties) {
-                        var penalties = manager.current(ret[i]).penalties
+                        var penalties = manager.current(ret[i]).penalties;
                         for (var penaltyI in penalties) {
                             resul.push(new gUtils.penaltyMetric(ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI]));
                         }

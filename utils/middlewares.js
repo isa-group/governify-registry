@@ -1,21 +1,27 @@
-/** MIDDLEWARES **/
+'use strict';
+
 var config = require('../config');
 
-/**
- * Middleware to control when an agreement state process is already in progress
- *
- * Examples:
- *
- *   app.use(stateInProgress);
- *
- * @param {RequestObject} req - Object that contains all information of the request
- * @param {ResponseObject} res - Object that contains all information of the response
- * @param {Function} next - The next fuction for the chain
- *
- * @api public
- */
-module.exports.stateInProgress = function (req, res, next) {
 
+/**
+ * Swagger module.
+ * @module middlewares
+ * @see module:utils
+ * @requires config
+ * */
+module.exports = {
+    stateInProgress: _stateInProgress
+};
+
+
+/** 
+ * Middleware to control when an agreement state process is already in progress
+ * @param {RequestObject} req Object that contains all information of the request
+ * @param {ResponseObject} res Object that contains all information of the response
+ * @param {Function} next The next fuction for the chain
+ * @alias module:middlewares.stateInProgress
+ * */
+function _stateInProgress(req, res, next) {
     config.logger.info('New request to retrieve state for agreement %s', JSON.stringify(req.params.agreement, null, 2));
     if (config.state.agreementsInProgress.indexOf(req.params.agreement) != -1) {
         config.logger.info('Agreement %s status: In-Progress. Ignoring request...', req.params.agreement);
@@ -32,8 +38,6 @@ module.exports.stateInProgress = function (req, res, next) {
                 config.logger.info('Agreement status has been changed to: Idle');
             }
         });
-
         next();
     }
-
 }

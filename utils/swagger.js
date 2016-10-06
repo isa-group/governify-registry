@@ -1,64 +1,62 @@
-/** SWAGGER UTILS **/
+'use strict';
 
 var fs = require('fs');
 var jsyaml = require('js-yaml');
 var swaggerTools = require('swagger-tools');
 
 /**
+ * Swagger module.
+ * @module swagger
+ * @see module:utils
+ * @requires fs
+ * @requires js-yaml
+ * @requires swagger-tools
+ * */
+module.exports = {
+    getRouterOption: _getRouterOption,
+    getSwaggerDoc: _getSwaggerDoc,
+    initializeMiddleware: _initializeMiddleware
+};
+
+
+/** 
  * This method return a the SwaggerRouterOptions object configure with version.
- *
- * Examples:
- *
- *    var options  = getRouterOption(1);
- *
- * @param {Number} version - The version of the options required
- *
+ * @param {Number} version The version of the options required
  * @return {Object} options The object which defines the option that is given to the swagger router component.
- * @api public
- */
-module.exports.getRouterOption = function (version) {
+ * @alias module:swagger.getRouterOption
+ * */
+function _getRouterOption(version) {
     return {
         swaggerUi: '/swaggerV' + version + '.json',
-        controllers: './controllers/v' + version,
+        controllers: './controllers/v' + version
     };
 }
 
-/**
+
+/** 
  * This method return an the object with swagger doc information of the 'version' of the api.
- *
- * Examples:
- *
- *    var swaggerDoc  = getSwaggerDoc(version)
- *
- * @param {Number} version - The version of the options required
- *
+ * @param {Number} version The version of the options required
  * @return {Object} swaggerDoc The object which represent the swagger document.
- * @api public
- */
-module.exports.getSwaggerDoc = function (version) {
+ * @alias module:swagger.getSwaggerDoc
+ * */
+function _getSwaggerDoc(version) {
     var spec = fs.readFileSync('./api/swaggerV' + version + '.yaml', 'utf8');
     return jsyaml.safeLoad(spec);
 }
 
-/**
- * This added all necesary middlewares from a list of swagger documents.
- *
- * Examples:
- *
- *   initializeMiddleware(app, [swagger1, swagger2], callback)
- *
- * @param {Express} app - app to append middlewares
- * @param {Array} swaggerDocs - Array of swagger documents
- * @param {Function} callback - The callback
- *
- * @return {Express} app for chaining
- * @api public
- */
-module.exports.initializeMiddleware = function (app, swaggerDocs, callback) {
 
-    swaggerDocs.forEach((swaggerDoc, index) => {
-        swaggerTools.initializeMiddleware(swaggerDoc, (middleware) => {
-            // Interpret Swagger resources and attach metadata to request - must be first in swagger-tools middleware chain
+/** 
+ * This add all necessary middlewares from a list of swagger documents.
+ * @param {Express} app app to append middlewares
+ * @param {Array} swaggerDocs Array of swagger documents
+ * @param {Function} callback The callback
+ * @return {Express} app for chaining
+ * @alias module:swagger.initializeMiddleware
+ * */
+function _initializeMiddleware(app, swaggerDocs, callback) {
+    swaggerDocs.forEach(function (swaggerDoc, index) {
+        swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
+            // Interpret Swagger resources and attach metadata to request must be first in swagger-tools middleware chain
             app.use(middleware.swaggerMetadata());
 
             // Validate Swagger requests
@@ -75,6 +73,7 @@ module.exports.initializeMiddleware = function (app, swaggerDocs, callback) {
         });
     });
 
-    if (callback) callback(app);
+    if (callback)
+        callback(app);
     return app;
 }

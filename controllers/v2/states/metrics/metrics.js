@@ -1,20 +1,41 @@
 'use strict';
 
-var agreementManager = require('governify-agreement-manager');
-var metricsRecords = agreementManager.operations.states.recordsManager.metrics;
-var errorModel = require('../../../../errors/index.js').errorModel;
-
 var config = require('../../../../config');
-var db = require('../../../../database');
 var logger = config.logger;
-var stateManager = require('../../../../stateManager/stateManager.js')
 var Promise = require("bluebird");
-var request = require("request");
-
 var JSONStream = require('JSONStream');
 var stream = require('stream');
+var errorModel = require('../../../../errors/index.js').errorModel;
+var stateManager = require('../../../../stateManager/stateManager.js');
 
-module.exports.metricsIdIncrease = function (args, res, next) {
+
+/**
+ * Metrics module
+ * @module metrics
+ * @see module:states
+ * @requires config
+ * @requires bluebird
+ * @requires JSONStream
+ * @requires stream
+ * @requires errors
+ * @requires stateManager
+ * */
+module.exports = {
+    metricsIdIncrease: _metricsIdIncrease,
+    metricsIdPUT: _metricsIdPUT,
+    metricsPOST: _metricsPOST,
+    metricsIdPOST: _metricsIdPOST
+};
+
+
+/** 
+ * Increase metric by ID.
+ * @param {object} args {agreement: String, metric: String}
+ * @param {object} res response
+ * @param {object} next next function
+ * @alias module:metrics.metricsIdIncrease
+ * */
+function _metricsIdIncrease(args, res, next) {
     var agreementId = args.agreement.value;
     var metricId = args.metric.value;
     var query = args.scope.value;
@@ -24,13 +45,9 @@ module.exports.metricsIdIncrease = function (args, res, next) {
     stateManager({
         id: agreementId
     }).then(function (manager) {
-
         query.metric = metricId;
-
         manager.get('metrics', query).then(function (metric) {
-
             logger.ctlState("Result of getting metricValues: " + JSON.stringify(metric, null, 2));
-
             logger.ctlState("Query to put " + JSON.stringify(query, null, 2));
             manager.put('metrics', query, manager.current(metric[0]).value + 1).then(function (success) {
                 res.json(success.map(function (element) {
@@ -39,25 +56,23 @@ module.exports.metricsIdIncrease = function (args, res, next) {
             }, function (err) {
                 res.status(err.code).json(err);
             });
-
         }, function (err) {
             res.status(err.code).json(err);
         });
-
     }, function (err) {
         res.status(err.code).json(err);
     });
-
 }
 
-module.exports.metricsIdPUT = function (args, res, next) {
-    /**
-     * parameters expected in the args:
-     * agreement (String)
-     * metric (String)
-     * metricValue ()
-     **/
-    var StateModel = db.models.StateModel;
+
+/** 
+ * Modify metric by ID.
+ * @param {object} args {agreement: String, metric: String, metricValue: String}
+ * @param {object} res response
+ * @param {object} next next function
+ * @alias module:metrics.metricsIdPUT
+ * */
+function _metricsIdPUT(args, res, next) {
     var agreementId = args.agreement.value;
     var metricValue = args.metricValue.value;
     var metricName = args.metric.value;
@@ -83,16 +98,18 @@ module.exports.metricsIdPUT = function (args, res, next) {
     });
 }
 
-module.exports.metricsPOST = function (req, res, next) {
-    /**
-     * parameters expected in the args:
-     * agreement (String)
-     **/
 
+/** 
+ * Post a new metric.
+ * @param {object} req request
+ * @param {object} res response
+ * @param {object} next next function
+ * @alias module:metrics.metricsPOST
+ * */
+function _metricsPOST(req, res, next) {
     res.setHeader('content-type', 'application/json; charset=utf-8');
     var args = req.swagger.params;
     var agreementId = args.agreement.value;
-    var AgreementModel = db.models.AgreementModel;
 
     logger.info("New request to GET metrics of agreement: " + agreementId);
 
@@ -120,10 +137,10 @@ module.exports.metricsPOST = function (req, res, next) {
                     objectMode: true
                 });
                 result.on('error', function (err) {
-                    logger.streaming("waiting data from stateManager...")
+                    logger.streaming("waiting data from stateManager...");
                 });
                 result.on('data', function (data) {
-                    logger.streaming("Streaming data...")
+                    logger.streaming("Streaming data...");
                 });
                 result.pipe(JSONStream.stringify()).pipe(res);
             } else {
@@ -149,10 +166,10 @@ module.exports.metricsPOST = function (req, res, next) {
                     objectMode: true
                 });
                 ret.on('error', function (err) {
-                    logger.streaming("waiting data from stateManager...")
+                    logger.streaming("waiting data from stateManager...");
                 });
                 ret.on('data', function (data) {
-                    logger.streaming("Streaming data...")
+                    logger.streaming("Streaming data...");
                 });
                 ret.pipe(JSONStream.stringify()).pipe(res);
             } else {
@@ -193,12 +210,15 @@ module.exports.metricsPOST = function (req, res, next) {
     });
 }
 
-module.exports.metricsIdPOST = function (args, res, next) {
-    /**
-     * parameters expected in the args:
-     * agreement (String)
-     * metric (String)
-     **/
+
+/** 
+ * Post a new metric by ID.
+ * @param {object} args {agreement: String, metric: String}
+ * @param {object} res response
+ * @param {object} next next function
+ * @alias module:metrics.metricsIdPOST
+ * */
+function _metricsIdPOST(args, res, next) {
     var agreementId = args.agreement.value;
     var metricId = args.metric.value;
 
@@ -216,10 +236,10 @@ module.exports.metricsIdPOST = function (args, res, next) {
             objectMode: true
         });
         ret.on('error', function (err) {
-            logger.streaming("waiting data from stateManager...")
+            logger.streaming("waiting data from stateManager...");
         });
         ret.on('data', function (data) {
-            logger.streaming("Streaming data...")
+            logger.streaming("Streaming data...");
         });
         ret.pipe(JSONStream.stringify()).pipe(res);
     }

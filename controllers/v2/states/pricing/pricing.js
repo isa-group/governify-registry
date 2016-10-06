@@ -4,10 +4,11 @@ var config = require('../../../../config');
 var logger = config.logger;
 var stateManager = require('../../../../stateManager/stateManager.js');
 
+
 /**
  * Pricing state module.
  * @module pricing
- * @see module:pricing
+ * @see module:states
  * @requires config
  * @requires stateManager
  * */
@@ -15,11 +16,12 @@ module.exports = {
     PricingBillingPenaltiesPOST: _PricingBillingPenaltiesPOST
 };
 
+
 /** 
- * Post pricing billing penalties
+ * Post pricing billing penalties.
  * @param {object} req request
  * @param {object} res response
- * @param {object} next  next function
+ * @param {object} next next function
  * @alias module:pricing.PricingBillingPenaltiesPOST
  * */
 function _PricingBillingPenaltiesPOST(req, res, next) {

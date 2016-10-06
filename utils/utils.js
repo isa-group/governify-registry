@@ -8,14 +8,15 @@ var diff = require("deep-diff");
  * @requires deep-diff
  * */
 
+
 module.exports = {
     /** 
-     * TODO.
+     * Swagger module.
      * @see module:swagger
      * */
     swagger: require('./swagger.js'),
     /** 
-     * TODO.
+     * middlewares module.
      * @see module:middlewares
      * */
     middlewares: require('./middlewares.js'),
@@ -23,6 +24,7 @@ module.exports = {
     periods: periods,
     convertPeriod: _convertPeriod
 };
+
 
 /** 
  * Check if an array contains a given object
@@ -39,6 +41,7 @@ function _containsObject(obj, array) {
     return -1;
 }
 
+
 /** 
  * Periods in miliseconds
  * @alias module:utils.periods
@@ -53,6 +56,7 @@ var periods = {
     "quarterly": 7884000000,
     "yearly": 31540000000
 };
+
 
 /** 
  * Convert a given billing cycle into a period string

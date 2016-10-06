@@ -1,25 +1,34 @@
 'use strict';
-/**
- * Utils that are required in guarantees controllers.
- */
 
-/** Promise dependencies**/
+var config = require('../../../../config');
+var logger = config.logger;
 var Promise = require("bluebird");
+var moment = require('moment');
+
 
 /**
+ * Utils that are required in guarantees controller module
+ * @module gUtils
+ * @requires config
+ * @requires bluebird
+ * @requires moment
+ * */
+module.exports = {
+    getPeriods: _getPeriods,
+    penaltyMetric: _PenaltyMetric,
+    checkQuery: _checkQuery,
+    processMode: _processMode
+};
+
+
+/** 
  * This method return a set of periods which are based on a window parameter.
- *
- * Examples:
- *
- *    var periods  = getPeriods(agreement, window)
- *
- * @param {AgreementModel} agreement
- * @param {WindowModel} window
- *
- * @return {Set} periods
- * @api public
- */
-module.exports.getPeriods = function (agreement, window) {
+ * @param {AgreementModel} agreement agreement model passed
+ * @param {WindowModel} window window model passed 
+ * @return {Set} set of periods
+ * @alias module:gUtils.getPeriods
+ * */
+function _getPeriods(agreement, window) {
     var periods = [];
     var Wfrom = moment.utc(moment.tz(window.initial, agreement.context.validity.timeZone));
     var current = moment.utc();
@@ -38,24 +47,18 @@ module.exports.getPeriods = function (agreement, window) {
 }
 
 
-/**
+/** 
  * Constructor for a metric of type penalty.
- *
- * Examples:
- *
- *    var periods  = new penaltyMetric (scope, parameters, periods, logs, penaltyName, penaltyValue);
- *
- * @param {ScopeModel} scope
- * @param {ParametersModel} parameters
- * @param {PeriodModel} period
- * @param {LogsModel} logs
- * @param {String} penaltyName
- * @param {Number} penaltyValue
- *
- * @return {Object} penaltyMetric
- * @api public
- */
-module.exports.penaltyMetric = function PenaltyMetric(scope, parameters, period, logs, penaltyName, penaltyValue) {
+ * @param {ScopeModel} scope scope
+ * @param {ParametersModel} parameters parameters
+ * @param {PeriodModel} period period
+ * @param {LogsModel} logs logs
+ * @param {String} penaltyName penalty name
+ * @param {Number} penaltyValue penalty value
+ * @return {Object} penalty metric
+ * @alias module:gUtils.penaltyMetric
+ * */
+function _PenaltyMetric(scope, parameters, period, logs, penaltyName, penaltyValue) {
     this.scope = scope;
     this.parameters = parameters;
     this.period = period;
@@ -64,20 +67,15 @@ module.exports.penaltyMetric = function PenaltyMetric(scope, parameters, period,
     this.logs = logs;
 }
 
-/**
+
+/** 
  * This method return 'true' or 'false' when check if query is complied.
- *
- * Examples:
- *
- *    if( checkQuery(state, query) )
- *
- * @param {StateModel} state
- * @param {QueryModel} query
- *
+ * @param {StateModel} state state
+ * @param {QueryModel} query query
  * @return {Boolean} ret
- * @api public
- */
-module.exports.checkQuery = function (state, query) {
+ * @alias module:gUtils.checkQuery
+ * */
+function _checkQuery(state, query) {
     var ret = true;
     for (var v in query) {
         if (v != "parameters" && v != "evidences" && v != "logs" && v != "window") {
@@ -93,7 +91,18 @@ module.exports.checkQuery = function (state, query) {
     return ret;
 }
 
-module.exports.processMode = function (mode, stateType, query, manager, resolve, reject) {
+
+/** 
+ * Process mode.
+ * @param {object} mode mode
+ * @param {object} stateType state type
+ * @param {object} query query
+ * @param {object} manager manager
+ * @param {object} resolve resolve
+ * @param {object} reject reject
+ * @alias module:gUtils.processMode
+ * */
+function _processMode(mode, stateType, query, manager, resolve, reject) {
     /** if mode is 'true' processMode is parallel **/
     var managerGetPromise = [];
     manager.agreement.terms[stateType].forEach(function (guarantee) {
@@ -101,11 +110,9 @@ module.exports.processMode = function (mode, stateType, query, manager, resolve,
             guarantee: guarantee.id
         }));
     });
-
     var results = [];
     if (mode) {
         logger.ctlState("### Process mode = PARALLEL ###");
-
         return Promise.settle(managerGetPromise).then(function (promisesResults) {
             if (promisesResults.length > 0) {
                 for (var r in promisesResults) {
@@ -130,9 +137,7 @@ module.exports.processMode = function (mode, stateType, query, manager, resolve,
     } else {
         logger.ctlState("### Process mode = SEQUENTIAL ###");
         return Promise.each(managerGetPromise, function (promise) {
-
             return promise.then(resolve, reject);
-
         });
     }
 }

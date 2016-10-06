@@ -4,6 +4,7 @@ var config = require('../../../../config');
 var logger = config.logger;
 var stateManager = require('../../../../stateManager/stateManager.js');
 
+
 /**
  * Rates state module.
  * @module rates
@@ -16,11 +17,12 @@ module.exports = {
     ratesRateGET: _ratesIdGET
 };
 
+
 /** 
- * Get all rates
- * @param {object} args Object properties: agreement (String)
+ * Get all rates.
+ * @param {object} args {agreement: String}
  * @param {object} res response
- * @param {object} next  next function
+ * @param {object} next next function
  * @alias module:rates.ratesGET
  * */
 function _ratesGET(args, res, next) {
@@ -37,11 +39,12 @@ function _ratesGET(args, res, next) {
     });
 }
 
+
 /** 
- * Get rates by ID
- * @param {object} args Object properties: agreement (String), rate (string)
+ * Get rates by ID.
+ * @param {object} args {agreement: String, rate: String}
  * @param {object} res response
- * @param {object} next  next function
+ * @param {object} next next function
  * @alias module:rates.ratesRateGET
  * */
 function _ratesIdGET(args, res, next) {

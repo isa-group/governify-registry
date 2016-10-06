@@ -9,6 +9,7 @@ var request = require('request');
 var mailer = require('../../../../mailer');
 var calculators = require('../../../../stateManager/calculators.js');
 
+
 /**
  * Agreement state module.
  * @module agreements
@@ -28,11 +29,12 @@ module.exports = {
     guaranteeIdGET: require('../guarantees/guarantees.js').guaranteeIdGET
 };
 
+
 /**
- * Get an agreement by ID
- * @param {object} args Object properties: agreement (String), from (String), to (String)
+ * Get an agreement by ID.
+ * @param {object} args {agreement: String, from: String, to: String}
  * @param {object} res response
- * @param {object} next  next function
+ * @param {object} next next function
  * @alias module:agreements.agreementIdGET
  * */
 function _agreementIdGET(args, res, next) {
@@ -56,11 +58,12 @@ function _agreementIdGET(args, res, next) {
     });
 }
 
+
 /**
- * Delete an agreement by ID
- * @param {object} args Object properties: agreement (String), from (String), to (String)
+ * Delete an agreement by ID.
+ * @param {object} args {agreement: String, from: String, to: String}
  * @param {object} res response
- * @param {object} next  next function
+ * @param {object} next next function
  * @alias module:agreements.agreementIdDELETE
  * */
 function _agreementIdDELETE(args, res, next) {
@@ -85,11 +88,12 @@ function _agreementIdDELETE(args, res, next) {
     }
 }
 
+
 /**
- * Reload an agreement by ID
- * @param {object} args Object properties: agreement (String), from (String), to (String)
+ * Reload an agreement by ID.
+ * @param {object} args {agreement: String, from: String, to: String}
  * @param {object} res response
- * @param {object} next  next function
+ * @param {object} next next function
  * @alias module:agreements.agreementIdRELOAD
  * */
 function _agreementIdRELOAD(args, res, next) {
@@ -118,7 +122,6 @@ function _agreementIdRELOAD(args, res, next) {
                     logger.error(err.toString());
                     errors.push(err);
                 }
-
                 stateManager({
                     id: agreementId
                 }).then(function (manager) {
@@ -148,7 +151,10 @@ function _agreementIdRELOAD(args, res, next) {
         }
     });
 }
+
+
 /**
+ * Send an email.
  * @function sendMail
  * @param {object} agreement agreement
  * @param {object} mail mail parameters
@@ -204,5 +210,4 @@ function sendMail(agreement, mail) {
             logger.ctlState('Summer is coming');
         });
     });
-
 }
