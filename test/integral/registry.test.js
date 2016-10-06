@@ -3,8 +3,9 @@
 var expect = require('chai').expect,
     request = require('request'),
     ppinot = require('./expected/ppinotData'),
-    registry = require('../index'),
-    agreement = require('./expected/agreements');
+    registry = require('../../index'),
+    agreement = require('./expected/agreements'),
+    utils = require('../../utils/utils');
 
 describe("Integration TEST", function () {
     before((done) => {
@@ -21,11 +22,8 @@ describe("Integration TEST", function () {
                     body: agreement,
                     json: true
                 }, (err, res, body) => {
-                    if (!err) {
-                        //console.log(body);
-                    } else {
+                    if (err)
                         console.log(err);
-                    }
                     done();
                 });
             });
@@ -35,19 +33,14 @@ describe("Integration TEST", function () {
         request.delete({
             url: 'http://localhost:5001/api/v2/agreements'
         }, (err, res, body) => {
-            if (!err) {
-                //console.log(body);
-            } else {
+            if (err)
                 console.log(err);
-            }
+
             request.delete({
                 url: 'http://localhost:5001/api/v2/states'
             }, (err, res, body) => {
-                if (!err) {
-                    //console.log(body);
-                } else {
+                if (err)
                     console.log(err);
-                }
                 done();
             });
         });
@@ -61,11 +54,14 @@ describe("Integration TEST", function () {
                 url: 'http://localhost:5001/api/v2/states/T14-L2-S12-minimal/guarantees',
                 json: true
             }, (err, res, body) => {
-                expect(true);
-
+                var expectedResults = require('./expected/guarantees.json');
+                var results = body;
+                expect(results).to.eql(expectedResults);
                 done();
             });
         });
+    });
+    describe('Pricing K00', () => {
         it('Get K00 P1', (done) => {
             request.post({
                 url: 'http://localhost:5001/api/v2/states/T14-L2-S12-minimal/metrics/SPU_IO_K00',
@@ -89,8 +85,9 @@ describe("Integration TEST", function () {
                     }
                 }
             }, (err, res, body) => {
-                expect(true);
-
+                var expectedResults = require('./expected/k00_p1.json');
+                var results = body;
+                expect(results).to.eql(expectedResults);
                 done();
             });
         });
@@ -117,8 +114,9 @@ describe("Integration TEST", function () {
                     }
                 }
             }, (err, res, body) => {
-                expect(true);
-
+                var expectedResults = require('./expected/k00_p2.json');
+                var results = body;
+                expect(results).to.eql(expectedResults);
                 done();
             });
         });
@@ -145,8 +143,9 @@ describe("Integration TEST", function () {
                     }
                 }
             }, (err, res, body) => {
-                expect(true);
-
+                var expectedResults = require('./expected/k00_p3.json');
+                var results = body;
+                expect(results).to.eql(expectedResults);
                 done();
             });
         });

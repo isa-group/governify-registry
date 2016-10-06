@@ -10,12 +10,12 @@ var diff = require("deep-diff");
 
 
 module.exports = {
-    /** 
+    /**
      * Swagger module.
      * @see module:swagger
      * */
     swagger: require('./swagger.js'),
-    /** 
+    /**
      * middlewares module.
      * @see module:middlewares
      * */
@@ -26,7 +26,7 @@ module.exports = {
 };
 
 
-/** 
+/**
  * Check if an array contains a given object
  * @param {object} obj object to seach for
  * @param {array} array array to search into
@@ -42,7 +42,7 @@ function _containsObject(obj, array) {
 }
 
 
-/** 
+/**
  * Periods in miliseconds
  * @alias module:utils.periods
  * */
@@ -58,7 +58,7 @@ var periods = {
 };
 
 
-/** 
+/**
  * Convert a given billing cycle into a period string
  * @param {object} billingCycle object billing cycle to convert
  * @alias module:utils.convertPeriod
