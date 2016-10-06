@@ -27,26 +27,31 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 app.use('/api/v2/states/:agreement', middlewares.stateInProgress);
 
 // Connect to mongodb
-db.connect((err) => {
-
-    if (!err) {
-        //list of swagger documents, one for each version of the api.
-        var swaggerDocs = [swaggerUtils.getSwaggerDoc(1), swaggerUtils.getSwaggerDoc(2)]
-            //initialize swagger middleware for each swagger documents.
-        swaggerUtils.initializeMiddleware(app, swaggerDocs, function (middleware) {
-
-            var serverPort = process.env.PORT || config.port;
-
-            var server = http.createServer(app);
-            server.timeout = 24 * 3600 * 1000; // 24h
-
-            server.listen(serverPort, function () {
-                config.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
-                config.logger.info('Swagger-ui is available on http://localhost:%d/api/v1/docs', serverPort);
-            });
-
-        });
+module.exports.deploy = function (configurations, callback) {
+    for (var c in configurations) {
+        var prop = configurations[c];
+        config.setProperty(c, prop);
     }
-});
+    db.connect((err) => {
 
-module.exports = app;
+        if (!err) {
+            //list of swagger documents, one for each version of the api.
+            var swaggerDocs = [swaggerUtils.getSwaggerDoc(1), swaggerUtils.getSwaggerDoc(2)]
+                //initialize swagger middleware for each swagger documents.
+            swaggerUtils.initializeMiddleware(app, swaggerDocs, function (middleware) {
+
+                var serverPort = process.env.PORT || config.port;
+
+                var server = http.createServer(app);
+                server.timeout = 24 * 3600 * 1000; // 24h
+
+                app.listen(serverPort, () => {
+                    config.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
+                    config.logger.info('Swagger-ui is available on http://localhost:%d/api/v1/docs', serverPort);
+                    if (callback)
+                        callback(server);
+                });
+            });
+        }
+    });
+}

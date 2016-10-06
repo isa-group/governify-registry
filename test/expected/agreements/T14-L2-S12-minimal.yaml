@@ -1,4 +1,4 @@
-id: T14-L4-S12-minimal
+id: T14-L2-S12-minimal
 version: 0.9.2
 type: agreement
 context:
@@ -66,7 +66,7 @@ context:
       casdm:
         default: true
         uri: 'http://logs-devel.sas.governify.io/api/v1/ca-sdm/v10.13'
-        stateUri: 'http://logs-devel.sas.governify.io/api/v1/ca-sdm/v10.13/count'
+        stateUri: 'http://localhost:5000/count'
         scopes:
           SPU:
             priority: priority
@@ -74,7 +74,7 @@ context:
             center: CENTRO
       jira:
         uri: 'http://logs-devel.sas.governify.io/api/v1/jira/v01.03'
-        stateUri: 'http://logs-devel.sas.governify.io/api/v1/jira/v01.03/count'
+        stateUri: 'http://localhost:5000/count'
         scopes:
           SPU:
             priority: priority
@@ -101,91 +101,91 @@ terms:
       schema:
         description: Fecha de Inicio de incidencia
         type: string
-      computer: 'http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_start/'
+      computer: 'http://localhost:5000/api/v1/indicators/issue_start/'
     issue_end:
       schema:
         description: Fecha de Inicio de incidencia
         type: string
-      computer: 'http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_end/'
+      computer: 'http://localhost:5000/api/v1/indicators/issue_end/'
     issue_duration:
       schema:
         description: Duracion de una incidencia
         type: string
         unit: seconds
       computer: >-
-        http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_duration/
+        http://localhost:5000/api/v1/indicators/issue_duration/
     issue_duration_K05:
       schema:
         description: Duracion de una incidencia sin tener en cuenta el campo prioridad
         type: string
         unit: seconds
       computer: >-
-        http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_duration_K05/
+        http://localhost:5000/api/v1/indicators/issue_duration_K05/
     issue_area_K18:
       schema:
         description: Area de la incidencia
         type: string
         unit: seconds
       computer: >-
-        http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_area_K18/
+        http://localhost:5000/api/v1/indicators/issue_area_K18/
     issue_idle_time:
       schema:
         description: Tiempo parado de una incidencia
         type: string
         unit: seconds
       computer: >-
-        http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_idle_time/
+        http://localhost:5000/api/v1/indicators/issue_idle_time/
     issue_subject:
       schema:
         description: Asunto de la incidencia
         type: string
-      computer: 'http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_subject/'
+      computer: 'http://localhost:5000/api/v1/indicators/issue_subject/'
     issue_source:
       schema:
         description: Origen de la incidencia
         type: string
-      computer: 'http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_source/'
+      computer: 'http://localhost:5000/api/v1/indicators/issue_source/'
     issue_typology:
       schema:
         description: Tipologia de la incidencia
         type: string
       computer: >-
-        http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_typology/
+        http://localhost:5000/api/v1/indicators/issue_typology/
     issue_priority:
       schema:
         description: Prioridad de la incidencia
         type: string
       computer: >-
-        http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_priority/
+        http://localhost:5000/api/v1/indicators/issue_priority/
     issue_resource:
       schema:
         description: Recurso de la incidencia
         type: string
       computer: >-
-        http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_resource/
+        http://localhost:5000/api/v1/indicators/issue_resource/
     issue_node:
       schema:
         description: Nodo de la incidencia
         type: string
-      computer: 'http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_node/'
+      computer: 'http://localhost:5000/api/v1/indicators/issue_node/'
     issue_center:
       schema:
         description: Centro de la incidencia
         type: string
-      computer: 'http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_center/'
+      computer: 'http://localhost:5000/api/v1/indicators/issue_center/'
     issue_resolutor:
       schema:
         description: Resolutor de la incidencia
         type: string
       computer: >-
-        http://ppinot.computer.sas.governify.io/api/v1/indicators/issue_resolutor/
+        http://localhost:5000/api/v1/indicators/issue_resolutor/
     SPU_IO_K00:
       schema:
         description: Penalizacion total del periodo
         type: double
         unit: '%'
       computer: >-
-        http://registry.sas.governify.io/api/v2/states/T14-L4-S12-minimal/pricing/billing/penalties
+        http://localhost:5001/api/v2/states/T14-L2-S12-minimal/pricing/billing/penalties
       scope:
         SPU:
           $ref: '#/context/definitions/scopes/SPU'
@@ -203,7 +203,7 @@ terms:
         description: Incidencias resueltas en plazo
         type: string
       computer: >-
-        http://ppinot.computer.sas.governify.io/api/v1/indicators/SPU_IO_K01_evidence/
+        http://localhost:5000/api/v1/indicators/SPU_IO_K01_evidence/
       parameters:
         deadline:
           schema:
@@ -219,7 +219,7 @@ terms:
         description: Porcentaje incidencias resueltas en plazo
         type: double
         unit: '%'
-      computer: 'http://ppinot.computer.sas.governify.io/api/v1/indicators/SPU_IO_K01/'
+      computer: 'http://localhost:5000/api/v1/indicators/SPU_IO_K01/'
       parameters:
         deadline:
           schema:
@@ -244,7 +244,7 @@ terms:
         description: Incidencias reabiertas (incluyendo el centro en el scope)
         type: bool
       computer: >-
-        http://ppinot.computer.sas.governify.io/api/v1/indicators/SPU_IO_K06_t_evidence/
+        http://localhost:5000/api/v1/indicators/SPU_IO_K06_t_evidence/
       parameters:
         deadline:
           schema:
@@ -260,7 +260,7 @@ terms:
         description: Porcentaje incidencias reabiertas (incluyendo el centro en el scope)
         type: double
         unit: '%'
-      computer: 'http://ppinot.computer.sas.governify.io/api/v1/indicators/SPU_IO_K06_t/'
+      computer: 'http://localhost:5000/api/v1/indicators/SPU_IO_K06_t/'
       scope:
         SPU:
           $ref: '#/context/definitions/scopes/SPU'
@@ -279,7 +279,7 @@ terms:
           cerradas)
         type: string
       computer: >-
-        http://ppinot.computer.sas.governify.io/api/v1/indicators/SPU_IO_K06_evidence/
+        http://localhost:5000/api/v1/indicators/SPU_IO_K06_evidence/
       parameters:
         deadline:
           schema:
@@ -295,7 +295,7 @@ terms:
         description: Porcentaje incidencias reabiertas
         type: double
         unit: '%'
-      computer: 'http://ppinot.computer.sas.governify.io/api/v1/indicators/SPU_IO_K06/'
+      computer: 'http://localhost:5000/api/v1/indicators/SPU_IO_K06/'
       scope:
         SPU:
           $ref: '#/context/definitions/scopes/SPU'
@@ -313,7 +313,7 @@ terms:
         type: double
         unit: '%'
       computer: >-
-        http://registry.sas.governify.io/api/v1/states/T14-L4-S12-minimal/guarantees/SPU_IO_K06_t/penalty
+        http://localhost:5001/api/v1/states/T14-L2-S12-minimal/guarantees/SPU_IO_K06_t/penalty
       parameters:
         offset:
           type: number
@@ -335,7 +335,7 @@ terms:
         type: double
         unit: '%'
       computer: >-
-        http://registry.sas.governify.io/api/v1/states/T14-L4-S12-minimal/guarantees/SPU_IO_K06_t/penalty
+        http://localhost:5001/api/v1/states/T14-L2-S12-minimal/guarantees/SPU_IO_K06_t/penalty
       parameters:
         offset:
           type: number
@@ -357,7 +357,7 @@ terms:
         description: Numero de incidencias nuevas dadas de alta
         type: number
         unit: nº
-      computer: 'http://ppinot.computer.sas.governify.io/api/v1/indicators/SPU_IO_K80/'
+      computer: 'http://localhost:5000/api/v1/indicators/SPU_IO_K80/'
       scope:
         SPU:
           $ref: '#/context/definitions/scopes/SPU'
@@ -374,7 +374,7 @@ terms:
         description: Numero de incidencias resueltas
         type: number
         unit: nº
-      computer: 'http://ppinot.computer.sas.governify.io/api/v1/indicators/SPU_IO_K81/'
+      computer: 'http://localhost:5000/api/v1/indicators/SPU_IO_K81/'
       scope:
         SPU:
           $ref: '#/context/definitions/scopes/SPU'
@@ -392,7 +392,7 @@ terms:
         description: Factor de rotacion del personal
         type: string
       computer: >-
-        http://ppinot.computer.sas.governify.io/api/v1/indicators/SPU_IO_K18_evidence/
+        http://localhost:5000/api/v1/indicators/SPU_IO_K18_evidence/
       parameters:
         deadline:
           schema:
@@ -408,7 +408,7 @@ terms:
         description: Factor de rotacion del personal
         type: int32
         unit: nº
-      computer: 'http://ppinot.computer.sas.governify.io/api/v1/indicators/SPU_IO_K18/'
+      computer: 'http://localhost:5000/api/v1/indicators/SPU_IO_K18/'
       scope:
         SPU:
           $ref: '#/context/definitions/scopes/SPU'

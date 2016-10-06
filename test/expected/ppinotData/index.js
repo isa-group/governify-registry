@@ -14,6 +14,12 @@ app.post('/api/v1/indicators/:name', (req, res, next) => {
 
 });
 
+app.get('/count', (req, res, next) => {
+
+    res.json(23);
+
+});
+
 module.exports = app;
 
 //app.listen(5000, ()=>{console.log("ready")});

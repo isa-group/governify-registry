@@ -22,14 +22,14 @@ config.parallelProcess.metrics = process.env.METRICS_PARALLEL_PROCESS ? process.
 
 config.state = {
     logger: null,
-    db: null,
-    models: null,
     agreementsInProgress: []
 };
 
 module.exports = config;
 
-
+module.exports.setProperty = function (propertyName, newValue) {
+    this[propertyName] = newValue;
+}
 
 var logConfig = {
     levels: {
@@ -74,7 +74,7 @@ module.exports.logger = new winston.Logger({
     colors: logConfig.colors,
     transports: [
         new winston.transports.File({
-            level: 'debug',
+            level: module.exports.loggerLevel,
             filename: 'logs.log',
             handleExceptions: true,
             json: false,
@@ -83,7 +83,7 @@ module.exports.logger = new winston.Logger({
             colorize: false
         }),
         new winston.transports.Console({
-            level: 'info',
+            level: module.exports.loggerLevel,
             handleExceptions: true,
             json: false,
             colorize: true,
@@ -93,7 +93,7 @@ module.exports.logger = new winston.Logger({
     exitOnError: false
 });
 
- /** Write info messages on logger.*/
+/** Write info messages on logger.*/
 module.exports.stream = {
     /** Print an info message on logger.
      * @param {string} message message to print
