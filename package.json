@@ -38,7 +38,7 @@
         "eslint": "eslint lib/**/*.js test/**/*.js",
         "test": "./node_modules/.bin/mocha --reporter spec --require test/bootstrap/node test/*.test.js test/**/*.test.js",
         "start": "node --max-old-space-size=20480 server.js",
-		"docs": "cmd /k generateDocs.bat",
-		"dockerhub": "cmd /k buildAndPushToDockerhub.bat"
+        "docs": "cmd /k generateDocs.bat",
+        "dockerhub": "cmd /k buildAndPushToDockerhub.bat"
     }
 }

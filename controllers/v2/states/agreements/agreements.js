@@ -4,22 +4,23 @@ var config = require('../../../../config');
 var db = require('../../../../database');
 var logger = config.logger;
 var stateManager = require('../../../../stateManager/stateManager.js');
-var Promise = require("bluebird");
-var request = require('request');
 var mailer = require('../../../../mailer');
 var calculators = require('../../../../stateManager/calculators.js');
+
+var Promise = require("bluebird");
+var request = require('request');
 
 
 /**
  * Agreement state module.
- * @module agreements
+ * @module agreementsState
  * @see module:states
  * @requires config
  * @requires stateManager
- * @requires bluebird
- * @requires request
  * @requires mailer
  * @requires calculators
+ * @requires bluebird
+ * @requires request
  * */
 module.exports = {
     agreementIdGET: _agreementIdGET,
@@ -78,7 +79,8 @@ function _agreementIdDELETE(args, res, next) {
                 logger.ctlState("Deleted state for agreement " + agreementId);
             } else {
                 res.sendStatus(404);
-                logger.warning("Can't delete state for agreement " + agreementId + " :" + err);;
+                logger.warning("Can't delete state for agreement " + agreementId + " :" + err);
+                ;
             }
         });
     } else {
@@ -130,7 +132,7 @@ function _agreementIdRELOAD(args, res, next) {
         var errors = [];
         if (!err) {
             var message = 'Reloading state of agreement ' + agreementId + '. ' +
-                (parameters.mail ? 'An email will be sent to ' + parameters.mail.to + ' when the process ends' : '');
+                    (parameters.mail ? 'An email will be sent to ' + parameters.mail.to + ' when the process ends' : '');
             res.end(message);
 
             logger.ctlState("Deleted state for agreement " + agreementId);

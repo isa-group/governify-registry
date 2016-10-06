@@ -4,13 +4,13 @@ var request = require("request");
 var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
 var fs = require('fs');
-var config = require('../../../../config/index');
+var config = require('../../../../../config/index');
 
 var server = "localhost";
 var port = config.port || 8081;
 
 describe("Guarantees GET", function () {
-    var url = "http://" + server + ":" + port + "/api/v2/states/" + agreementId + "/guarantees";
+    var url = "http://" + server + ":" + port + "/api/v2/states/T14-L1-S12/guarantees";
 
     it("returns valid models", function (done) {
         request(url, function (error, response, body) {
