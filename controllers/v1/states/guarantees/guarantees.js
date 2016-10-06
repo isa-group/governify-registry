@@ -11,7 +11,7 @@ var logger = config.logger;
 var Promise = require("bluebird");
 var moment = require('moment');
 
-module.exports.guaranteesGET = function(args, res, next) {
+module.exports.guaranteesGET = function (args, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
@@ -29,20 +29,20 @@ module.exports.guaranteesGET = function(args, res, next) {
         if (config.parallelProcess.guarantees) {
             logger.ctlState("Processing guarantees in parallel mode");
             var processGuarantees = [];
-            manager.agreement.terms.guarantees.forEach(function(guarantee) {
+            manager.agreement.terms.guarantees.forEach(function (guarantee) {
                 processGuarantees.push(manager.get('guarantees', {
                     guarantee: guarantee.id
                 }));
             });
 
-            Promise.settle(processGuarantees).then(function(guaranteesValues) {
+            Promise.settle(processGuarantees).then(function (guaranteesValues) {
                 try {
                     if (guaranteesValues.length > 0) {
                         var result = [];
                         for (var i = 0; i < guaranteesValues.length; i++) {
                             if (guaranteesValues[i].isFulfilled()) {
                                 if (guaranteesValues[i].value().length > 0) {
-                                    var guaranteesResults = guaranteesValues[i].value().map(function(guaranteeValue) {
+                                    var guaranteesResults = guaranteesValues[i].value().map(function (guaranteeValue) {
                                         return manager.current(guaranteeValue);
                                     });
                                     result = result.concat(guaranteesResults);
@@ -59,7 +59,7 @@ module.exports.guaranteesGET = function(args, res, next) {
                     logger.error(err);
                     res.status(500).json(new errorModel(500, err));
                 }
-            }, function(err) {
+            }, function (err) {
                 logger.error(err);
                 res.status(500).json(new errorModel(500, err));
             });
@@ -77,7 +77,7 @@ module.exports.guaranteesGET = function(args, res, next) {
                 }, (err) => {
                     logger.error(err);
                 });
-            }).then(function(results) {
+            }).then(function (results) {
                 res.json(ret);
             }, (err) => {
                 logger.error("ERROR processing guarantees: ", err);
@@ -90,7 +90,7 @@ module.exports.guaranteesGET = function(args, res, next) {
     });
 }
 
-module.exports.guaranteeIdGET = function(args, res, next) {
+module.exports.guaranteeIdGET = function (args, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
@@ -105,11 +105,11 @@ module.exports.guaranteeIdGET = function(args, res, next) {
     }).then((manager) => {
         manager.get('guarantees', {
             guarantee: guaranteeId
-        }).then(function(success) {
+        }).then(function (success) {
             res.json(success.map((element) => {
                 return manager.current(element);
             }));
-        }, function(err) {
+        }, function (err) {
             logger.error(err);
             res.status(500).json(new errorModel(500, err));
         });
@@ -119,7 +119,7 @@ module.exports.guaranteeIdGET = function(args, res, next) {
     });
 }
 
-module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
+module.exports.guaranteeIdPenaltyPOST = function (args, res, next) {
     var guaranteeId = args.guarantee.value;
     var agreementId = args.agreement.value;
     var query = args.query.value;
@@ -145,7 +145,7 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
             var log = manager.agreement.context.definitions.logs[logId];
             var scope = {};
             var scopeId = Object.keys(log.scopes)[0];
-            var logScopes = Object.keys(log.scopes[scopeId]).map(function(key) {
+            var logScopes = Object.keys(log.scopes[scopeId]).map(function (key) {
                 return log.scopes[scopeId][key];
             });
             for (var queryScope in query.scope) {
@@ -167,7 +167,7 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
                 scope: query.scope,
                 //  period: p //,
                 //  window: query.window
-            }).then(function(success) {
+            }).then(function (success) {
                 var ret = [];
                 for (var i in success) {
                     var e = success[i];
@@ -187,7 +187,7 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
                     }
                 }
 
-            }, function(err) {
+            }, function (err) {
                 logger.error(err);
                 //res.status(500).json(new errorModel(500, err));
             });

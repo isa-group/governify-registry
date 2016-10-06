@@ -5,18 +5,19 @@ var metricsRecords = agreementManager.operations.states.recordsManager.metrics;
 var errorModel = require('../../../../errors/index.js').errorModel;
 
 var config = require('../../../../config');
+var db = require('../../../../database');
 var logger = config.logger;
 var stateManager = require('../../../../stateManager/stateManager.js')
 var Promise = require("bluebird");
 var request = require("request");
 
 
-module.exports.metricsIdIncrease = function (args, res, next){
+module.exports.metricsIdIncrease = function (args, res, next) {
     var agreementId = args.agreement.value;
     var metricId = args.metric.value;
     var query = args.scope.value;
 
-    logger.ctlState("New request to increase metric = %s, with values = %s", metricId, JSON.stringify(query, null, 2) );
+    logger.ctlState("New request to increase metric = %s, with values = %s", metricId, JSON.stringify(query, null, 2));
 
     stateManager({
         id: agreementId
@@ -24,11 +25,11 @@ module.exports.metricsIdIncrease = function (args, res, next){
 
         query.metric = metricId;
 
-        manager.get('metrics', query).then((metric)=>{
+        manager.get('metrics', query).then((metric) => {
 
             logger.ctlState("Result of getting metricValues: " + JSON.stringify(metric, null, 2));
 
-            logger.ctlState("Query to put "+ JSON.stringify(query, null, 2));
+            logger.ctlState("Query to put " + JSON.stringify(query, null, 2));
             manager.put('metrics', query, manager.current(metric[0]).value + 1).then((success) => {
                 res.json(success.map((element) => {
                     return manager.current(element);
@@ -47,14 +48,14 @@ module.exports.metricsIdIncrease = function (args, res, next){
 
 }
 
-module.exports.metricsIdPUT = function(args, res, next) {
+module.exports.metricsIdPUT = function (args, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
      * metric (String)
      * metricValue ()
      **/
-    var StateModel = config.db.models.StateModel;
+    var StateModel = db.models.StateModel;
     var agreementId = args.agreement.value;
     var metricValue = args.metricValue.value;
     var metricName = args.metric.value;
@@ -80,14 +81,14 @@ module.exports.metricsIdPUT = function(args, res, next) {
     });
 }
 
-module.exports.metricsPOST = function(req, res, next) {
+module.exports.metricsPOST = function (req, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
      **/
     var args = req.swagger.params;
     var agreementId = args.agreement.value;
-    var AgreementModel = config.db.models.AgreementModel;
+    var AgreementModel = db.models.AgreementModel;
 
     logger.info("New request to GET metrics of agreement: " + agreementId);
 
@@ -108,7 +109,7 @@ module.exports.metricsPOST = function(req, res, next) {
                 processMetrics.push(manager.get('metrics', metricParams));
             }
 
-            Promise.all(processMetrics).then(function(metricsValues) {
+            Promise.all(processMetrics).then(function (metricsValues) {
                 for (var i in results) {
                     ret.push(manager.current(results[i]));
                 }
@@ -130,7 +131,7 @@ module.exports.metricsPOST = function(req, res, next) {
                 }, (err) => {
                     logger.error(err);
                 });
-            }).then(function(results) {
+            }).then(function (results) {
                 res.json(ret);
             }, (err) => {
                 logger.error("ERROR processing metrics");
@@ -144,7 +145,7 @@ module.exports.metricsPOST = function(req, res, next) {
     });
 }
 
-module.exports.metricsIdPOST = function(args, res, next) {
+module.exports.metricsIdPOST = function (args, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)

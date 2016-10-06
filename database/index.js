@@ -11,17 +11,15 @@ var config = require('../config');
  * @module db
  */
 module.exports = {
-    instance: {
-        db: null,
-        models: null
-    },
+    db: null,
+    models: {},
     /**
      * Create a new database connection.
      * @param {callback} callback callback connect function
      * @alias module:db.connect
      * */
     connect: function (callback) {
-        var instance = this.instance;
+        var instance = this;
         var databaseURL = config.database.url[config.database.url.length - 1] === "/" ? config.database.url : config.database.url + '/';
         var databaseFullURL = databaseURL + config.database.db_name;
         config.logger.info('Connecting to ' + databaseFullURL);
@@ -73,6 +71,6 @@ function setupModel(instance, modelName, jsonModelUri) {
             minimize: false
         });
         var mongooseModel = mongoose.model(modelName, mongooseSchema);
-        instance[modelName] = mongooseModel;
+        instance.models[modelName] = mongooseModel;
     });
 }

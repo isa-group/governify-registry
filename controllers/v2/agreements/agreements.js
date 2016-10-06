@@ -2,7 +2,8 @@
 
 var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
-var config = require('../../../config/index');
+var config = require('../../../config');
+var db = require('../../../database');
 var agreementManager = require('governify-agreement-manager').operations.states;
 
 var agreementState = require('../states/agreements/agreements');
@@ -26,7 +27,7 @@ function _agreementsGET(args, res, next) {
      * namespace (String)
      **/
     logger.info("New request to GET agreements agreements/agreements.js");
-    var AgreementModel = config.db.models.AgreementModel;
+    var AgreementModel = db.models.AgreementModel;
     AgreementModel.find(function (err, agreements) {
         if (err) {
             logger.error(err.toString());
@@ -40,7 +41,7 @@ function _agreementsGET(args, res, next) {
 
 function _agreementsDELETE(args, res, next) {
     logger.info("New request to DELETE all agreements");
-    var AgreementModel = config.db.models.AgreementModel;
+    var AgreementModel = db.models.AgreementModel;
     AgreementModel.remove({}, function (err) {
         if (!err) {
             logger.info("Deleted all agreements");
@@ -59,7 +60,7 @@ function _agreementIdGET(args, res, next) {
      * agreement (String)
      **/
     logger.info("New request to GET agreement with id = " + args.agreement.value);
-    var AgreementModel = config.db.models.AgreementModel;
+    var AgreementModel = db.models.AgreementModel;
     AgreementModel.findOne({
         id: args.agreement.value
     }, function (err, agreement) {
@@ -82,7 +83,7 @@ function _agreementIdDELETE(args, res, next) {
     logger.info("New request to DELETE agreement");
     var agreementId = args.agreement.value;
     if (agreementId) {
-        var AgreementModel = config.db.models.AgreementModel;
+        var AgreementModel = db.models.AgreementModel;
         AgreementModel.find({
             "id": agreementId
         }).remove(function (err) {
@@ -108,14 +109,14 @@ function _agreementsPOST(args, res, next) {
      **/
     // no response value expected for this operation
 
-    //console.log(config.db.models.agreement);
+    //console.log(db.models.agreement);
     logger.info("New request to CREATE agreement");
     $RefParser.dereference(args.agreement.value, function (err, schema) {
         if (err) {
             logger.error(err.toString());
             res.json(new errorModel(500, err));
         } else {
-            var agreement = new config.db.models.AgreementModel(schema);
+            var agreement = new db.models.AgreementModel(schema);
             agreement.save(function (err) {
                 if (err) {
                     logger.error("Mongo error saving agreement: " + err.toString());
@@ -125,7 +126,7 @@ function _agreementsPOST(args, res, next) {
                     logger.info('Initializing agreement state');
                     //Initialize state
                     agreementManager.initializeState(schema, function (st) {
-                        var state = new config.db.models.StateModel(st);
+                        var state = new db.models.StateModel(st);
                         state.save(function (err) {
                             if (err) {
                                 logger.error("Mongo error saving state: " + err.toString());

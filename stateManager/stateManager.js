@@ -1,6 +1,7 @@
 'use strict';
 
 var config = require('../config');
+var db = require('../database');
 var logger = config.logger;
 var request = require('requestretry');
 var errorModel = require('../errors/index.js').errorModel;
@@ -21,12 +22,12 @@ module.exports = initialize;
 function initialize(_agreement) {
     logger.sm('(initialize) Initializing state with agreement ID = ' + _agreement.id);
     return new Promise((resolve, reject) => {
-        var AgreementModel = config.db.models.AgreementModel;
+        var AgreementModel = db.models.AgreementModel;
         logger.sm("Searching agreement with agreementID = " + _agreement.id);
         //Executes a mongodb query to search Agreement file with id = _agreement
         AgreementModel.findOne({
             'id': _agreement.id
-        }, function(err, ag) {
+        }, function (err, ag) {
             if (err) {
                 //something fail on mongodb query and error is returned
                 logger.error(err.toString());
@@ -67,7 +68,7 @@ function _get(stateType, query) {
     logger.sm('(_get) Retrieving state of ' + stateType);
     return new Promise((resolve, reject) => {
         logger.sm("Getting " + stateType + " state for query =  " + JSON.stringify(query));
-        var StateModel = config.db.models.StateModel;
+        var StateModel = db.models.StateModel;
         //Executes a mongodb query to search States file that match with query
         // projectionBuilder(...) builds a mongodb query from StateManagerQuery
         // refineQuery(...) ensures that the query is well formed, chooses and renames fields to make a well formed query.
@@ -135,7 +136,7 @@ function _put(stateType, query, value, metadata) {
     var stateManager = this;
     logger.sm('(_put) Saving state of ' + stateType);
     return new Promise((resolve, reject) => {
-        var StateModel = config.db.models.StateModel;
+        var StateModel = db.models.StateModel;
 
         logger.sm("AGREEMENT: " + stateManager.agreement.id);
         var dbQuery = projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query));
@@ -217,108 +218,108 @@ function _update(stateType, query, logsState) {
     logger.sm('(_update) Updating state of ' + stateType);
     return new Promise((resolve, reject) => {
         switch (stateType) {
-            case "agreement":
-                calculators.agreementCalculator.process(stateManager.agreement, stateManager)
-                    .then(function(agreementState) {
-                        stateManager.put(stateType, agreementState).then((data) => {
-                            return resolve(data);
-                        }, (err) => {
-                            return reject(err);
-                        });
-                    }, function(err) {
-                        logger.error(err.toString());
-                        return reject(new errorModel(500, err));
+        case "agreement":
+            calculators.agreementCalculator.process(stateManager.agreement, stateManager)
+                .then(function (agreementState) {
+                    stateManager.put(stateType, agreementState).then((data) => {
+                        return resolve(data);
+                    }, (err) => {
+                        return reject(err);
                     });
-                break;
-            case "guarantees":
-                calculators.guaranteeCalculator.process(stateManager.agreement, query.guarantee, stateManager)
-                    .then(function(guaranteeStates) {
-                        logger.sm('Guarantee states for ' + guaranteeStates.guaranteeId + ' have been calculated (' + guaranteeStates.guaranteeValues.length + ') ');
-                        logger.debug('Guarantee states: ' + JSON.stringify(guaranteeStates, null, 2));
-                        var processguarantees = [];
-                        guaranteeStates.guaranteeValues.forEach(function(guaranteeState) {
-                            logger.debug('Guarantee state: ' + JSON.stringify(guaranteeState, null, 2));
-                            processguarantees.push(stateManager.put(stateType, {
-                                guarantee: query.guarantee,
-                                period: guaranteeState.period,
-                                scope: guaranteeState.scope
-                            }, guaranteeState.value, {
+                }, function (err) {
+                    logger.error(err.toString());
+                    return reject(new errorModel(500, err));
+                });
+            break;
+        case "guarantees":
+            calculators.guaranteeCalculator.process(stateManager.agreement, query.guarantee, stateManager)
+                .then(function (guaranteeStates) {
+                    logger.sm('Guarantee states for ' + guaranteeStates.guaranteeId + ' have been calculated (' + guaranteeStates.guaranteeValues.length + ') ');
+                    logger.debug('Guarantee states: ' + JSON.stringify(guaranteeStates, null, 2));
+                    var processguarantees = [];
+                    guaranteeStates.guaranteeValues.forEach(function (guaranteeState) {
+                        logger.debug('Guarantee state: ' + JSON.stringify(guaranteeState, null, 2));
+                        processguarantees.push(stateManager.put(stateType, {
+                            guarantee: query.guarantee,
+                            period: guaranteeState.period,
+                            scope: guaranteeState.scope
+                        }, guaranteeState.value, {
+                            "logsState": logsState,
+                            metrics: guaranteeState.metrics,
+                            evidences: guaranteeState.evidences,
+                            penalties: guaranteeState.penalties ? guaranteeState.penalties : null
+                        }));
+                    });
+                    logger.sm('Created parameters array for saving states of guarantee of length ' + processguarantees.length);
+                    logger.sm('Persisting guarantee states...');
+                    Promise.all(processguarantees).then((guarantees) => {
+                        logger.sm('All guarantee states have been persisted');
+                        var result = [];
+                        for (var a in guarantees) {
+                            result.push(guarantees[a][0]);
+                        }
+                        return resolve(result);
+                    });
+                }, function (err) {
+                    logger.error(err.toString());
+                    return reject(new errorModel(500, err));
+                });
+            break;
+        case "metrics":
+            calculators.metricCalculator.process(stateManager.agreement, query.metric, query)
+                .then(function (metricStates) {
+                    logger.sm('Metric states for ' + metricStates.metricId + ' have been calculated (' + metricStates.metricValues.length + ') ');
+                    var processMetrics = [];
+                    metricStates.metricValues.forEach(function (metricValue) {
+                        processMetrics.push(
+                            stateManager.put(stateType, {
+                                metric: query.metric,
+                                scope: metricValue.scope,
+                                period: metricValue.period,
+                                window: query.window
+                            }, metricValue.value, {
                                 "logsState": logsState,
-                                metrics: guaranteeState.metrics,
-                                evidences: guaranteeState.evidences,
-                                penalties: guaranteeState.penalties ? guaranteeState.penalties : null
+                                evidences: metricValue.evidences,
+                                parameters: metricValue.parameters
                             }));
-                        });
-                        logger.sm('Created parameters array for saving states of guarantee of length ' + processguarantees.length);
-                        logger.sm('Persisting guarantee states...');
-                        Promise.all(processguarantees).then((guarantees) => {
-                            logger.sm('All guarantee states have been persisted');
-                            var result = [];
-                            for (var a in guarantees) {
-                                result.push(guarantees[a][0]);
-                            }
-                            return resolve(result);
-                        });
-                    }, function(err) {
-                        logger.error(err.toString());
-                        return reject(new errorModel(500, err));
                     });
-                break;
-            case "metrics":
-                calculators.metricCalculator.process(stateManager.agreement, query.metric, query)
-                    .then(function(metricStates) {
-                        logger.sm('Metric states for ' + metricStates.metricId + ' have been calculated (' + metricStates.metricValues.length + ') ');
-                        var processMetrics = [];
-                        metricStates.metricValues.forEach(function(metricValue) {
-                            processMetrics.push(
-                                stateManager.put(stateType, {
-                                    metric: query.metric,
-                                    scope: metricValue.scope,
-                                    period: metricValue.period,
-                                    window: query.window
-                                }, metricValue.value, {
-                                    "logsState": logsState,
-                                    evidences: metricValue.evidences,
-                                    parameters: metricValue.parameters
-                                }));
-                        });
-                        logger.sm('Created parameters array for saving states of metric of length ' + processMetrics.length);
-                        logger.sm('Persisting metric states...');
-                        Promise.all(processMetrics).then((metrics) => {
-                            logger.sm('All metric states have been persisted');
-                            var result = [];
-                            for (var a in metrics) {
-                                result.push(metrics[a][0]);
-                            }
-                            return resolve(result);
-                        })
-                    }, function(err) {
-                        logger.error(err.toString());
-                        return reject(new errorModel(500, err));
-                    });
-                break;
-            case "pricing":
-                calculators.pricingCalculator.process(stateManager.agreement, query, stateManager).then((pricingStates) => {
-                    logger.sm('All pricing states (' + pricingStates.length + ') have been calculated ');
-                    return resolve(pricingStates);
-                }, (err) => {
+                    logger.sm('Created parameters array for saving states of metric of length ' + processMetrics.length);
+                    logger.sm('Persisting metric states...');
+                    Promise.all(processMetrics).then((metrics) => {
+                        logger.sm('All metric states have been persisted');
+                        var result = [];
+                        for (var a in metrics) {
+                            result.push(metrics[a][0]);
+                        }
+                        return resolve(result);
+                    })
+                }, function (err) {
                     logger.error(err.toString());
                     return reject(new errorModel(500, err));
                 });
-                break;
+            break;
+        case "pricing":
+            calculators.pricingCalculator.process(stateManager.agreement, query, stateManager).then((pricingStates) => {
+                logger.sm('All pricing states (' + pricingStates.length + ') have been calculated ');
+                return resolve(pricingStates);
+            }, (err) => {
+                logger.error(err.toString());
+                return reject(new errorModel(500, err));
+            });
+            break;
 
-            case "quotas":
-                calculators.quotasCalculator.process(stateManager, query).then((quotasStates) => {
-                    logger.sm('All quotas states (' + quotasStates.length + ') has been calculated ');
-                    //putting quotas
-                    return resolve(quotasStates);
-                }, (err) => {
-                    logger.error(err.toString());
-                    return reject(new errorModel(500, err));
-                });
-                break;
-            default:
-                return reject(new errorModel(500, "There are not method implemented to calculate " + stateType + " state"));
+        case "quotas":
+            calculators.quotasCalculator.process(stateManager, query).then((quotasStates) => {
+                logger.sm('All quotas states (' + quotasStates.length + ') has been calculated ');
+                //putting quotas
+                return resolve(quotasStates);
+            }, (err) => {
+                logger.error(err.toString());
+                return reject(new errorModel(500, err));
+            });
+            break;
+        default:
+            return reject(new errorModel(500, "There are not method implemented to calculate " + stateType + " state"));
 
         }
     });
@@ -365,7 +366,7 @@ function isUpdated(agreement, states) {
             request.get({
                 uri: logUris,
                 json: true,
-                // The below parameters are specific to request-retry 
+                // The below parameters are specific to request-retry
                 maxAttempts: config.maxAttempts,
                 retryDelay: config.retryDelay,
                 retryStrategy: request.RetryStrategies.HTTPOrNetworkError // retry on 5xx or network errors
@@ -473,12 +474,12 @@ function refineQuery(agId, stateType, query) {
         refinedQuery.window = query.window;
 
     switch (stateType) {
-        case 'metrics':
-            refinedQuery.id = query.metric;
-            break;
-        case 'guarantees':
-            refinedQuery.id = query.guarantee;
-            break;
+    case 'metrics':
+        refinedQuery.id = query.metric;
+        break;
+    case 'guarantees':
+        refinedQuery.id = query.guarantee;
+        break;
     }
 
     return refinedQuery;

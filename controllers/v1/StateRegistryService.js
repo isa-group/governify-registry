@@ -2,7 +2,7 @@
 
 var request = require('request');
 var config = require('../../config');
-
+var db = require('../../database');
 // Requiring states controllers
 var states = require("./states/states.js");
 
@@ -41,7 +41,7 @@ module.exports = {
 
 function _statesDELETE(args, res, next) {
     logger.ctlState("New request to DELETE all agreement states");
-    var StateModel = config.db.models.StateModel;
+    var StateModel = db.models.StateModel;
     StateModel.remove(function (err) {
         if (!err) {
             res.sendStatus(200);

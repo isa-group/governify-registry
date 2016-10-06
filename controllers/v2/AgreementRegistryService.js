@@ -1,6 +1,7 @@
 'use strict';
 
 var config = require('../../config');
+var db = require('../../database');
 
 var agreements = require('./agreements/agreements.js');
 
@@ -20,7 +21,7 @@ exports.agreementsAgreementTermsGuaranteesGET = function (args, res, next) {
      * parameters expected in the args:
      * agreement (String)
      **/
-    var AgreementModel = config.db.models.AgreementModel;
+    var AgreementModel = db.models.AgreementModel;
     AgreementModel.find({
         'id': args.agreement.value
     }, function (err, agreement) {
@@ -43,7 +44,7 @@ exports.agreementsAgreementTermsGuaranteesGuaranteeGET = function (args, res, ne
      * guarantee (String)
      **/
     var guarantee = {};
-    var AgreementModel = config.db.models.AgreementModel;
+    var AgreementModel = db.models.AgreementModel;
     AgreementModel.find({
         'id': args.agreement.value
     }, function (err, agreement) {

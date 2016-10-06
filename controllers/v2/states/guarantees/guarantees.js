@@ -1,18 +1,18 @@
 'use strict';
 
 /** Configuration an model dependencies **/
-var config = require('../../../../config'),
-        logger = config.logger,
-        errorModel = require('../../../../errors/index.js').errorModel,
-        moment = require('moment'),
-        gUtils = require('./gUtils'),
-        /** StateManager dependencies**/
-        stateManager = require('../../../../stateManager/stateManager.js'),
-        /** Promise dependencies**/
-        Promise = require("bluebird"),
-        /** Streaming dependencies**/
-        JSONStream = require('JSONStream'),
-        stream = require('stream');
+var config = require('../../../../config');
+var logger = config.logger;
+var errorModel = require('../../../../errors/index.js').errorModel;
+var moment = require('moment');
+var gUtils = require('./gUtils');
+/** StateManager dependencies**/
+var stateManager = require('../../../../stateManager/stateManager.js');
+/** Promise dependencies**/
+var Promise = require("bluebird");
+/** Streaming dependencies**/
+var JSONStream = require('JSONStream');
+var stream = require('stream');
 
 
 /**

@@ -1,6 +1,7 @@
 'use strict';
 
 var config = require('../../../../config');
+var db = require('../../../../database');
 var logger = config.logger;
 var stateManager = require('../../../../stateManager/stateManager.js');
 var Promise = require("bluebird");
@@ -27,7 +28,7 @@ module.exports = {
     guaranteeIdGET: require('../guarantees/guarantees.js').guaranteeIdGET
 };
 
-/** 
+/**
  * Get an agreement by ID
  * @param {object} args Object properties: agreement (String), from (String), to (String)
  * @param {object} res response
@@ -55,7 +56,7 @@ function _agreementIdGET(args, res, next) {
     });
 }
 
-/** 
+/**
  * Delete an agreement by ID
  * @param {object} args Object properties: agreement (String), from (String), to (String)
  * @param {object} res response
@@ -66,7 +67,7 @@ function _agreementIdDELETE(args, res, next) {
     var agreementId = args.agreements.value;
     logger.info("New request to DELETE agreement state for agreement " + agreementId);
     if (agreementId) {
-        var StateModel = config.db.models.StateModel;
+        var StateModel = db.models.StateModel;
         StateModel.find({
             "agreementId": agreementId
         }).remove(function (err) {
@@ -75,8 +76,7 @@ function _agreementIdDELETE(args, res, next) {
                 logger.ctlState("Deleted state for agreement " + agreementId);
             } else {
                 res.sendStatus(404);
-                logger.warning("Can't delete state for agreement " + agreementId + " :" + err);
-                ;
+                logger.warning("Can't delete state for agreement " + agreementId + " :" + err);;
             }
         });
     } else {
@@ -85,7 +85,7 @@ function _agreementIdDELETE(args, res, next) {
     }
 }
 
-/** 
+/**
  * Reload an agreement by ID
  * @param {object} args Object properties: agreement (String), from (String), to (String)
  * @param {object} res response
@@ -98,19 +98,19 @@ function _agreementIdRELOAD(args, res, next) {
 
     logger.ctlState("New request to reload state of agreement " + agreementId);
 
-    var StateModel = config.db.models.StateModel;
+    var StateModel = db.models.StateModel;
     StateModel.find({
         "agreementId": agreementId
     }).remove(function (err) {
         var errors = [];
         if (!err) {
             var message = 'Reloading state of agreement ' + agreementId + '. ' +
-                    (parameters.mail ? 'An email will be sent to ' + parameters.mail.to + ' when the process ends' : '');
+                (parameters.mail ? 'An email will be sent to ' + parameters.mail.to + ' when the process ends' : '');
             res.end(message);
 
             logger.ctlState("Deleted state for agreement " + agreementId);
 
-            var AgreementModel = config.db.models.AgreementModel;
+            var AgreementModel = db.models.AgreementModel;
             AgreementModel.findOne({
                 id: agreementId
             }, function (err, agreement) {
@@ -148,7 +148,7 @@ function _agreementIdRELOAD(args, res, next) {
         }
     });
 }
-/** 
+/**
  * @function sendMail
  * @param {object} agreement agreement
  * @param {object} mail mail parameters
