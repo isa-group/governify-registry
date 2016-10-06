@@ -8,4 +8,7 @@ describe('Registry Module Tests', () => {
     it('.deploy() Function', () => {
         expect(registry.deploy).to.not.null;
     });
+    it('.undeploy Function', () => {
+        expect(registry.undeploy).to.not.null;
+    });
 });

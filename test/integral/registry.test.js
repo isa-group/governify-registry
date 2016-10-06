@@ -41,7 +41,8 @@ describe("Integration TEST", function () {
             }, (err, res, body) => {
                 if (err)
                     console.log(err);
-                done();
+
+                registry.undeploy(done);
             });
         });
     })

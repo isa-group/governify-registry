@@ -16,7 +16,7 @@ var middlewares = require('./utils/utils').middlewares;
 app.use(cors());
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json()); // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({// to support URL-encoded bodies
+app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
 
@@ -37,11 +37,12 @@ app.use('/api/v2/states/:agreement', middlewares.stateInProgress);
  * @requires middlewares
  * */
 module.exports = {
-    deploy: _deploy
+    deploy: _deploy,
+    undeploy: _undeploy
 };
 
 
-/** 
+/**
  * statesAgreementGET.
  * @param {object} configurations configuration object
  * @param {function} callback callback function
@@ -61,16 +62,30 @@ function _deploy(configurations, callback) {
 
                 var serverPort = process.env.PORT || config.port;
 
-                var server = http.createServer(app);
-                server.timeout = 24 * 3600 * 1000; // 24h
+                module.exports.server = http.createServer(app);
+                module.exports.server.timeout = 24 * 3600 * 1000; // 24h
 
-                app.listen(serverPort, function () {
+                module.exports.server.listen(serverPort, function () {
                     config.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
                     config.logger.info('Swagger-ui is available on http://localhost:%d/api/v1/docs', serverPort);
                     if (callback)
-                        callback(server);
+                        callback(module.exports.server);
                 });
             });
         }
+    });
+}
+
+/**
+ * statesAgreementGET.
+ * @param {function} callback callback function
+ * @alias module:registry.undeploy
+ * */
+function _undeploy(callback) {
+    db.close(() => {
+        module.exports.server.close(() => {
+            config.logger.info('Server has been closed');
+            callback();
+        });
     });
 }

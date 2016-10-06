@@ -66,6 +66,7 @@ function _close(done) {
         this.instance.db.close(function (err, result) {
             this.instance.db = null;
             this.instance.models = null;
+            done();
         });
     }
 }
@@ -88,4 +89,8 @@ function setupModel(instance, modelName, jsonModelUri) {
         var mongooseModel = mongoose.model(modelName, mongooseSchema);
         instance.models[modelName] = mongooseModel;
     });
+}
+});
+}
+});
 }
