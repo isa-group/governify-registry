@@ -62,10 +62,11 @@ function _connect(callback) {
  * @alias module:db.close
  * */
 function _close(done) {
-    if (this.instance.db) {
-        this.instance.db.close(function (err, result) {
-            this.instance.db = null;
-            this.instance.models = null;
+    var instance = this;
+    if (this.db) {
+        this.db.close(function (err, result) {
+            instance.db = null;
+            instance.models = null;
             done();
         });
     }
@@ -89,8 +90,4 @@ function setupModel(instance, modelName, jsonModelUri) {
         var mongooseModel = mongoose.model(modelName, mongooseSchema);
         instance.models[modelName] = mongooseModel;
     });
-}
-});
-}
-});
 }
