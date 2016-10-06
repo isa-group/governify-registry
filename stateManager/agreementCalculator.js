@@ -4,7 +4,7 @@ var yaml = require('js-yaml');
 var fs = require('fs');
 var Promise = require("bluebird");
 var request = require('request');
-const vm = require('vm');
+var vm = require('vm');
 var config = require('../config');
 var logger = config.logger;
 
@@ -15,20 +15,20 @@ module.exports = {
 }
 
 function _process(manager, parameters, from, to) {
-    return new Promise((resolve, reject) => {
+    return new Promise(function (resolve, reject) {
         try {
 
             //Process guarantees
-            processGuarantees(manager, parameters).then(function(guaranteeResults) {
+            processGuarantees(manager, parameters).then(function (guaranteeResults) {
 
                 // Process metrics
-                processMetrics(manager, parameters).then(function(metricResults) {
+                processMetrics(manager, parameters).then(function (metricResults) {
                     return resolve(guaranteeResults);
-                }, function(err) {
+                }, function (err) {
                     return reject(err);
                 });
 
-            }, function(err) {
+            }, function (err) {
                 return reject(err);
             });
 
@@ -41,7 +41,7 @@ function _process(manager, parameters, from, to) {
 }
 
 function processMetrics(manager, parameters) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
         var metrics = [];
         if (!parameters.metrics) {
@@ -59,25 +59,25 @@ function processMetrics(manager, parameters) {
             logger.agreement("- metrics: " + metrics);
 
             var processMetrics = [];
-            metrics.forEach(function(metricId) {
+            metrics.forEach(function (metricId) {
                 var priorities = ['P1', 'P2', 'P3'];
                 if (metricId == 'SPU_IO_K00') {
                     priorities = [''];
                 }
 
-                priorities.forEach(function(priority) {
+                priorities.forEach(function (priority) {
                     parameters.metrics[metricId].scope.priority = priority;
                     processMetrics.push(manager.get('metrics', parameters.metrics[metricId]));
                 })
             });
 
-            Promise.settle(processMetrics).then(function(results) {
+            Promise.settle(processMetrics).then(function (results) {
                 if (results.length > 0) {
                     var values = [];
                     for (var i = 0; i < results.length; i++) {
                         if (results[i].isFulfilled()) {
                             if (results[i].value().length > 0) {
-                                results[i].value().forEach(function(metricValue) {
+                                results[i].value().forEach(function (metricValue) {
                                     values.push(metricValue);
                                 });
                             }
@@ -87,7 +87,7 @@ function processMetrics(manager, parameters) {
                 } else {
                     return reject('Error processing metric: empty result');
                 }
-            }, function(err) {
+            }, function (err) {
                 console.error(err);
                 return reject(err);
             });
@@ -96,13 +96,13 @@ function processMetrics(manager, parameters) {
             logger.agreement("- metrics: " + metrics);
 
             var processMetrics = [];
-            metrics.forEach(function(metricId) {
+            metrics.forEach(function (metricId) {
                 var priorities = ['P1', 'P2', 'P3'];
                 if (metricId == 'SPU_IO_K00') {
                     priorities = [''];
                 }
 
-                priorities.forEach(function(priority) {
+                priorities.forEach(function (priority) {
                     var scp = JSON.parse(JSON.stringify(parameters.metrics[metricId].scope));
                     scp.priority = priority;
                     processMetrics.push({
@@ -122,23 +122,23 @@ function processMetrics(manager, parameters) {
 
             var ret = [];
 
-            Promise.each(processMetrics, function(metricParam) {
+            Promise.each(processMetrics, function (metricParam) {
                 logger.agreement("- metricId: " + metricParam.metric);
-                return manager.get('metrics', metricParam).then((results) => {
+                return manager.get('metrics', metricParam).then(function (results) {
                     for (var i in results) {
                         ret.push(manager.current(results[i]));
                     }
-                }, (err) => {
+                }, function (err) {
                     logger.error(err);
                     return reject(err);
                 });
-            }).then(function(results) {
+            }).then(function (results) {
                 if (results.length > 0) {
                     return resolve(ret);
                 } else {
                     return reject('Error processing metric: empty result');
                 }
-            }, function(err) {
+            }, function (err) {
                 console.error(err);
                 return reject(err);
             });
@@ -153,13 +153,13 @@ function processMetrics(manager, parameters) {
 
 
 function processGuarantees(manager, parameters) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
         var guarantees = [];
         if (!parameters.guarantees) {
             guarantees = manager.agreement.terms.guarantees;
         } else {
-            guarantees = manager.agreement.terms.guarantees.filter(function(guarantee) {
+            guarantees = manager.agreement.terms.guarantees.filter(function (guarantee) {
                 return Object.keys(parameters.guarantees).indexOf(guarantee.id) != -1;
             });
         }
@@ -169,19 +169,19 @@ function processGuarantees(manager, parameters) {
             logger.agreement("- guarantees: " + guarantees);
 
             var processGuarantees = [];
-            guarantees.forEach(function(guarantee) {
+            guarantees.forEach(function (guarantee) {
                 processGuarantees.push(manager.get('guarantees', {
                     guarantee: guarantee.id
                 }));
             });
 
-            Promise.settle(processGuarantees).then(function(results) {
+            Promise.settle(processGuarantees).then(function (results) {
                 if (results.length > 0) {
                     var values = [];
                     for (var i = 0; i < results.length; i++) {
                         if (results[i].isFulfilled()) {
                             if (results[i].value().length > 0) {
-                                results[i].value().forEach(function(guaranteeValue) {
+                                results[i].value().forEach(function (guaranteeValue) {
                                     values.push(guaranteeValue);
                                 });
                             }
@@ -191,7 +191,7 @@ function processGuarantees(manager, parameters) {
                 } else {
                     return reject('Error processing compensations: empty result');
                 }
-            }, function(err) {
+            }, function (err) {
                 console.error(err);
                 return reject(err);
             });
@@ -201,21 +201,21 @@ function processGuarantees(manager, parameters) {
 
             var ret = [];
 
-            Promise.each(guarantees, (guarantee) => {
+            Promise.each(guarantees, function (guarantee) {
                 logger.agreement("- guaranteeId: " + guarantee.id);
                 return manager.get('guarantees', {
                     guarantee: guarantee.id
-                }).then((results) => {
+                }).then(function (results) {
                     for (var i in results) {
                         ret.push(manager.current(results[i]));
                     }
-                }, (err) => {
+                }, function (err) {
                     logger.error(err);
                     return reject(err);
                 });
-            }).then(function(results) {
+            }).then(function (results) {
                 return resolve(ret);
-            }, (err) => {
+            }, function (err) {
                 logger.error("Error processing guarantees: ", err);
                 return reject(err);
             });
