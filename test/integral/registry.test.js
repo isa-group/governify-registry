@@ -10,13 +10,7 @@ var expect = require('chai').expect,
 describe("Integral TEST", function () {
     before((done) => {
         ppinot.listen(5000, () => {
-            registry.deploy({
-                port: 5001,
-                database: {
-                    url: "mongodb://dockers:27017",
-                    db_name: "registry-tests"
-                }
-            }, (server) => {
+            registry.deploy(require('../config.json'), (server) => {
                 request.post({
                     url: 'http://localhost:5001/api/v2/agreements',
                     body: agreement,
