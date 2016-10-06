@@ -1,24 +1,36 @@
 'use strict';
 
 var config = require('../config');
-var db = require('../database');
 var logger = config.logger;
-var request = require('requestretry');
+var db = require('../database');
 var errorModel = require('../errors/index.js').errorModel;
-var iso8601 = require('iso8601');
 var calculators = require('../stateManager/calculators.js');
-var Promise = require("bluebird");
-var clone = require('clone');
 
+var Promise = require("bluebird");
+var request = require('requestretry');
+var iso8601 = require('iso8601');
+
+
+/**
+ * State manager module.
+ * @module stateManager
+ * @requires config
+ * @requires database
+ * @requires errors
+ * @requires calculators
+ * @requires bluebird
+ * @requires requestretry
+ * @requires iso8601
+ * */
 module.exports = initialize;
+
 
 /**
  * Intialize the StateManager for an agreement.
- *
- * @param {String} agreement identifier
+ * @param {String} _agreement agreement ID
  * @return {Promise} Promise that will return a StateManager object
- * @api public
- */
+ * @alias module:stateManager.initialize
+ * */
 function initialize(_agreement) {
     logger.sm('(initialize) Initializing state with agreement ID = ' + _agreement.id);
     return new Promise(function (resolve, reject) {
@@ -55,14 +67,14 @@ function initialize(_agreement) {
     });
 }
 
+
 /**
  * Gets one or more states by an specific query.
- *
- * @param {String} state type enum: {guarantees, pricing, agreement, metrics}
- * @param {StateManagerQuery} query will be matched with an state.
+ * @function _get
+ * @param {String} stateType enum: {guarantees, pricing, agreement, metrics}
+ * @param {StateManagerQuery} query query will be matched with an state.
  * @return {Promise} Promise that will return an array of state objects
- * @api public
- */
+ * */
 function _get(stateType, query) {
     var stateManager = this;
     logger.sm('(_get) Retrieving state of ' + stateType);
@@ -90,7 +102,6 @@ function _get(stateType, query) {
                         //States are updated, returns.
                         logger.sm("Returning state of " + stateType);
                         return resolve(states);
-
                     } else {
                         //States are updated, returns.
                         logger.sm("Refreshing states of " + stateType);
@@ -99,7 +110,6 @@ function _get(stateType, query) {
                         }, function (err) {
                             return reject(err);
                         });
-
                     }
                 }, function (err) {
                     logger.sm(JSON.stringify(err));
@@ -110,7 +120,7 @@ function _get(stateType, query) {
                 logger.sm("Adding states of " + stateType);
                 isUpdated(stateManager.agreement).then(function (data) {
                     if (data.isUpdated) {
-                        logger.sm("There is no state for this metric. Returning initial values.")
+                        logger.sm("There is no state for this metric. Returning initial values.");
                         var newState = new state(0, query, {});
                         return resolve([newState]);
                     } else {
@@ -120,18 +130,25 @@ function _get(stateType, query) {
                             return reject(err);
                         });
                     }
-
                 }, function (err) {
                     logger.sm(JSON.stringify(err));
                     return reject(new errorModel(500, "Error while checking if it is update: " + err));
                 });
             }
         });
-
     });
 }
 
-/** metadata = {logsState, evidences, parameters} **/
+
+/**
+ * Add states with an specific query.
+ * @function _put
+ * @param {String} stateType enum: {guarantees, pricing, agreement, metrics}
+ * @param {StateManagerQuery} query query will be matched with an state.
+ * @param {object} value value
+ * @param {object} metadata {logsState, evidences, parameters}.
+ * @return {Promise} Promise that will return an array of state objects
+ * */
 function _put(stateType, query, value, metadata) {
     var stateManager = this;
     logger.sm('(_put) Saving state of ' + stateType);
@@ -207,12 +224,20 @@ function _put(stateType, query, value, metadata) {
                         }
                     });
                 }
-
             }
-        })
+        });
     });
 }
 
+
+/**
+ * Modify states with an specific query.
+ * @function _update
+ * @param {String} stateType enum: {guarantees, pricing, agreement, metrics}
+ * @param {StateManagerQuery} query query will be matched with an state.
+ * @param {object} logsState logsState
+ * @return {Promise} Promise that will return an array of state objects
+ * */
 function _update(stateType, query, logsState) {
     var stateManager = this;
     logger.sm('(_update) Updating state of ' + stateType);
@@ -292,7 +317,7 @@ function _update(stateType, query, logsState) {
                                     result.push(metrics[a][0]);
                                 }
                                 return resolve(result);
-                            })
+                            });
                         }, function (err) {
                             logger.error(err.toString());
                             return reject(new errorModel(500, err));
@@ -320,13 +345,18 @@ function _update(stateType, query, logsState) {
                 break;
             default:
                 return reject(new errorModel(500, "There are not method implemented to calculate " + stateType + " state"));
-
         }
     });
-
 }
 
-/** metadata = {logsState, evidences, parameters} **/
+
+/**
+ * State.
+ * @function state
+ * @param {object} value value
+ * @param {String} query query will be matched with an state.
+ * @param {object} metadata {logsState, evidences, parameters}
+ * */
 function state(value, query, metadata) {
     for (var v in query) {
         this[v] = query[v];
@@ -335,9 +365,14 @@ function state(value, query, metadata) {
     this.records.push(new record(value, metadata));
 }
 
-/** metadata = {logsState, evidences, parameters} **/
-function record(value, metadata) {
 
+/**
+ * Record.
+ * @function record
+ * @param {object} value value
+ * @param {object} metadata {logsState, evidences, parameters}
+ * */
+function record(value, metadata) {
     this.value = value;
     this.time = iso8601.fromDate(new Date());
     if (metadata) {
@@ -345,10 +380,15 @@ function record(value, metadata) {
             this[v] = metadata[v];
         }
     }
-
 }
 
 
+/**
+ * Check if it is updated.
+ * @function isUpdated
+ * @param {String} agreement agreement ID
+ * @param {object} states states
+ * */
 function isUpdated(agreement, states) {
     return new Promise(function (resolve, reject) {
         var logUris = null;
@@ -410,7 +450,7 @@ function isUpdated(agreement, states) {
                 }
             });
         } else {
-            logger.sm("This metric is not calculated from logs, please PUT values.")
+            logger.sm("This metric is not calculated from logs, please PUT values.");
             return resolve({
                 isUpdated: true
             });
@@ -418,6 +458,14 @@ function isUpdated(agreement, states) {
     });
 }
 
+
+/**
+ * Check a query.
+ * @function checkQuery
+ * @param {object} element element
+ * @param {String} query query will be matched with an state.
+ * @return {Boolean} query check result
+ * */
 function checkQuery(element, query) {
     var ret = true;
     for (var v in query) {
@@ -434,12 +482,24 @@ function checkQuery(element, query) {
     return ret;
 }
 
+
+/**
+ * Get current state.
+ * @function getCurrent
+ * @param {object} state state
+ * */
 function getCurrent(state) {
     return state.records[state.records.length - 1];
 }
 
-function _current(state) {
 
+/**
+ * _current.
+ * @function _current
+ * @param {object} state state
+ * @return {object} state
+ * */
+function _current(state) {
     var newState = {
         stateType: state.stateType,
         agreementId: state.agreementId,
@@ -448,22 +508,27 @@ function _current(state) {
         period: state.period,
         window: state.window ? state.window : undefined,
     };
-
     var currentRecord = getCurrent(state);
-
     for (var v in currentRecord) {
         if (v != 'time' && v != 'logsState')
             newState[v] = currentRecord[v];
     }
-
     return newState;
 }
 
-// refines the query for a search in db
-function refineQuery(agId, stateType, query) {
+
+/**
+ * Refine the query for a search in database.
+ * @function refineQuery
+ * @param {String} agreementId agreementId
+ * @param {String} stateType enum: {guarantees, pricing, agreement, metrics}
+ * @param {String} query query will be matched with an state.
+ * @return {object} refined query 
+ * */
+function refineQuery(agreementId, stateType, query) {
     var refinedQuery = {};
     refinedQuery.stateType = stateType;
-    refinedQuery.agreementId = agId;
+    refinedQuery.agreementId = agreementId;
 
     if (query.scope)
         refinedQuery.scope = query.scope;
@@ -482,10 +547,16 @@ function refineQuery(agId, stateType, query) {
             refinedQuery.id = query.guarantee;
             break;
     }
-
     return refinedQuery;
 }
 
+/**
+ * Refine the query for a search in database.
+ * @function projectionBuilder
+ * @param {String} stateType enum: {guarantees, pricing, agreement, metrics}
+ * @param {String} query query will be matched with an state.
+ * @return {String} mongo projection
+ * */
 function projectionBuilder(stateType, query) {
     var singular = {
         guarantees: "guarantee",
@@ -520,7 +591,6 @@ function projectionBuilder(stateType, query) {
                 projection[propName] = propValue;
         }
     }
-
     logger.sm("Mongo projection: " + JSON.stringify(projection, null, 2));
     return projection;
 }
