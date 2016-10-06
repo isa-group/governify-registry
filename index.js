@@ -61,8 +61,8 @@ function _deploy(configurations, callback) {
             swaggerUtils.initializeMiddleware(app, swaggerDocs, function (middleware) {
 
                 var serverPort = process.env.PORT || config.port;
-
-                module.exports.server = http.createServer(app);
+                if (!module.exports.server)
+                    module.exports.server = http.createServer(app);
                 module.exports.server.timeout = 24 * 3600 * 1000; // 24h
 
                 module.exports.server.listen(serverPort, function () {

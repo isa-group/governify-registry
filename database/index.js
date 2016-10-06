@@ -19,7 +19,7 @@ var $RefParser = require('json-schema-ref-parser');
  * */
 module.exports = {
     db: null,
-    models: {},
+    models: null,
     connect: _connect,
     close: _close
 };
@@ -45,10 +45,11 @@ function _connect(callback) {
     db.on('open', function () {
         config.logger.info('Connected to db!');
         instance.db = db;
-
-        setupModel(instance, config.models.agreement.name, config.models.agreement.path);
-        setupModel(instance, config.models.state.name, config.models.state.path);
-
+        if (!instance.models) {
+            instance.models = {};
+            setupModel(instance, config.models.agreement.name, config.models.agreement.path);
+            setupModel(instance, config.models.state.name, config.models.state.path);
+        }
         if (callback)
             callback();
 
@@ -66,7 +67,6 @@ function _close(done) {
     if (this.db) {
         this.db.close(function (err, result) {
             instance.db = null;
-            instance.models = null;
             done();
         });
     }

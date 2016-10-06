@@ -7,7 +7,7 @@ var expect = require('chai').expect,
     agreement = require('./expected/agreements'),
     utils = require('../../utils/utils');
 
-describe("Integration TEST", function () {
+describe("Integral TEST", function () {
     before((done) => {
         ppinot.listen(5000, () => {
             registry.deploy({
@@ -41,8 +41,9 @@ describe("Integration TEST", function () {
             }, (err, res, body) => {
                 if (err)
                     console.log(err);
-
-                registry.undeploy(done);
+                registry.undeploy(() => {
+                    done();
+                });
             });
         });
     })
