@@ -1,48 +1,60 @@
-"use strict"
+"use strict";
 
-var yaml = require('js-yaml');
-var fs = require('fs');
-var Promise = require("bluebird");
-var request = require('request');
-var vm = require('vm');
 var config = require('../config');
 var logger = config.logger;
 
-var calculators = require('./calculators.js');
+var Promise = require("bluebird");
 
+/**
+ * Agreement calculator module.
+ * @module agreementCalculator
+ * @requires config
+ * @requires bluebird
+ * @see module:calculators
+ * */
 module.exports = {
     process: _process
-}
+};
 
+
+/**
+ * Process agreement.
+ * @param {object} manager manager
+ * @param {object} parameters parameters
+ * @param {date} from from date
+ * @param {date} to to date
+ * @alias module:agreementCalculator.process
+ * */
 function _process(manager, parameters, from, to) {
     return new Promise(function (resolve, reject) {
         try {
-
             //Process guarantees
             processGuarantees(manager, parameters).then(function (guaranteeResults) {
-
                 // Process metrics
                 processMetrics(manager, parameters).then(function (metricResults) {
                     return resolve(guaranteeResults);
                 }, function (err) {
                     return reject(err);
                 });
-
             }, function (err) {
                 return reject(err);
             });
-
         } catch (e) {
             logger.error(e);
             return reject(e);
         }
-
     });
 }
 
+
+/**
+ * Process metrics.
+ * @function processMetrics
+ * @param {object} manager manager
+ * @param {object} parameters parameters
+ * */
 function processMetrics(manager, parameters) {
     return new Promise(function (resolve, reject) {
-
         var metrics = [];
         if (!parameters.metrics) {
             metrics = Object.keys(manager.agreement.terms.metrics);
@@ -68,7 +80,7 @@ function processMetrics(manager, parameters) {
                 priorities.forEach(function (priority) {
                     parameters.metrics[metricId].scope.priority = priority;
                     processMetrics.push(manager.get('metrics', parameters.metrics[metricId]));
-                })
+                });
             });
 
             Promise.settle(processMetrics).then(function (results) {
@@ -142,16 +154,17 @@ function processMetrics(manager, parameters) {
                 console.error(err);
                 return reject(err);
             });
-
-
-
         }
-
-
     });
 }
 
 
+/**
+ * Process guarantees.
+ * @function processGuarantees
+ * @param {object} manager manager
+ * @param {object} parameters parameters
+ * */
 function processGuarantees(manager, parameters) {
     return new Promise(function (resolve, reject) {
 
