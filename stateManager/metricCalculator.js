@@ -1,20 +1,34 @@
-"use strict"
+"use strict";
 
-var yaml = require('js-yaml');
-var fs = require('fs');
-var $RefParser = require('json-schema-ref-parser');
-var Promise = require("bluebird");
-var request = require('request');
-var vm = require('vm');
 var config = require('../config');
 var logger = config.logger;
 
+var Promise = require("bluebird");
+var yaml = require('js-yaml');
+var request = require('request');
+
+/**
+ * Metric calculator module.
+ * @module metricCalculator
+ * @requires config
+ * @requires bluebird
+ * @requires js-yaml
+ * @requires request
+ * @see module:calculators
+ * */
 module.exports = {
     process: processMetric
-}
+};
 
+
+/**
+ * Process all metrics.
+ * @param {object} agreement agreement
+ * @param {object} metricId metric ID
+ * @param {object} metricParameters metric parameters
+ * @alias module:metricCalculator.process
+ * */
 function processMetric(agreement, metricId, metricParameters) {
-
     return new Promise(function (resolve, reject) {
         try {
             var metric = agreement.terms.metrics[metricId];
