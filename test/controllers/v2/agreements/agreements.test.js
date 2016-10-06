@@ -8,8 +8,60 @@ var config = require('../../../../config/index');
 
 var server = "localhost";
 var port = config.port || 8081;
+var registry = require('../../../../index');
 
-describe("Agreements GET", function () {
+describe("Agreements POST", function () {
+    var url = "http://" + server + ":" + port + "/api/v2/agreements";
+    var contract = require('../../../integral/expected/agreements/T14-L2-S12-minimal.json');
+    var options = {
+        uri: url,
+        method: 'POST',
+        json: contract
+    };
+
+    before((done) => {
+        registry.deploy({
+            port: port,
+            database: {
+                url: "mongodb://localhost:27017",
+                db_name: "registry-tests"
+            }
+        }, () => { done(); });
+    });
+
+    it("returns new contract", function (done) {
+        request(options, function (error, response, body) {
+
+            // return status 200
+            expect(response.statusCode).to.equal(200);
+
+            // return JSON content
+            expect(body.data).to.be.ok;
+
+            var isValidContract = function (contract) {
+                var contractKeys = Object.keys(contract);
+                var expectedKeys = ["id", "version", "type", "context", "terms"];
+                var isValid = true;
+
+                expectedKeys.forEach(function (k) {
+                    if (contractKeys.indexOf(k) === -1) {
+                        isValid = false;
+                        return false;
+                    }
+                });
+
+                return isValid;
+            };
+
+            // return JSON valid contract in body.data
+            expect(isValidContract(body.data)).to.be.ok;
+
+            done();
+        });
+    });
+});
+
+/*describe("Agreements GET", function () {
     var url = "http://" + server + ":" + port + "/api/v2/agreements";
 
     it("returns valid models", function (done) {
@@ -48,4 +100,4 @@ describe("Agreements GET", function () {
         });
     });
 
-});
+});*/
