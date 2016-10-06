@@ -3,6 +3,7 @@
 var jsyaml = require('js-yaml');
 var $RefParser = require('json-schema-ref-parser');
 var config = require('../../../../config');
+var db = require('../../../../database');
 var logger = config.logger;
 var stateManager = require('../../../../stateManager/stateManager.js');
 var agreementManager = require('governify-agreement-manager').operations.states;
@@ -36,19 +37,19 @@ function _agreementIdGET(args, res, next) {
 
     stateManager({
         id: agreementId
-    }).then(function(manager) {
-        manager.get("agreement").then(function(agreement) {
+    }).then(function (manager) {
+        manager.get("agreement").then(function (agreement) {
             res.json(agreement);
-        }, function(err) {
+        }, function (err) {
             logger.error(err.message.toString());
             res.status(err.code).json(err);
         });
-    }, function(err) {
+    }, function (err) {
         logger.error(err.message.toString());
         res.status(err.code).json(err);
     });
 
-    // var AgreementModel = config.db.models.AgreementModel;
+    // var AgreementModel = db.models.AgreementModel;
     // AgreementModel.findOne(function(err, agreement) {
     //     if (err) {
     //         logger.error(err.toString());
@@ -77,10 +78,10 @@ function _agreementIdDELETE(args, res, next) {
     var agreementId = args.agreement.value;
     logger.info("New request to DELETE agreement state for agreement " + agreementId);
     if (agreementId) {
-        var StateModel = config.db.models.StateModel;
+        var StateModel = db.models.StateModel;
         StateModel.find({
             "agreementId": agreementId
-        }).remove(function(err) {
+        }).remove(function (err) {
             if (!err) {
                 res.sendStatus(200);
                 logger.ctlState("Deleted state for agreement " + agreementId);
@@ -101,10 +102,10 @@ function _agreementIdRELOAD(args, res, next) {
 
     logger.ctlState("New request to reload state of agreement " + agreementId);
 
-    var StateModel = config.db.models.StateModel;
+    var StateModel = db.models.StateModel;
     StateModel.find({
         "agreementId": agreementId
-    }).remove(function(err) {
+    }).remove(function (err) {
         var errors = [];
         if (!err) {
             var message = 'Reloading state of agreement ' + agreementId + '. ' +
@@ -113,10 +114,10 @@ function _agreementIdRELOAD(args, res, next) {
 
             logger.ctlState("Deleted state for agreement " + agreementId);
 
-            var AgreementModel = config.db.models.AgreementModel;
+            var AgreementModel = db.models.AgreementModel;
             AgreementModel.findOne({
                 id: agreementId
-            }, function(err, agreement) {
+            }, function (err, agreement) {
                 if (err) {
                     logger.error(err.toString());
                     errors.push(err);
@@ -124,9 +125,9 @@ function _agreementIdRELOAD(args, res, next) {
 
                 stateManager({
                     id: agreementId
-                }).then(function(manager) {
+                }).then(function (manager) {
                     logger.ctlState("Calculating agreement state...");
-                    calculators.agreementCalculator.process(manager, parameters.requestedState).then(function(result) {
+                    calculators.agreementCalculator.process(manager, parameters.requestedState).then(function (result) {
                         logger.debug("Agreement state has been calculated successfully");
                         if (errors.length > 0)
                             logger.error("Agreement state reload has been finished with " + errors.length + " errors: \n" + JSON.stringify(errors));
@@ -136,11 +137,11 @@ function _agreementIdRELOAD(args, res, next) {
                             if (parameters.mail)
                                 sendMail(agreement, parameters.mail);
                         }
-                    }, function(err) {
+                    }, function (err) {
                         logger.error(err.message.toString());
                         errors.push(err);
                     });
-                }, function(err) {
+                }, function (err) {
                     logger.error(err.message.toString());
                     errors.push(err);
                 });
@@ -163,8 +164,8 @@ function sendMail(agreement, mail) {
     }
 
     var logStates = [];
-    Promise.each(logRequests, function(log) {
-        return new Promise(function(resolve, reject) {
+    Promise.each(logRequests, function (log) {
+        return new Promise(function (resolve, reject) {
             request.get({
                 uri: log.stateUri
             }, (err, response, body) => {
@@ -179,10 +180,10 @@ function sendMail(agreement, mail) {
                 return resolve();
             });
         });
-    }).then(function(results) {
+    }).then(function (results) {
         if (logStates.length > 0) {
             mail.content += '<ul>';
-            logStates.forEach(function(logState) {
+            logStates.forEach(function (logState) {
                 mail.content += '<li>' + logState.id + ' (' + logState.state + ')</li>';
             });
             mail.content += '<ul/>';
@@ -195,7 +196,7 @@ function sendMail(agreement, mail) {
             html: mail.content
         };
 
-        mailer.sendMail(mailOptions, function(error, info) {
+        mailer.sendMail(mailOptions, function (error, info) {
             if (error) {
                 return logger.error(error);
             }

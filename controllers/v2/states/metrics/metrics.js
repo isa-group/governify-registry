@@ -5,6 +5,7 @@ var metricsRecords = agreementManager.operations.states.recordsManager.metrics;
 var errorModel = require('../../../../errors/index.js').errorModel;
 
 var config = require('../../../../config');
+var db = require('../../../../database');
 var logger = config.logger;
 var stateManager = require('../../../../stateManager/stateManager.js')
 var Promise = require("bluebird");
@@ -56,7 +57,7 @@ module.exports.metricsIdPUT = function (args, res, next) {
      * metric (String)
      * metricValue ()
      **/
-    var StateModel = config.db.models.StateModel;
+    var StateModel = db.models.StateModel;
     var agreementId = args.agreement.value;
     var metricValue = args.metricValue.value;
     var metricName = args.metric.value;
@@ -91,7 +92,7 @@ module.exports.metricsPOST = function (req, res, next) {
     res.setHeader('content-type', 'application/json; charset=utf-8');
     var args = req.swagger.params;
     var agreementId = args.agreement.value;
-    var AgreementModel = config.db.models.AgreementModel;
+    var AgreementModel = db.models.AgreementModel;
 
     logger.info("New request to GET metrics of agreement: " + agreementId);
 
