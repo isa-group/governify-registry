@@ -19,12 +19,12 @@ var Promise = require("bluebird");
  * @return {Set} periods
  * @api public
  */
-module.exports.getPeriods = function(agreement, window) {
+module.exports.getPeriods = function (agreement, window) {
     var periods = [];
     var Wfrom = moment.utc(moment.tz(window.initial, agreement.context.validity.timeZone));
     var current = moment.utc();
     var from = moment.utc(Wfrom),
-        to = moment.utc(Wfrom).add(1, "months").subtract(1, "milliseconds");
+            to = moment.utc(Wfrom).add(1, "months").subtract(1, "milliseconds");
     while (!to || to.isSameOrBefore(current)) {
         periods.push({
             from: from,
@@ -77,7 +77,7 @@ module.exports.penaltyMetric = function PenaltyMetric(scope, parameters, period,
  * @return {Boolean} ret
  * @api public
  */
-module.exports.checkQuery = function(state, query) {
+module.exports.checkQuery = function (state, query) {
     var ret = true;
     for (var v in query) {
         if (v != "parameters" && v != "evidences" && v != "logs" && v != "window") {
@@ -93,10 +93,10 @@ module.exports.checkQuery = function(state, query) {
     return ret;
 }
 
-module.exports.processMode = function(mode, stateType, query, manager, resolve, reject) {
+module.exports.processMode = function (mode, stateType, query, manager, resolve, reject) {
     /** if mode is 'true' processMode is parallel **/
     var managerGetPromise = [];
-    manager.agreement.terms[stateType].forEach(function(guarantee) {
+    manager.agreement.terms[stateType].forEach(function (guarantee) {
         managerGetPromise.push(manager.get(stateType, {
             guarantee: guarantee.id
         }));
@@ -106,12 +106,12 @@ module.exports.processMode = function(mode, stateType, query, manager, resolve, 
     if (mode) {
         logger.ctlState("### Process mode = PARALLEL ###");
 
-        return Promise.settle(managerGetPromise).then((promisesResults) => {
+        return Promise.settle(managerGetPromise).then(function (promisesResults) {
             if (promisesResults.length > 0) {
                 for (var r in promisesResults) {
                     var onePromiseResults = promisesResults[r];
                     if (onePromiseResults.isFulfilled()) {
-                        onePromiseResults.value().forEach((value) => {
+                        onePromiseResults.value().forEach(function (value) {
                             results.push(manager.current(value));
                         });
                     }
@@ -122,14 +122,14 @@ module.exports.processMode = function(mode, stateType, query, manager, resolve, 
                 logger.error(err);
                 return reject(err);
             }
-        }, (err) => {
+        }, function (err) {
             logger.error(err);
             return reject(err);
         });
 
     } else {
         logger.ctlState("### Process mode = SEQUENTIAL ###");
-        return Promise.each(managerGetPromise, (promise) => {
+        return Promise.each(managerGetPromise, function (promise) {
 
             return promise.then(resolve, reject);
 

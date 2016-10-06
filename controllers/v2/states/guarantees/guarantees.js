@@ -2,20 +2,17 @@
 
 /** Configuration an model dependencies **/
 var config = require('../../../../config'),
-    logger = config.logger,
-    errorModel = require('../../../../errors/index.js').errorModel,
-    moment = require('moment'),
-    gUtils = require('./gUtils'),
-
-    /** StateManager dependencies**/
-    stateManager = require('../../../../stateManager/stateManager.js'),
-
-    /** Promise dependencies**/
-    Promise = require("bluebird"),
-
-    /** Streaming dependencies**/
-    JSONStream = require('JSONStream'),
-    stream = require('stream');
+        logger = config.logger,
+        errorModel = require('../../../../errors/index.js').errorModel,
+        moment = require('moment'),
+        gUtils = require('./gUtils'),
+        /** StateManager dependencies**/
+        stateManager = require('../../../../stateManager/stateManager.js'),
+        /** Promise dependencies**/
+        Promise = require("bluebird"),
+        /** Streaming dependencies**/
+        JSONStream = require('JSONStream'),
+        stream = require('stream');
 
 
 /**
@@ -28,7 +25,7 @@ var config = require('../../../../config'),
  * @return Nothing to return
  * @api public
  */
-module.exports.guaranteesGET = function(args, res, next) {
+module.exports.guaranteesGET = function (args, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
@@ -41,13 +38,13 @@ module.exports.guaranteesGET = function(args, res, next) {
 
     stateManager({
         id: agreementId
-    }).then((manager) => {
+    }).then(function (manager) {
         logger.ctlState("Getting state of guarantees...");
 
         if (config.parallelProcess.guarantees) {
             logger.ctlState("Processing guarantees in parallel mode");
             var processGuarantees = [];
-            manager.agreement.terms.guarantees.forEach(function(guarantee) {
+            manager.agreement.terms.guarantees.forEach(function (guarantee) {
                 processGuarantees.push(manager.get('guarantees', {
                     guarantee: guarantee.id
                 }));
@@ -59,10 +56,10 @@ module.exports.guaranteesGET = function(args, res, next) {
                 result = new stream.Readable({
                     objectMode: true
                 });
-                result.on('error', (err) => {
+                result.on('error', function (err) {
                     logger.streaming("waiting data from stateManager...")
                 });
-                result.on('data', (data) => {
+                result.on('data', function (data) {
                     logger.streaming("Streaming data...")
                 });
                 result.pipe(JSONStream.stringify()).pipe(res);
@@ -71,7 +68,7 @@ module.exports.guaranteesGET = function(args, res, next) {
                 result = [];
             }
 
-            Promise.settle(processGuarantees).then(function(guaranteesValues) {
+            Promise.settle(processGuarantees).then(function (guaranteesValues) {
                 try {
                     if (guaranteesValues.length > 0) {
 
@@ -79,11 +76,11 @@ module.exports.guaranteesGET = function(args, res, next) {
                             if (guaranteesValues[i].isFulfilled()) {
                                 if (guaranteesValues[i].value().length > 0) {
                                     if (config.streaming) {
-                                        guaranteesValues[i].value().forEach(function(guaranteeValue) {
+                                        guaranteesValues[i].value().forEach(function (guaranteeValue) {
                                             result.push(manager.current(guaranteeValue));
                                         });
                                     } else {
-                                        var guaranteesResults = guaranteesValues[i].value().map(function(guaranteeValue) {
+                                        var guaranteesResults = guaranteesValues[i].value().map(function (guaranteeValue) {
                                             return manager.current(guaranteeValue);
                                         });
                                         result = result.concat(guaranteesResults);
@@ -105,7 +102,7 @@ module.exports.guaranteesGET = function(args, res, next) {
                     logger.error(err);
                     res.status(500).json(new errorModel(500, err));
                 }
-            }, function(err) {
+            }, function (err) {
                 logger.error(err);
                 res.status(500).json(new errorModel(500, err));
             });
@@ -118,10 +115,10 @@ module.exports.guaranteesGET = function(args, res, next) {
                 ret = new stream.Readable({
                     objectMode: true
                 });
-                ret.on('error', (err) => {
+                ret.on('error', function (err) {
                     logger.streaming("waiting data from stateManager...")
                 });
-                ret.on('data', (data) => {
+                ret.on('data', function (data) {
                     logger.streaming("Streaming data...")
                 });
                 ret.pipe(JSONStream.stringify()).pipe(res);
@@ -129,37 +126,37 @@ module.exports.guaranteesGET = function(args, res, next) {
                 logger.ctlState("### NO Streaming mode ###");
                 ret = [];
             }
-            Promise.each(manager.agreement.terms.guarantees, (guarantee) => {
+            Promise.each(manager.agreement.terms.guarantees, function (guarantee) {
                 logger.ctlState("- guaranteeId: " + guarantee.id);
                 return manager.get('guarantees', {
                     guarantee: guarantee.id
-                }).then((results) => {
+                }).then(function (results) {
                     for (var i in results) {
                         //feeding stream
                         ret.push(manager.current(results[i]));
                     }
-                }, (err) => {
+                }, function (err) {
                     logger.error(err);
                 });
-            }).then(function(results) {
+            }).then(function (results) {
                 //end stream
                 if (config.streaming)
                     ret.push(null);
                 else
                     res.json(ret);
 
-            }, (err) => {
+            }, function (err) {
                 logger.error("ERROR processing guarantees: ", err);
                 res.status(500).json(new errorModel(500, err));
             });
         }
-    }, (err) => {
+    }, function (err) {
         logger.error(err);
         res.status(500).json(new errorModel(500, err));
     });
 }
 
-module.exports.guaranteeIdGET = function(args, res, next) {
+module.exports.guaranteeIdGET = function (args, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
@@ -173,45 +170,45 @@ module.exports.guaranteeIdGET = function(args, res, next) {
 
     stateManager({
         id: agreementId
-    }).then((manager) => {
+    }).then(function (manager) {
         var ret;
         if (config.streaming) {
             logger.ctlState("### Streaming mode ###");
             ret = new stream.Readable({
                 objectMode: true
             });
-            ret.on('error', (err) => {
+            ret.on('error', function (err) {
                 logger.streaming("waiting data from stateManager...")
             });
-            ret.on('data', (data) => {
+            ret.on('data', function (data) {
                 logger.streaming("Streaming data...")
             });
             ret.pipe(JSONStream.stringify()).pipe(res);
         }
         manager.get('guarantees', {
             guarantee: guaranteeId
-        }).then(function(success) {
+        }).then(function (success) {
             if (config.streaming) {
-                res.json(success.map((element) => {
+                res.json(success.map(function (element) {
                     return manager.current(element);
                 }));
             } else {
-                success.forEach((element) => {
+                success.forEach(function (element) {
                     ret.push(manager.current(element));
                 });
                 ret.push(null);
             }
-        }, function(err) {
+        }, function (err) {
             logger.error(err);
             res.status(500).json(new errorModel(500, err));
         });
-    }, (err) => {
+    }, function (err) {
         logger.error(err);
         res.status(500).json(new errorModel(500, err));
     });
 }
 
-module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
+module.exports.guaranteeIdPenaltyPOST = function (args, res, next) {
     var guaranteeId = args.guarantee.value;
     var agreementId = args.agreement.value;
     var query = args.query.value;
@@ -222,12 +219,12 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
 
     stateManager({
         id: agreementId
-    }).then((manager) => {
+    }).then(function (manager) {
 
         var periods = gUtils.getPeriods(manager.agreement, query.window);
 
         var resul = [];
-        Promise.each(periods, (element) => {
+        Promise.each(periods, function (element) {
             var p = {
                 from: moment.utc(moment.tz(element.from, manager.agreement.context.validity.timeZone).subtract(Math.abs(offset), "months")).toISOString(),
                 to: moment.utc(moment.tz(element.to, manager.agreement.context.validity.timeZone).subtract(Math.abs(offset), "months")).toISOString()
@@ -237,7 +234,7 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
             var log = manager.agreement.context.definitions.logs[logId];
             var scope = {};
             var scopeId = Object.keys(log.scopes)[0];
-            var logScopes = Object.keys(log.scopes[scopeId]).map(function(key) {
+            var logScopes = Object.keys(log.scopes[scopeId]).map(function (key) {
                 return log.scopes[scopeId][key];
             });
             for (var queryScope in query.scope) {
@@ -259,7 +256,7 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
                 scope: query.scope,
                 //  period: p //,
                 //  window: query.window
-            }).then(function(success) {
+            }).then(function (success) {
                 var ret = [];
                 for (var i in success) {
                     var e = success[i];
@@ -279,19 +276,19 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
                     }
                 }
 
-            }, function(err) {
+            }, function (err) {
                 logger.error(err);
                 //res.status(500).json(new errorModel(500, err));
             });
 
-        }).then((result) => {
-            res.json(resul);
-        }, (err) => {
+        }).then(function (result) {
+            res.json(result);
+        }, function (err) {
             logger.error(err);
             res.status(500).json(new errorModel(500, err));
         });
 
-    }, (err) => {
+    }, function (err) {
         logger.error(err);
         res.status(500).json(new errorModel(500, err));
     });

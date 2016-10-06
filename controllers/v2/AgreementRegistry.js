@@ -1,8 +1,5 @@
 'use strict';
 
-var url = require('url');
-var utils = require('../../utils/utils');
-
 var Agreement = require('./AgreementRegistryService');
 
 module.exports.agreementsAgreementContextDefinitionsGET = function agreementsAgreementContextDefinitionsGET(req, res, next) {

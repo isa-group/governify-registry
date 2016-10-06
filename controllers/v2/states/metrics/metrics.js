@@ -13,7 +13,7 @@ var request = require("request");
 var JSONStream = require('JSONStream');
 var stream = require('stream');
 
-module.exports.metricsIdIncrease = function(args, res, next) {
+module.exports.metricsIdIncrease = function (args, res, next) {
     var agreementId = args.agreement.value;
     var metricId = args.metric.value;
     var query = args.scope.value;
@@ -22,34 +22,34 @@ module.exports.metricsIdIncrease = function(args, res, next) {
 
     stateManager({
         id: agreementId
-    }).then((manager) => {
+    }).then(function (manager) {
 
         query.metric = metricId;
 
-        manager.get('metrics', query).then((metric) => {
+        manager.get('metrics', query).then(function (metric) {
 
             logger.ctlState("Result of getting metricValues: " + JSON.stringify(metric, null, 2));
 
             logger.ctlState("Query to put " + JSON.stringify(query, null, 2));
-            manager.put('metrics', query, manager.current(metric[0]).value + 1).then((success) => {
-                res.json(success.map((element) => {
+            manager.put('metrics', query, manager.current(metric[0]).value + 1).then(function (success) {
+                res.json(success.map(function (element) {
                     return manager.current(element);
                 }));
-            }, (err) => {
+            }, function (err) {
                 res.status(err.code).json(err);
             });
 
-        }, (err) => {
+        }, function (err) {
             res.status(err.code).json(err);
         });
 
-    }, (err) => {
+    }, function (err) {
         res.status(err.code).json(err);
     });
 
 }
 
-module.exports.metricsIdPUT = function(args, res, next) {
+module.exports.metricsIdPUT = function (args, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
@@ -65,24 +65,24 @@ module.exports.metricsIdPUT = function(args, res, next) {
 
     stateManager({
         id: agreementId
-    }).then((manager) => {
+    }).then(function (manager) {
         manager.put('metrics', {
             metric: metricName,
             scope: metricValue.scope,
             window: metricValue.window
-        }, metricValue.value).then((success) => {
-            res.json(success.map((element) => {
+        }, metricValue.value).then(function (success) {
+            res.json(success.map(function (element) {
                 return manager.current(element);
             }));
-        }, (err) => {
+        }, function (err) {
             res.status(err.code).json(err);
         });
-    }, (err) => {
+    }, function (err) {
         res.status(err.code).json(err);
     });
 }
 
-module.exports.metricsPOST = function(req, res, next) {
+module.exports.metricsPOST = function (req, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
@@ -97,7 +97,7 @@ module.exports.metricsPOST = function(req, res, next) {
 
     stateManager({
         id: agreementId
-    }).then((manager) => {
+    }).then(function (manager) {
         logger.info("Preparing requests to /states/" + agreementId + "/metrics/{metricId} : ");
         var ret = [];
         if (config.parallelProcess.metrics) {
@@ -118,10 +118,10 @@ module.exports.metricsPOST = function(req, res, next) {
                 result = new stream.Readable({
                     objectMode: true
                 });
-                result.on('error', (err) => {
+                result.on('error', function (err) {
                     logger.streaming("waiting data from stateManager...")
                 });
-                result.on('data', (data) => {
+                result.on('data', function (data) {
                     logger.streaming("Streaming data...")
                 });
                 result.pipe(JSONStream.stringify()).pipe(res);
@@ -130,7 +130,7 @@ module.exports.metricsPOST = function(req, res, next) {
                 result = [];
             }
 
-            Promise.all(processMetrics).then(function(metricsValues) {
+            Promise.all(processMetrics).then(function (metricsValues) {
                 for (var i in results) {
                     result.push(manager.current(results[i]));
                 }
@@ -147,10 +147,10 @@ module.exports.metricsPOST = function(req, res, next) {
                 ret = new stream.Readable({
                     objectMode: true
                 });
-                ret.on('error', (err) => {
+                ret.on('error', function (err) {
                     logger.streaming("waiting data from stateManager...")
                 });
-                ret.on('data', (data) => {
+                ret.on('data', function (data) {
                     logger.streaming("Streaming data...")
                 });
                 ret.pipe(JSONStream.stringify()).pipe(res);
@@ -158,7 +158,7 @@ module.exports.metricsPOST = function(req, res, next) {
                 logger.ctlState("### NO Streaming mode ###");
                 ret = [];
             }
-            Promise.each(Object.keys(manager.agreement.terms.metrics), (metricId) => {
+            Promise.each(Object.keys(manager.agreement.terms.metrics), function (metricId) {
                 logger.info("==> metricId = " + metricId);
                 var metricParams = args.scope.value;
                 metricParams.period = metricParams.period ? metricParams.period : {
@@ -166,33 +166,33 @@ module.exports.metricsPOST = function(req, res, next) {
                     to: '*'
                 };
                 metricParams.metric = metricId;
-                return manager.get('metrics', metricParams).then((results) => {
+                return manager.get('metrics', metricParams).then(function (results) {
                     for (var i in results) {
                         //feeding stream
                         ret.push(manager.current(results[i]));
                     }
-                }, (err) => {
+                }, function (err) {
                     logger.error(err);
                 });
-            }).then(function(results) {
+            }).then(function (results) {
                 //end stream
                 if (config.streaming)
                     ret.push(null);
                 else
                     res.json(ret);
-            }, (err) => {
+            }, function (err) {
                 logger.error("ERROR processing metrics");
                 res.status(500).json(new errorModel(500, err));
             });
         }
 
-    }, (err) => {
+    }, function (err) {
         logger.error("ERROR processing metrics");
         res.status(500).json(new errorModel(500, err));
     });
 }
 
-module.exports.metricsIdPOST = function(args, res, next) {
+module.exports.metricsIdPOST = function (args, res, next) {
     /**
      * parameters expected in the args:
      * agreement (String)
@@ -214,10 +214,10 @@ module.exports.metricsIdPOST = function(args, res, next) {
         ret = new stream.Readable({
             objectMode: true
         });
-        ret.on('error', (err) => {
+        ret.on('error', function (err) {
             logger.streaming("waiting data from stateManager...")
         });
-        ret.on('data', (data) => {
+        ret.on('data', function (data) {
             logger.streaming("Streaming data...")
         });
         ret.pipe(JSONStream.stringify()).pipe(res);
@@ -225,23 +225,23 @@ module.exports.metricsIdPOST = function(args, res, next) {
 
     stateManager({
         id: agreementId
-    }).then((manager) => {
-        manager.get('metrics', metricParams).then((data) => {
+    }).then(function (manager) {
+        manager.get('metrics', metricParams).then(function (data) {
             if (config.streaming) {
-                res.json(data.map((element) => {
+                res.json(data.map(function (element) {
                     return manager.current(element);
                 }));
             } else {
-                data.forEach((element) => {
+                data.forEach(function (element) {
                     ret.push(manager.current(element));
                 });
                 ret.push(null);
             }
-        }, (err) => {
+        }, function (err) {
             logger.error(err);
             res.status(500).json(new errorModel(500, err));
         });
-    }, (err) => {
+    }, function (err) {
         logger.error(err);
         res.status(500).json(new errorModel(500, err));
     });

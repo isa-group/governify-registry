@@ -27,7 +27,7 @@ function _agreementsGET(args, res, next) {
      **/
     logger.info("New request to GET agreements agreements/agreements.js");
     var AgreementModel = config.db.models.AgreementModel;
-    AgreementModel.find(function(err, agreements) {
+    AgreementModel.find(function (err, agreements) {
         if (err) {
             logger.error(err.toString());
             res.json(new errorModel(500, err));
@@ -41,7 +41,7 @@ function _agreementsGET(args, res, next) {
 function _agreementsDELETE(args, res, next) {
     logger.info("New request to DELETE all agreements");
     var AgreementModel = config.db.models.AgreementModel;
-    AgreementModel.remove({}, function(err) {
+    AgreementModel.remove({}, function (err) {
         if (!err) {
             logger.info("Deleted all agreements");
             stateRegistySrv.statesDELETE(args, res, next);
@@ -62,7 +62,7 @@ function _agreementIdGET(args, res, next) {
     var AgreementModel = config.db.models.AgreementModel;
     AgreementModel.findOne({
         id: args.agreement.value
-    }, function(err, agreement) {
+    }, function (err, agreement) {
         if (err) {
             logger.error(err.toString());
             return res.status(500).json(new errorModel(500, err));
@@ -85,7 +85,7 @@ function _agreementIdDELETE(args, res, next) {
         var AgreementModel = config.db.models.AgreementModel;
         AgreementModel.find({
             "id": agreementId
-        }).remove(function(err) {
+        }).remove(function (err) {
             if (!err) {
                 logger.info("Deleted agreement with id " + agreementId);
                 agreementState.agreementIdDELETE(args, res, next);
@@ -110,13 +110,13 @@ function _agreementsPOST(args, res, next) {
 
     //console.log(config.db.models.agreement);
     logger.info("New request to CREATE agreement");
-    $RefParser.dereference(args.agreement.value, function(err, schema) {
+    $RefParser.dereference(args.agreement.value, function (err, schema) {
         if (err) {
             logger.error(err.toString());
             res.json(new errorModel(500, err));
         } else {
             var agreement = new config.db.models.AgreementModel(schema);
-            agreement.save(function(err) {
+            agreement.save(function (err) {
                 if (err) {
                     logger.error("Mongo error saving agreement: " + err.toString());
                     res.json(new errorModel(500, err));
@@ -124,9 +124,9 @@ function _agreementsPOST(args, res, next) {
                     logger.info('New agreement saved successfully!');
                     logger.info('Initializing agreement state');
                     //Initialize state
-                    agreementManager.initializeState(schema, (st) => {
+                    agreementManager.initializeState(schema, function (st) {
                         var state = new config.db.models.StateModel(st);
-                        state.save((err) => {
+                        state.save(function (err) {
                             if (err) {
                                 logger.error("Mongo error saving state: " + err.toString());
                                 res.json(new errorModel(500, err));
@@ -139,7 +139,7 @@ function _agreementsPOST(args, res, next) {
                                 });
                             }
                         });
-                    }, (err) => {
+                    }, function (err) {
                         logger.error("Mongo error saving state: " + err.toString());
                         res.json(new errorModel(500, err));
                     });

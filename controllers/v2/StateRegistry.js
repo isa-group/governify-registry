@@ -1,8 +1,5 @@
 'use strict';
 
-var url = require('url');
-
-
 var Stateregistry = require('./StateRegistryService');
 
 

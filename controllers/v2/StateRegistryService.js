@@ -1,6 +1,5 @@
 'use strict';
 
-var request = require('request');
 var config = require('../../config');
 
 // Requiring states controllers
@@ -36,7 +35,7 @@ module.exports = {
     // Pricing
     statesAgreementPricingBillingPenaltiesPOST: states.pricing.PricingBillingPenaltiesPOST,
     // Delete
-    statesDELETE: _statesDELETE,
+    statesDELETE: _statesDELETE
 };
 
 function _statesDELETE(args, res, next) {

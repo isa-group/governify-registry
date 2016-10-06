@@ -2,33 +2,46 @@
 
 var config = require('../../../../config');
 var logger = config.logger;
-var iso8601 = require('iso8601');
-var Promise = require("bluebird");
-var errorModel = require('../../../../errors/index.js').errorModel;
-var stateManager = require('../../../../stateManager/stateManager.js')
-var Promise = require("bluebird");
-var request = require("request");
+var stateManager = require('../../../../stateManager/stateManager.js');
 
-module.exports.PricingBillingPenaltiesPOST = function (req, res, next) {
+/**
+ * Pricing state module.
+ * @module pricing
+ * @see module:pricing
+ * @requires config
+ * @requires stateManager
+ * */
+module.exports = {
+    PricingBillingPenaltiesPOST: _PricingBillingPenaltiesPOST
+};
+
+/** 
+ * Post pricing billing penalties
+ * @param {object} req request
+ * @param {object} res response
+ * @param {object} next  next function
+ * @alias module:pricing.PricingBillingPenaltiesPOST
+ * */
+function _PricingBillingPenaltiesPOST(req, res, next) {
     var args = req.swagger.params;
 
     logger.warning(JSON.stringify(args));
     var agreementId = args.agreement.value;
     var query = args.query.value;
     logger.ctlState("New request to get pricing state for agreementId = " + agreementId);
-    
-    stateManager({id: agreementId}).then((manager)=>{
-              manager.get('pricing', query).then((data)=>{
 
-                  logger.ctlState("Sending Pricing-Billing-Penalties state");
-                  res.json(data);
+    stateManager({id: agreementId}).then(function (manager) {
+        manager.get('pricing', query).then(function (data) {
 
-              }, (err) =>{
-                  logger.ctlState("ERROR: " + err.message );
-                  res.status(err.code).json(err);
-              })
-          }, (err) =>{
-              logger.ctlState("ERROR: " + err.message );
-              res.status(err.code).json(err);
-          });
+            logger.ctlState("Sending Pricing-Billing-Penalties state");
+            res.json(data);
+
+        }, function (err) {
+            logger.ctlState("ERROR: " + err.message);
+            res.status(err.code).json(err);
+        });
+    }, function (err) {
+        logger.ctlState("ERROR: " + err.message);
+        res.status(err.code).json(err);
+    });
 }

@@ -1,10 +1,29 @@
 'use strict';
 
-module.exports.ratesGET = function (args, res, next) {
-    /**
-     * parameters expected in the args:
-     * agreement (String)
-     **/
+var config = require('../../../../config');
+var logger = config.logger;
+var stateManager = require('../../../../stateManager/stateManager.js');
+
+/**
+ * Rates state module.
+ * @module rates
+ * @see module:states
+ * @requires config
+ * @requires stateManager
+ * */
+module.exports = {
+    ratesGET: _ratesGET,
+    ratesRateGET: _ratesIdGET
+};
+
+/** 
+ * Get all rates
+ * @param {object} args Object properties: agreement (String)
+ * @param {object} res response
+ * @param {object} next  next function
+ * @alias module:rates.ratesGET
+ * */
+function _ratesGET(args, res, next) {
     logger.info("New request to GET rates");
     var agreementId = args.agreement.value;
 
@@ -16,16 +35,16 @@ module.exports.ratesGET = function (args, res, next) {
         logger.error(err.message.toString());
         res.status(err.code).json(err);
     });
-
 }
 
-module.exports.ratesRateGET = function (args, res, next) {
-    /**
-     * parameters expected in the args:
-     * agreement (String)
-     * rate (String)
-     **/
-
+/** 
+ * Get rates by ID
+ * @param {object} args Object properties: agreement (String), rate (string)
+ * @param {object} res response
+ * @param {object} next  next function
+ * @alias module:rates.ratesRateGET
+ * */
+function _ratesIdGET(args, res, next) {
     logger.info("New request to GET rate");
     var agreementId = args.agreement.value;
     var rateId = args.rate.value;
