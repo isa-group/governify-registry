@@ -37,9 +37,9 @@ module.exports = {
 
 /** 
  * statesAgreementGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementGET
  * */
 function _statesAgreementGET(req, res, next) {
@@ -49,9 +49,9 @@ function _statesAgreementGET(req, res, next) {
 
 /** 
  * statesAgreementDELETE.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementDELETE
  * */
 function _statesAgreementDELETE(req, res, next) {
@@ -61,9 +61,9 @@ function _statesAgreementDELETE(req, res, next) {
 
 /** 
  * statesAgreementRELOAD.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementRELOAD
  * */
 function _statesAgreementRELOAD(req, res, next) {
@@ -73,9 +73,9 @@ function _statesAgreementRELOAD(req, res, next) {
 
 /** 
  * statesAgreementGuaranteesGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementGuaranteesGET
  * */
 function _statesAgreementGuaranteesGET(req, res, next) {
@@ -85,9 +85,9 @@ function _statesAgreementGuaranteesGET(req, res, next) {
 
 /** 
  * statesAgreementGuaranteesGuaranteeGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementGuaranteesGuaranteeGET
  * */
 function _statesAgreementGuaranteesGuaranteeGET(req, res, next) {
@@ -97,9 +97,9 @@ function _statesAgreementGuaranteesGuaranteeGET(req, res, next) {
 
 /** 
  * statesAgreementGuaranteesGuaranteePenaltiyPOST.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementGuaranteesGuaranteePenaltiyPOST
  * */
 function _statesAgreementGuaranteesGuaranteePenaltiyPOST(req, res, next) {
@@ -109,9 +109,9 @@ function _statesAgreementGuaranteesGuaranteePenaltiyPOST(req, res, next) {
 
 /** 
  * statesAgreementMetricsPOST.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementMetricsPOST
  * */
 function _statesAgreementMetricsPOST(req, res, next) {
@@ -121,9 +121,9 @@ function _statesAgreementMetricsPOST(req, res, next) {
 
 /** 
  * statesAgreementMetricsMetricPOST.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementMetricsMetricPOST
  * */
 function _statesAgreementMetricsMetricPOST(req, res, next) {
@@ -133,9 +133,9 @@ function _statesAgreementMetricsMetricPOST(req, res, next) {
 
 /** 
  * statesAgreementMetricsMetricHistoryPOST.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementMetricsMetricHistoryPOST
  * */
 function _statesAgreementMetricsMetricHistoryPOST(req, res, next) {
@@ -145,9 +145,9 @@ function _statesAgreementMetricsMetricHistoryPOST(req, res, next) {
 
 /** 
  * statesAgreementMetricsMetricIncreasePOST.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementMetricsMetricIncreasePOST
  * */
 function _statesAgreementMetricsMetricIncreasePOST(req, res, next) {
@@ -157,9 +157,9 @@ function _statesAgreementMetricsMetricIncreasePOST(req, res, next) {
 
 /** 
  * statesAgreementMetricsMetricPUT.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementMetricsMetricPUT
  * */
 function _statesAgreementMetricsMetricPUT(req, res, next) {
@@ -169,9 +169,9 @@ function _statesAgreementMetricsMetricPUT(req, res, next) {
 
 /** 
  * statesAgreementPricingGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementPricingGET
  * */
 function _statesAgreementPricingGET(req, res, next) {
@@ -181,9 +181,9 @@ function _statesAgreementPricingGET(req, res, next) {
 
 /** 
  * statesAgreementPricingBillingPenaltiesPOST.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementPricingBillingPenaltiesPOST
  * */
 function _statesAgreementPricingBillingPenaltiesPOST(req, res, next) {
@@ -193,9 +193,9 @@ function _statesAgreementPricingBillingPenaltiesPOST(req, res, next) {
 
 /** 
  * statesAgreementQuotasGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementQuotasGET
  * */
 function _statesAgreementQuotasGET(req, res, next) {
@@ -205,9 +205,9 @@ function _statesAgreementQuotasGET(req, res, next) {
 
 /** 
  * statesAgreementQuotasQuotaGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementQuotasQuotaGET
  * */
 function _statesAgreementQuotasQuotaGET(req, res, next) {
@@ -217,9 +217,9 @@ function _statesAgreementQuotasQuotaGET(req, res, next) {
 
 /** 
  * statesAgreementQuotasQuotaPUT.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementQuotasQuotaPUT
  * */
 function _statesAgreementQuotasQuotaPUT(req, res, next) {
@@ -229,9 +229,9 @@ function _statesAgreementQuotasQuotaPUT(req, res, next) {
 
 /** 
  * statesAgreementRatesGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementRatesGET
  * */
 function _statesAgreementRatesGET(req, res, next) {
@@ -241,9 +241,9 @@ function _statesAgreementRatesGET(req, res, next) {
 
 /** 
  * statesAgreementRatesRateGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementRatesRateGET
  * */
 function _statesAgreementRatesRateGET(req, res, next) {
@@ -253,9 +253,9 @@ function _statesAgreementRatesRateGET(req, res, next) {
 
 /** 
  * statesAgreementRatesRatePUT.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesAgreementRatesRatePUT
  * */
 function _statesAgreementRatesRatePUT(req, res, next) {
@@ -265,9 +265,9 @@ function _statesAgreementRatesRatePUT(req, res, next) {
 
 /** 
  * statesGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesGET
  * */
 function _statesGET(req, res, next) {
@@ -277,9 +277,9 @@ function _statesGET(req, res, next) {
 
 /** 
  * statesDELETE.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:StateRegistry.statesDELETE
  * */
 function _statesDELETE(req, res, next) {

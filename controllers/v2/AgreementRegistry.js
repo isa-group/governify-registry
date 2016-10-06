@@ -40,9 +40,9 @@ module.exports = {
 
 /** 
  * agreementsAgreementContextDefinitionsGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementContextDefinitionsGET
  * */
 function _agreementsAgreementContextDefinitionsGET(req, res, next) {
@@ -52,9 +52,9 @@ function _agreementsAgreementContextDefinitionsGET(req, res, next) {
 
 /** 
  * agreementsAgreementContextDefinitionsLogsGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementContextDefinitionsLogsGET
  * */
 function _agreementsAgreementContextDefinitionsLogsGET(req, res, next) {
@@ -64,9 +64,9 @@ function _agreementsAgreementContextDefinitionsLogsGET(req, res, next) {
 
 /** 
  * agreementsAgreementContextDefinitionsSchemasGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementContextDefinitionsSchemasGET
  * */
 function _agreementsAgreementContextDefinitionsSchemasGET(req, res, next) {
@@ -76,9 +76,9 @@ function _agreementsAgreementContextDefinitionsSchemasGET(req, res, next) {
 
 /** 
  * agreementsAgreementContextDefinitionsScopesGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementContextDefinitionsScopesGET
  * */
 function _agreementsAgreementContextDefinitionsScopesGET(req, res, next) {
@@ -88,9 +88,9 @@ function _agreementsAgreementContextDefinitionsScopesGET(req, res, next) {
 
 /** 
  * agreementsAgreementContextGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementContextGET
  * */
 function _agreementsAgreementContextGET(req, res, next) {
@@ -100,9 +100,9 @@ function _agreementsAgreementContextGET(req, res, next) {
 
 /** 
  * agreementsAgreementContextInfrastructureGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementContextInfrastructureGET
  * */
 function _agreementsAgreementContextInfrastructureGET(req, res, next) {
@@ -112,9 +112,9 @@ function _agreementsAgreementContextInfrastructureGET(req, res, next) {
 
 /** 
  * agreementsAgreementContextValidityGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementContextValidityGET
  * */
 function _agreementsAgreementContextValidityGET(req, res, next) {
@@ -124,9 +124,9 @@ function _agreementsAgreementContextValidityGET(req, res, next) {
 
 /** 
  * agreementsAgreementGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementGET
  * */
 function _agreementsAgreementGET(req, res, next) {
@@ -136,9 +136,9 @@ function _agreementsAgreementGET(req, res, next) {
 
 /** 
  * agreementsAgreementDELETE.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementDELETE
  * */
 function _agreementsAgreementDELETE(req, res, next) {
@@ -148,9 +148,9 @@ function _agreementsAgreementDELETE(req, res, next) {
 
 /** 
  * agreementsAgreementTermsGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementTermsGET
  * */
 function _agreementsAgreementTermsGET(req, res, next) {
@@ -160,9 +160,9 @@ function _agreementsAgreementTermsGET(req, res, next) {
 
 /** 
  * agreementsAgreementTermsGuaranteesGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementTermsGuaranteesGET
  * */
 function _agreementsAgreementTermsGuaranteesGET(req, res, next) {
@@ -172,9 +172,9 @@ function _agreementsAgreementTermsGuaranteesGET(req, res, next) {
 
 /** 
  * agreementsAgreementTermsGuaranteesGuaranteeGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementTermsGuaranteesGuaranteeGET
  * */
 function _agreementsAgreementTermsGuaranteesGuaranteeGET(req, res, next) {
@@ -184,9 +184,9 @@ function _agreementsAgreementTermsGuaranteesGuaranteeGET(req, res, next) {
 
 /** 
  * agreementsAgreementTermsMetricsGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementTermsMetricsGET
  * */
 function _agreementsAgreementTermsMetricsGET(req, res, next) {
@@ -196,9 +196,9 @@ function _agreementsAgreementTermsMetricsGET(req, res, next) {
 
 /** 
  * agreementsAgreementTermsMetricsMetricGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementTermsMetricsMetricGET
  * */
 function _agreementsAgreementTermsMetricsMetricGET(req, res, next) {
@@ -208,9 +208,9 @@ function _agreementsAgreementTermsMetricsMetricGET(req, res, next) {
 
 /** 
  * agreementsAgreementTermsPricingBillingGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementTermsPricingBillingGET
  * */
 function _agreementsAgreementTermsPricingBillingGET(req, res, next) {
@@ -220,9 +220,9 @@ function _agreementsAgreementTermsPricingBillingGET(req, res, next) {
 
 /** 
  * agreementsAgreementTermsPricingBillingPenaltiesGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementTermsPricingBillingPenaltiesGET
  * */
 function _agreementsAgreementTermsPricingBillingPenaltiesGET(req, res, next) {
@@ -232,9 +232,9 @@ function _agreementsAgreementTermsPricingBillingPenaltiesGET(req, res, next) {
 
 /** 
  * agreementsAgreementTermsPricingBillingPenaltiesPenaltyGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementTermsPricingBillingPenaltiesPenaltyGET
  * */
 function _agreementsAgreementTermsPricingBillingPenaltiesPenaltyGET(req, res, next) {
@@ -244,9 +244,9 @@ function _agreementsAgreementTermsPricingBillingPenaltiesPenaltyGET(req, res, ne
 
 /** 
  * agreementsAgreementTermsPricingBillingRewardsGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementTermsPricingBillingRewardsGET
  * */
 function _agreementsAgreementTermsPricingBillingRewardsGET(req, res, next) {
@@ -256,9 +256,9 @@ function _agreementsAgreementTermsPricingBillingRewardsGET(req, res, next) {
 
 /** 
  * agreementsAgreementTermsPricingBillingRewardsRewardGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementTermsPricingBillingRewardsRewardGET
  * */
 function _agreementsAgreementTermsPricingBillingRewardsRewardGET(req, res, next) {
@@ -268,9 +268,9 @@ function _agreementsAgreementTermsPricingBillingRewardsRewardGET(req, res, next)
 
 /** 
  * agreementsAgreementTermsPricingGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementTermsPricingGET
  * */
 function _agreementsAgreementTermsPricingGET(req, res, next) {
@@ -280,9 +280,9 @@ function _agreementsAgreementTermsPricingGET(req, res, next) {
 
 /** 
  * agreementsAgreementTermsQuotasGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementTermsQuotasGET
  * */
 function _agreementsAgreementTermsQuotasGET(req, res, next) {
@@ -292,9 +292,9 @@ function _agreementsAgreementTermsQuotasGET(req, res, next) {
 
 /** 
  * agreementsAgreementTermsRatesGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsAgreementTermsRatesGET
  * */
 function _agreementsAgreementTermsRatesGET(req, res, next) {
@@ -304,9 +304,9 @@ function _agreementsAgreementTermsRatesGET(req, res, next) {
 
 /** 
  * agreementsGET.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsGET
  * */
 function _agreementsGET(req, res, next) {
@@ -316,9 +316,9 @@ function _agreementsGET(req, res, next) {
 
 /** 
  * agreementsDELETE.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsDELETE
  * */
 function _agreementsDELETE(req, res, next) {
@@ -328,9 +328,9 @@ function _agreementsDELETE(req, res, next) {
 
 /** 
  * agreementsPOST.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:AgreementRegistry.agreementsPOST
  * */
 function _agreementsPOST(req, res, next) {

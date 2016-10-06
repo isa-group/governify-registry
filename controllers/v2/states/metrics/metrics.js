@@ -5,7 +5,7 @@ var logger = config.logger;
 var errorModel = require('../../../../errors/index.js').errorModel;
 var stateManager = require('../../../../stateManager/stateManager.js');
 
-var Promise = require("bluebird");
+var Promise = require('bluebird');
 var JSONStream = require('JSONStream');
 var stream = require('stream');
 
@@ -31,9 +31,9 @@ module.exports = {
 
 /** 
  * Increase metric by ID.
- * @param {object} args {agreement: String, metric: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String, metric: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:metrics.metricsIdIncrease
  * */
 function _metricsIdIncrease(args, res, next) {
@@ -68,9 +68,9 @@ function _metricsIdIncrease(args, res, next) {
 
 /** 
  * Modify metric by ID.
- * @param {object} args {agreement: String, metric: String, metricValue: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String, metric: String, metricValue: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:metrics.metricsIdPUT
  * */
 function _metricsIdPUT(args, res, next) {
@@ -102,9 +102,9 @@ function _metricsIdPUT(args, res, next) {
 
 /** 
  * Post a new metric.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:metrics.metricsPOST
  * */
 function _metricsPOST(req, res, next) {
@@ -214,9 +214,9 @@ function _metricsPOST(req, res, next) {
 
 /** 
  * Post a new metric by ID.
- * @param {object} args {agreement: String, metric: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String, metric: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:metrics.metricsIdPOST
  * */
 function _metricsIdPOST(args, res, next) {

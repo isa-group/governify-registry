@@ -11,10 +11,20 @@
         ]
     },
     "templates": {
-        "cleverLinks": false,
-        "monospaceLinks": false,
-        "default": {
-            "outputSourceFiles": true
-        }
+    "systemName"            : "Governify registry",
+    "footer"                : "ISA Research Group",
+    "copyright"             :  "ISA Research Group",
+    "includeDate"           : false,
+    "navType"               : "vertical",
+    "theme"                 : "cosmo",
+    "linenums"              : true,
+    "collapseSymbols"       : false,
+    "inverseNav"            : false,
+    "outputSourceFiles"     : true ,
+    "outputSourcePath"      : false,
+    "dateFormat"            : "YYYY MM DD",
+    "syntaxTheme"           : "default",
+    "sort"                  : true,
+    "search"                : true
     }
 }

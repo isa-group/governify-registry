@@ -1,6 +1,6 @@
 'use strict';
 
-var diff = require("deep-diff");
+var diff = require('deep-diff");
 
 /**
  * Utils module.
@@ -28,7 +28,7 @@ module.exports = {
 
 /** 
  * Check if an array contains a given object
- * @param {object} obj object to seach for
+ * @param {Object} obj object to seach for
  * @param {array} array array to search into
  * @alias module:utils.containsObject
  * */
@@ -60,7 +60,7 @@ var periods = {
 
 /** 
  * Convert a given billing cycle into a period string
- * @param {object} billingCycle object billing cycle to convert
+ * @param {Object} billingCycle object billing cycle to convert
  * @alias module:utils.convertPeriod
  * */
 function _convertPeriod(billingCycle) {

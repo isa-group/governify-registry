@@ -3,7 +3,7 @@
 var config = require('../../../../config');
 var logger = config.logger;
 
-var Promise = require("bluebird");
+var Promise = require('bluebird');
 var moment = require('moment');
 
 
@@ -95,12 +95,12 @@ function _checkQuery(state, query) {
 
 /** 
  * Process mode.
- * @param {object} mode mode
- * @param {object} stateType state type
- * @param {object} query query
- * @param {object} manager manager
- * @param {object} resolve resolve
- * @param {object} reject reject
+ * @param {Object} mode mode
+ * @param {Object} stateType state type
+ * @param {Object} query query
+ * @param {Object} manager manager
+ * @param {Object} resolve resolve
+ * @param {Object} reject reject
  * @alias module:gUtils.processMode
  * */
 function _processMode(mode, stateType, query, manager, resolve, reject) {

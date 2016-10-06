@@ -38,9 +38,9 @@ module.exports = {
 
 /** 
  * Post an agreement
- * @param {object} args {agreement: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:agreement.agreementsPOST
  * */
 function _agreementsPOST(args, res, next) {
@@ -87,9 +87,9 @@ function _agreementsPOST(args, res, next) {
 
 /** 
  * Delete all agreements.
- * @param {object} args {}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:agreement.agreementsDELETE
  * */
 function _agreementsDELETE(args, res, next) {
@@ -109,9 +109,9 @@ function _agreementsDELETE(args, res, next) {
 
 /** 
  * Get all agreements.
- * @param {object} args {}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:agreement.agreementsGET
  * */
 function _agreementsGET(args, res, next) {
@@ -134,9 +134,9 @@ function _agreementsGET(args, res, next) {
 
 /** 
  * Get an agreement by agreement ID.
- * @param {object} args {agreement: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:agreement.agreementIdGET
  * */
 function _agreementIdGET(args, res, next) {
@@ -163,9 +163,9 @@ function _agreementIdGET(args, res, next) {
 
 /** 
  * Delete an agreement by agreement ID.
- * @param {object} args {agreement: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:agreement.agreementIdDELETE
  * */
 function _agreementIdDELETE(args, res, next) {
@@ -193,9 +193,9 @@ function _agreementIdDELETE(args, res, next) {
 
 /** 
  * Get all agreement terms.
- * @param {object} args {}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:agreement.agreementsAgreementTermsGuaranteesGET
  * */
 function _agreementsAgreementTermsGuaranteesGET(args, res, next) {
@@ -217,9 +217,9 @@ function _agreementsAgreementTermsGuaranteesGET(args, res, next) {
 
 /** 
  * Get all agreement guarantees.
- * @param {object} args {agreement: String, guarantee: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String, guarantee: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:agreement.agreementsAgreementTermsGuaranteesGuaranteeGET
  * */
 function _agreementsAgreementTermsGuaranteesGuaranteeGET(args, res, next) {

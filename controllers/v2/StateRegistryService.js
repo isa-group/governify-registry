@@ -1,6 +1,6 @@
 'use strict';
 
-var states = require("./states/states.js");
+var states = require('./states/states.js');
 
 
 /**

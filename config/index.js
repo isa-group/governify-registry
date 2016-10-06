@@ -96,8 +96,8 @@ module.exports.logger = new winston.Logger({
 /** Write info messages on logger.*/
 module.exports.stream = {
     /** Print an info message on logger.
-     * @param {string} message message to print
-     * @param {string} encoding message enconding
+     * @param {String} message message to print
+     * @param {String} encoding message enconding
      * @alias module:config.stream.write
      * */
     write: function (message, encoding) {

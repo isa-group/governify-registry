@@ -5,7 +5,7 @@ var logger = config.logger;
 var errorModel = require('../../../../errors/index.js').errorModel;
 var stateManager = require('../../../../stateManager/stateManager.js');
 
-var Promise = require("bluebird");
+var Promise = require('bluebird');
 var JSONStream = require('JSONStream');
 var stream = require('stream');
 var moment = require('moment');
@@ -33,8 +33,8 @@ module.exports = {
 /** 
  * Get all guarantees.
  * @param {Object} args {agreement: String, from: String, to: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:guarantees.guaranteesGET
  * */
 function _guaranteesGET(args, res, next) {
@@ -166,8 +166,8 @@ function _guaranteesGET(args, res, next) {
 /** 
  * Get guarantees by ID.
  * @param {Object} args {agreement: String, guarantee: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:guarantees.guaranteeIdGET
  * */
 function _guaranteeIdGET(args, res, next) {
@@ -221,8 +221,8 @@ function _guaranteeIdGET(args, res, next) {
 /** 
  * Post gurantee penalty by ID.
  * @param {Object} args {agreement: String, guarantee: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:guarantees.guaranteeIdPenaltyPOST
  * */
 function _guaranteeIdPenaltyPOST(args, res, next) {

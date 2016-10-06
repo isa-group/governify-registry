@@ -20,9 +20,9 @@ module.exports = {
 
 /** 
  * Get all quotas.
- * @param {object} args {agreement: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:quotas.quotasGET
  * */
 function _quotasGET(args, res, next) {
@@ -42,9 +42,9 @@ function _quotasGET(args, res, next) {
 
 /** 
  * Get quotas by ID.
- * @param {object} args {agreement: String, quota: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String, quota: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:quotas.quotasQuotaGET
  * */
 function _quotasIdGET(args, res, next) {

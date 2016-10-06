@@ -11,9 +11,9 @@ module.exports = {
 
 /** 
  * Error model for error response.
- * @param {string} code error code
- * @param {string} message error message
- * @alias module:error.errorModel
+ * @param {String} code error code
+ * @param {String} message error message
+ * @alias module:errors.errorModel
  * */
 function _Error(code, message) {
     this.code = code;

@@ -19,9 +19,9 @@ module.exports = {
 
 /** 
  * Post pricing billing penalties.
- * @param {object} req request
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:pricing.PricingBillingPenaltiesPOST
  * */
 function _PricingBillingPenaltiesPOST(req, res, next) {

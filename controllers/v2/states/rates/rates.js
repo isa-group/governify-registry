@@ -20,9 +20,9 @@ module.exports = {
 
 /** 
  * Get all rates.
- * @param {object} args {agreement: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:rates.ratesGET
  * */
 function _ratesGET(args, res, next) {
@@ -42,9 +42,9 @@ function _ratesGET(args, res, next) {
 
 /** 
  * Get rates by ID.
- * @param {object} args {agreement: String, rate: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String, rate: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:rates.ratesRateGET
  * */
 function _ratesIdGET(args, res, next) {

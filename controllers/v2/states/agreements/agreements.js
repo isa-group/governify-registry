@@ -7,7 +7,7 @@ var stateManager = require('../../../../stateManager/stateManager.js');
 var mailer = require('../../../../mailer');
 var calculators = require('../../../../stateManager/calculators.js');
 
-var Promise = require("bluebird");
+var Promise = require('bluebird');
 var request = require('request');
 
 
@@ -34,9 +34,9 @@ module.exports = {
 
 /**
  * Get an agreement state by agreement ID.
- * @param {object} args {agreement: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:agreements.agreementIdGET
  * */
 function _agreementIdGET(args, res, next) {
@@ -61,9 +61,9 @@ function _agreementIdGET(args, res, next) {
 
 /**
  * Delete an agreement state by agreement ID.
- * @param {object} args {agreement: String, from: String, to: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String, from: String, to: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:agreements.agreementIdDELETE
  * */
 function _agreementIdDELETE(args, res, next) {
@@ -92,9 +92,9 @@ function _agreementIdDELETE(args, res, next) {
 
 /**
  * Delete all agreement states
- * @param {object} args {agreement: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:agreements.statesDELETE
  * */
 function _statesDELETE(args, res, next) {
@@ -114,9 +114,9 @@ function _statesDELETE(args, res, next) {
 
 /**
  * Reload an agreement state by agreement ID.
- * @param {object} args {agreement: String, from: String, to: String}
- * @param {object} res response
- * @param {object} next next function
+ * @param {Object} args {agreement: String, from: String, to: String}
+ * @param {Object} res response
+ * @param {Object} next next function
  * @alias module:agreements.agreementIdRELOAD
  * */
 function _agreementIdRELOAD(args, res, next) {
@@ -179,8 +179,8 @@ function _agreementIdRELOAD(args, res, next) {
 /**
  * Send an email.
  * @function sendMail
- * @param {object} agreement agreement
- * @param {object} mail mail parameters
+ * @param {Object} agreement agreement
+ * @param {Object} mail mail parameters
  * */
 function sendMail(agreement, mail) {
     logger.ctlState("Sending email to " + mail.to);

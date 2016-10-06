@@ -75,9 +75,9 @@ function _close(done) {
 
 /**
  * Create Mongo schema from JSON schema.
- * @param {object} instance instance
- * @param {string} modelName model name
- * @param {string} jsonModelUri model URI
+ * @param {Object} instance instance
+ * @param {String} modelName model name
+ * @param {String} jsonModelUri model URI
  * */
 function setupModel(instance, modelName, jsonModelUri) {
     var referencedJsonModel = jsyaml.safeLoad(fs.readFileSync(jsonModelUri));

@@ -3,7 +3,7 @@
 var config = require('../config');
 var logger = config.logger;
 
-var Promise = require("bluebird");
+var Promise = require('bluebird');
 var yaml = require('js-yaml');
 var request = require('request');
 
@@ -23,9 +23,9 @@ module.exports = {
 
 /**
  * Process all metrics.
- * @param {object} agreement agreement
- * @param {object} metricId metric ID
- * @param {object} metricParameters metric parameters
+ * @param {Object} agreement agreement
+ * @param {Object} metricId metric ID
+ * @param {Object} metricParameters metric parameters
  * @alias module:metricCalculator.process
  * */
 function processMetric(agreement, metricId, metricParameters) {

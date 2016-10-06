@@ -4,7 +4,7 @@ var config = require('../config');
 var logger = config.logger;
 var utils = require('../utils/utils.js');
 
-var Promise = require("bluebird");
+var Promise = require('bluebird');
 var moment = require('moment');
 
 
@@ -24,9 +24,9 @@ module.exports = {
 
 /**
  * Process all quotas for a given query.
- * @param {object} agreementDef agreement definition
- * @param {string} query query
- * @param {object} manager manager
+ * @param {Object} agreementDef agreement definition
+ * @param {String} query query
+ * @param {Object} manager manager
  * @alias module:pricingCalculator.process
  * */
 function processPricing(agreementDef, query, manager) {
@@ -208,7 +208,7 @@ function processPricing(agreementDef, query, manager) {
 /**
  * Get periods from an agreement.
  * @function getPeriods
- * @param {object} agreement agreement
+ * @param {Object} agreement agreement
  * */
 function getPeriods(agreement) {
     var initial = agreement.context.validity.initial;

@@ -3,7 +3,7 @@
 var config = require('../config');
 var logger = config.logger;
 
-var Promise = require("bluebird");
+var Promise = require('bluebird');
 
 /**
  * Agreement calculator module.
@@ -19,8 +19,8 @@ module.exports = {
 
 /**
  * Process agreement.
- * @param {object} manager manager
- * @param {object} parameters parameters
+ * @param {Object} manager manager
+ * @param {Object} parameters parameters
  * @param {date} from from date
  * @param {date} to to date
  * @alias module:agreementCalculator.process
@@ -50,8 +50,8 @@ function _process(manager, parameters, from, to) {
 /**
  * Process metrics.
  * @function processMetrics
- * @param {object} manager manager
- * @param {object} parameters parameters
+ * @param {Object} manager manager
+ * @param {Object} parameters parameters
  * */
 function processMetrics(manager, parameters) {
     return new Promise(function (resolve, reject) {
@@ -162,8 +162,8 @@ function processMetrics(manager, parameters) {
 /**
  * Process guarantees.
  * @function processGuarantees
- * @param {object} manager manager
- * @param {object} parameters parameters
+ * @param {Object} manager manager
+ * @param {Object} parameters parameters
  * */
 function processGuarantees(manager, parameters) {
     return new Promise(function (resolve, reject) {

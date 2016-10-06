@@ -4,7 +4,7 @@ var config = require('../config');
 var logger = config.logger;
 var utils = require('../utils/utils.js');
 
-var Promise = require("bluebird");
+var Promise = require('bluebird');
 var vm = require('vm');
 var moment = require('moment-timezone');
 
@@ -27,7 +27,7 @@ module.exports = {
 
 /**
  * Process all guarantees.
- * @param {object} agreement agreement
+ * @param {Object} agreement agreement
  * @alias module:guaranteeCalculator.processAll
  * */
 function processGuarantees(agreement) {
@@ -68,9 +68,9 @@ function processGuarantees(agreement) {
 
 /**
  * Process a single guarantees.
- * @param {object} agreement agreement
- * @param {object} guaranteeId guarantee ID
- * @param {object} manager manager
+ * @param {Object} agreement agreement
+ * @param {Object} guaranteeId guarantee ID
+ * @param {Object} manager manager
  * @alias module:guaranteeCalculator.process
  * */
 function processGuarantee(agreement, guaranteeId, manager) {
@@ -126,10 +126,10 @@ function processGuarantee(agreement, guaranteeId, manager) {
 /**
  * Process a scoped guarantee.
  * @function processScopedGuarantee
- * @param {object} agreement agreement
- * @param {object} guarantee guarantee
- * @param {object} ofElement of element
- * @param {object} manager manager
+ * @param {Object} agreement agreement
+ * @param {Object} guarantee guarantee
+ * @param {Object} ofElement of element
+ * @param {Object} manager manager
  * */
 function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
     try {
@@ -249,13 +249,13 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
 /**
  * Calculate a penalty.
  * @function calculatePenalty
- * @param {object} agreement agreement
- * @param {object} guarantee guarantee
- * @param {object} ofElement of element
- * @param {object} timedScope timed scope
- * @param {object} metricsValues metric values
- * @param {object} slo SLO
- * @param {object} penalties penalties
+ * @param {Object} agreement agreement
+ * @param {Object} guarantee guarantee
+ * @param {Object} ofElement of element
+ * @param {Object} timedScope timed scope
+ * @param {Object} metricsValues metric values
+ * @param {Object} slo SLO
+ * @param {Object} penalties penalties
  * */
 function calculatePenalty(agreement, guarantee, ofElement, timedScope, metricsValues, slo, penalties) {
     var guaranteeValue = {};

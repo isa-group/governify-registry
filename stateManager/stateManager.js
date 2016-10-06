@@ -6,7 +6,7 @@ var db = require('../database');
 var errorModel = require('../errors/index.js').errorModel;
 var calculators = require('../stateManager/calculators.js');
 
-var Promise = require("bluebird");
+var Promise = require('bluebird');
 var request = require('requestretry');
 var iso8601 = require('iso8601');
 
@@ -145,8 +145,8 @@ function _get(stateType, query) {
  * @function _put
  * @param {String} stateType enum: {guarantees, pricing, agreement, metrics}
  * @param {StateManagerQuery} query query will be matched with an state.
- * @param {object} value value
- * @param {object} metadata {logsState, evidences, parameters}.
+ * @param {Object} value value
+ * @param {Object} metadata {logsState, evidences, parameters}.
  * @return {Promise} Promise that will return an array of state objects
  * */
 function _put(stateType, query, value, metadata) {
@@ -235,7 +235,7 @@ function _put(stateType, query, value, metadata) {
  * @function _update
  * @param {String} stateType enum: {guarantees, pricing, agreement, metrics}
  * @param {StateManagerQuery} query query will be matched with an state.
- * @param {object} logsState logsState
+ * @param {Object} logsState logsState
  * @return {Promise} Promise that will return an array of state objects
  * */
 function _update(stateType, query, logsState) {
@@ -353,9 +353,9 @@ function _update(stateType, query, logsState) {
 /**
  * State.
  * @function state
- * @param {object} value value
+ * @param {Object} value value
  * @param {String} query query will be matched with an state.
- * @param {object} metadata {logsState, evidences, parameters}
+ * @param {Object} metadata {logsState, evidences, parameters}
  * */
 function state(value, query, metadata) {
     for (var v in query) {
@@ -369,8 +369,8 @@ function state(value, query, metadata) {
 /**
  * Record.
  * @function record
- * @param {object} value value
- * @param {object} metadata {logsState, evidences, parameters}
+ * @param {Object} value value
+ * @param {Object} metadata {logsState, evidences, parameters}
  * */
 function record(value, metadata) {
     this.value = value;
@@ -387,7 +387,7 @@ function record(value, metadata) {
  * Check if it is updated.
  * @function isUpdated
  * @param {String} agreement agreement ID
- * @param {object} states states
+ * @param {Object} states states
  * */
 function isUpdated(agreement, states) {
     return new Promise(function (resolve, reject) {
@@ -462,7 +462,7 @@ function isUpdated(agreement, states) {
 /**
  * Check a query.
  * @function checkQuery
- * @param {object} element element
+ * @param {Object} element element
  * @param {String} query query will be matched with an state.
  * @return {Boolean} query check result
  * */
@@ -486,7 +486,7 @@ function checkQuery(element, query) {
 /**
  * Get current state.
  * @function getCurrent
- * @param {object} state state
+ * @param {Object} state state
  * */
 function getCurrent(state) {
     return state.records[state.records.length - 1];
@@ -496,7 +496,7 @@ function getCurrent(state) {
 /**
  * _current.
  * @function _current
- * @param {object} state state
+ * @param {Object} state state
  * @return {object} state
  * */
 function _current(state) {

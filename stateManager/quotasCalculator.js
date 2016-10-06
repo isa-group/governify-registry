@@ -4,7 +4,7 @@ var config = require('../config');
 var logger = config.logger;
 var errorModel = require('../errors/index.js').errorModel;
 
-var Promise = require("bluebird");
+var Promise = require('bluebird');
 
 
 /**
@@ -21,8 +21,8 @@ module.exports = {
 
 /**
  * Process all quotas for a given query.
- * @param {object} stateManager stateManager
- * @param {string} query query
+ * @param {Object} stateManager stateManager
+ * @param {String} query query
  * @alias module:quotasCalculator.process
  * */
 function processQuotas(stateManager, query) {

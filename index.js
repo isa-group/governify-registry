@@ -44,7 +44,7 @@ module.exports = {
 
 /**
  * statesAgreementGET.
- * @param {object} configurations configuration object
+ * @param {Object} configurations configuration object
  * @param {function} callback callback function
  * @alias module:registry.deploy
  * */
