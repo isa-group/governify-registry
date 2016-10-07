@@ -49,11 +49,18 @@ module.exports = {
  * @alias module:registry.deploy
  * */
 function _deploy(configurations, callback) {
-    for (var c in configurations) {
-        var prop = configurations[c];
-        config.setProperty(c, prop);
+    config.logger.info('Trying to deploy server');
+    if (configurations) {
+        config.logger.info('Reading configuration...');
+        for (var c in configurations) {
+            var prop = configurations[c];
+            config.logger.info('Setting property' + c + ' with value ' + prop);
+            config.setProperty(c, prop);
+        }
     }
+
     db.connect(function (err) {
+        config.logger.info('Trying to connect to database');
         if (!err) {
             //list of swagger documents, one for each version of the api.
             var swaggerDocs = [swaggerUtils.getSwaggerDoc(1), swaggerUtils.getSwaggerDoc(2)];
@@ -72,6 +79,9 @@ function _deploy(configurations, callback) {
                         callback(module.exports.server);
                 });
             });
+        } else {
+            config.logger.error('Database connection failed', err);
+
         }
     });
 }

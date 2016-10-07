@@ -1,6 +1,9 @@
 'use strict';
 
-var registry = require('./');
+var registry = require('./index.js');
 var config = require('./config');
 
-registry.deploy(null, function (server) {});
+config.logger.info('Deploy request received');
+registry.deploy(null, function (server) {
+    config.logger.info('Deploy successfully done');
+});

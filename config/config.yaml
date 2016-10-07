@@ -12,7 +12,7 @@ development:
       path: "./models/stateModel.json"
   port: 8081
   logfile: "./logs/dev.log"
-  loggerLevel: error
+  loggerLevel: info
   parallelProcess:
     guarantees: false
     metrics: false
