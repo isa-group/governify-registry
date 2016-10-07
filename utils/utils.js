@@ -1,6 +1,6 @@
 'use strict';
 
-var diff = require('deep-diff");
+var diff = require('deep-diff');
 
 /**
  * Utils module.
