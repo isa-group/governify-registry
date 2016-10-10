@@ -231,7 +231,7 @@ function _update(stateType, query, logsState) {
                     });
                 break;
             case "guarantees":
-                calculators.guaranteeCalculator.process(stateManager.agreement, query.guarantee, stateManager)
+                calculators.guaranteeCalculator.process(stateManager, query)
                     .then(function(guaranteeStates) {
                         logger.sm('Guarantee states for ' + guaranteeStates.guaranteeId + ' have been calculated (' + guaranteeStates.guaranteeValues.length + ') ');
                         logger.debug('Guarantee states: ' + JSON.stringify(guaranteeStates, null, 2));

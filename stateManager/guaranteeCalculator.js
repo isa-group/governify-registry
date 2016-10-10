@@ -24,10 +24,10 @@ function processGuarantees(agreement) {
         var processGuarantees = [];
 
         // processGuarantee is called for each guarantee of the agreement guarantees definition
-        agreement.terms.guarantees.forEach(function(guarantee) {
+        agreement.terms.guarantees.forEach(function (guarantee) {
             processGuarantees.push(processGuarantee(agreement, guarantee.id));
         });
-        Promise.settle(processGuarantees).then(function(results) {
+        Promise.settle(processGuarantees).then(function (results) {
             // Once we have all guarantees states calculated...
             if (results.length > 0) {
                 var values = [];
@@ -36,7 +36,7 @@ function processGuarantees(agreement) {
                     if (results[i].isFulfilled()) {
                         if (results[i].value().length > 0) {
                             // For each guarantee state, we store it in the array 'values'
-                            results[i].value().forEach(function(guaranteeValue) {
+                            results[i].value().forEach(function (guaranteeValue) {
                                 values.push(guaranteeValue);
                             });
                         }
@@ -48,21 +48,25 @@ function processGuarantees(agreement) {
             } else {
                 return reject('Error processing guarantee: empty result');
             }
-        }, function(err) {
+        }, function (err) {
             return reject(err);
         });
     });
 }
 
-function processGuarantee(agreement, guaranteeId, manager) {
+function processGuarantee(manager, query) {
+
+    var agreement = manager.agreement;
+    var guaranteeId = query.guarantee;
+
     var processScopedGuarantees = [];
 
     return new Promise((resolve, reject) => {
 
-        logger.debug("Searching guarantee '%s' in array:\n %s",guaranteeId,JSON.stringify(agreement.terms.guarantees, null, 2));
+        logger.debug("Searching guarantee '%s' in array:\n %s", guaranteeId, JSON.stringify(agreement.terms.guarantees, null, 2));
 
         // We retrieve the guarantee definition from the agreement that matches with the provided ID
-        var guarantee = agreement.terms.guarantees.find(function(guarantee) {
+        var guarantee = agreement.terms.guarantees.find(function (guarantee) {
             return guarantee.id === guaranteeId
         });
 
@@ -73,12 +77,12 @@ function processGuarantee(agreement, guaranteeId, manager) {
         }
 
         // We prepare the parameters needed by the processScopedGuarantee function
-        guarantee.of.forEach(function(ofElement) {
+        guarantee.of.forEach(function (ofElement) {
             processScopedGuarantees.push({
-                agreement: agreement,
+                manager: manager,
+                query: query,
                 guarantee: guarantee,
-                ofElement: ofElement,
-                manager: manager
+                ofElement: ofElement
             });
         });
 
@@ -88,33 +92,35 @@ function processGuarantee(agreement, guaranteeId, manager) {
         logger.guarantees('Processing scoped guarantee (' + guarantee.id + ')...');
 
         // processScopedGuarantee is called for each scope (priority, node, serviceLine, activity, etc.) of the guarantee
-        Promise.each(processScopedGuarantees, function(guaranteeParam) {
-            return processScopedGuarantee(guaranteeParam.agreement, guaranteeParam.guarantee, guaranteeParam.ofElement, guaranteeParam.manager).then(function(value) {
+        Promise.each(processScopedGuarantees, function (guaranteeParam) {
+            return processScopedGuarantee(guaranteeParam.manager, guaranteeParam.query, guaranteeParam.guarantee, guaranteeParam.ofElement).then(function (value) {
                 logger.guarantees('Scoped guarantee has been processed');
                 // Once we have calculated the scoped guarantee state, we add it to the array 'guaranteeValues'
                 guaranteesValues = guaranteesValues.concat(value);
-            }).catch(function(err) {
+            }).catch(function (err) {
                 logger.error('Error processing scoped guarantee: ', err);
                 return reject(err);
             });
 
-        }).then(function() {
+        }).then(function () {
             logger.guarantees('All scoped guarantees have been processed');
             // Once we have calculated all scoped guarantees, we return guarantee ID and guarantee states values
             return resolve({
                 guaranteeId: guaranteeId,
                 guaranteeValues: guaranteesValues
             });
-        }).catch(function(err) {
+        }).catch(function (err) {
             logger.error(err);
             return reject(err);
         });
     });
 }
 
-function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
+function processScopedGuarantee(manager, query, guarantee, ofElement) {
     try {
         return new Promise((resolve, reject) => {
+
+            var agreement = manager.agreement;
 
             // We retrieve the SLO from the scoped guarantee and the penalties to apply
             var slo = ofElement.objective;
@@ -137,7 +143,7 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
             // We collect the evidences that will be send to computer
             var evidences = [];
             if (ofElement.evidences) {
-                ofElement.evidences.forEach(function(evidence) {
+                ofElement.evidences.forEach(function (evidence) {
                     var evidenceId = Object.keys(evidence)[0];
                     if (evidence[evidenceId].computer) {
                         evidences.push({
@@ -163,8 +169,8 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                         evidences: evidences,
                         window: window,
                         period: {
-                            from: '*',
-                            to: '*'
+                            from: query.period ? query.period.from : '*',
+                            to: query.period ? query.period.to : '*'
                         }
                     });
                 }
@@ -177,15 +183,15 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
             var metricValues = [];
 
             logger.guarantees('Obtaining required metrics states for scoped guarantee ' + guarantee.id + '...');
-            Promise.each(processMetrics, function(metricParam) {
-                return manager.get('metrics', metricParam).then(function(scopedMetricValues) {
+            Promise.each(processMetrics, function (metricParam) {
+                return manager.get('metrics', metricParam).then(function (scopedMetricValues) {
                     // Once we have all metrics involved in the scoped guarantee calculated...
                     if (scopedMetricValues.length > 0) {
                         logger.guarantees('Timed scoped metric values for ' + scopedMetricValues[0].id + ' has been calculated (' + scopedMetricValues.length + ') ');
                         logger.guarantees('Updating timed scope array for ' + scopedMetricValues[0].id + '...');
 
                         // For each scoped metric value...
-                        scopedMetricValues.forEach(function(metricValue) {
+                        scopedMetricValues.forEach(function (metricValue) {
                             var ts = {
                                 scope: metricValue.scope,
                                 period: metricValue.period
@@ -216,11 +222,11 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                     } else {
                         logger.guarantees('No metrics found for parameters: ' + JSON.stringify(metricParam, null, 2));
                     }
-                }).catch(function(err) {
+                }).catch(function (err) {
                     logger.error('Error processing metric: ', err);
                     return reject(err);
                 });
-            }).then(function(metricsValues) {
+            }).then(function (metricsValues) {
                 var guaranteesValues = [];
                 logger.guarantees('Calculating penalties for scoped guarantee ' + guarantee.id + '...');
                 for (var index = 0; index < timedScopes.length; index++) {
@@ -231,7 +237,7 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                 logger.guarantees('All penalties for scoped guarantee ' + guarantee.id + ' calculated.');
                 logger.debug('Guarantees values: ' + JSON.stringify(guaranteesValues, null, 2));
                 return resolve(guaranteesValues);
-            }).catch(function(err) {
+            }).catch(function (err) {
                 logger.error(err);
                 return reject(err);
             });
@@ -277,9 +283,9 @@ function calculatePenalty(agreement, guarantee, ofElement, timedScope, metricsVa
 
     if (!fulfilled && penalties.length > 0) {
         guaranteeValue.penalties = {};
-        penalties.forEach(function(penalty) {
+        penalties.forEach(function (penalty) {
             var penaltyVar = Object.keys(penalty.over)[0];
-            var penaltyFufilled = penalty.of.filter(function(compensationOf) {
+            var penaltyFufilled = penalty.of.filter(function (compensationOf) {
                 return vm.runInThisContext(compensationOf.condition);
             });
             if (penaltyFufilled.length > 0) {

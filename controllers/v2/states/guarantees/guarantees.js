@@ -143,6 +143,8 @@ module.exports.guaranteeIdGET = function(args, res, next) {
     logger.ctlState("New request to GET guarantee");
     var agreementId = args.agreement.value;
     var guaranteeId = args.guarantee.value;
+    var from = args.from.value;
+    var to = args.to.value;
 
     res.setHeader('content-type', 'application/json; charset=utf-8');
 
@@ -158,7 +160,11 @@ module.exports.guaranteeIdGET = function(args, res, next) {
             ret.pipe(JSONStream.stringify()).pipe(res);
         }
         manager.get('guarantees', {
-            guarantee: guaranteeId
+            guarantee: guaranteeId,
+            period: {
+                "from": from,
+                "to": to
+            }
         }).then(function(success) {
             if(config.streaming){
                 res.json(success.map((element) => {
