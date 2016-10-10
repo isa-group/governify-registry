@@ -11,15 +11,17 @@ var expect = require('chai').expect,
 describe("Integral TEST", function () {
     before((done) => {
         ppinot.listen(5000, () => {
-            registry.deploy(require('../config.json'), (server) => {
-                request.post({
-                    url: 'http://localhost:5001/api/v2/agreements',
-                    body: agreement,
-                    json: true
-                }, (err, res, body) => {
-                    if (err)
-                        console.log(err);
-                    done();
+            testUtils.dropDB((err) => {
+                registry.deploy(require('../config.json'), (server) => {
+                    request.post({
+                        url: 'http://localhost:5001/api/v2/agreements',
+                        body: agreement,
+                        json: true
+                    }, (err, res, body) => {
+                        if (err)
+                            console.log(err);
+                        done();
+                    });
                 });
             });
         });

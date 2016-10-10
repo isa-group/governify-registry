@@ -1,5 +1,4 @@
-const mongoose = require('mongoose'),
-    expect = require("chai").expect,
+const expect = require("chai").expect,
     request = require("request"),
     jsyaml = require('js-yaml'),
     $RefParser = require('json-schema-ref-parser'),

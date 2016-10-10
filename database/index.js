@@ -35,6 +35,7 @@ function _connect(callback) {
     var databaseURL = config.database.url[config.database.url.length - 1] === "/" ? config.database.url : config.database.url + '/';
     var databaseFullURL = databaseURL + config.database.db_name;
     config.logger.info('Connecting to ' + databaseFullURL);
+    mongoose.Promise = global.Promise;
     mongoose.connect(databaseFullURL);
     var db = mongoose.connection;
     db.on('error', function (err) {

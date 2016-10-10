@@ -15,24 +15,15 @@ function _dropDB(callback) {
     });
     connection.once('open', () => {
         try {
-            connection.collections['agreementmodels'].drop((err) => {
+            connection.db.dropDatabase((err) => {
                 if (!err) {
-                    try {
-                        connection.collections['statemodels'].drop((err) => {
-                            if (err) return callback(err);
-                            else {
-                                connection.close((err) => {
-                                    callback();
-                                })
-                            }
-                        });
-                    } catch (err) {
-                        connection.close((err) => {
-                            callback();
-                        });
-                    }
+                    connection.close((err) => {
+                        callback();
+                    });
                 } else {
-                    return callback(err);
+                    connection.close((err) => {
+                        callback(err);
+                    });
                 }
             });
         } catch (e) {
