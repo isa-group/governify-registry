@@ -1,34 +1,26 @@
-var mongoose = require('mongoose');
-var expect = require("chai").expect;
-var request = require("request");
-var jsyaml = require('js-yaml');
-var $RefParser = require('json-schema-ref-parser');
-var fs = require('fs');
+const mongoose = require('mongoose'),
+    expect = require("chai").expect,
+    request = require("request"),
+    jsyaml = require('js-yaml'),
+    $RefParser = require('json-schema-ref-parser'),
+    fs = require('fs'),
 
-var config = require('../../../config.json');
-var registry = require('../../../../index');
+    config = require('../../../config.json'),
+    registry = require('../../../../index'),
 
-var server = "localhost";
-var port = 5001;
+    server = "localhost",
+    port = 5001;
 
-describe("Agreements POST unit tests", function () {
+describe("Agreements unit tests...", function () {
 
-    let url = "http://" + server + ":" + port + "/api/v2/agreements";
-    let contract = require('../../../integral/expected/agreements/T14-L2-S12-minimal.json');
-    let options = {
-        uri: url,
-        method: 'POST',
-        json: contract
-    };
-
+    // Deploy registry before all tests
     before((done) => {
-        registry.deploy(
-            config,
-            () => { done(); });
+        registry.deploy(config, () => done());
     });
 
+    // Remove all data and undeploy registry after all tests
     after((done) => {
-       request.delete({
+        request.delete({
             url: 'http://localhost:5001/api/v2/agreements'
         }, (err, res, body) => {
             if (err)
@@ -39,30 +31,51 @@ describe("Agreements POST unit tests", function () {
             }, (err, res, body) => {
                 if (err)
                     console.log(err);
-                registry.undeploy(() => {
-                    done();
-                });
+                registry.undeploy(() => done());
             });
         });
     });
 
-    describe("Agreements", function () {
-        it("returns new contract", (done) => {
+    let url = "http://" + server + ":" + port + "/api/v2/agreements";
+    let contractFile = require('../../../integral/expected/agreements/T14-L2-S12-minimal.json');
+    let options = {
+        uri: url,
+        method: 'POST',
+        json: contractFile
+    };
+
+    describe("POST /agreements unit tests", function () {
+
+        var contractResponse = null;
+        var reqResponse = null;
+
+        it("returns status 200", (done) => {
             request(options, (error, response, body) => {
-
-                // return status 200
                 expect(response.statusCode).to.equal(200);
-
-                // return JSON content
-                expect(body.data).to.be.ok;
-
-
-
-                // return JSON valid contract in body.data
-                expect(isValidContract(body.data)).to.be.ok;
-
+                reqResponse = body;
+                contractResponse = body.data;
                 done();
             });
+        });
+
+        it("returns JSON response", (done) => {
+            expect(!!JSON.stringify(reqResponse)).to.be.ok;
+            done();
+        });
+
+        it("returns not empty contract", (done) => {
+            expect(!!contractResponse).to.be.ok;
+            done();
+        });
+
+        it("returns valid contract", (done) => {
+            expect(isValidContract(contractResponse) == true).to.be.ok
+            done();
+        });
+
+        it("returns contract with same id", (done) => {
+            expect(contractResponse.id === contractFile.id).to.be.ok
+            done();
         });
     });
 });
@@ -70,32 +83,15 @@ describe("Agreements POST unit tests", function () {
 var isValidContract = (contract) => {
 
     let isValid = true;
-    // let obj = {
-    //     "" : ["id", "version", "type", "context", "terms"],
-    //     "context": ["definitions", "infrastructure", "validity", "consumer", "provider"],
-    //     "context.definitions": ["logs", "scopes", "schemas"],
-    //     "context.definitions.logs": ["jira", "casdm"],
-    //     "context.definitions.logs.jira": ["scopes", "stateUri", "uri"],
-    //     "context.definitions.logs.jira.scopes": ["SPU"],
-    //     "context.definitions.logs.jira.scopes.SPU": ["center", "node", "priority"],
-    //     "terms" : ["guarantees", "metrics", "pricing"]
-    // };
+    let Ajv = require('ajv');
+    let ajv = new Ajv(); // options can be passed, e.g. {allErrors: true}
+    let schema = require("../../../../schemas/agreementSchema.json");
+    let valid = ajv.validate(schema, contract);
 
-    // for (keyPath in obj) {
-    //     if (obj.hasOwnProperty(keyPath)) {
-    //         obj[keyPath].forEach((k) => {
-    //             console.log(k);
-    //             isValid = (keyPath === "") ? 
-    //                 k in contract: 
-    //                 k in eval("contract." + keyPath.split(".").toString().replace(",","."));
-
-    //             // Stop forEach
-    //             if (!isValid) return false;
-
-    //         });
-    //     }
-    // }
-
+    if (!valid) {
+        console.log(ajv.errors);
+        isValid = false;
+    }
 
     return isValid;
 };
