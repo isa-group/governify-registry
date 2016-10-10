@@ -1,9 +1,18 @@
 ---
 development:
   database:
-    url: "mongodb://localhost:27017/prosas"
+    url: "mongodb://localhost:27017"
+    db_name: registry
+  models:
+    agreement:
+      name: "AgreementModel"
+      path: "./models/agreementModel.json"
+    state:
+      name: "StateModel"
+      path: "./models/stateModel.json"
   port: 8081
   logfile: "./logs/dev.log"
+  loggerLevel: info
   parallelProcess:
     guarantees: false
     metrics: false
@@ -12,6 +21,7 @@ development:
   maxAttempts: 10
   retryDelay: 2000
   email:
+    mailerApiKey: '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'
     defaultMailFrom: '"ISA-Group" <no-reply@isa.us.es>'
     messages:
       reloadAgreement:
@@ -20,9 +30,18 @@ development:
 
 production:
   database:
-    url: "mongodb://mongo/prosas"
+    url: "mongodb://mongo"
+    db_name: registry
+  models:
+    agreement:
+      name: "AgreementModel"
+      path: "./models/agreementModel.json"
+    state:
+      name: "StateModel"
+      path: "./models/stateModel.json"
   port: 8081
   logfile: "./logs/prod.log"
+  loggerLevel: debug
   parallelProcess:
     guarantees: false
     metrics: false
@@ -31,6 +50,7 @@ production:
   maxAttempts: 20
   retryDelay: 5000
   email:
+    mailerApiKey: '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'
     defaultMailFrom: '"ISA-Group" <no-reply@isa.us.es>'
     messages:
       reloadAgreement:

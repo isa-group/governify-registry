@@ -2,31 +2,44 @@
 
 var config = require('../config');
 var logger = config.logger;
-var request = require('requestretry');
+var db = require('../database');
 var errorModel = require('../errors/index.js').errorModel;
-var iso8601 = require('iso8601');
 var calculators = require('../stateManager/calculators.js');
-var Promise = require("bluebird");
-var clone = require('clone');
 
+var Promise = require('bluebird');
+var request = require('requestretry');
+var iso8601 = require('iso8601');
+
+
+/**
+ * State manager module.
+ * @module stateManager
+ * @requires config
+ * @requires database
+ * @requires errors
+ * @requires calculators
+ * @requires bluebird
+ * @requires requestretry
+ * @requires iso8601
+ * */
 module.exports = initialize;
+
 
 /**
  * Intialize the StateManager for an agreement.
- *
- * @param {String} agreement identifier
+ * @param {String} _agreement agreement ID
  * @return {Promise} Promise that will return a StateManager object
- * @api public
- */
+ * @alias module:stateManager.initialize
+ * */
 function initialize(_agreement) {
     logger.sm('(initialize) Initializing state with agreement ID = ' + _agreement.id);
-    return new Promise((resolve, reject) => {
-        var AgreementModel = config.db.models.AgreementModel;
+    return new Promise(function (resolve, reject) {
+        var AgreementModel = db.models.AgreementModel;
         logger.sm("Searching agreement with agreementID = " + _agreement.id);
         //Executes a mongodb query to search Agreement file with id = _agreement
         AgreementModel.findOne({
             'id': _agreement.id
-        }, function(err, ag) {
+        }, function (err, ag) {
             if (err) {
                 //something fail on mongodb query and error is returned
                 logger.error(err.toString());
@@ -54,24 +67,24 @@ function initialize(_agreement) {
     });
 }
 
+
 /**
  * Gets one or more states by an specific query.
- *
- * @param {String} state type enum: {guarantees, pricing, agreement, metrics}
- * @param {StateManagerQuery} query will be matched with an state.
+ * @function _get
+ * @param {String} stateType enum: {guarantees, pricing, agreement, metrics}
+ * @param {StateManagerQuery} query query will be matched with an state.
  * @return {Promise} Promise that will return an array of state objects
- * @api public
- */
+ * */
 function _get(stateType, query) {
     var stateManager = this;
     logger.sm('(_get) Retrieving state of ' + stateType);
-    return new Promise((resolve, reject) => {
+    return new Promise(function (resolve, reject) {
         logger.sm("Getting " + stateType + " state for query =  " + JSON.stringify(query));
-        var StateModel = config.db.models.StateModel;
+        var StateModel = db.models.StateModel;
         //Executes a mongodb query to search States file that match with query
         // projectionBuilder(...) builds a mongodb query from StateManagerQuery
         // refineQuery(...) ensures that the query is well formed, chooses and renames fields to make a well formed query.
-        StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), (err, result) => {
+        StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), function (err, result) {
             if (err) {
                 //something fail on mongodb query and error is returned
                 logger.sm(JSON.stringify(err));
@@ -83,59 +96,64 @@ function _get(stateType, query) {
                 var states = result;
 
                 logger.sm('Checking if ' + stateType + ' is updated...');
-                isUpdated(stateManager.agreement, states).then((data) => {
+                isUpdated(stateManager.agreement, states).then(function (data) {
                     logger.sm("Updated: " + (data.isUpdated ? 'YES' : 'NO'));
                     if (data.isUpdated) {
                         //States are updated, returns.
                         logger.sm("Returning state of " + stateType);
                         return resolve(states);
-
                     } else {
                         //States are updated, returns.
                         logger.sm("Refreshing states of " + stateType);
-                        stateManager.update(stateType, query, data.logsState).then((states) => {
+                        stateManager.update(stateType, query, data.logsState).then(function (states) {
                             return resolve(states);
-                        }, (err) => {
+                        }, function (err) {
                             return reject(err);
                         });
-
                     }
-                }, (err) => {
+                }, function (err) {
                     logger.sm(JSON.stringify(err));
                     return reject(new errorModel(500, "Error while checking if it is update: " + err));
                 });
             } else {
                 logger.sm("There are not " + stateType + " state for query =  " + JSON.stringify(query) + " in DB");
                 logger.sm("Adding states of " + stateType);
-                isUpdated(stateManager.agreement).then((data) => {
+                isUpdated(stateManager.agreement).then(function (data) {
                     if (data.isUpdated) {
-                        logger.sm("There is no state for this metric. Returning initial values.")
+                        logger.sm("There is no state for this metric. Returning initial values.");
                         var newState = new state(0, query, {});
                         return resolve([newState]);
                     } else {
-                        stateManager.update(stateType, query, data.logsState).then((states) => {
+                        stateManager.update(stateType, query, data.logsState).then(function (states) {
                             return resolve(states);
-                        }, (err) => {
+                        }, function (err) {
                             return reject(err);
                         });
                     }
-
-                }, (err) => {
+                }, function (err) {
                     logger.sm(JSON.stringify(err));
                     return reject(new errorModel(500, "Error while checking if it is update: " + err));
                 });
             }
         });
-
     });
 }
 
-/** metadata = {logsState, evidences, parameters} **/
+
+/**
+ * Add states with an specific query.
+ * @function _put
+ * @param {String} stateType enum: {guarantees, pricing, agreement, metrics}
+ * @param {StateManagerQuery} query query will be matched with an state.
+ * @param {Object} value value
+ * @param {Object} metadata {logsState, evidences, parameters}.
+ * @return {Promise} Promise that will return an array of state objects
+ * */
 function _put(stateType, query, value, metadata) {
     var stateManager = this;
     logger.sm('(_put) Saving state of ' + stateType);
-    return new Promise((resolve, reject) => {
-        var StateModel = config.db.models.StateModel;
+    return new Promise(function (resolve, reject) {
+        var StateModel = db.models.StateModel;
 
         logger.sm("AGREEMENT: " + stateManager.agreement.id);
         var dbQuery = projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query));
@@ -145,7 +163,7 @@ function _put(stateType, query, value, metadata) {
             $push: {
                 "records": new record(value, metadata)
             }
-        }, (err, result) => {
+        }, function (err, result) {
             if (err) {
                 logger.sm("Error, Is not possible to update state with this query = " + JSON.stringify(query));
                 return reject(new errorModel(500, err));
@@ -167,13 +185,13 @@ function _put(stateType, query, value, metadata) {
                     var newState = new state(value, refineQuery(stateManager.agreement.id, stateType, query), metadata);
                     var stateModel = new StateModel(newState);
 
-                    stateModel.save(newState, (err, result) => {
+                    stateModel.save(newState, function (err, result) {
                         if (err) {
                             logger.error(err.toString());
                             return reject(new errorModel(500, err));
                         } else {
                             logger.sm("Inserted new record in the new " + stateType + " state.");
-                            StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), (err, result) => {
+                            StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), function (err, result) {
                                 if (err) {
                                     logger.error(err.toString());
                                     return reject(new errorModel(500, err));
@@ -192,7 +210,7 @@ function _put(stateType, query, value, metadata) {
                     // There is some state for Guarantee / Metric , ....
                     // Lets add a new record.
                     logger.sm("Inserted new record of " + stateType + " state.");
-                    StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), (err, result) => {
+                    StateModel.find(projectionBuilder(stateType, refineQuery(stateManager.agreement.id, stateType, query)), function (err, result) {
                         if (err) {
                             logger.error(err.toString());
                             return reject(new errorModel(500, err));
@@ -206,29 +224,37 @@ function _put(stateType, query, value, metadata) {
                         }
                     });
                 }
-
             }
-        })
+        });
     });
 }
 
+
+/**
+ * Modify states with an specific query.
+ * @function _update
+ * @param {String} stateType enum: {guarantees, pricing, agreement, metrics}
+ * @param {StateManagerQuery} query query will be matched with an state.
+ * @param {Object} logsState logsState
+ * @return {Promise} Promise that will return an array of state objects
+ * */
 function _update(stateType, query, logsState) {
     var stateManager = this;
     logger.sm('(_update) Updating state of ' + stateType);
-    return new Promise((resolve, reject) => {
+    return new Promise(function (resolve, reject) {
         switch (stateType) {
             case "agreement":
                 calculators.agreementCalculator.process(stateManager.agreement, stateManager)
-                    .then(function(agreementState) {
-                        stateManager.put(stateType, agreementState).then((data) => {
-                            return resolve(data);
-                        }, (err) => {
-                            return reject(err);
+                        .then(function (agreementState) {
+                            stateManager.put(stateType, agreementState).then(function (data) {
+                                return resolvefunction(data);
+                            }, function (err) {
+                                return reject(err);
+                            });
+                        }, function (err) {
+                            logger.error(err.toString());
+                            return reject(new errorModel(500, err));
                         });
-                    }, function(err) {
-                        logger.error(err.toString());
-                        return reject(new errorModel(500, err));
-                    });
                 break;
             case "guarantees":
                 calculators.guaranteeCalculator.process(stateManager, query)
@@ -259,73 +285,74 @@ function _update(stateType, query, logsState) {
                             }
                             return resolve(result);
                         });
-                    }, function(err) {
-                        logger.error(err.toString());
-                        return reject(new errorModel(500, err));
-                    });
                 break;
             case "metrics":
                 calculators.metricCalculator.process(stateManager.agreement, query.metric, query)
-                    .then(function(metricStates) {
-                        logger.sm('Metric states for ' + metricStates.metricId + ' have been calculated (' + metricStates.metricValues.length + ') ');
-                        var processMetrics = [];
-                        metricStates.metricValues.forEach(function(metricValue) {
-                            processMetrics.push(
-                                stateManager.put(stateType, {
-                                    metric: query.metric,
-                                    scope: metricValue.scope,
-                                    period: metricValue.period,
-                                    window: query.window
-                                }, metricValue.value, {
-                                    "logsState": logsState,
-                                    evidences: metricValue.evidences,
-                                    parameters: metricValue.parameters
-                                }));
+                        .then(function (metricStates) {
+                            logger.sm('Metric states for ' + metricStates.metricId + ' have been calculated (' + metricStates.metricValues.length + ') ');
+                            var processMetrics = [];
+                            metricStates.metricValues.forEach(function (metricValue) {
+                                processMetrics.push(
+                                        stateManager.put(stateType, {
+                                            metric: query.metric,
+                                            scope: metricValue.scope,
+                                            period: metricValue.period,
+                                            window: query.window
+                                        }, metricValue.value, {
+                                            "logsState": logsState,
+                                            evidences: metricValue.evidences,
+                                            parameters: metricValue.parameters
+                                        }));
+                            });
+                            logger.sm('Created parameters array for saving states of metric of length ' + processMetrics.length);
+                            logger.sm('Persisting metric states...');
+                            Promise.all(processMetrics).then(function (metrics) {
+                                logger.sm('All metric states have been persisted');
+                                var result = [];
+                                for (var a in metrics) {
+                                    result.push(metrics[a][0]);
+                                }
+                                return resolve(result);
+                            });
+                        }, function (err) {
+                            logger.error(err.toString());
+                            return reject(new errorModel(500, err));
                         });
-                        logger.sm('Created parameters array for saving states of metric of length ' + processMetrics.length);
-                        logger.sm('Persisting metric states...');
-                        Promise.all(processMetrics).then((metrics) => {
-                            logger.sm('All metric states have been persisted');
-                            var result = [];
-                            for (var a in metrics) {
-                                result.push(metrics[a][0]);
-                            }
-                            return resolve(result);
-                        })
-                    }, function(err) {
-                        logger.error(err.toString());
-                        return reject(new errorModel(500, err));
-                    });
                 break;
             case "pricing":
-                calculators.pricingCalculator.process(stateManager.agreement, query, stateManager).then((pricingStates) => {
+                calculators.pricingCalculator.process(stateManager.agreement, query, stateManager).then(function (pricingStates) {
                     logger.sm('All pricing states (' + pricingStates.length + ') have been calculated ');
                     return resolve(pricingStates);
-                }, (err) => {
+                }, function (err) {
                     logger.error(err.toString());
                     return reject(new errorModel(500, err));
                 });
                 break;
 
             case "quotas":
-                calculators.quotasCalculator.process(stateManager, query).then((quotasStates) => {
+                calculators.quotasCalculator.process(stateManager, query).then(function (quotasStates) {
                     logger.sm('All quotas states (' + quotasStates.length + ') has been calculated ');
                     //putting quotas
                     return resolve(quotasStates);
-                }, (err) => {
+                }, function (err) {
                     logger.error(err.toString());
                     return reject(new errorModel(500, err));
                 });
                 break;
             default:
                 return reject(new errorModel(500, "There are not method implemented to calculate " + stateType + " state"));
-
         }
     });
-
 }
 
-/** metadata = {logsState, evidences, parameters} **/
+
+/**
+ * State.
+ * @function state
+ * @param {Object} value value
+ * @param {String} query query will be matched with an state.
+ * @param {Object} metadata {logsState, evidences, parameters}
+ * */
 function state(value, query, metadata) {
     for (var v in query) {
         this[v] = query[v];
@@ -334,9 +361,14 @@ function state(value, query, metadata) {
     this.records.push(new record(value, metadata));
 }
 
-/** metadata = {logsState, evidences, parameters} **/
-function record(value, metadata) {
 
+/**
+ * Record.
+ * @function record
+ * @param {Object} value value
+ * @param {Object} metadata {logsState, evidences, parameters}
+ * */
+function record(value, metadata) {
     this.value = value;
     this.time = iso8601.fromDate(new Date());
     if (metadata) {
@@ -344,15 +376,21 @@ function record(value, metadata) {
             this[v] = metadata[v];
         }
     }
-
 }
 
 
+/**
+ * Check if it is updated.
+ * @function isUpdated
+ * @param {String} agreement agreement ID
+ * @param {Object} states states
+ * */
 function isUpdated(agreement, states) {
-    return new Promise((resolve, reject) => {
+    return new Promise(function (resolve, reject) {
         var logUris = null;
         for (var log in agreement.context.definitions.logs) {
-            if (agreement.context.definitions.logs[log].default) logUris = agreement.context.definitions.logs[log].stateUri;
+            if (agreement.context.definitions.logs[log].default)
+                logUris = agreement.context.definitions.logs[log].stateUri;
         }
         logger.sm("LogUris = " + logUris);
         if (logUris) {
@@ -365,11 +403,11 @@ function isUpdated(agreement, states) {
             request.get({
                 uri: logUris,
                 json: true,
-                // The below parameters are specific to request-retry 
+                // The below parameters are specific to request-retry
                 maxAttempts: config.maxAttempts,
                 retryDelay: config.retryDelay,
                 retryStrategy: request.RetryStrategies.HTTPOrNetworkError // retry on 5xx or network errors
-            }, (err, response, body) => {
+            }, function (err, response, body) {
                 if (err) {
                     logger.error(err);
                     return reject("Error with Logs state URI this: " + err);
@@ -408,7 +446,7 @@ function isUpdated(agreement, states) {
                 }
             });
         } else {
-            logger.sm("This metric is not calculated from logs, please PUT values.")
+            logger.sm("This metric is not calculated from logs, please PUT values.");
             return resolve({
                 isUpdated: true
             });
@@ -416,6 +454,14 @@ function isUpdated(agreement, states) {
     });
 }
 
+
+/**
+ * Check a query.
+ * @function checkQuery
+ * @param {Object} element element
+ * @param {String} query query will be matched with an state.
+ * @return {Boolean} query check result
+ * */
 function checkQuery(element, query) {
     var ret = true;
     for (var v in query) {
@@ -432,12 +478,24 @@ function checkQuery(element, query) {
     return ret;
 }
 
+
+/**
+ * Get current state.
+ * @function getCurrent
+ * @param {Object} state state
+ * */
 function getCurrent(state) {
     return state.records[state.records.length - 1];
 }
 
-function _current(state) {
 
+/**
+ * _current.
+ * @function _current
+ * @param {Object} state state
+ * @return {object} state
+ * */
+function _current(state) {
     var newState = {
         stateType: state.stateType,
         agreementId: state.agreementId,
@@ -446,22 +504,27 @@ function _current(state) {
         period: state.period,
         window: state.window ? state.window : undefined,
     };
-
     var currentRecord = getCurrent(state);
-
     for (var v in currentRecord) {
         if (v != 'time' && v != 'logsState')
             newState[v] = currentRecord[v];
     }
-
     return newState;
 }
 
-// refines the query for a search in db
-function refineQuery(agId, stateType, query) {
+
+/**
+ * Refine the query for a search in database.
+ * @function refineQuery
+ * @param {String} agreementId agreementId
+ * @param {String} stateType enum: {guarantees, pricing, agreement, metrics}
+ * @param {String} query query will be matched with an state.
+ * @return {object} refined query 
+ * */
+function refineQuery(agreementId, stateType, query) {
     var refinedQuery = {};
     refinedQuery.stateType = stateType;
-    refinedQuery.agreementId = agId;
+    refinedQuery.agreementId = agreementId;
 
     if (query.scope)
         refinedQuery.scope = query.scope;
@@ -480,10 +543,16 @@ function refineQuery(agId, stateType, query) {
             refinedQuery.id = query.guarantee;
             break;
     }
-
     return refinedQuery;
 }
 
+/**
+ * Refine the query for a search in database.
+ * @function projectionBuilder
+ * @param {String} stateType enum: {guarantees, pricing, agreement, metrics}
+ * @param {String} query query will be matched with an state.
+ * @return {String} mongo projection
+ * */
 function projectionBuilder(stateType, query) {
     var singular = {
         guarantees: "guarantee",
@@ -494,7 +563,8 @@ function projectionBuilder(stateType, query) {
     };
     var projection = {};
     var singularStateType = singular[stateType];
-    if (!singularStateType) return logger.error("projectionBuilder error: stateType '%s' is not expected", stateType);
+    if (!singularStateType)
+        return logger.error("projectionBuilder error: stateType '%s' is not expected", stateType);
 
     //iterate over element in the query (scope, period...)
     for (var v in query) {
@@ -517,7 +587,6 @@ function projectionBuilder(stateType, query) {
                 projection[propName] = propValue;
         }
     }
-
     logger.sm("Mongo projection: " + JSON.stringify(projection, null, 2));
     return projection;
 }

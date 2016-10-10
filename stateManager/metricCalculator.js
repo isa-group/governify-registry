@@ -1,27 +1,35 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+"use strict";
 
-"use strict"
-
-var yaml = require('js-yaml');
-var fs = require('fs');
-var $RefParser = require('json-schema-ref-parser');
-var Promise = require("bluebird");
-var request = require('request');
-const vm = require('vm');
 var config = require('../config');
 var logger = config.logger;
 
+var Promise = require('bluebird');
+var yaml = require('js-yaml');
+var request = require('request');
+
+/**
+ * Metric calculator module.
+ * @module metricCalculator
+ * @requires config
+ * @requires bluebird
+ * @requires js-yaml
+ * @requires request
+ * @see module:calculators
+ * */
 module.exports = {
     process: processMetric
-}
+};
 
+
+/**
+ * Process all metrics.
+ * @param {Object} agreement agreement
+ * @param {Object} metricId metric ID
+ * @param {Object} metricParameters metric parameters
+ * @alias module:metricCalculator.process
+ * */
 function processMetric(agreement, metricId, metricParameters) {
-
-    return new Promise((resolve, reject) => {
+    return new Promise(function (resolve, reject) {
         try {
             var metric = agreement.terms.metrics[metricId];
             if (!metric) {
@@ -77,7 +85,7 @@ function processMetric(agreement, metricId, metricParameters) {
 
             if (!data.logs) {
                 return reject('Log not found for metric ' + metricId + '. ' +
-                    'Please, specify metric log or default log.');
+                        'Please, specify metric log or default log.');
             }
 
             data.scope = scope ? scope : metricParameters.scope;
@@ -89,7 +97,7 @@ function processMetric(agreement, metricId, metricParameters) {
                 },
                 url: computerEndpoint,
                 body: JSON.stringify(data)
-            }, function(err, httpResponse, response) {
+            }, function (err, httpResponse, response) {
                 logger.metrics('Processing metric ' + metricId + ' response from computer ');
                 //logger.metrics('response from computer: ' + JSON.stringify(response, null, 2));
                 if (err) {
@@ -106,13 +114,13 @@ function processMetric(agreement, metricId, metricParameters) {
                     response = yaml.safeLoad(response);
                     logger.metrics('Processing column name bindings from log...');
                     if (response && Array.isArray(response)) {
-                        response.forEach(function(metricState) {
+                        response.forEach(function (metricState) {
                             if (metricState.logs) {
                                 var logId = Object.keys(metricState.logs)[0];
                                 var log = agreement.context.definitions.logs[logId];
                                 var scope = {};
                                 var scopeId = Object.keys(metric.scope)[0];
-                                var logScopes = Object.keys(log.scopes[scopeId]).map(function(key) {
+                                var logScopes = Object.keys(log.scopes[scopeId]).map(function (key) {
                                     return log.scopes[scopeId][key];
                                 });
                                 for (var metricScope in metricState.scope) {

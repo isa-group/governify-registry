@@ -1,70 +1,92 @@
 'use strict';
 
-var jsyaml = require('js-yaml');
-var $RefParser = require('json-schema-ref-parser');
 var config = require('../../../../config');
-var stateManager = require('../../../../stateManager/stateManager.js');
-var Promise = require("bluebird");
-var fs = require('fs');
-var errorModel = require('../../../../errors/index.js').errorModel;
 var logger = config.logger;
-var Promise = require("bluebird");
-var moment = require('moment');
+var errorModel = require('../../../../errors/index.js').errorModel;
+var stateManager = require('../../../../stateManager/stateManager.js');
 
+var Promise = require('bluebird');
 var JSONStream = require('JSONStream');
 var stream = require('stream');
+var moment = require('moment');
 
-module.exports.guaranteesGET = function(args, res, next) {
-    /**
-     * parameters expected in the args:
-     * agreement (String)
-     * from (String)
-     * to (String)
-     **/
 
+/**
+ * Guarantees module
+ * @module guarantees
+ * @see module:states
+ * @requires config
+ * @requires bluebird
+ * @requires JSONStream
+ * @requires stream
+ * @requires errors
+ * @requires stateManager
+ * @requires gUtils
+ * */
+module.exports = {
+    guaranteesGET: _guaranteesGET,
+    guaranteeIdGET: _guaranteeIdGET,
+    guaranteeIdPenaltyPOST: _guaranteeIdPenaltyPOST
+};
+
+
+/** 
+ * Get all guarantees.
+ * @param {Object} args {agreement: String, from: String, to: String}
+ * @param {Object} res response
+ * @param {Object} next next function
+ * @alias module:guarantees.guaranteesGET
+ * */
+function _guaranteesGET(args, res, next) {
     res.setHeader('content-type', 'application/json; charset=utf-8');
     logger.ctlState("New request to GET guarantees");
     var agreementId = args.agreement.value;
 
     stateManager({
         id: agreementId
-    }).then((manager) => {
+    }).then(function (manager) {
         logger.ctlState("Getting state of guarantees...");
 
         if (config.parallelProcess.guarantees) {
             logger.ctlState("Processing guarantees in parallel mode");
             var processGuarantees = [];
-            manager.agreement.terms.guarantees.forEach(function(guarantee) {
+            manager.agreement.terms.guarantees.forEach(function (guarantee) {
                 processGuarantees.push(manager.get('guarantees', {
                     guarantee: guarantee.id
                 }));
             });
 
             var result;
-            if(config.streaming){
+            if (config.streaming) {
                 logger.ctlState("### Streaming mode ###");
-                result = new stream.Readable({ objectMode: true });
-                result.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
-                result.on('data', (data)=>{logger.streaming("Streaming data...")});
+                result = new stream.Readable({
+                    objectMode: true
+                });
+                result.on('error', function (err) {
+                    logger.streaming("waiting data from stateManager...");
+                });
+                result.on('data', function (data) {
+                    logger.streaming("Streaming data...");
+                });
                 result.pipe(JSONStream.stringify()).pipe(res);
-            }else{
+            } else {
                 logger.ctlState("### NO Streaming mode ###");
                 result = [];
             }
 
-            Promise.settle(processGuarantees).then(function(guaranteesValues) {
+            Promise.settle(processGuarantees).then(function (guaranteesValues) {
                 try {
                     if (guaranteesValues.length > 0) {
 
                         for (var i = 0; i < guaranteesValues.length; i++) {
                             if (guaranteesValues[i].isFulfilled()) {
                                 if (guaranteesValues[i].value().length > 0) {
-                                    if(config.streaming){
-                                        guaranteesValues[i].value().forEach(function(guaranteeValue) {
+                                    if (config.streaming) {
+                                        guaranteesValues[i].value().forEach(function (guaranteeValue) {
                                             result.push(manager.current(guaranteeValue));
                                         });
-                                    }else{
-                                        var guaranteesResults = guaranteesValues[i].value().map(function(guaranteeValue) {
+                                    } else {
+                                        var guaranteesResults = guaranteesValues[i].value().map(function (guaranteeValue) {
                                             return manager.current(guaranteeValue);
                                         });
                                         result = result.concat(guaranteesResults);
@@ -72,9 +94,9 @@ module.exports.guaranteesGET = function(args, res, next) {
                                 }
                             }
                         }
-                        if(config.streaming){
+                        if (config.streaming) {
                             result.push(null);
-                        }else{
+                        } else {
                             res.json(result);
                         }
                     } else {
@@ -86,7 +108,7 @@ module.exports.guaranteesGET = function(args, res, next) {
                     logger.error(err);
                     res.status(500).json(new errorModel(500, err));
                 }
-            }, function(err) {
+            }, function (err) {
                 logger.error(err);
                 res.status(500).json(new errorModel(500, err));
             });
@@ -94,52 +116,61 @@ module.exports.guaranteesGET = function(args, res, next) {
             logger.ctlState("Processing guarantees in sequential mode");
             //Build stream when it's required
             var ret;
-            if(config.streaming){
+            if (config.streaming) {
                 logger.ctlState("### Streaming mode ###");
-                ret = new stream.Readable({ objectMode: true });
-                ret.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
-                ret.on('data', (data)=>{logger.streaming("Streaming data...")});
+                ret = new stream.Readable({
+                    objectMode: true
+                });
+                ret.on('error', function (err) {
+                    logger.streaming("waiting data from stateManager...");
+                });
+                ret.on('data', function (data) {
+                    logger.streaming("Streaming data...");
+                });
                 ret.pipe(JSONStream.stringify()).pipe(res);
-            }else{
+            } else {
                 logger.ctlState("### NO Streaming mode ###");
                 ret = [];
             }
-            Promise.each(manager.agreement.terms.guarantees, (guarantee) => {
+            Promise.each(manager.agreement.terms.guarantees, function (guarantee) {
                 logger.ctlState("- guaranteeId: " + guarantee.id);
                 return manager.get('guarantees', {
                     guarantee: guarantee.id
-                }).then((results) => {
+                }).then(function (results) {
                     for (var i in results) {
                         //feeding stream
                         ret.push(manager.current(results[i]));
                     }
-                }, (err) => {
+                }, function (err) {
                     logger.error(err);
                 });
-            }).then(function(results) {
+            }).then(function (results) {
                 //end stream
-                if(config.streaming)
+                if (config.streaming)
                     ret.push(null);
                 else
                     res.json(ret);
 
-            }, (err) => {
+            }, function (err) {
                 logger.error("ERROR processing guarantees: ", err);
                 res.status(500).json(new errorModel(500, err));
             });
         }
-    }, (err) => {
+    }, function (err) {
         logger.error(err);
         res.status(500).json(new errorModel(500, err));
     });
 }
 
-module.exports.guaranteeIdGET = function(args, res, next) {
-    /**
-     * parameters expected in the args:
-     * agreement (String)
-     * guarantee (String)
-     **/
+
+/** 
+ * Get guarantees by ID.
+ * @param {Object} args {agreement: String, guarantee: String}
+ * @param {Object} res response
+ * @param {Object} next next function
+ * @alias module:guarantees.guaranteeIdGET
+ * */
+function _guaranteeIdGET(args, res, next) {
     logger.ctlState("New request to GET guarantee");
     var agreementId = args.agreement.value;
     var guaranteeId = args.guarantee.value;
@@ -150,13 +181,19 @@ module.exports.guaranteeIdGET = function(args, res, next) {
 
     stateManager({
         id: agreementId
-    }).then((manager) => {
+    }).then(function (manager) {
         var ret;
-        if(config.streaming){
+        if (config.streaming) {
             logger.ctlState("### Streaming mode ###");
-            ret = new stream.Readable({ objectMode: true });
-            ret.on('error', (err)=>{logger.streaming("waiting data from stateManager...")});
-            ret.on('data', (data)=>{logger.streaming("Streaming data...")});
+            ret = new stream.Readable({
+                objectMode: true
+            });
+            ret.on('error', function (err) {
+                logger.streaming("waiting data from stateManager...");
+            });
+            ret.on('data', function (data) {
+                logger.streaming("Streaming data...");
+            });
             ret.pipe(JSONStream.stringify()).pipe(res);
         }
         manager.get('guarantees', {
@@ -170,23 +207,31 @@ module.exports.guaranteeIdGET = function(args, res, next) {
                 res.json(success.map((element) => {
                     return manager.current(element);
                 }));
-            }else{
-              success.forEach((element) => {
-                  ret.push(manager.current(element));
-              });
-              ret.push(null);
+            } else {
+                success.forEach(function (element) {
+                    ret.push(manager.current(element));
+                });
+                ret.push(null);
             }
-        }, function(err) {
+        }, function (err) {
             logger.error(err);
             res.status(500).json(new errorModel(500, err));
         });
-    }, (err) => {
+    }, function (err) {
         logger.error(err);
         res.status(500).json(new errorModel(500, err));
     });
 }
 
-module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
+
+/** 
+ * Post gurantee penalty by ID.
+ * @param {Object} args {agreement: String, guarantee: String}
+ * @param {Object} res response
+ * @param {Object} next next function
+ * @alias module:guarantees.guaranteeIdPenaltyPOST
+ * */
+function _guaranteeIdPenaltyPOST(args, res, next) {
     var guaranteeId = args.guarantee.value;
     var agreementId = args.agreement.value;
     var query = args.query.value;
@@ -197,12 +242,12 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
 
     stateManager({
         id: agreementId
-    }).then((manager) => {
+    }).then(function (manager) {
 
-        var periods = getPeriods(manager.agreement, query.window);
+        var periods = gUtils.getPeriods(manager.agreement, query.window);
 
         var resul = [];
-        Promise.each(periods, (element) => {
+        Promise.each(periods, function (element) {
             var p = {
                 from: moment.utc(moment.tz(element.from, manager.agreement.context.validity.timeZone).subtract(Math.abs(offset), "months")).toISOString(),
                 to: moment.utc(moment.tz(element.to, manager.agreement.context.validity.timeZone).subtract(Math.abs(offset), "months")).toISOString()
@@ -212,7 +257,7 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
             var log = manager.agreement.context.definitions.logs[logId];
             var scope = {};
             var scopeId = Object.keys(log.scopes)[0];
-            var logScopes = Object.keys(log.scopes[scopeId]).map(function(key) {
+            var logScopes = Object.keys(log.scopes[scopeId]).map(function (key) {
                 return log.scopes[scopeId][key];
             });
             for (var queryScope in query.scope) {
@@ -231,15 +276,15 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
             //  logger.ctlState("Query after parse: " + JSON.stringify(query, null, 2));
             return manager.get('guarantees', {
                 guarantee: guaranteeId,
-                scope: query.scope,
-                //  period: p //,
-                //  window: query.window
-            }).then(function(success) {
+                scope: query.scope
+                        //  period: p //,
+                        //  window: query.window
+            }).then(function (success) {
                 var ret = [];
                 for (var i in success) {
                     var e = success[i];
                     //logger.ctlState("Comparing period:  " + e.period.from + ">=" + p.from + " && " + e.period.to + "<=" + p.to);
-                    if (moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to) && checkQuery(e, query)) {
+                    if (moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to) && gUtils.checkQuery(e, query)) {
                         ret.push(e);
                     }
                 }
@@ -247,73 +292,27 @@ module.exports.guaranteeIdPenaltyPOST = function(args, res, next) {
 
                 for (var i in ret) {
                     if (manager.current(ret[i]).penalties) {
-                        var penalties = manager.current(ret[i]).penalties
+                        var penalties = manager.current(ret[i]).penalties;
                         for (var penaltyI in penalties) {
-                            resul.push(new penaltyMetric(ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI]));
+                            resul.push(new gUtils.penaltyMetric(ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI]));
                         }
                     }
                 }
 
-            }, function(err) {
+            }, function (err) {
                 logger.error(err);
                 //res.status(500).json(new errorModel(500, err));
             });
 
-        }).then((result) => {
-            res.json(resul);
-        }, (err) => {
+        }).then(function (result) {
+            res.json(result);
+        }, function (err) {
             logger.error(err);
             res.status(500).json(new errorModel(500, err));
         });
 
-    }, (err) => {
+    }, function (err) {
         logger.error(err);
         res.status(500).json(new errorModel(500, err));
     });
-
-
-}
-
-function getPeriods(agreement, window) {
-    var periods = [];
-    var Wfrom = moment.utc(moment.tz(window.initial, agreement.context.validity.timeZone));
-    var current = moment.utc();
-    var from = moment.utc(Wfrom),
-        to = moment.utc(Wfrom).add(1, "months").subtract(1, "milliseconds");
-    while (!to || to.isSameOrBefore(current)) {
-        periods.push({
-            from: from,
-            to: to
-        });
-        from = moment.utc(moment.tz(from, agreement.context.validity.timeZone).add(1, "months"));
-        to = moment.utc(moment.tz(from, agreement.context.validity.timeZone).add(1, "months").subtract(1, "milliseconds"));
-    }
-
-    return periods;
-}
-
-//function
-function penaltyMetric(scope, parameters, period, logs, penaltyName, penaltyValue) {
-    this.scope = scope;
-    this.parameters = parameters;
-    this.period = period;
-    this.penalty = penaltyName;
-    this.value = penaltyValue;
-    this.logs = logs;
-}
-
-function checkQuery(element, query) {
-    var ret = true;
-    for (var v in query) {
-        if (v != "parameters" && v != "evidences" && v != "logs" && v != "window") {
-            if (query[v] instanceof Object) {
-                ret = ret && checkQuery(element[v], query[v]);
-            } else {
-                if ((element[v] !== query[v] && query[v] != "*") || !element[v]) {
-                    ret = ret && false;
-                }
-            }
-        }
-    }
-    return ret;
 }

@@ -2,7 +2,7 @@
 
 var request = require('request');
 var config = require('../../config');
-
+var db = require('../../database');
 // Requiring states controllers
 var states = require("./states/states.js");
 
@@ -14,13 +14,11 @@ module.exports = {
     statesAgreementGET: states.agreements.agreementIdGET,
     statesAgreementDELETE: states.agreements.agreementIdDELETE,
     statesAgreementRELOAD: states.agreements.agreementIdRELOAD,
-
     // Guarantees controllers
 
     statesAgreementGuaranteesGET: states.guarantees.guaranteesGET,
     statesAgreementGuaranteesGuaranteeGET: states.guarantees.guaranteeIdGET,
     statesAgreementGuaranteesGuaranteePenaltiyPOST: states.guarantees.guaranteeIdPenaltyPOST,
-
     // Quotas controllers
 
     statesAgreementQuotasGET: states.quotas.quotasGET,
@@ -35,18 +33,16 @@ module.exports = {
     statesAgreementMetricsMetricPOST: states.metrics.metricsIdPOST,
     statesAgreementMetricsMetricPUT: states.metrics.metricsIdPUT,
     statesAgreementMetricsMetricIncreasePOST: states.metrics.metricsIdIncrease,
-
     // Pricing
     statesAgreementPricingBillingPenaltiesPOST: states.pricing.PricingBillingPenaltiesPOST,
-
     // Delete
     statesDELETE: _statesDELETE,
 };
 
 function _statesDELETE(args, res, next) {
     logger.ctlState("New request to DELETE all agreement states");
-    var StateModel = config.db.models.StateModel;
-    StateModel.remove(function(err) {
+    var StateModel = db.models.StateModel;
+    StateModel.remove(function (err) {
         if (!err) {
             res.sendStatus(200);
             logger.info("Deleted state for all agreements");

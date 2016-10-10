@@ -1,0 +1,732 @@
+[
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Cadiz",
+            "activity": "Actividad no planificada",
+            "nodeETC": ">= 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-01-15T23:00:00.000Z",
+            "to": "2016-04-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Cadiz,ETC del Nodo=22,N Recursos=0",
+                "id": "1000020",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Cadiz,ETC del Nodo=22,N Recursos=0",
+                "id": "1000029",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Cadiz,ETC del Nodo=22,N Recursos=0",
+                "id": "1000038",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Malaga",
+            "activity": "Actividad no planificada",
+            "nodeETC": ">= 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-01-15T23:00:00.000Z",
+            "to": "2016-04-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Malaga,ETC del Nodo=25,N Recursos=0",
+                "id": "1000021",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Malaga,ETC del Nodo=25,N Recursos=0",
+                "id": "1000030",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Malaga,ETC del Nodo=25,N Recursos=0",
+                "id": "1000039",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Sevilla",
+            "activity": "Actividad no planificada",
+            "nodeETC": ">= 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-01-15T23:00:00.000Z",
+            "to": "2016-04-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Sevilla,ETC del Nodo=30,N Recursos=0",
+                "id": "1000033",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Sevilla,ETC del Nodo=30,N Recursos=0",
+                "id": "1000042",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Cordoba",
+            "activity": "Actividad no planificada",
+            "nodeETC": ">= 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-01-15T23:00:00.000Z",
+            "to": "2016-04-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Cordoba,ETC del Nodo=20,N Recursos=0",
+                "id": "1000025",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Cordoba,ETC del Nodo=20,N Recursos=0",
+                "id": "1000043",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "SSCC",
+            "activity": "Actividad no planificada",
+            "nodeETC": ">= 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-01-15T23:00:00.000Z",
+            "to": "2016-04-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=SSCC,ETC del Nodo=21,N Recursos=0",
+                "id": "1000027",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=SSCC,ETC del Nodo=21,N Recursos=0",
+                "id": "1000036",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Cadiz",
+            "activity": "Actividad no planificada",
+            "nodeETC": ">= 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-04-15T22:00:00.000Z",
+            "to": "2016-07-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Cadiz,ETC del Nodo=22,N Recursos=0",
+                "id": "1000047",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Cadiz,ETC del Nodo=22,N Recursos=0",
+                "id": "1000056",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Cadiz,ETC del Nodo=22,N Recursos=0",
+                "id": "1000065",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Malaga",
+            "activity": "Actividad no planificada",
+            "nodeETC": ">= 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-04-15T22:00:00.000Z",
+            "to": "2016-07-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Malaga,ETC del Nodo=25,N Recursos=0",
+                "id": "1000066",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Sevilla",
+            "activity": "Actividad no planificada",
+            "nodeETC": ">= 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-04-15T22:00:00.000Z",
+            "to": "2016-07-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Sevilla,ETC del Nodo=30,N Recursos=0",
+                "id": "1000051",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Sevilla,ETC del Nodo=30,N Recursos=0",
+                "id": "1000060",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Sevilla,ETC del Nodo=30,N Recursos=0",
+                "id": "1000069",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Cordoba",
+            "activity": "Actividad no planificada",
+            "nodeETC": ">= 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-04-15T22:00:00.000Z",
+            "to": "2016-07-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Cordoba,ETC del Nodo=20,N Recursos=0",
+                "id": "1000052",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Cordoba,ETC del Nodo=20,N Recursos=0",
+                "id": "1000061",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Cordoba,ETC del Nodo=20,N Recursos=0",
+                "id": "1000070",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "SSCC",
+            "activity": "Actividad no planificada",
+            "nodeETC": ">= 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-04-15T22:00:00.000Z",
+            "to": "2016-07-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=SSCC,ETC del Nodo=21,N Recursos=0",
+                "id": "1000054",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=SSCC,ETC del Nodo=21,N Recursos=0",
+                "id": "1000063",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=SSCC,ETC del Nodo=21,N Recursos=0",
+                "id": "1000072",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Cadiz",
+            "activity": "Actividad no planificada",
+            "nodeETC": ">= 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-07-15T22:00:00.000Z",
+            "to": "2016-10-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Cadiz,ETC del Nodo=22,N Recursos=0",
+                "id": "1000074",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Malaga",
+            "activity": "Actividad no planificada",
+            "nodeETC": ">= 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-07-15T22:00:00.000Z",
+            "to": "2016-10-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Malaga,ETC del Nodo=25,N Recursos=0",
+                "id": "1000075",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Sevilla",
+            "activity": "Actividad no planificada",
+            "nodeETC": ">= 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-07-15T22:00:00.000Z",
+            "to": "2016-10-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Sevilla,ETC del Nodo=30,N Recursos=0",
+                "id": "1000078",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "SSCC",
+            "activity": "Actividad no planificada",
+            "nodeETC": ">= 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-07-15T22:00:00.000Z",
+            "to": "2016-10-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=SSCC,ETC del Nodo=21,N Recursos=0",
+                "id": "1000081",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    }
+]
