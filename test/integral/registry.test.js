@@ -5,7 +5,8 @@ var expect = require('chai').expect,
     ppinot = require('./expected/ppinotData'),
     registry = require('../../index'),
     agreement = require('./expected/agreements'),
-    utils = require('../../utils/utils');
+    utils = require('../../utils/utils'),
+    testUtils = require('../utils');
 
 describe("Integral TEST", function () {
     before((done) => {
@@ -24,20 +25,9 @@ describe("Integral TEST", function () {
         });
     });
     after((done) => {
-        request.delete({
-            url: 'http://localhost:5001/api/v2/agreements'
-        }, (err, res, body) => {
-            if (err)
-                console.log(err);
-
-            request.delete({
-                url: 'http://localhost:5001/api/v2/states'
-            }, (err, res, body) => {
-                if (err)
-                    console.log(err);
-                registry.undeploy(() => {
-                    done();
-                });
+        registry.undeploy(() => {
+            testUtils.dropDB((err) => {
+                done();
             });
         });
     })

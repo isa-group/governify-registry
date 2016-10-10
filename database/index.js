@@ -42,7 +42,7 @@ function _connect(callback) {
         if (callback)
             callback(err);
     });
-    db.on('open', function () {
+    db.once('open', function () {
         config.logger.info('Connected to db!');
         instance.db = db;
         if (!instance.models) {

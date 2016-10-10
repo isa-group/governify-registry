@@ -7,6 +7,7 @@ const mongoose = require('mongoose'),
 
     config = require('../../../config.json'),
     registry = require('../../../../index'),
+    testUtils = require('../../../utils'),
 
     server = "localhost",
     port = 5001;
@@ -15,23 +16,17 @@ describe("Agreements unit tests...", function () {
 
     // Deploy registry before all tests
     before((done) => {
-        registry.deploy(config, () => done());
+        testUtils.dropDB((err) => {
+            if (!err)
+                registry.deploy(config, () => done());
+        });
     });
 
     // Remove all data and undeploy registry after all tests
     after((done) => {
-        request.delete({
-            url: 'http://localhost:5001/api/v2/agreements'
-        }, (err, res, body) => {
-            if (err)
-                console.log(err);
-
-            request.delete({
-                url: 'http://localhost:5001/api/v2/states'
-            }, (err, res, body) => {
-                if (err)
-                    console.log(err);
-                registry.undeploy(() => done());
+        registry.undeploy(() => {
+            testUtils.dropDB((err) => {
+                done();
             });
         });
     });
