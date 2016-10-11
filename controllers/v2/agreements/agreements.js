@@ -147,7 +147,7 @@ function _agreementIdGET(args, res, next) {
         }
 
         if (!agreement) {
-            logger.error('There is no agreement with id: ' + args.agreement.value);
+            logger.warning('There is no agreement with id: ' + args.agreement.value);
             return res.status(404).json(new errorModel(404, 'There is no agreement with id: ' + args.agreement.value));
         }
 
