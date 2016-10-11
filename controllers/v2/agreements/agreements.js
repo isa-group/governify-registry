@@ -48,13 +48,13 @@ function _agreementsPOST(args, res, next) {
     $RefParser.dereference(args.agreement.value, function (err, schema) {
         if (err) {
             logger.error(err.toString());
-            res.json(new errorModel(500, err));
+            res.status(500).json(new errorModel(500, err));
         } else {
             var agreement = new db.models.AgreementModel(schema);
             agreement.save(function (err) {
                 if (err) {
                     logger.error("Mongo error saving agreement: " + err.toString());
-                    res.json(new errorModel(500, err));
+                    res.status(500).json(new errorModel(500, err));
                 } else {
                     logger.info('New agreement saved successfully!');
                     logger.info('Initializing agreement state');
@@ -64,19 +64,15 @@ function _agreementsPOST(args, res, next) {
                         state.save(function (err) {
                             if (err) {
                                 logger.error("Mongo error saving state: " + err.toString());
-                                res.json(new errorModel(500, err));
+                                res.status(500).json(new errorModel(500, err));
                             } else {
                                 logger.info("State initialized successfully!");
-                                res.json({
-                                    code: 200,
-                                    message: 'New agreement saved successfully!',
-                                    data: agreement
-                                });
+                                res.sendStatus(200);
                             }
                         });
                     }, function (err) {
                         logger.error("Mongo error saving state: " + err.toString());
-                        res.json(new errorModel(500, err));
+                        res.status(500).json(new errorModel(500, err));
                     });
                 }
             });
@@ -124,10 +120,10 @@ function _agreementsGET(args, res, next) {
     AgreementModel.find(function (err, agreements) {
         if (err) {
             logger.error(err.toString());
-            res.json(new errorModel(500, err));
+            res.status(500).json(new errorModel(500, err));
         }
         logger.info("Agreements returned");
-        res.json(agreements);
+        res.status(200).json(agreements);
     });
 }
 
@@ -156,7 +152,7 @@ function _agreementIdGET(args, res, next) {
         }
 
         logger.info("Agreement returned");
-        res.json(agreement);
+        res.status(200).json(agreement);
     });
 }
 
