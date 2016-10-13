@@ -12,7 +12,7 @@ var request = require('request');
 var fs = require('fs');
 var errorModel = require('../../../../errors/index.js').errorModel;
 var mailer = require('../../../../mailer');
-var calculators = require('../../../../stateManager/calculators.js');
+var calculators = require('../../../../stateManager/v1/calculators.js');
 const util = require('util');
 
 module.exports = {

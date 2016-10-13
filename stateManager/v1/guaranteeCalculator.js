@@ -1,8 +1,8 @@
 "use strict";
 
-var config = require('../config');
+var config = require('../../config');
 var logger = config.logger;
-var utils = require('../utils/utils.js');
+var utils = require('../../utils/utils.js');
 
 var Promise = require('bluebird');
 var vm = require('vm');
@@ -207,8 +207,8 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                                 logger.guarantees('TimedScope already exists in array index: ', tsIndex);
                             }
 
-                            // If array metricValues has no values for the index yet, we initialize it 
-                            if (metricValues[tsIndex] == null){
+                            // If array metricValues has no values for the index yet, we initialize it
+                            if (metricValues[tsIndex] == null) {
                                 metricValues[tsIndex] = {};
                             }
                             // Finally, we store current value (most recent value) of the metric

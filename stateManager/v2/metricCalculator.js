@@ -1,6 +1,6 @@
 "use strict";
 
-var config = require('../config');
+var config = require('../../config');
 var logger = config.logger;
 
 var Promise = require('bluebird');
@@ -85,7 +85,7 @@ function processMetric(agreement, metricId, metricParameters) {
 
             if (!data.logs) {
                 return reject('Log not found for metric ' + metricId + '. ' +
-                        'Please, specify metric log or default log.');
+                    'Please, specify metric log or default log.');
             }
 
             data.scope = scope ? scope : metricParameters.scope;

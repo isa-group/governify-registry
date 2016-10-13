@@ -1,10 +1,10 @@
 'use strict';
 
-var config = require('../config');
+var config = require('../../config');
 var logger = config.logger;
-var db = require('../database');
-var errorModel = require('../errors/index.js').errorModel;
-var calculators = require('../stateManager/calculators.js');
+var db = require('../../database');
+var errorModel = require('../../errors/index.js').errorModel;
+var calculators = require('./calculators.js');
 
 var Promise = require('bluebird');
 var request = require('requestretry');

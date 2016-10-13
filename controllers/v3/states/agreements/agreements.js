@@ -5,7 +5,7 @@ var db = require('../../../../database');
 var logger = config.logger;
 var stateManager = require('../../../../stateManager/v2/stateManager.js');
 var mailer = require('../../../../mailer');
-var calculators = require('../../../../stateManager/calculators.js');
+var calculators = require('../../../../stateManager/v2/calculators.js');
 
 var Promise = require('bluebird');
 var request = require('request');

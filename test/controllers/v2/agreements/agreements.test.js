@@ -7,7 +7,7 @@ const expect = require("chai").expect,
     registry = require('../../../../index'),
     testUtils = require('../../../utils'),
     config = require('../../../config.json'),
-    agreementFile = require('../../../integral/expected/agreements/T14-L2-S12-minimal.json'),
+    agreementFile = require('../expected/agreements/T14-L2-S12-minimal.json'),
     // Registry endpoint
     serverPath = "http://localhost:5001/api/v2",
     agreementsPath = serverPath + '/agreements',
@@ -112,7 +112,7 @@ describe("Agreements unit tests...", function () {
             let agreementJson = null,
                 _body = null;
             const agreementId = "T14-L2-S12-minimal",
-                expectedAgreement = require('../../../integral/expected/agreements/T14-L2-S12-minimal-getresponse.json'),
+                expectedAgreement = require('../expected/agreements/T14-L2-S12-minimal-getresponse.json'),
                 options = {
                     uri: agreementsPath + "/" + agreementId,
                     method: 'GET'
@@ -152,7 +152,7 @@ describe("Agreements unit tests...", function () {
 
             let agreementsJson = null;
             const agreementId = "T14-L2-S12-minimal",
-                expectedAgreement = require('../../../integral/expected/agreements/T14-L2-S12-minimal-getresponse.json'),
+                expectedAgreement = require('../expected/agreements/T14-L2-S12-minimal-getresponse.json'),
                 options = {
                     uri: agreementsPath,
                     method: 'GET'

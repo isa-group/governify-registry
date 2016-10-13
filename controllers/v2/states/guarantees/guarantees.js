@@ -139,11 +139,7 @@ function _guaranteesGET(args, res, next) {
                     guarantee: guarantee.id
                 }, null, 2));
                 return manager.get('guarantees', {
-                    guarantee: guarantee.id,
-                    period: {
-                        from: from,
-                        to: to
-                    }
+                    guarantee: guarantee.id
                 }).then(function (results) {
                     for (var i in results) {
                         //feeding stream
@@ -182,8 +178,6 @@ function _guaranteeIdGET(args, res, next) {
     logger.ctlState("New request to GET guarantee");
     var agreementId = args.agreement.value;
     var guaranteeId = args.guarantee.value;
-    var from = args.from.value;
-    var to = args.to.value;
 
     res.setHeader('content-type', 'application/json; charset=utf-8');
 
@@ -205,11 +199,7 @@ function _guaranteeIdGET(args, res, next) {
             ret.pipe(JSONStream.stringify()).pipe(res);
         }
         manager.get('guarantees', {
-            guarantee: guaranteeId,
-            period: {
-                "from": from,
-                "to": to
-            }
+            guarantee: guaranteeId
         }).then(function (success) {
             if (config.streaming) {
                 res.json(success.map((element) => {

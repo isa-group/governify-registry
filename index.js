@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 
 // middleware to control when an agreement state process is already in progress
 app.use('/api/v2/states/:agreement', middlewares.stateInProgress);
-
+app.use('/api/v3/states/:agreement', middlewares.stateInProgress);
 
 /**
  * Registry module.

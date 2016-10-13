@@ -1,8 +1,8 @@
 'use strict';
 
-var config = require('../config');
+var config = require('../../config');
 var logger = config.logger;
-var errorModel = require('../errors/index.js').errorModel;
+var errorModel = require('../../errors/index.js').errorModel;
 
 var Promise = require('bluebird');
 

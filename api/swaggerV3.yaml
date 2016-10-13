@@ -13,7 +13,7 @@ info:
     name: "MIT"
     url: "http://opensource.org/licenses/MIT"
 host: "registry.governify.io"
-basePath: "/api/v2"
+basePath: "/api/v3"
 tags:
 - name: "agreement-registry"
   description: "Agreement registry"

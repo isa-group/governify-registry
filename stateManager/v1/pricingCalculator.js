@@ -1,8 +1,8 @@
 'use strict';
 
-var config = require('../config');
+var config = require('../../config');
 var logger = config.logger;
-var utils = require('../utils/utils.js');
+var utils = require('../../utils/utils.js');
 
 var Promise = require('bluebird');
 var moment = require('moment');
@@ -143,9 +143,9 @@ function processPricing(agreementDef, query, manager) {
 
                         var classifier = classifiers.find(function (classif) {
                             return moment.utc(guaranteeState.period.to).isSameOrAfter(classif.period.from) &&
-                                    moment.utc(guaranteeState.period.to).isSameOrBefore(classif.period.to);
+                                moment.utc(guaranteeState.period.to).isSameOrBefore(classif.period.to);
                         });
-                        
+
                         if (!!classifier) {
                             logger.pricing("Classifier already initialized");
                             logger.pricing(JSON.stringify(classifier, null, 2));
@@ -154,24 +154,24 @@ function processPricing(agreementDef, query, manager) {
                             groupBy.forEach(function (group) {
                                 validScope = validScope && (classifier.scope[group] == guaranteeState.scope[group]);
                             });
-                            
+
                             if (validScope) {
                                 // Once the classifier is initialized (now or before) ...
                                 //... In case this guarantee state has penalties we aggregated it....
                                 if (guaranteeState.penalties) {
                                     // Calculate aggregated values of penalty
                                     switch (penalty.aggregatedBy) {
-                                        case 'sum':
-                                            logger.pricing("SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
-                                            classifier.value += guaranteeState.penalties[penaltyId];
-                                            break;
-                                        case 'prod':
-                                            logger.pricing("PROD " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
-                                            classifier.value *= guaranteeState.penalties[penaltyId];
-                                            break;
-                                        default:
-                                            logger.pricing("(DEFAULT) SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
-                                            classifier.value += guaranteeState.penalties[penaltyId];
+                                    case 'sum':
+                                        logger.pricing("SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
+                                        classifier.value += guaranteeState.penalties[penaltyId];
+                                        break;
+                                    case 'prod':
+                                        logger.pricing("PROD " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
+                                        classifier.value *= guaranteeState.penalties[penaltyId];
+                                        break;
+                                    default:
+                                        logger.pricing("(DEFAULT) SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
+                                        classifier.value += guaranteeState.penalties[penaltyId];
                                     }
                                 }
                                 // Control Saturation (maximum value) with UpTo in the definition
@@ -217,7 +217,7 @@ function getPeriods(agreement) {
     var Wfrom = moment.utc(moment.tz(initial, agreement.context.validity.timeZone));
     var current = moment.utc();
     var from = moment.utc(Wfrom),
-            to = moment.utc(Wfrom).add(1, frequency).subtract(1, "milliseconds");
+        to = moment.utc(Wfrom).add(1, frequency).subtract(1, "milliseconds");
     while (!to || to.isSameOrBefore(current)) {
         periods.push({
             from: from,

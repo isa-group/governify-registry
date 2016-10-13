@@ -2,7 +2,7 @@
 
 var config = require('../../../../config');
 var logger = config.logger;
-var stateManager = require('../../../../stateManager/stateManager.js');
+var stateManager = require('../../../../stateManager/v1/stateManager.js');
 
 
 /**
@@ -18,7 +18,7 @@ module.exports = {
 };
 
 
-/** 
+/**
  * Get all quotas.
  * @param {Object} args {agreement: String}
  * @param {Object} res response
@@ -40,7 +40,7 @@ function _quotasGET(args, res, next) {
 }
 
 
-/** 
+/**
  * Get quotas by ID.
  * @param {Object} args {agreement: String, quota: String}
  * @param {Object} res response

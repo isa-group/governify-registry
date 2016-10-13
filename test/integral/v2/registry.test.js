@@ -3,16 +3,16 @@
 var expect = require('chai').expect,
     request = require('request'),
     ppinot = require('./expected/ppinotData'),
-    registry = require('../../index'),
+    registry = require('../../../index'),
     agreement = require('./expected/agreements'),
-    utils = require('../../utils/utils'),
-    testUtils = require('../utils');
+    utils = require('../../../utils/utils'),
+    testUtils = require('../../utils');
 
-describe("Integral TEST", function () {
+describe("Integral TEST V2", function () {
     before((done) => {
         ppinot.listen(5000, () => {
             testUtils.dropDB((err) => {
-                registry.deploy(require('../config.json'), (server) => {
+                registry.deploy(require('../../config.json'), (server) => {
                     request.post({
                         url: 'http://localhost:5001/api/v2/agreements',
                         body: agreement,
