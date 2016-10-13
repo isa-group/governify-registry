@@ -4,6 +4,7 @@ var config = require('../../../../config');
 var logger = config.logger;
 var errorModel = require('../../../../errors/index.js').errorModel;
 var stateManager = require('../../../../stateManager/stateManager.js');
+var gUtils = require('./gUtils.js');
 
 var Promise = require('bluebird');
 var JSONStream = require('JSONStream');
@@ -30,7 +31,7 @@ module.exports = {
 };
 
 
-/** 
+/**
  * Get all guarantees.
  * @param {Object} args {agreement: String, from: String, to: String}
  * @param {Object} res response
@@ -41,6 +42,8 @@ function _guaranteesGET(args, res, next) {
     res.setHeader('content-type', 'application/json; charset=utf-8');
     logger.ctlState("New request to GET guarantees");
     var agreementId = args.agreement.value;
+    var from = args.from.value;
+    var to = args.to.value;
 
     stateManager({
         id: agreementId
@@ -52,7 +55,11 @@ function _guaranteesGET(args, res, next) {
             var processGuarantees = [];
             manager.agreement.terms.guarantees.forEach(function (guarantee) {
                 processGuarantees.push(manager.get('guarantees', {
-                    guarantee: guarantee.id
+                    guarantee: guarantee.id,
+                    period: {
+                        "from": from,
+                        "to": to
+                    }
                 }));
             });
 
@@ -134,8 +141,19 @@ function _guaranteesGET(args, res, next) {
             }
             Promise.each(manager.agreement.terms.guarantees, function (guarantee) {
                 logger.ctlState("- guaranteeId: " + guarantee.id);
+                logger.warning("1º ( CTL ) query" + JSON.stringify({
+                    guarantee: guarantee.id,
+                    period: {
+                        from: from,
+                        to: to
+                    }
+                }, null, 2));
                 return manager.get('guarantees', {
-                    guarantee: guarantee.id
+                    guarantee: guarantee.id,
+                    period: {
+                        from: from,
+                        to: to
+                    }
                 }).then(function (results) {
                     for (var i in results) {
                         //feeding stream
@@ -163,7 +181,7 @@ function _guaranteesGET(args, res, next) {
 }
 
 
-/** 
+/**
  * Get guarantees by ID.
  * @param {Object} args {agreement: String, guarantee: String}
  * @param {Object} res response
@@ -202,8 +220,8 @@ function _guaranteeIdGET(args, res, next) {
                 "from": from,
                 "to": to
             }
-        }).then(function(success) {
-            if(config.streaming){
+        }).then(function (success) {
+            if (config.streaming) {
                 res.json(success.map((element) => {
                     return manager.current(element);
                 }));
@@ -224,7 +242,7 @@ function _guaranteeIdGET(args, res, next) {
 }
 
 
-/** 
+/**
  * Post gurantee penalty by ID.
  * @param {Object} args {agreement: String, guarantee: String}
  * @param {Object} res response
@@ -240,13 +258,15 @@ function _guaranteeIdPenaltyPOST(args, res, next) {
 
     var offset = query.parameters.offset;
 
+    logger.ctlState("With offset = " + offset);
+
     stateManager({
         id: agreementId
     }).then(function (manager) {
 
         var periods = gUtils.getPeriods(manager.agreement, query.window);
-
-        var resul = [];
+        logger.warning("periods: " + JSON.stringify(periods, null, 2));
+        var result = [];
         Promise.each(periods, function (element) {
             var p = {
                 from: moment.utc(moment.tz(element.from, manager.agreement.context.validity.timeZone).subtract(Math.abs(offset), "months")).toISOString(),
@@ -274,11 +294,13 @@ function _guaranteeIdPenaltyPOST(args, res, next) {
             query.scope = scope ? scope : query.scope;
 
             //  logger.ctlState("Query after parse: " + JSON.stringify(query, null, 2));
+            logger.warning("Query after parse: " + JSON.stringify(p, null, 2));
             return manager.get('guarantees', {
                 guarantee: guaranteeId,
-                scope: query.scope
-                        //  period: p //,
-                        //  window: query.window
+                scope: query.scope,
+                period: p
+                    //  period: p //,
+                    //  window: query.window
             }).then(function (success) {
                 var ret = [];
                 for (var i in success) {
@@ -294,7 +316,8 @@ function _guaranteeIdPenaltyPOST(args, res, next) {
                     if (manager.current(ret[i]).penalties) {
                         var penalties = manager.current(ret[i]).penalties;
                         for (var penaltyI in penalties) {
-                            resul.push(new gUtils.penaltyMetric(ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI]));
+                            logger.warning("element: " + JSON.stringify(element, null, 2));
+                            result.push(new gUtils.penaltyMetric(ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI]));
                         }
                     }
                 }
@@ -304,8 +327,10 @@ function _guaranteeIdPenaltyPOST(args, res, next) {
                 //res.status(500).json(new errorModel(500, err));
             });
 
-        }).then(function (result) {
+        }).then(function () {
+
             res.json(result);
+
         }, function (err) {
             logger.error(err);
             res.status(500).json(new errorModel(500, err));

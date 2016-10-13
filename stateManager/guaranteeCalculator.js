@@ -93,6 +93,7 @@ function processGuarantee(manager, query) {
             return reject('Guarantee ' + guaranteeId + ' not found.');
         }
         // We prepare the parameters needed by the processScopedGuarantee function
+        logger.warning("2º ( processGuarantee ) query" + JSON.stringify(query, null, 2));
         guarantee.of.forEach(function (ofElement) {
             processScopedGuarantees.push({
                 manager: manager,
@@ -104,6 +105,7 @@ function processGuarantee(manager, query) {
 
         var guaranteesValues = [];
         logger.guarantees('Processing scoped guarantee (' + guarantee.id + ')...');
+        logger.guarantees('With query:  (' + JSON.stringify(query, null, 2) + ')...');
         // processScopedGuarantee is called for each scope (priority, node, serviceLine, activity, etc.) of the guarantee
         Promise.each(processScopedGuarantees, function (guaranteeParam) {
             return processScopedGuarantee(guaranteeParam.manager, guaranteeParam.query, guaranteeParam.guarantee, guaranteeParam.ofElement).then(function (value) {
@@ -174,8 +176,11 @@ function processScopedGuarantee(manager, query, guarantee, ofElement) {
             // We get the metrics to calculate from the with section of the scoped guarantee
             if (ofElement.with) {
                 var window = ofElement.window;
-                window.initial = moment.utc(moment.tz(ofElement.window.initial, agreement.context.validity.timeZone)).format();
+                logger.warning("3º ( processScopedGuarantee ) query" + JSON.stringify(query, null, 2));
+                window.initial = moment.utc(moment.tz(query.period.from, agreement.context.validity.timeZone)).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
+                window.end = moment.utc(moment.tz(query.period.to, agreement.context.validity.timeZone)).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
                 window.timeZone = agreement.context.validity.timeZone;
+                logger.warning("4º ( processScopedGuarantee ) window" + JSON.stringify(window, null, 2));
                 // For each metric, we create an object with the parameters needed by the manager to be able to calculate the metric state
                 for (var metricId in ofElement.with) {
                     processMetrics.push({
@@ -217,8 +222,8 @@ function processScopedGuarantee(manager, query, guarantee, ofElement) {
                                 logger.guarantees('TimedScope already exists in array index: ', tsIndex);
                             }
 
-                            // If array metricValues has no values for the index yet, we initialize it 
-                            if (metricValues[tsIndex] == null){
+                            // If array metricValues has no values for the index yet, we initialize it
+                            if (metricValues[tsIndex] == null) {
                                 metricValues[tsIndex] = {};
                             }
                             // Finally, we store current value (most recent value) of the metric

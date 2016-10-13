@@ -22,20 +22,29 @@ module.exports = {
 };
 
 
-/** 
+/**
  * This method return a set of periods which are based on a window parameter.
  * @param {AgreementModel} agreement agreement model passed
- * @param {WindowModel} window window model passed 
+ * @param {WindowModel} window window model passed
  * @return {Set} set of periods
  * @alias module:gUtils.getPeriods
  * */
 function _getPeriods(agreement, window) {
     var periods = [];
+    logger.warning("Window: " + JSON.stringify(window, null, 2));
     var Wfrom = moment.utc(moment.tz(window.initial, agreement.context.validity.timeZone));
-    var current = moment.utc();
+    var Wto = window.end ? moment.utc(moment.tz(window.end, agreement.context.validity.timeZone)) : moment.utc();
+    logger.warning("Window: " + JSON.stringify({
+        initial: Wfrom,
+        end: Wto
+    }, null, 2));
     var from = moment.utc(Wfrom),
-            to = moment.utc(Wfrom).add(1, "months").subtract(1, "milliseconds");
-    while (!to || to.isSameOrBefore(current)) {
+        to = moment.utc(Wfrom).add(1, "months").subtract(1, "milliseconds");
+    logger.warning("period: " + JSON.stringify({
+        from: from,
+        to: to
+    }, null, 2));
+    while (!to || to.isSameOrBefore(Wto)) {
         periods.push({
             from: from,
             to: to
@@ -48,7 +57,7 @@ function _getPeriods(agreement, window) {
 }
 
 
-/** 
+/**
  * Constructor for a metric of type penalty.
  * @param {ScopeModel} scope scope
  * @param {ParametersModel} parameters parameters
@@ -69,7 +78,7 @@ function _PenaltyMetric(scope, parameters, period, logs, penaltyName, penaltyVal
 }
 
 
-/** 
+/**
  * This method return 'true' or 'false' when check if query is complied.
  * @param {StateModel} state state
  * @param {QueryModel} query query
@@ -81,7 +90,7 @@ function _checkQuery(state, query) {
     for (var v in query) {
         if (v != "parameters" && v != "evidences" && v != "logs" && v != "window") {
             if (query[v] instanceof Object) {
-                ret = ret && checkQuery(state[v], query[v]);
+                ret = ret && _checkQuery(state[v], query[v]);
             } else {
                 if ((state[v] !== query[v] && query[v] != "*") || !state[v]) {
                     ret = ret && false;
@@ -93,7 +102,7 @@ function _checkQuery(state, query) {
 }
 
 
-/** 
+/**
  * Process mode.
  * @param {Object} mode mode
  * @param {Object} stateType state type
