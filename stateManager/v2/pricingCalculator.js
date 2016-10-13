@@ -46,7 +46,11 @@ function processPricing(agreementDef, query, manager) {
             var processGuarantees = [];
             agreementDef.terms.guarantees.forEach(function (guarantee) {
                 processGuarantees.push(manager.get('guarantees', {
-                    guarantee: guarantee.id
+                    guarantee: guarantee.id,
+                    period: {
+                        from: query.window.initial,
+                        to: query.window.end
+                    }
                 }));
             });
 
@@ -98,7 +102,11 @@ function processPricing(agreementDef, query, manager) {
             Promise.each(agreementDef.terms.guarantees, function (guarantee) {
                 logger.pricing("Getting state for guarantee = " + guarantee.id);
                 return manager.get('guarantees', {
-                    guarantee: guarantee.id
+                    guarantee: guarantee.id,
+                    period: {
+                        from: query.window.initial,
+                        to: query.window.end
+                    }
                 }).then(function (results) {
                     // store array of guarantee states
                     logger.pricing("States retrieved from guarantee '" + guarantee.id + "' : " + results.length);
@@ -121,7 +129,7 @@ function processPricing(agreementDef, query, manager) {
                     // initialize grouping keys (e.g. serviceLine, activity)
                     var groupBy = Object.keys(penalty.groupBy);
                     logger.pricing("Calculating pricing state with values: [penalty=" + penaltyId + ", aggregatedBy=" + penalty.aggregatedBy + ", groupBy= " + groupBy.toString() + "]:");
-                    var periods = getPeriods(agreementDef);
+                    var periods = utils.getPeriodsFrom(agreementDef, query.window);
                     periods.forEach(function (period) {
                         // Populate scopes from groupBy (e.g. serviceLine & activity)
                         var classifier = {};
@@ -140,12 +148,12 @@ function processPricing(agreementDef, query, manager) {
                         var guaranteeState = manager.current(guaranteesStates[i]);
                         logger.pricing("\t(" + i + "/" + guaranteesStates.length + ") Processing guaranteeState with scope: ");
                         logger.pricing("\t\t\t" + JSON.stringify(guaranteeState.scope));
-
+                        logger.pricing("ID: " + guaranteeState.id);
                         var classifier = classifiers.find(function (classif) {
                             return moment.utc(guaranteeState.period.to).isSameOrAfter(classif.period.from) &&
-                                    moment.utc(guaranteeState.period.to).isSameOrBefore(classif.period.to);
+                                moment.utc(guaranteeState.period.to).isSameOrBefore(classif.period.to);
                         });
-                        
+
                         if (!!classifier) {
                             logger.pricing("Classifier already initialized");
                             logger.pricing(JSON.stringify(classifier, null, 2));
@@ -154,24 +162,24 @@ function processPricing(agreementDef, query, manager) {
                             groupBy.forEach(function (group) {
                                 validScope = validScope && (classifier.scope[group] == guaranteeState.scope[group]);
                             });
-                            
+
                             if (validScope) {
                                 // Once the classifier is initialized (now or before) ...
                                 //... In case this guarantee state has penalties we aggregated it....
                                 if (guaranteeState.penalties) {
                                     // Calculate aggregated values of penalty
                                     switch (penalty.aggregatedBy) {
-                                        case 'sum':
-                                            logger.pricing("SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
-                                            classifier.value += guaranteeState.penalties[penaltyId];
-                                            break;
-                                        case 'prod':
-                                            logger.pricing("PROD " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
-                                            classifier.value *= guaranteeState.penalties[penaltyId];
-                                            break;
-                                        default:
-                                            logger.pricing("(DEFAULT) SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
-                                            classifier.value += guaranteeState.penalties[penaltyId];
+                                    case 'sum':
+                                        logger.pricing("SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
+                                        classifier.value += guaranteeState.penalties[penaltyId];
+                                        break;
+                                    case 'prod':
+                                        logger.pricing("PROD " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
+                                        classifier.value *= guaranteeState.penalties[penaltyId];
+                                        break;
+                                    default:
+                                        logger.pricing("(DEFAULT) SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
+                                        classifier.value += guaranteeState.penalties[penaltyId];
                                     }
                                 }
                                 // Control Saturation (maximum value) with UpTo in the definition
@@ -217,7 +225,7 @@ function getPeriods(agreement) {
     var Wfrom = moment.utc(moment.tz(initial, agreement.context.validity.timeZone));
     var current = moment.utc();
     var from = moment.utc(Wfrom),
-            to = moment.utc(Wfrom).add(1, frequency).subtract(1, "milliseconds");
+        to = moment.utc(Wfrom).add(1, frequency).subtract(1, "milliseconds");
     while (!to || to.isSameOrBefore(current)) {
         periods.push({
             from: from,

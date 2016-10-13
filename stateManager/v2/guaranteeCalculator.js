@@ -73,33 +73,43 @@ function processGuarantees(agreement) {
  * @param {Object} manager manager
  * @alias module:guaranteeCalculator.process
  * */
-function processGuarantee(agreement, guaranteeId, manager) {
+function processGuarantee(manager, query) {
+
+    var agreement = manager.agreement;
+    var guaranteeId = query.guarantee;
+
     var processScopedGuarantees = [];
-    return new Promise(function (resolve, reject) {
+
+    return new Promise((resolve, reject) => {
+
         logger.debug("Searching guarantee '%s' in array:\n %s", guaranteeId, JSON.stringify(agreement.terms.guarantees, null, 2));
+
         // We retrieve the guarantee definition from the agreement that matches with the provided ID
         var guarantee = agreement.terms.guarantees.find(function (guarantee) {
-            return guarantee.id === guaranteeId;
+            return guarantee.id === guaranteeId
         });
         logger.debug('Processing guarantee: ' + guaranteeId);
         if (!guarantee) {
             return reject('Guarantee ' + guaranteeId + ' not found.');
         }
         // We prepare the parameters needed by the processScopedGuarantee function
+        logger.warning("2º ( processGuarantee ) query" + JSON.stringify(query, null, 2));
         guarantee.of.forEach(function (ofElement) {
             processScopedGuarantees.push({
-                agreement: agreement,
+                manager: manager,
+                query: query,
                 guarantee: guarantee,
-                ofElement: ofElement,
-                manager: manager
+                ofElement: ofElement
             });
         });
 
         var guaranteesValues = [];
         logger.guarantees('Processing scoped guarantee (' + guarantee.id + ')...');
+        logger.guarantees('With query:  (' + JSON.stringify(query, null, 2) + ')...');
         // processScopedGuarantee is called for each scope (priority, node, serviceLine, activity, etc.) of the guarantee
         Promise.each(processScopedGuarantees, function (guaranteeParam) {
-            return processScopedGuarantee(guaranteeParam.agreement, guaranteeParam.guarantee, guaranteeParam.ofElement, guaranteeParam.manager).then(function (value) {
+            return processScopedGuarantee(guaranteeParam.manager, guaranteeParam.query, guaranteeParam.guarantee, guaranteeParam.ofElement).then(function (value) {
+
                 logger.guarantees('Scoped guarantee has been processed');
                 // Once we have calculated the scoped guarantee state, we add it to the array 'guaranteeValues'
                 guaranteesValues = guaranteesValues.concat(value);
@@ -122,7 +132,6 @@ function processGuarantee(agreement, guaranteeId, manager) {
     });
 }
 
-
 /**
  * Process a scoped guarantee.
  * @function processScopedGuarantee
@@ -131,9 +140,12 @@ function processGuarantee(agreement, guaranteeId, manager) {
  * @param {Object} ofElement of element
  * @param {Object} manager manager
  * */
-function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
+function processScopedGuarantee(manager, query, guarantee, ofElement) {
     try {
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
+
+            var agreement = manager.agreement;
+
             // We retrieve the SLO from the scoped guarantee and the penalties to apply
             var slo = ofElement.objective;
             var penalties = ofElement.penalties;
@@ -164,8 +176,11 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
             // We get the metrics to calculate from the with section of the scoped guarantee
             if (ofElement.with) {
                 var window = ofElement.window;
-                window.initial = moment.utc(moment.tz(ofElement.window.initial, agreement.context.validity.timeZone)).format();
+                logger.warning("3º ( processScopedGuarantee ) query" + JSON.stringify(query, null, 2));
+                window.initial = moment.utc(moment.tz(query.period.from, agreement.context.validity.timeZone)).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
+                window.end = moment.utc(moment.tz(query.period.to, agreement.context.validity.timeZone)).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
                 window.timeZone = agreement.context.validity.timeZone;
+                logger.warning("4º ( processScopedGuarantee ) window" + JSON.stringify(window, null, 2));
                 // For each metric, we create an object with the parameters needed by the manager to be able to calculate the metric state
                 for (var metricId in ofElement.with) {
                     processMetrics.push({
@@ -175,8 +190,8 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                         evidences: evidences,
                         window: window,
                         period: {
-                            from: '*',
-                            to: '*'
+                            from: query.period ? query.period.from : '*',
+                            to: query.period ? query.period.to : '*'
                         }
                     });
                 }
@@ -207,8 +222,8 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                                 logger.guarantees('TimedScope already exists in array index: ', tsIndex);
                             }
 
-                            // If array metricValues has no values for the index yet, we initialize it 
-                            if (metricValues[tsIndex] == null){
+                            // If array metricValues has no values for the index yet, we initialize it
+                            if (metricValues[tsIndex] == null) {
                                 metricValues[tsIndex] = {};
                             }
                             // Finally, we store current value (most recent value) of the metric
