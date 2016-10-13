@@ -3,7 +3,7 @@
 var config = require('../../../../config');
 var logger = config.logger;
 var errorModel = require('../../../../errors/index.js').errorModel;
-var stateManager = require('../../../../stateManager/stateManager.js');
+var stateManager = require('../../../../stateManager/v2/stateManager.js');
 
 var Promise = require('bluebird');
 var JSONStream = require('JSONStream');
@@ -29,7 +29,7 @@ module.exports = {
 };
 
 
-/** 
+/**
  * Increase metric by ID.
  * @param {Object} args {agreement: String, metric: String}
  * @param {Object} res response
@@ -66,7 +66,7 @@ function _metricsIdIncrease(args, res, next) {
 }
 
 
-/** 
+/**
  * Modify metric by ID.
  * @param {Object} args {agreement: String, metric: String, metricValue: String}
  * @param {Object} res response
@@ -100,7 +100,7 @@ function _metricsIdPUT(args, res, next) {
 }
 
 
-/** 
+/**
  * Post a new metric.
  * @param {Object} req request
  * @param {Object} res response
@@ -212,7 +212,7 @@ function _metricsPOST(req, res, next) {
 }
 
 
-/** 
+/**
  * Post a new metric by ID.
  * @param {Object} args {agreement: String, metric: String}
  * @param {Object} res response

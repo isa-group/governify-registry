@@ -1,13 +1,13 @@
 'use strict';
 
-//Server dependencies 
+//Server dependencies
 var express = require('express');
 var http = require('http');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var app = express();
 
-//Self dependencies 
+//Self dependencies
 var config = require('./config');
 var db = require('./database');
 var swaggerUtils = require('./utils/utils').swagger;
@@ -16,7 +16,7 @@ var middlewares = require('./utils/utils').middlewares;
 app.use(cors());
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json()); // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({// to support URL-encoded bodies
+app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
 
@@ -63,7 +63,7 @@ function _deploy(configurations, callback) {
         config.logger.info('Trying to connect to database');
         if (!err) {
             //list of swagger documents, one for each version of the api.
-            var swaggerDocs = [swaggerUtils.getSwaggerDoc(1), swaggerUtils.getSwaggerDoc(2)];
+            var swaggerDocs = [swaggerUtils.getSwaggerDoc(1), swaggerUtils.getSwaggerDoc(2), swaggerUtils.getSwaggerDoc(3)];
             //initialize swagger middleware for each swagger documents.
             swaggerUtils.initializeMiddleware(app, swaggerDocs, function (middleware) {
 

@@ -2,7 +2,7 @@
 
 var config = require('../../../../config');
 var logger = config.logger;
-var stateManager = require('../../../../stateManager/stateManager.js');
+var stateManager = require('../../../../stateManager/v1/stateManager.js');
 
 
 /**
@@ -17,7 +17,7 @@ module.exports = {
 };
 
 
-/** 
+/**
  * Post pricing billing penalties.
  * @param {Object} req request
  * @param {Object} res response
@@ -32,7 +32,9 @@ function _PricingBillingPenaltiesPOST(req, res, next) {
     var query = args.query.value;
     logger.ctlState("New request to get pricing state for agreementId = " + agreementId);
 
-    stateManager({id: agreementId}).then(function (manager) {
+    stateManager({
+        id: agreementId
+    }).then(function (manager) {
         manager.get('pricing', query).then(function (data) {
 
             logger.ctlState("Sending Pricing-Billing-Penalties state");

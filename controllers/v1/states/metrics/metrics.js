@@ -7,7 +7,7 @@ var errorModel = require('../../../../errors/index.js').errorModel;
 var config = require('../../../../config');
 var db = require('../../../../database');
 var logger = config.logger;
-var stateManager = require('../../../../stateManager/stateManager.js')
+var stateManager = require('../../../../stateManager/v1/stateManager.js')
 var Promise = require("bluebird");
 var request = require("request");
 

@@ -3,7 +3,7 @@
 var config = require('../../../../config');
 var db = require('../../../../database');
 var logger = config.logger;
-var stateManager = require('../../../../stateManager/stateManager.js');
+var stateManager = require('../../../../stateManager/v1/stateManager.js');
 var mailer = require('../../../../mailer');
 var calculators = require('../../../../stateManager/calculators.js');
 
@@ -79,8 +79,7 @@ function _agreementIdDELETE(args, res, next) {
                 logger.ctlState("Deleted state for agreement " + agreementId);
             } else {
                 res.sendStatus(404);
-                logger.warning("Can't delete state for agreement " + agreementId + " :" + err);
-                ;
+                logger.warning("Can't delete state for agreement " + agreementId + " :" + err);;
             }
         });
     } else {
@@ -132,7 +131,7 @@ function _agreementIdRELOAD(args, res, next) {
         var errors = [];
         if (!err) {
             var message = 'Reloading state of agreement ' + agreementId + '. ' +
-                    (parameters.mail ? 'An email will be sent to ' + parameters.mail.to + ' when the process ends' : '');
+                (parameters.mail ? 'An email will be sent to ' + parameters.mail.to + ' when the process ends' : '');
             res.end(message);
 
             logger.ctlState("Deleted state for agreement " + agreementId);

@@ -3,7 +3,7 @@
 var config = require('../../../../config');
 var logger = config.logger;
 var errorModel = require('../../../../errors/index.js').errorModel;
-var stateManager = require('../../../../stateManager/stateManager.js');
+var stateManager = require('../../../../stateManager/v1/stateManager.js');
 var gUtils = require('./gUtils.js');
 
 var Promise = require('bluebird');
