@@ -42,6 +42,8 @@ function _guaranteesGET(args, res, next) {
     res.setHeader('content-type', 'application/json; charset=utf-8');
     logger.ctlState("New request to GET guarantees");
     var agreementId = args.agreement.value;
+    var from = args.from.value;
+    var to = args.to.value;
 
     stateManager({
         id: agreementId
@@ -53,7 +55,11 @@ function _guaranteesGET(args, res, next) {
             var processGuarantees = [];
             manager.agreement.terms.guarantees.forEach(function (guarantee) {
                 processGuarantees.push(manager.get('guarantees', {
-                    guarantee: guarantee.id
+                    guarantee: guarantee.id,
+                    period: {
+                        "from": from,
+                        "to": to
+                    }
                 }));
             });
 
@@ -136,7 +142,11 @@ function _guaranteesGET(args, res, next) {
             Promise.each(manager.agreement.terms.guarantees, function (guarantee) {
                 logger.ctlState("- guaranteeId: " + guarantee.id);
                 logger.warning("1º ( CTL ) query" + JSON.stringify({
-                    guarantee: guarantee.id
+                    guarantee: guarantee.id,
+                    period: {
+                        from: from,
+                        to: to
+                    }
                 }, null, 2));
                 return manager.get('guarantees', {
                     guarantee: guarantee.id,
@@ -286,7 +296,9 @@ function _guaranteeIdPenaltyPOST(args, res, next) {
             //  logger.ctlState("Query after parse: " + JSON.stringify(query, null, 2));
             logger.warning("Query after parse: " + JSON.stringify(p, null, 2));
             return manager.get('guarantees', {
-                guarantee: guaranteeId
+                guarantee: guaranteeId,
+                scope: query.scope,
+                period: p
                     //  period: p //,
                     //  window: query.window
             }).then(function (success) {
