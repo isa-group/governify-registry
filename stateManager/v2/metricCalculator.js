@@ -6,6 +6,7 @@ var logger = config.logger;
 var Promise = require('bluebird');
 var yaml = require('js-yaml');
 var request = require('request');
+var JSONStream = require('JSONStream');
 
 /**
  * Metric calculator module.
@@ -14,6 +15,7 @@ var request = require('request');
  * @requires bluebird
  * @requires js-yaml
  * @requires request
+ * @requires JSONStream
  * @see module:calculators
  * */
 module.exports = {
@@ -91,65 +93,63 @@ function processMetric(agreement, metricId, metricParameters) {
             data.scope = scope ? scope : metricParameters.scope;
             logger.metrics("Sending request to computer (" + computerEndpoint + ") with payload: " + JSON.stringify(data, null, 2));
 
-            request.post({
+            var compositeResponse = [];
+            var computerRequest = request.post({
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 url: computerEndpoint,
                 body: JSON.stringify(data)
-            }, function (err, httpResponse, response) {
-                logger.metrics('Processing metric ' + metricId + ' response from computer ');
-                //logger.metrics('response from computer: ' + JSON.stringify(response, null, 2));
-                if (err) {
-                    logger.error("Error in PPINOT Computer response", err);
-                    return reject(err);
+            }).on('response', (httpResponse) => {
+                if (httpResponse.statusCode !== 200) {
+                    logger.error("Error in PPINOT Computer response", httpResponse.statusCode + ':' + httpResponse.statusMessage);
+                    return reject("Error in PPINOT Computer response", httpResponse.statusCode + ':' + httpResponse.statusMessage);
                 }
-
-                if (!response) {
-                    logger.error("Error in PPINOT Computer response");
-                    return reject("Error in PPINOT Computer response");
-                }
-
-                try {
-                    response = yaml.safeLoad(response);
-                    logger.metrics('Processing column name bindings from log...');
-                    if (response && Array.isArray(response)) {
-                        response.forEach(function (metricState) {
-                            if (metricState.logs) {
-                                var logId = Object.keys(metricState.logs)[0];
-                                var log = agreement.context.definitions.logs[logId];
-                                var scope = {};
-                                var scopeId = Object.keys(metric.scope)[0];
-                                var logScopes = Object.keys(log.scopes[scopeId]).map(function (key) {
-                                    return log.scopes[scopeId][key];
-                                });
-                                for (var metricScope in metricState.scope) {
-                                    if (logScopes.indexOf(metricScope) > -1) {
-                                        for (var logScope in log.scopes[scopeId]) {
-                                            if (log.scopes[scopeId][logScope] === metricScope) {
-                                                scope[logScope] = metricState.scope[metricScope];
+                computerRequest.pipe(JSONStream.parse()).on('data', (monthMetrics) => {
+                    console.log(monthMetrics);
+                    try {
+                        //monthMetrics = yaml.safeLoad(monthMetrics);
+                        logger.metrics('Processing column name bindings from log...');
+                        if (monthMetrics && Array.isArray(monthMetrics)) {
+                            monthMetrics.forEach(function (metricState) {
+                                if (metricState.logs) {
+                                    var logId = Object.keys(metricState.logs)[0];
+                                    var log = agreement.context.definitions.logs[logId];
+                                    var scope = {};
+                                    var scopeId = Object.keys(metric.scope)[0];
+                                    var logScopes = Object.keys(log.scopes[scopeId]).map(function (key) {
+                                        return log.scopes[scopeId][key];
+                                    });
+                                    for (var metricScope in metricState.scope) {
+                                        if (logScopes.indexOf(metricScope) > -1) {
+                                            for (var logScope in log.scopes[scopeId]) {
+                                                if (log.scopes[scopeId][logScope] === metricScope) {
+                                                    scope[logScope] = metricState.scope[metricScope];
+                                                }
                                             }
+                                        } else {
+                                            scope[metricScope] = metricState.scope[metricScope];
                                         }
-                                    } else {
-                                        scope[metricScope] = metricState.scope[metricScope];
                                     }
+                                    metricState.scope = scope ? scope : metricState.scope;
                                 }
-                                metricState.scope = scope ? scope : metricState.scope;
-                            }
-                        });
-                        logger.metrics('Column name bindings processed');
-                        return resolve({
-                            metricId: metricId,
-                            metricValues: response
-                        });
-                    } else {
-                        logger.error('Error in computer response. Response is not an array: ', JSON.stringify(response, null, 2));
-                        return reject('There was a problem retrieving indicator ' + metricId);
+                                compositeResponse.push(metricState);
+                            });
+                            logger.metrics('Column name bindings processed');
+                        } else {
+                            logger.error('Error in computer response. Response is not an array: ', JSON.stringify(monthMetrics, null, 2));
+                            return reject('There was a problem retrieving indicator ' + metricId);
+                        }
+                    } catch (error) {
+                        logger.error("Error in computer response: " + JSON.stringify(error, null, 2) + "\nResponse: " + JSON.stringify(monthMetrics, null, 2));
+                        return reject("Error in computer response: " + JSON.stringify(error, null, 2) + "\nResponse: " + JSON.stringify(monthMetrics, null, 2));
                     }
-                } catch (error) {
-                    logger.error("Error in computer response: " + JSON.stringify(error, null, 2) + "\nResponse: " + JSON.stringify(response, null, 2));
-                    return reject("Error in computer response: " + JSON.stringify(error, null, 2) + "\nResponse: " + JSON.stringify(response, null, 2));
-                }
+                }).on('end', () => {
+                    return resolve({
+                        metricId: metricId,
+                        metricValues: compositeResponse
+                    });
+                });
             });
         } catch (err) {
             logger.error('Error processing metric: ' + metricId + ': ', JSON.stringify(err, null, 2));
