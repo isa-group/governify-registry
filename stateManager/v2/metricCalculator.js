@@ -106,7 +106,7 @@ function processMetric(agreement, metricId, metricParameters) {
                     return reject("Error in PPINOT Computer response", httpResponse.statusCode + ':' + httpResponse.statusMessage);
                 }
                 computerRequest.pipe(JSONStream.parse()).on('data', (monthMetrics) => {
-                    console.log(monthMetrics);
+                    //console.log(monthMetrics);
                     try {
                         //monthMetrics = yaml.safeLoad(monthMetrics);
                         logger.metrics('Processing column name bindings from log...');

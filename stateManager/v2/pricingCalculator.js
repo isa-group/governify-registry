@@ -48,8 +48,8 @@ function processPricing(agreementDef, query, manager) {
                 processGuarantees.push(manager.get('guarantees', {
                     guarantee: guarantee.id,
                     period: {
-                        from: query.window.initial,
-                        to: query.window.end
+                        from: query.window ? query.window.initial : null,
+                        to: query.window ? query.window.end : null
                     }
                 }));
             });
@@ -104,8 +104,8 @@ function processPricing(agreementDef, query, manager) {
                 return manager.get('guarantees', {
                     guarantee: guarantee.id,
                     period: {
-                        from: query.window.initial,
-                        to: query.window.end
+                        from: query.window ? query.window.initial : null,
+                        to: query.window ? query.window.end : null
                     }
                 }).then(function (results) {
                     // store array of guarantee states
@@ -129,7 +129,9 @@ function processPricing(agreementDef, query, manager) {
                     // initialize grouping keys (e.g. serviceLine, activity)
                     var groupBy = Object.keys(penalty.groupBy);
                     logger.pricing("Calculating pricing state with values: [penalty=" + penaltyId + ", aggregatedBy=" + penalty.aggregatedBy + ", groupBy= " + groupBy.toString() + "]:");
-                    var periods = utils.getPeriodsFrom(agreementDef, query.window);
+                    var periods = utils.getPeriodsFrom(agreementDef, query.window ? query.window : {
+                        window: {}
+                    });
                     periods.forEach(function (period) {
                         // Populate scopes from groupBy (e.g. serviceLine & activity)
                         var classifier = {};

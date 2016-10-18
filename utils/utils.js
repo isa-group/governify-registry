@@ -36,7 +36,7 @@ module.exports = {
 function _getPeriodsFrom(agreement, window) {
     var periods = [];
 
-    var Wfrom = moment.utc(moment.tz(window.initial, agreement.context.validity.timeZone));
+    var Wfrom = moment.utc(moment.tz(window.initial ? window.initial : agreement.context.validity.initial, agreement.context.validity.timeZone));
     var Wto = window.end ? moment.utc(moment.tz(window.end, agreement.context.validity.timeZone)) : moment.utc();
     var from = moment.utc(Wfrom),
         to = moment.utc(Wfrom).add(1, "months").subtract(1, "milliseconds");

@@ -177,8 +177,9 @@ function processScopedGuarantee(manager, query, guarantee, ofElement) {
             if (ofElement.with) {
                 var window = ofElement.window;
                 logger.warning("3º ( processScopedGuarantee ) query" + JSON.stringify(query, null, 2));
-                window.initial = moment.utc(moment.tz(query.period.from ? query.period.from : ofElement.window.initial, agreement.context.validity.timeZone)).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
-                window.end = moment.utc(moment.tz(query.period.to, agreement.context.validity.timeZone)).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
+                window.initial = moment.utc(moment.tz(query.period && query.period.from ? query.period.from : ofElement.window.initial, agreement.context.validity.timeZone)).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
+                if (query.period && query.period.to)
+                    window.end = moment.utc(moment.tz(query.period.to, agreement.context.validity.timeZone)).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
                 window.timeZone = agreement.context.validity.timeZone;
                 logger.warning("4º ( processScopedGuarantee ) window" + JSON.stringify(window, null, 2));
                 // For each metric, we create an object with the parameters needed by the manager to be able to calculate the metric state

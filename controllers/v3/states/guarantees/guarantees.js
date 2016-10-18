@@ -54,13 +54,16 @@ function _guaranteesGET(args, res, next) {
             logger.ctlState("Processing guarantees in parallel mode");
             var processGuarantees = [];
             manager.agreement.terms.guarantees.forEach(function (guarantee) {
-                processGuarantees.push(manager.get('guarantees', {
-                    guarantee: guarantee.id,
-                    period: {
-                        "from": from,
-                        "to": to
-                    }
-                }));
+                var query = {};
+                query.guarantee = guarantee.id;
+                if (from) {
+                    query.period = {};
+                    query.period.from = from;
+                }
+                if (to) {
+                    query.period.to = to;
+                }
+                processGuarantees.push(manager.get('guarantees', query));
             });
 
             var result;
@@ -139,22 +142,20 @@ function _guaranteesGET(args, res, next) {
                 logger.ctlState("### NO Streaming mode ###");
                 ret = [];
             }
+
             Promise.each(manager.agreement.terms.guarantees, function (guarantee) {
+                var query = {};
+                query.guarantee = guarantee.id;
+                if (from) {
+                    query.period = {};
+                    query.period.from = from;
+                }
+                if (to) {
+                    query.period.to = to;
+                }
                 logger.ctlState("- guaranteeId: " + guarantee.id);
-                logger.warning("1º ( CTL ) query" + JSON.stringify({
-                    guarantee: guarantee.id,
-                    period: {
-                        from: from,
-                        to: to
-                    }
-                }, null, 2));
-                return manager.get('guarantees', {
-                    guarantee: guarantee.id,
-                    period: {
-                        from: from,
-                        to: to
-                    }
-                }).then(function (results) {
+
+                return manager.get('guarantees', query).then(function (results) {
                     for (var i in results) {
                         //feeding stream
                         ret.push(manager.current(results[i]));
@@ -196,7 +197,15 @@ function _guaranteeIdGET(args, res, next) {
     var to = args.to.value;
 
     res.setHeader('content-type', 'application/json; charset=utf-8');
-
+    var query = {};
+    query.guarantee = guaranteeId;
+    if (from) {
+        query.period = {};
+        query.period.from = from;
+    }
+    if (to) {
+        query.period.to = to;
+    }
     stateManager({
         id: agreementId
     }).then(function (manager) {
@@ -214,13 +223,7 @@ function _guaranteeIdGET(args, res, next) {
             });
             ret.pipe(JSONStream.stringify()).pipe(res);
         }
-        manager.get('guarantees', {
-            guarantee: guaranteeId,
-            period: {
-                "from": from,
-                "to": to
-            }
-        }).then(function (success) {
+        manager.get('guarantees', query).then(function (success) {
             if (config.streaming) {
                 res.json(success.map((element) => {
                     return manager.current(element);
