@@ -5,10 +5,9 @@ var logger = config.logger;
 var errorModel = require('../../../../errors/index.js').errorModel;
 var stateManager = require('../../../../stateManager/v2/stateManager.js');
 var gUtils = require('./gUtils.js');
-
+var utils = require('../../../../utils/utils.js')
 var Promise = require('bluebird');
 var JSONStream = require('JSONStream');
-var stream = require('stream');
 var moment = require('moment');
 
 
@@ -30,7 +29,6 @@ module.exports = {
     guaranteeIdPenaltyPOST: _guaranteeIdPenaltyPOST
 };
 
-
 /**
  * Get all guarantees.
  * @param {Object} args {agreement: String, from: String, to: String}
@@ -45,135 +43,38 @@ function _guaranteesGET(args, res, next) {
     var from = args.from.value;
     var to = args.to.value;
 
+    var result;
+    if (config.streaming) {
+        logger.ctlState("### Streaming mode ###");
+        result = utils.stream.createReadable();
+
+        result.pipe(JSONStream.stringify()).pipe(res);
+    } else {
+        logger.ctlState("### NO Streaming mode ###");
+        result = [];
+    }
+
     stateManager({
         id: agreementId
     }).then(function (manager) {
         logger.ctlState("Getting state of guarantees...");
 
+        var guaranteesPromises = [];
+        manager.agreement.terms.guarantees.forEach(function (guarantee) {
+            var query = gUtils.buildGuaranteeQuery(guarantee.id, from, to);
+            guaranteesPromises.push(manager.get('guarantees', query));
+        });
+
         if (config.parallelProcess.guarantees) {
-            logger.ctlState("Processing guarantees in parallel mode");
-            var processGuarantees = [];
-            manager.agreement.terms.guarantees.forEach(function (guarantee) {
-                var query = {};
-                query.guarantee = guarantee.id;
-                if (from) {
-                    query.period = {};
-                    query.period.from = from;
-                }
-                if (to) {
-                    query.period.to = to;
-                }
-                processGuarantees.push(manager.get('guarantees', query));
-            });
 
-            var result;
-            if (config.streaming) {
-                logger.ctlState("### Streaming mode ###");
-                result = new stream.Readable({
-                    objectMode: true
-                });
-                result.on('error', function (err) {
-                    logger.streaming("waiting data from stateManager...");
-                });
-                result.on('data', function (data) {
-                    logger.streaming("Streaming data...");
-                });
-                result.pipe(JSONStream.stringify()).pipe(res);
-            } else {
-                logger.ctlState("### NO Streaming mode ###");
-                result = [];
-            }
+            logger.ctlState("### Process mode = PARALLEL ###");
+            utils.promise.processParallelPromises(manager, guaranteesPromises, result, res, config.streaming);
 
-            Promise.settle(processGuarantees).then(function (guaranteesValues) {
-                try {
-                    if (guaranteesValues.length > 0) {
-
-                        for (var i = 0; i < guaranteesValues.length; i++) {
-                            if (guaranteesValues[i].isFulfilled()) {
-                                if (guaranteesValues[i].value().length > 0) {
-                                    if (config.streaming) {
-                                        guaranteesValues[i].value().forEach(function (guaranteeValue) {
-                                            result.push(manager.current(guaranteeValue));
-                                        });
-                                    } else {
-                                        var guaranteesResults = guaranteesValues[i].value().map(function (guaranteeValue) {
-                                            return manager.current(guaranteeValue);
-                                        });
-                                        result = result.concat(guaranteesResults);
-                                    }
-                                }
-                            }
-                        }
-                        if (config.streaming) {
-                            result.push(null);
-                        } else {
-                            res.json(result);
-                        }
-                    } else {
-                        var err = 'Error processing guarantee: empty result';
-                        logger.error(err);
-                        res.status(500).json(new errorModel(500, err));
-                    }
-                } catch (err) {
-                    logger.error(err);
-                    res.status(500).json(new errorModel(500, err));
-                }
-            }, function (err) {
-                logger.error(err);
-                res.status(500).json(new errorModel(500, err));
-            });
         } else {
-            logger.ctlState("Processing guarantees in sequential mode");
-            //Build stream when it's required
-            var ret;
-            if (config.streaming) {
-                logger.ctlState("### Streaming mode ###");
-                ret = new stream.Readable({
-                    objectMode: true
-                });
-                ret.on('error', function (err) {
-                    logger.streaming("waiting data from stateManager...");
-                });
-                ret.on('data', function (data) {
-                    logger.streaming("Streaming data...");
-                });
-                ret.pipe(JSONStream.stringify()).pipe(res);
-            } else {
-                logger.ctlState("### NO Streaming mode ###");
-                ret = [];
-            }
 
-            Promise.each(manager.agreement.terms.guarantees, function (guarantee) {
-                var query = {};
-                query.guarantee = guarantee.id;
-                if (from) {
-                    query.period = {};
-                    query.period.from = from;
-                }
-                if (to) {
-                    query.period.to = to;
-                }
-                logger.ctlState("- guaranteeId: " + guarantee.id);
+            logger.ctlState("### Process mode = SEQUENTIAL ###");
+            utils.promise.processSequentialPromises(manager, guaranteesPromises, result, res, config.streaming);
 
-                return manager.get('guarantees', query).then(function (results) {
-                    for (var i in results) {
-                        //feeding stream
-                        ret.push(manager.current(results[i]));
-                    }
-                }, function (err) {
-                    logger.error(err);
-                });
-            }).then(function (results) {
-                //end stream
-                if (config.streaming)
-                    ret.push(null);
-                else
-                    res.json(ret);
-
-            }, function (err) {
-                logger.error("ERROR processing guarantees: ", err);
-                res.status(500).json(new errorModel(500, err));
-            });
         }
     }, function (err) {
         logger.error(err);
@@ -197,32 +98,22 @@ function _guaranteeIdGET(args, res, next) {
     var to = args.to.value;
 
     res.setHeader('content-type', 'application/json; charset=utf-8');
-    var query = {};
-    query.guarantee = guaranteeId;
-    if (from) {
-        query.period = {};
-        query.period.from = from;
+    var query = gUtils.buildGuaranteeQuery(guaranteeId, from, to);
+
+    var ret;
+    if (config.streaming) {
+        logger.ctlState("### Streaming mode ###");
+        ret = utils.stream.createReadable();
+
+        ret.pipe(JSONStream.stringify()).pipe(res);
+    } else {
+        logger.ctlState("### NO Streaming mode ###");
     }
-    if (to) {
-        query.period.to = to;
-    }
+
     stateManager({
         id: agreementId
     }).then(function (manager) {
-        var ret;
-        if (config.streaming) {
-            logger.ctlState("### Streaming mode ###");
-            ret = new stream.Readable({
-                objectMode: true
-            });
-            ret.on('error', function (err) {
-                logger.streaming("waiting data from stateManager...");
-            });
-            ret.on('data', function (data) {
-                logger.streaming("Streaming data...");
-            });
-            ret.pipe(JSONStream.stringify()).pipe(res);
-        }
+
         manager.get('guarantees', query).then(function (success) {
             if (config.streaming) {
                 res.json(success.map((element) => {
@@ -267,7 +158,7 @@ function _guaranteeIdPenaltyPOST(args, res, next) {
         id: agreementId
     }).then(function (manager) {
 
-        var periods = gUtils.getPeriods(manager.agreement, query.window);
+        var periods = utils.time.getPeriods(manager.agreement, query.window);
         logger.warning("periods: " + JSON.stringify(periods, null, 2));
         var result = [];
         Promise.each(periods, function (element) {

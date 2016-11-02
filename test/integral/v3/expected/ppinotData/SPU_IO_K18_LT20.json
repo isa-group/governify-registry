@@ -1,0 +1,582 @@
+[
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Granada",
+            "activity": "Actividad no planificada",
+            "nodeETC": "< 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-01-15T23:00:00.000Z",
+            "to": "2016-04-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Granada,ETC del Nodo=6,N Recursos=0",
+                "id": "1000031",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Granada,ETC del Nodo=6,N Recursos=0",
+                "id": "1000040",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Huelva",
+            "activity": "Actividad no planificada",
+            "nodeETC": "< 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-01-15T23:00:00.000Z",
+            "to": "2016-04-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Huelva,ETC del Nodo=8,N Recursos=0",
+                "id": "1000028",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Jaen",
+            "activity": "Actividad no planificada",
+            "nodeETC": "< 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-01-15T23:00:00.000Z",
+            "to": "2016-04-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Jaen,ETC del Nodo=15,N Recursos=0",
+                "id": "1000026",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Jaen,ETC del Nodo=15,N Recursos=0",
+                "id": "1000035",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Jaen,ETC del Nodo=15,N Recursos=0",
+                "id": "1000044",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Almeria",
+            "activity": "Actividad no planificada",
+            "nodeETC": "< 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-01-15T23:00:00.000Z",
+            "to": "2016-04-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Almeria,ETC del Nodo=5,N Recursos=0",
+                "id": "1000023",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Almeria,ETC del Nodo=5,N Recursos=0",
+                "id": "1000032",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Granada",
+            "activity": "Actividad no planificada",
+            "nodeETC": "< 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-04-15T22:00:00.000Z",
+            "to": "2016-07-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Granada,ETC del Nodo=6,N Recursos=0",
+                "id": "1000049",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Granada,ETC del Nodo=6,N Recursos=0",
+                "id": "1000067",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Huelva",
+            "activity": "Actividad no planificada",
+            "nodeETC": "< 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-04-15T22:00:00.000Z",
+            "to": "2016-07-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Huelva,ETC del Nodo=8,N Recursos=0",
+                "id": "1000046",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Huelva,ETC del Nodo=8,N Recursos=0",
+                "id": "1000055",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Huelva,ETC del Nodo=8,N Recursos=0",
+                "id": "1000064",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Jaen",
+            "activity": "Actividad no planificada",
+            "nodeETC": "< 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-04-15T22:00:00.000Z",
+            "to": "2016-07-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Jaen,ETC del Nodo=15,N Recursos=0",
+                "id": "1000053",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Jaen,ETC del Nodo=15,N Recursos=0",
+                "id": "1000062",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Jaen,ETC del Nodo=15,N Recursos=0",
+                "id": "1000071",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Almeria",
+            "activity": "Actividad no planificada",
+            "nodeETC": "< 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-04-15T22:00:00.000Z",
+            "to": "2016-07-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Almeria,ETC del Nodo=5,N Recursos=0",
+                "id": "1000050",
+                "issue_area_K18": "",
+                "issue_end": null
+            },
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Almeria,ETC del Nodo=5,N Recursos=0",
+                "id": "1000068",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Granada",
+            "activity": "Actividad no planificada",
+            "nodeETC": "< 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-07-15T22:00:00.000Z",
+            "to": "2016-10-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Granada,ETC del Nodo=6,N Recursos=0",
+                "id": "1000076",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Huelva",
+            "activity": "Actividad no planificada",
+            "nodeETC": "< 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-07-15T22:00:00.000Z",
+            "to": "2016-10-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Huelva,ETC del Nodo=8,N Recursos=0",
+                "id": "1000073",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Jaen",
+            "activity": "Actividad no planificada",
+            "nodeETC": "< 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-07-15T22:00:00.000Z",
+            "to": "2016-10-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Jaen,ETC del Nodo=15,N Recursos=0",
+                "id": "1000080",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    },
+    {
+        "scope": {
+            "serviceLine": "Línea de servicio de operación",
+            "ASUNTO_NODO": "Almeria",
+            "activity": "Actividad no planificada",
+            "nodeETC": "< 20"
+        },
+        "logs": {
+            "jira": "http://logs-devel.sas.governify.io/api/v1/jira/v01.03"
+        },
+        "parameters": {},
+        "period": {
+            "from": "2016-07-15T22:00:00.000Z",
+            "to": "2016-10-15T21:59:59.999Z"
+        },
+        "evidences": [
+            {
+                "issue_resource": "",
+                "issue_priority": "P1",
+                "issue_idle_time": "NaN",
+                "issue_center": "",
+                "issue_node": "",
+                "issue_resolutor": "SPU",
+                "SPU_IO_K18_evidence": "true",
+                "issue_typology": "LE",
+                "issue_start": null,
+                "issue_source": "",
+                "issue_subject": "KPI=SPU_IO_K18,Nodo=Almeria,ETC del Nodo=5,N Recursos=0",
+                "id": "1000077",
+                "issue_area_K18": "",
+                "issue_end": null
+            }
+        ],
+        "value": "0.0"
+    }
+]

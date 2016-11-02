@@ -1,0 +1,57 @@
+{
+    "queryPlanner": {
+        "plannerVersion": 1,
+        "namespace": "prosas.statemodels",
+        "indexFilterSet": false,
+        "parsedQuery": {
+            "agreementId": {
+                "$eq": "T14-L2-S12-minimal"
+            }
+        },
+        "winningPlan": {
+            "stage": "COLLSCAN",
+            "filter": {
+                "agreementId": {
+                    "$eq": "T14-L2-S12-minimal"
+                }
+            },
+            "direction": "forward"
+        },
+        "rejectedPlans": [
+        ]
+    },
+    "executionStats": {
+        "executionSuccess": true,
+        "nReturned": 126,
+        "executionTimeMillis": 28,
+        "totalKeysExamined": 0,
+        "totalDocsExamined": 47850,
+        "executionStages": {
+            "stage": "COLLSCAN",
+            "filter": {
+                "agreementId": {
+                    "$eq": "T14-L2-S12-minimal"
+                }
+            },
+            "nReturned": 126,
+            "executionTimeMillisEstimate": 20,
+            "works": 47852,
+            "advanced": 126,
+            "needTime": 47725,
+            "needYield": 0,
+            "saveState": 373,
+            "restoreState": 373,
+            "isEOF": 1,
+            "invalidates": 0,
+            "direction": "forward",
+            "docsExamined": 47850
+        }
+    },
+    "serverInfo": {
+        "host": "847aa8e7bc25",
+        "port": 27017,
+        "version": "3.2.10",
+        "gitVersion": "79d9b3ab5ce20f51c272b4411202710a082d0317"
+    },
+    "ok": 1.0
+}

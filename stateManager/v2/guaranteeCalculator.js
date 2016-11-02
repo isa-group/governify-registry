@@ -88,19 +88,36 @@ function processGuarantee(manager, query) {
         var guarantee = agreement.terms.guarantees.find(function (guarantee) {
             return guarantee.id === guaranteeId
         });
+
         logger.debug('Processing guarantee: ' + guaranteeId);
         if (!guarantee) {
             return reject('Guarantee ' + guaranteeId + ' not found.');
         }
         // We prepare the parameters needed by the processScopedGuarantee function
         logger.warning("2º ( processGuarantee ) query" + JSON.stringify(query, null, 2));
+        if (query.period && query.period.from === "*") delete query.period;
         guarantee.of.forEach(function (ofElement) {
-            processScopedGuarantees.push({
-                manager: manager,
-                query: query,
-                guarantee: guarantee,
-                ofElement: ofElement
-            });
+            var guaranteeCalculationPeriods = utils.time.getPeriods(agreement, ofElement.window);
+            var realPeriod = null;
+            if (query.period) {
+                realPeriod = guaranteeCalculationPeriods.find((element) => {
+                    return element.to.isSame(moment.utc(moment.tz(query.period.to, agreement.context.validity.timeZone)));
+                });
+            }
+            if (realPeriod || !query.period) {
+                if (realPeriod) {
+                    query.period = {
+                        from: realPeriod.from.toISOString(),
+                        to: realPeriod.to.toISOString()
+                    }
+                }
+                processScopedGuarantees.push({
+                    manager: manager,
+                    query: query,
+                    guarantee: guarantee,
+                    ofElement: ofElement
+                });
+            }
         });
 
         var guaranteesValues = [];
@@ -324,4 +341,4 @@ function calculatePenalty(agreement, guarantee, ofElement, timedScope, metricsVa
         });
     }
     return guaranteeValue;
-}
+};

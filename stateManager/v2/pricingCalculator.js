@@ -48,8 +48,8 @@ function processPricing(agreementDef, query, manager) {
                 processGuarantees.push(manager.get('guarantees', {
                     guarantee: guarantee.id,
                     period: {
-                        from: query.window ? query.window.initial : null,
-                        to: query.window ? query.window.end : null
+                        from: query.window ? query.window.initial : "*",
+                        to: query.window ? query.window.end : "*"
                     }
                 }));
             });
@@ -104,8 +104,8 @@ function processPricing(agreementDef, query, manager) {
                 return manager.get('guarantees', {
                     guarantee: guarantee.id,
                     period: {
-                        from: query.window ? query.window.initial : null,
-                        to: query.window ? query.window.end : null
+                        from: query.window ? query.window.initial : "*",
+                        to: query.window ? query.window.end : "*"
                     }
                 }).then(function (results) {
                     // store array of guarantee states
@@ -129,7 +129,7 @@ function processPricing(agreementDef, query, manager) {
                     // initialize grouping keys (e.g. serviceLine, activity)
                     var groupBy = Object.keys(penalty.groupBy);
                     logger.pricing("Calculating pricing state with values: [penalty=" + penaltyId + ", aggregatedBy=" + penalty.aggregatedBy + ", groupBy= " + groupBy.toString() + "]:");
-                    var periods = utils.getPeriodsFrom(agreementDef, query.window ? query.window : {
+                    var periods = utils.time.getPeriods(agreementDef, query.window ? query.window : {
                         window: {}
                     });
                     periods.forEach(function (period) {
@@ -151,9 +151,11 @@ function processPricing(agreementDef, query, manager) {
                         logger.pricing("\t(" + i + "/" + guaranteesStates.length + ") Processing guaranteeState with scope: ");
                         logger.pricing("\t\t\t" + JSON.stringify(guaranteeState.scope));
                         logger.pricing("ID: " + guaranteeState.id);
+                        logger.pricing("Classifiers" + JSON.stringify(classifiers, null, 2));
                         var classifier = classifiers.find(function (classif) {
-                            return moment.utc(guaranteeState.period.to).isSameOrAfter(classif.period.from) &&
-                                moment.utc(guaranteeState.period.to).isSameOrBefore(classif.period.to);
+                            logger.info(classif);
+                            return moment.utc(moment.tz(guaranteeState.period.from, agreementDef.context.validity.timeZone)).isSameOrAfter(classif.period.from) &&
+                                moment.utc(moment.tz(guaranteeState.period.to, agreementDef.context.validity.timeZone)).isSameOrBefore(classif.period.to);
                         });
 
                         if (!!classifier) {

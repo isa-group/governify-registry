@@ -5,7 +5,7 @@ var config = require('../config');
 
 /**
  * Swagger module.
- * @module middlewares
+ * @module utils.middlewares
  * @see module:utils
  * @requires config
  * */
@@ -14,7 +14,7 @@ module.exports = {
 };
 
 
-/** 
+/**
  * Middleware to control when an agreement state process is already in progress
  * @param {RequestObject} req Object that contains all information of the request
  * @param {ResponseObject} res Object that contains all information of the response

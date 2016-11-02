@@ -15,47 +15,30 @@ var moment = require('moment');
  * @requires moment
  * */
 module.exports = {
-    getPeriods: _getPeriods,
     penaltyMetric: _PenaltyMetric,
     checkQuery: _checkQuery,
-    processMode: _processMode
+    buildGuaranteeQuery: _buildGuaranteeQuery
 };
 
-
 /**
- * This method return a set of periods which are based on a window parameter.
- * @param {AgreementModel} agreement agreement model passed
- * @param {WindowModel} window window model passed
- * @return {Set} set of periods
+ * This method return a well formed query for stateManager.
+ * @param {String} guranteeId Id of guarantee which will be calculated
+ * @param {ISODateString} from YYYY-MM-DDTHH:mm:ss.SSSZ
+ * @return {ISODateString} to YYYY-MM-DDTHH:mm:ss.SSSZ
  * @alias module:gUtils.getPeriods
  * */
-function _getPeriods(agreement, window) {
-    var periods = [];
-    logger.warning("Window: " + JSON.stringify(window, null, 2));
-    var Wfrom = moment.utc(moment.tz(window.initial, agreement.context.validity.timeZone));
-    var Wto = window.end ? moment.utc(moment.tz(window.end, agreement.context.validity.timeZone)) : moment.utc();
-    logger.warning("Window: " + JSON.stringify({
-        initial: Wfrom,
-        end: Wto
-    }, null, 2));
-    var from = moment.utc(Wfrom),
-        to = moment.utc(Wfrom).add(1, "months").subtract(1, "milliseconds");
-    logger.warning("period: " + JSON.stringify({
-        from: from,
-        to: to
-    }, null, 2));
-    while (!to || to.isSameOrBefore(Wto)) {
-        periods.push({
-            from: from,
-            to: to
-        });
-        from = moment.utc(moment.tz(from, agreement.context.validity.timeZone).add(1, "months"));
-        to = moment.utc(moment.tz(from, agreement.context.validity.timeZone).add(1, "months").subtract(1, "milliseconds"));
+function _buildGuaranteeQuery(guaranteeId, from, to) {
+    var query = {};
+    query.guarantee = guaranteeId;
+    if (from) {
+        query.period = {};
+        query.period.from = from;
     }
-
-    return periods;
+    if (to) {
+        query.period.to = to;
+    }
+    return query;
 }
-
 
 /**
  * Constructor for a metric of type penalty.
@@ -99,55 +82,4 @@ function _checkQuery(state, query) {
         }
     }
     return ret;
-}
-
-
-/**
- * Process mode.
- * @param {Object} mode mode
- * @param {Object} stateType state type
- * @param {Object} query query
- * @param {Object} manager manager
- * @param {Object} resolve resolve
- * @param {Object} reject reject
- * @alias module:gUtils.processMode
- * */
-function _processMode(mode, stateType, query, manager, resolve, reject) {
-    /** if mode is 'true' processMode is parallel **/
-    var managerGetPromise = [];
-    manager.agreement.terms[stateType].forEach(function (guarantee) {
-        managerGetPromise.push(manager.get(stateType, {
-            guarantee: guarantee.id
-        }));
-    });
-    var results = [];
-    if (mode) {
-        logger.ctlState("### Process mode = PARALLEL ###");
-        return Promise.settle(managerGetPromise).then(function (promisesResults) {
-            if (promisesResults.length > 0) {
-                for (var r in promisesResults) {
-                    var onePromiseResults = promisesResults[r];
-                    if (onePromiseResults.isFulfilled()) {
-                        onePromiseResults.value().forEach(function (value) {
-                            results.push(manager.current(value));
-                        });
-                    }
-                }
-                return resolve(results);
-            } else {
-                var err = 'Error processing guarantee: empty result';
-                logger.error(err);
-                return reject(err);
-            }
-        }, function (err) {
-            logger.error(err);
-            return reject(err);
-        });
-
-    } else {
-        logger.ctlState("### Process mode = SEQUENTIAL ###");
-        return Promise.each(managerGetPromise, function (promise) {
-            return promise.then(resolve, reject);
-        });
-    }
 }

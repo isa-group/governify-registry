@@ -7,7 +7,7 @@ var swaggerTools = require('swagger-tools');
 /**
  * Swagger module.
  * @module swagger
- * @see module:utils
+ * @see module:utils.swagger
  * @requires fs
  * @requires js-yaml
  * @requires swagger-tools
@@ -19,7 +19,7 @@ module.exports = {
 };
 
 
-/** 
+/**
  * This method return a the SwaggerRouterOptions object configure with version.
  * @param {Number} version The version of the options required
  * @return {Object} options The object which defines the option that is given to the swagger router component.
@@ -33,7 +33,7 @@ function _getRouterOption(version) {
 }
 
 
-/** 
+/**
  * This method return an the object with swagger doc information of the 'version' of the api.
  * @param {Number} version The version of the options required
  * @return {Object} swaggerDoc The object which represent the swagger document.
@@ -45,7 +45,7 @@ function _getSwaggerDoc(version) {
 }
 
 
-/** 
+/**
  * This add all necessary middlewares from a list of swagger documents.
  * @param {Express} app app to append middlewares
  * @param {Array} swaggerDocs Array of swagger documents
