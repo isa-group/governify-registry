@@ -69,14 +69,21 @@ function _processParallelPromises(manager, promisesArray, result, res, streaming
  * @param {Boolean} streaming Decide if stream or not stream response
  * @alias module:gUtils.processMode
  * */
-function _processSequentialPromises(manager, promisesArray, result, res, streaming) {
+function _processSequentialPromises(manager, queries, result, res, streaming) {
 
-    Promise.each(promisesArray, function (onePromiseResults) {
-        for (var i in onePromiseResults) {
-            var state = onePromiseResults[i];
-            //feeding stream
-            result.push(manager.current(state));
-        }
+    Promise.each(queries, function (oneQueries) {
+
+        return manager.get('guarantees', oneQueries).then((promiseResult) => {
+            for (var i in promiseResult) {
+                var state = promiseResult[i];
+                //feeding stream
+                result.push(manager.current(state));
+            }
+        }, (err) => {
+            logger.error(err);
+            res.status(500).json(new errorModel(500, err));
+        });
+
     }).then(function (promisesInfo) {
         //end stream
         if (streaming)

@@ -94,9 +94,9 @@ function processGuarantee(manager, query) {
             return reject('Guarantee ' + guaranteeId + ' not found.');
         }
         // We prepare the parameters needed by the processScopedGuarantee function
-        logger.warning("2º ( processGuarantee ) query" + JSON.stringify(query, null, 2));
+        //logger.warning("2º ( processGuarantee ) query" + JSON.stringify(query, null, 2));
         if (query.period && query.period.from === "*") delete query.period;
-        guarantee.of.forEach(function (ofElement) {
+        guarantee.of.forEach(function (ofElement, index) {
             var guaranteeCalculationPeriods = utils.time.getPeriods(agreement, ofElement.window);
             var realPeriod = null;
             if (query.period) {
@@ -111,6 +111,7 @@ function processGuarantee(manager, query) {
                         to: realPeriod.to.toISOString()
                     }
                 }
+                logger.warning(index + "- ( processScopedGuarantee ) with query" + JSON.stringify(query, null, 2));
                 processScopedGuarantees.push({
                     manager: manager,
                     query: query,
@@ -192,13 +193,12 @@ function processScopedGuarantee(manager, query, guarantee, ofElement) {
             }
             // We get the metrics to calculate from the with section of the scoped guarantee
             if (ofElement.with) {
+
                 var window = ofElement.window;
-                logger.warning("3º ( processScopedGuarantee ) query" + JSON.stringify(query, null, 2));
                 window.initial = moment.utc(moment.tz(query.period && query.period.from ? query.period.from : ofElement.window.initial, agreement.context.validity.timeZone)).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
                 if (query.period && query.period.to)
                     window.end = moment.utc(moment.tz(query.period.to, agreement.context.validity.timeZone)).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
                 window.timeZone = agreement.context.validity.timeZone;
-                logger.warning("4º ( processScopedGuarantee ) window" + JSON.stringify(window, null, 2));
                 // For each metric, we create an object with the parameters needed by the manager to be able to calculate the metric state
                 for (var metricId in ofElement.with) {
                     processMetrics.push({
@@ -215,10 +215,12 @@ function processScopedGuarantee(manager, query, guarantee, ofElement) {
                 }
             }
             // timedScope array will group all metric values by the same scope and period
+            logger.warning("This scopedguarantee need these metric: " + JSON.stringify(processMetrics, null, 2));
             var timedScopes = [];
             var metricValues = [];
             logger.guarantees('Obtaining required metrics states for scoped guarantee ' + guarantee.id + '...');
             Promise.each(processMetrics, function (metricParam) {
+
                 return manager.get('metrics', metricParam).then(function (scopedMetricValues) {
                     // Once we have all metrics involved in the scoped guarantee calculated...
                     if (scopedMetricValues.length > 0) {

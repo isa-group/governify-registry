@@ -79,7 +79,7 @@ function _get(stateType, query) {
     var stateManager = this;
     logger.sm('(_get) Retrieving state of ' + stateType);
     return new Promise(function (resolve, reject) {
-        logger.sm("Getting " + stateType + " state for query =  " + JSON.stringify(query));
+        logger.warning("Getting " + stateType + " state for query =  " + JSON.stringify(query));
         var StateModel = db.models.StateModel;
         //Executes a mongodb query to search States file that match with query
         // projectionBuilder(...) builds a mongodb query from StateManagerQuery

@@ -31,8 +31,6 @@ function _getPeriods(agreement, window) {
     var from = moment.utc(moment.tz(Wfrom, agreement.context.validity.timeZone)),
         to = moment.utc(moment.tz(Wfrom, agreement.context.validity.timeZone).add(slot.count, slot.unit).subtract(1, "milliseconds"));
 
-    console.log("Wto " + Wto.toISOString());
-    console.log("to " + to.toISOString());
     while (!to || to.isSameOrBefore(Wto)) {
         periods.push({
             from: from,

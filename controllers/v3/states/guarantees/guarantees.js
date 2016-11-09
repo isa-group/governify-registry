@@ -59,21 +59,29 @@ function _guaranteesGET(args, res, next) {
     }).then(function (manager) {
         logger.ctlState("Getting state of guarantees...");
 
-        var guaranteesPromises = [];
-        manager.agreement.terms.guarantees.forEach(function (guarantee) {
-            var query = gUtils.buildGuaranteeQuery(guarantee.id, from, to);
-            guaranteesPromises.push(manager.get('guarantees', query));
-        });
-
         if (config.parallelProcess.guarantees) {
 
             logger.ctlState("### Process mode = PARALLEL ###");
+
+            var guaranteesPromises = [];
+            manager.agreement.terms.guarantees.forEach(function (guarantee) {
+                var query = gUtils.buildGuaranteeQuery(guarantee.id, from, to);
+                guaranteesPromises.push(manager.get('guarantees', query));
+            });
+
             utils.promise.processParallelPromises(manager, guaranteesPromises, result, res, config.streaming);
 
         } else {
 
             logger.ctlState("### Process mode = SEQUENTIAL ###");
-            utils.promise.processSequentialPromises(manager, guaranteesPromises, result, res, config.streaming);
+
+            var guaranteesQueries = [];
+            manager.agreement.terms.guarantees.forEach(function (guarantee) {
+                var query = gUtils.buildGuaranteeQuery(guarantee.id, from, to);
+                guaranteesQueries.push(query);
+            });
+
+            utils.promise.processSequentialPromises(manager, guaranteesQueries, result, res, config.streaming);
 
         }
     }, function (err) {
@@ -159,14 +167,14 @@ function _guaranteeIdPenaltyPOST(args, res, next) {
     }).then(function (manager) {
 
         var periods = utils.time.getPeriods(manager.agreement, query.window);
-        logger.warning("periods: " + JSON.stringify(periods, null, 2));
+        //logger.warning("periods: " + JSON.stringify(periods, null, 2));
         var result = [];
         Promise.each(periods, function (element) {
             var p = {
-                from: moment.utc(moment.tz(element.from, manager.agreement.context.validity.timeZone).subtract(Math.abs(offset), "months")).toISOString(),
-                to: moment.utc(moment.tz(element.to, manager.agreement.context.validity.timeZone).subtract(Math.abs(offset), "months")).toISOString()
+                from: element.from.subtract(Math.abs(offset), "months").toISOString(),
+                to: element.to.subtract(Math.abs(offset), "months").toISOString()
             };
-            //  logger.ctlState("Query before parse: " + JSON.stringify(query, null, 2));
+            logger.ctlState("Query before parse: " + JSON.stringify(query, null, 2));
             var logId = Object.keys(query.logs)[0];
             var log = manager.agreement.context.definitions.logs[logId];
             var scope = {};
@@ -187,8 +195,8 @@ function _guaranteeIdPenaltyPOST(args, res, next) {
             }
             query.scope = scope ? scope : query.scope;
 
-            //  logger.ctlState("Query after parse: " + JSON.stringify(query, null, 2));
-            logger.warning("Query after parse: " + JSON.stringify(p, null, 2));
+            logger.ctlState("Query after parse: " + JSON.stringify(query, null, 2));
+            //logger.warning("Query after parse: " + JSON.stringify(p, null, 2));
             return manager.get('guarantees', {
                 guarantee: guaranteeId,
                 scope: query.scope,
@@ -210,7 +218,7 @@ function _guaranteeIdPenaltyPOST(args, res, next) {
                     if (manager.current(ret[i]).penalties) {
                         var penalties = manager.current(ret[i]).penalties;
                         for (var penaltyI in penalties) {
-                            logger.warning("element: " + JSON.stringify(element, null, 2));
+                            //logger.warning("element: " + JSON.stringify(element, null, 2));
                             result.push(new gUtils.penaltyMetric(ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI]));
                         }
                     }
