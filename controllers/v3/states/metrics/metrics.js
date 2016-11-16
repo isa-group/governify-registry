@@ -124,8 +124,8 @@ function _metricsPOST(req, res, next) {
             for (var metricId in manager.agreement.terms.metrics) {
                 var metricParams = args.scope.value;
                 metricParams.period = metricParams.period ? metricParams.period : {
-                    from: '*',
-                    to: '*'
+                    from: metricsParams.window ? metricsParams.window.initial : '*',
+                    to: metricsParams.window ? metricsParams.window.end : '*'
                 };
                 metricParams.metric = metricId;
                 processMetrics.push(manager.get('metrics', metricParams));
@@ -181,8 +181,8 @@ function _metricsPOST(req, res, next) {
                 logger.info("==> metricId = " + metricId);
                 var metricParams = args.scope.value;
                 metricParams.period = metricParams.period ? metricParams.period : {
-                    from: '*',
-                    to: '*'
+                    from: metricsParams.window ? metricsParams.window.initial : '*',
+                    to: metricsParams.window ? metricsParams.window.end : '*'
                 };
                 metricParams.metric = metricId;
                 return manager.get('metrics', metricParams).then(function (results) {
@@ -226,8 +226,8 @@ function _metricsIdPOST(args, res, next) {
     var metricParams = args.scope.value;
     metricParams.metric = metricId;
     metricParams.period = metricParams.period ? metricParams.period : {
-        from: '*',
-        to: '*'
+        from: metricParams.window ? metricParams.window.initial : '*',
+        to: metricParams.window ? metricParams.window.end : '*'
     };
 
     var ret;

@@ -153,7 +153,7 @@ function processPricing(agreementDef, query, manager) {
                         logger.pricing("ID: " + guaranteeState.id);
                         logger.pricing("Classifiers" + JSON.stringify(classifiers, null, 2));
                         var classifier = classifiers.find(function (classif) {
-                            logger.info(classif);
+                            //logger.info(classif);
                             return moment.utc(moment.tz(guaranteeState.period.from, agreementDef.context.validity.timeZone)).isSameOrAfter(classif.period.from) &&
                                 moment.utc(moment.tz(guaranteeState.period.to, agreementDef.context.validity.timeZone)).isSameOrBefore(classif.period.to);
                         });
@@ -214,29 +214,4 @@ function processPricing(agreementDef, query, manager) {
             });
         }
     });
-}
-
-
-/**
- * Get periods from an agreement.
- * @function getPeriods
- * @param {Object} agreement agreement
- * */
-function getPeriods(agreement) {
-    var initial = agreement.context.validity.initial;
-    var frequency = utils.convertPeriod(agreement.terms.pricing.billing.period);
-    var periods = [];
-    var Wfrom = moment.utc(moment.tz(initial, agreement.context.validity.timeZone));
-    var current = moment.utc();
-    var from = moment.utc(Wfrom),
-        to = moment.utc(Wfrom).add(1, frequency).subtract(1, "milliseconds");
-    while (!to || to.isSameOrBefore(current)) {
-        periods.push({
-            from: from,
-            to: to
-        });
-        from = moment.utc(moment.tz(from, agreement.context.validity.timeZone).add(1, frequency));
-        to = moment.utc(moment.tz(from, agreement.context.validity.timeZone).add(1, frequency).subtract(1, "milliseconds"));
-    }
-    return periods;
 }

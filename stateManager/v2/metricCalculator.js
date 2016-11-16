@@ -91,7 +91,7 @@ function processMetric(agreement, metricId, metricParameters) {
             }
 
             data.scope = scope ? scope : metricParameters.scope;
-            logger.warning("Sending request to computer (" + computerEndpoint + ") with payload: " + JSON.stringify(data, null, 2));
+            logger.metrics("Sending request to computer (" + computerEndpoint + ") with payload: " + JSON.stringify(data, null, 2));
 
             var compositeResponse = [];
             var computerRequest = request.post({

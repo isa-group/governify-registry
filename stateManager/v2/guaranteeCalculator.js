@@ -111,7 +111,7 @@ function processGuarantee(manager, query) {
                         to: realPeriod.to.toISOString()
                     }
                 }
-                logger.warning(index + "- ( processScopedGuarantee ) with query" + JSON.stringify(query, null, 2));
+                logger.guarantees(index + "- ( processScopedGuarantee ) with query" + JSON.stringify(query, null, 2));
                 processScopedGuarantees.push({
                     manager: manager,
                     query: query,
@@ -215,7 +215,7 @@ function processScopedGuarantee(manager, query, guarantee, ofElement) {
                 }
             }
             // timedScope array will group all metric values by the same scope and period
-            logger.warning("This scopedguarantee need these metric: " + JSON.stringify(processMetrics, null, 2));
+            //logger.warning("This scopedguarantee need these metric: " + JSON.stringify(processMetrics, null, 2));
             var timedScopes = [];
             var metricValues = [];
             logger.guarantees('Obtaining required metrics states for scoped guarantee ' + guarantee.id + '...');
