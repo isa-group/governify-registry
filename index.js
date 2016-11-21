@@ -3,6 +3,8 @@
 //Server dependencies
 var express = require('express');
 var http = require('http');
+var https = require('https');
+var fs = require('fs');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var app = express();
@@ -71,6 +73,18 @@ function _deploy(configurations, callback) {
                 if (!module.exports.server)
                     module.exports.server = http.createServer(app);
                 module.exports.server.timeout = 24 * 3600 * 1000; // 24h
+
+                if (process.env.HTTPS_SERVER === "true") {
+                    var securePort = 443;
+                    https.createServer({
+                        key: fs.readFileSync('certs/privkey.pem'),
+                        cert: fs.readFileSync('certs/cert.pem')
+                    }, app).listen(securePort, function () {
+                        config.logger.info('HTTPS_SERVER mode');
+                        config.logger.info('Your server is listening on port %d (https://localhost:%d)', serverPort, serverPort);
+                        config.logger.info('Swagger-ui is available on https://localhost:%d/api/v1/docs', serverPort);
+                    });
+                }
 
                 module.exports.server.listen(serverPort, function () {
                     config.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);

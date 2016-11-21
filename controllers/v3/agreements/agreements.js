@@ -36,7 +36,7 @@ module.exports = {
 };
 
 
-/** 
+/**
  * Post an agreement
  * @param {Object} args {agreement: String}
  * @param {Object} res response
@@ -81,7 +81,7 @@ function _agreementsPOST(args, res, next) {
 }
 
 
-/** 
+/**
  * Delete all agreements.
  * @param {Object} args {}
  * @param {Object} res response
@@ -103,7 +103,7 @@ function _agreementsDELETE(args, res, next) {
 }
 
 
-/** 
+/**
  * Get all agreements.
  * @param {Object} args {}
  * @param {Object} res response
@@ -128,7 +128,7 @@ function _agreementsGET(args, res, next) {
 }
 
 
-/** 
+/**
  * Get an agreement by agreement ID.
  * @param {Object} args {agreement: String}
  * @param {Object} res response
@@ -157,7 +157,7 @@ function _agreementIdGET(args, res, next) {
 }
 
 
-/** 
+/**
  * Delete an agreement by agreement ID.
  * @param {Object} args {agreement: String}
  * @param {Object} res response
@@ -174,6 +174,7 @@ function _agreementIdDELETE(args, res, next) {
         }).remove(function (err) {
             if (!err) {
                 logger.info("Deleted agreement with id " + agreementId);
+                args.agreements = args.agreement;
                 agreementState.agreementIdDELETE(args, res, next);
             } else {
                 res.sendStatus(404);
@@ -187,7 +188,7 @@ function _agreementIdDELETE(args, res, next) {
 }
 
 
-/** 
+/**
  * Get all agreement terms.
  * @param {Object} args {}
  * @param {Object} res response
@@ -211,7 +212,7 @@ function _agreementsAgreementTermsGuaranteesGET(args, res, next) {
 }
 
 
-/** 
+/**
  * Get all agreement guarantees.
  * @param {Object} args {agreement: String, guarantee: String}
  * @param {Object} res response
