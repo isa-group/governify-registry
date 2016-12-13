@@ -71,16 +71,18 @@ function processMetric(agreement, metricId, metricParameters) {
                     if (log.default) {
                         data.logs = {};
                         data.logs[logId] = log.uri;
-                        var scopeId = Object.keys(metric.scope)[0];
-                        for (var metricScope in metricParameters.scope) {
-                            if (log.scopes[scopeId] && log.scopes[scopeId][metricScope]) {
-                                var logScope = log.scopes[scopeId][metricScope];
-                                scope[logScope] = metricParameters.scope[metricScope];
-                            } else {
-                                scope[metricScope] = metricParameters.scope[metricScope];
+                        if (metric.scope) {
+                            var scopeId = Object.keys(metric.scope)[0];
+                            for (var metricScope in metricParameters.scope) {
+                                if (log.scopes[scopeId] && log.scopes[scopeId][metricScope]) {
+                                    var logScope = log.scopes[scopeId][metricScope];
+                                    scope[logScope] = metricParameters.scope[metricScope];
+                                } else {
+                                    scope[metricScope] = metricParameters.scope[metricScope];
+                                }
                             }
+                            break;
                         }
-                        break;
                     }
                 }
             }
@@ -112,12 +114,12 @@ function processMetric(agreement, metricId, metricParameters) {
                         logger.metrics('Processing column name bindings from log...');
                         if (monthMetrics && Array.isArray(monthMetrics)) {
                             monthMetrics.forEach(function (metricState) {
-                                if (metricState.logs) {
+                                if (metricState.logs && metric.scope && log.scopes) {
                                     var logId = Object.keys(metricState.logs)[0];
                                     var log = agreement.context.definitions.logs[logId];
                                     var scope = {};
-                                    var scopeId = Object.keys(metric.scope)[0];
-                                    var logScopes = Object.keys(log.scopes[scopeId]).map(function (key) {
+                                    var scopeId = Object.keys(metric.scope || {})[0];
+                                    var logScopes = Object.keys(log.scopes[scopeId] || {}).map(function (key) {
                                         return log.scopes[scopeId][key];
                                     });
                                     for (var metricScope in metricState.scope) {
@@ -141,8 +143,8 @@ function processMetric(agreement, metricId, metricParameters) {
                             return reject('There was a problem retrieving indicator ' + metricId);
                         }
                     } catch (error) {
-                        logger.error("Error in computer response: " + JSON.stringify(error, null, 2) + "\nResponse: " + JSON.stringify(monthMetrics, null, 2));
-                        return reject("Error in computer response: " + JSON.stringify(error, null, 2) + "\nResponse: " + JSON.stringify(monthMetrics, null, 2));
+                        logger.error("Error in computer response: " + error.toString() + "\nResponse: " + JSON.stringify(monthMetrics, null, 2));
+                        return reject("Error in computer response: " + error.toString() + "\nResponse: " + JSON.stringify(monthMetrics, null, 2));
                     }
                 }).on('end', () => {
                     return resolve({
@@ -152,8 +154,8 @@ function processMetric(agreement, metricId, metricParameters) {
                 });
             });
         } catch (err) {
-            logger.error('Error processing metric: ' + metricId + ': ', JSON.stringify(err, null, 2));
-            return reject('Error processing metric: ' + metricId + ': ' + JSON.stringify(err, null, 2));
+            logger.error('Error processing metric: ' + metricId + ': ', err);
+            return reject('Error processing metric: ' + metricId + ': ' + JSON.stringify(err.toString(), null, 2));
         }
     });
 

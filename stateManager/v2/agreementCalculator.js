@@ -2,6 +2,7 @@
 
 var config = require('../../config');
 var logger = config.logger;
+var moment = require('moment');
 
 var Promise = require('bluebird');
 
@@ -28,11 +29,14 @@ module.exports = {
 function _process(manager, parameters, from, to) {
     return new Promise(function (resolve, reject) {
         try {
+            if (!parameters) parameters = {};
             //Process guarantees
             processGuarantees(manager, parameters).then(function (guaranteeResults) {
                 // Process metrics
                 processMetrics(manager, parameters).then(function (metricResults) {
-                    return resolve(guaranteeResults);
+                    var ret = guaranteeResults.concat(metricResults);
+
+                    return resolve(ret);
                 }, function (err) {
                     return reject(err);
                 });
@@ -66,7 +70,7 @@ function processMetrics(manager, parameters) {
             }
         }
 
-        if (config.parallelProcess.metrics) {
+        if (config.parallelProcess.metrics && false) { // parallel process is not implemented correctly
             logger.agreement("Processing metrics in parallel mode");
             logger.agreement("- metrics: " + metrics);
 
@@ -109,27 +113,46 @@ function processMetrics(manager, parameters) {
 
             var processMetrics = [];
             metrics.forEach(function (metricId) {
-                var priorities = ['P1', 'P2', 'P3'];
-                if (metricId == 'SPU_IO_K00') {
-                    priorities = [''];
-                }
+                logger.agreement("-- metricId: " + metricId);
 
-                priorities.forEach(function (priority) {
-                    var scp = JSON.parse(JSON.stringify(parameters.metrics[metricId].scope));
-                    scp.priority = priority;
-                    processMetrics.push({
+                var metricDef = manager.agreement.terms.metrics[metricId];
+                if (metricDef.defaultStateReload) {
+                    // it's suposed that computer accepts always scope[key] = '*';
+                    var scope = null;
+                    if (metricDef.scope) {
+                        scope = {};
+                        var metricsScp = metricDef.scope;
+                        for (var s in metricsScp) {
+                            var scopeType = metricsScp[s];
+                            for (var st in scopeType) {
+                                scope[st] = manager.agreement.context.definitions.scopes[s][st].default || '*';
+                            }
+                        }
+                        //    if (!scope.priority) scope.priority = 'P2'; //activate for PROSAS agreements
+                    }
+
+                    logger.agreement('Scope for metricId=%s : %s', metricId, JSON.stringify(scope, null, 2));
+                    var query = {
                         metric: metricId,
-                        scope: scp,
-                        parameters: parameters.metrics[metricId].parameters,
-                        evidences: parameters.metrics[metricId].evidences,
-                        window: parameters.metrics[metricId].window,
-                        logs: parameters.metrics[metricId].logs,
+                        scope: scope,
+                        parameters: {},
+                        evidences: [],
+                        window: {
+                            initial: moment.utc(moment.tz(metricDef.window.initial, manager.agreement.context.validity.timeZone)).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z",
+                            timeZone: manager.agreement.context.validity.timeZone,
+                            period: metricDef.window.period,
+                            type: metricDef.window.type
+                        }, //how to get window
                         period: {
                             from: '*',
                             to: '*'
                         }
-                    });
-                });
+                    }
+                    if (!scope) delete query.scope;
+                    logger.agreement("query. ", JSON.stringify(query, null, 2));
+                    processMetrics.push(query);
+                }
+
             });
 
             var ret = [];
@@ -145,11 +168,11 @@ function processMetrics(manager, parameters) {
                     return reject(err);
                 });
             }).then(function (results) {
-                if (results.length > 0) {
-                    return resolve(ret);
-                } else {
-                    return reject('Error processing metric: empty result');
-                }
+                //if (results.length > 0) {
+                return resolve(ret);
+                //} else {
+                //    return reject('Error processing metric: empty result');
+                //}
             }, function (err) {
                 console.error(err);
                 return reject(err);

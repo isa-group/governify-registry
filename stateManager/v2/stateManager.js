@@ -81,6 +81,7 @@ function _get(stateType, query) {
     return new Promise(function (resolve, reject) {
         logger.sm("Getting " + stateType + " state for query =  " + JSON.stringify(query));
         var StateModel = db.models.StateModel;
+        if (!query) query = {};
         //Executes a mongodb query to search States file that match with query
         // projectionBuilder(...) builds a mongodb query from StateManagerQuery
         // refineQuery(...) ensures that the query is well formed, chooses and renames fields to make a well formed query.
@@ -244,13 +245,15 @@ function _update(stateType, query, logsState) {
     return new Promise(function (resolve, reject) {
         switch (stateType) {
         case "agreement":
-            calculators.agreementCalculator.process(stateManager.agreement, stateManager)
-                .then(function (agreementState) {
-                    stateManager.put(stateType, agreementState).then(function (data) {
-                        return resolvefunction(data);
-                    }, function (err) {
-                        return reject(err);
-                    });
+            calculators.agreementCalculator.process(stateManager)
+                .then(function (states) {
+                    // states.forEach((state)=>{
+                    // 	stateManager.put(state.stateType, agreementState).then(function (data) {
+                    return resolve(states);
+                    //     }, function (err) {
+                    //         return reject(err);
+                    //     });
+                    // });
                 }, function (err) {
                     logger.error(err.toString());
                     return reject(new errorModel(500, err));
@@ -560,7 +563,8 @@ function projectionBuilder(stateType, query) {
         metrics: "metric",
         quotas: "quota",
         rates: "rate",
-        pricing: "pricing"
+        pricing: "pricing",
+        agreement: "agreement"
     };
     var projection = {};
     var singularStateType = singular[stateType];

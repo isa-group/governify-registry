@@ -48,8 +48,8 @@ function processPricing(agreementDef, query, manager) {
                 processGuarantees.push(manager.get('guarantees', {
                     guarantee: guarantee.id,
                     period: {
-                        from: query.window ? query.window.initial : "*",
-                        to: query.window ? query.window.end : "*"
+                        from: query.window && query.window.initial && query.window.end ? query.window.initial : "*",
+                        to: query.window && query.window.initial && query.window.end ? query.window.end : "*"
                     }
                 }));
             });
@@ -104,8 +104,8 @@ function processPricing(agreementDef, query, manager) {
                 return manager.get('guarantees', {
                     guarantee: guarantee.id,
                     period: {
-                        from: query.window ? query.window.initial : "*",
-                        to: query.window ? query.window.end : "*"
+                        from: query.window && query.window.initial && query.window.end ? query.window.initial : "*",
+                        to: query.window && query.window.initial && query.window.end ? query.window.end : "*"
                     }
                 }).then(function (results) {
                     // store array of guarantee states

@@ -170,7 +170,7 @@ function processScopedGuarantee(manager, query, guarantee, ofElement) {
             var processMetrics = [];
             // If some scope is not specified, we set it with default values
             var scopeWithDefault = {};
-            var definedScopes = Object.keys(ofElement.scope);
+            var definedScopes = Object.keys(ofElement.scope || {});
             for (var guaranteeScope in guarantee.scope) {
                 if (definedScopes.indexOf(guaranteeScope) > -1) {
                     scopeWithDefault[guaranteeScope] = ofElement.scope[guaranteeScope];

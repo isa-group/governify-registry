@@ -41,7 +41,7 @@ module.exports = {
  * */
 function _agreementIdGET(args, res, next) {
     logger.info("New request to GET agreements (states/agreements/agreements.js)");
-    var agreementId = args.agreements.value;
+    var agreementId = args.agreement.value;
 
     stateManager({
         id: agreementId
