@@ -212,7 +212,7 @@ function processPricing(agreementDef, query, manager) {
  * */
 function getPeriods(agreement) {
     var initial = agreement.context.validity.initial;
-    var frequency = utils.convertPeriod(agreement.terms.pricing.billing.period);
+    var frequency = utils.time.convertPeriod(agreement.terms.pricing.billing.period);
     var periods = [];
     var Wfrom = moment.utc(moment.tz(initial, agreement.context.validity.timeZone));
     var current = moment.utc();

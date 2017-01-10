@@ -51,6 +51,7 @@ module.exports = {
  * @alias module:registry.deploy
  * */
 function _deploy(configurations, callback) {
+    if (configurations && configurations.loggerLevel) config.logger.transports.console.level = configurations.loggerLevel;
     config.logger.info('Trying to deploy server');
     if (configurations) {
         config.logger.info('Reading configuration...');

@@ -54,7 +54,17 @@ function processMetric(agreement, metricId, metricParameters) {
                 // Binding of columns names in custom log
                 data.logs = {};
                 var logId = Object.keys(metric.log)[0];
-                data.logs[logId] = metric.log[logId].uri;
+                //building computer logs
+                data.logs[logId] = {
+                    uri: metric.log[logId].uri,
+                    stateUri: metric.log[logId].stateUri,
+                    measures: metric.log[logId].measures || null,
+                    holidays: metric.log[logId].holidays || null
+                };
+                for (var prop in data.logs[logId]) {
+                    if (!data.logs[logId][prop]) delete data.logs[logId][prop];
+                }
+
                 var scopeId = Object.keys(metric.scope)[0];
                 for (var metricScope in metricParameters.scope) {
                     var logScope = metric.log[logId].scopes[scopeId][metricScope];
@@ -70,7 +80,17 @@ function processMetric(agreement, metricId, metricParameters) {
                     var log = agreement.context.definitions.logs[logId];
                     if (log.default) {
                         data.logs = {};
-                        data.logs[logId] = log.uri;
+                        //building computer logs
+                        data.logs[logId] = {
+                            uri: log.uri,
+                            stateUri: log.stateUri,
+                            measures: log.measures || null,
+                            holidays: log.holidays || null
+                        };
+                        for (var prop in data.logs[logId]) {
+                            if (!data.logs[logId][prop]) delete data.logs[logId][prop];
+                        }
+
                         if (metric.scope) {
                             var scopeId = Object.keys(metric.scope)[0];
                             for (var metricScope in metricParameters.scope) {
@@ -114,7 +134,7 @@ function processMetric(agreement, metricId, metricParameters) {
                         logger.metrics('Processing column name bindings from log...');
                         if (monthMetrics && Array.isArray(monthMetrics)) {
                             monthMetrics.forEach(function (metricState) {
-                                if (metricState.logs && metric.scope && log.scopes) {
+                                if (metricState.logs && metric.scope) {
                                     var logId = Object.keys(metricState.logs)[0];
                                     var log = agreement.context.definitions.logs[logId];
                                     var scope = {};

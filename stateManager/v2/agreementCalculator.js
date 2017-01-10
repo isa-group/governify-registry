@@ -128,7 +128,7 @@ function processMetrics(manager, parameters) {
                                 scope[st] = manager.agreement.context.definitions.scopes[s][st].default || '*';
                             }
                         }
-                        //    if (!scope.priority) scope.priority = 'P2'; //activate for PROSAS agreements
+                        if (!scope.priority) scope.priority = 'P2'; //activate for PROSAS agreements
                     }
 
                     logger.agreement('Scope for metricId=%s : %s', metricId, JSON.stringify(scope, null, 2));

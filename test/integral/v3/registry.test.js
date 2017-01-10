@@ -1,12 +1,13 @@
 'use strict';
 
 var expect = require('chai').expect,
+    assert = require('chai').assert,
     request = require('request'),
-    ppinot = require('./expected/ppinotData'),
     registry = require('../../../index'),
     agreement = require('./expected/agreements'),
     utils = require('../../../utils/utils'),
     testUtils = require('../../utils'),
+    fs = require('fs'),
     Promise = require('bluebird');
 
 var agreementMock = {
@@ -19,21 +20,21 @@ var agreementMock = {
 
 describe("Integral TEST V3", function () {
     before((done) => {
-        ppinot.listen(5000, () => {
-            testUtils.dropDB((err) => {
-                registry.deploy(require('../../config.json'), (server) => {
-                    request.post({
-                        url: 'http://localhost:5001/api/v3/agreements',
-                        body: agreement,
-                        json: true
-                    }, (err, res, body) => {
-                        if (err)
-                            console.log(err);
-                        done();
-                    });
+        // ppinot.listen(5000, () => {
+        testUtils.dropDB((err) => {
+            registry.deploy(require('../../config.json'), (server) => {
+                request.post({
+                    url: 'http://localhost:5001/api/v3/agreements',
+                    body: agreement,
+                    json: true
+                }, (err, res, body) => {
+                    if (err)
+                        console.log(err);
+                    done();
                 });
             });
         });
+        // });
     });
     after((done) => {
         registry.undeploy(() => {
@@ -53,14 +54,21 @@ describe("Integral TEST V3", function () {
             }, (err, res, body) => {
                 var expectedResults = require('./expected/guarantees.json');
                 var results = body;
-                expect(results).to.eql(expectedResults);
-                done();
+                //fs.writeFileSync(__dirname + '/guarantees.results.v3.json', JSON.stringify(results));
+                try {
+                    expect(results).to.eql(expectedResults);
+                    done();
+                } catch (e) {
+                    done(e);
+                }
             });
         });
+
         it('Get guarantees period by period', (done) => {
             var results = [];
-            var periods = utils.getPeriodsFrom(agreementMock, {
-                initial: '2014-10-16'
+            var periods = utils.time.getPeriods(agreementMock, {
+                initial: '2016-01-16',
+                timeZone: 'Europe/Madrid'
             });
             //console.log(periods);
             Promise.each(periods, (period) => {
@@ -76,111 +84,24 @@ describe("Integral TEST V3", function () {
                         return resolve(body);
                     });
                 }).then((body) => {
-                    //console.log(body);
                     body.forEach((element) => {
                         results.push(element);
                     });
                 }, (err) => {
-                    expect(false);
-                    done();
+                    done(err);
                 });
             }).then((res) => {
                 var expectedResults = require('./expected/guarantees.json');
-                expect(results).to.eql(expectedResults);
-                done();
+                //fs.writeFileSync(__dirname + '/guarantees.results.v3.month.json', JSON.stringify(results, null, 2));
+                try {
+                    expect(results).to.eql(expectedResults);
+                    done();
+                } catch (e) {
+                    done(e);
+                }
             }, (error) => {
-                expect(false);
-                done();
+                done(error);
             });
         });
     });
-    // describe('Pricing K00', () => {
-    //     it('Get K00 P1', (done) => {
-    //         request.post({
-    //             url: 'http://localhost:5001/api/v2/states/T14-L2-S12-minimal/metrics/SPU_IO_K00',
-    //             json: true,
-    //             body: {
-    //                 scope: {
-    //                     priority: "P1",
-    //                     node: "*",
-    //                     center: "*",
-    //                     serviceLine: "",
-    //                     activity: ""
-    //                 },
-    //                 window: {
-    //                     type: "static",
-    //                     period: "monthly",
-    //                     initial: "2014-10-16T22:00:00.000Z",
-    //                     timeZone: "Europe/Madrid"
-    //                 },
-    //                 logs: {
-    //                     casdm: "http://logs-devel.sas.governify.io/api/v1/ca-sdm/v10.13"
-    //                 }
-    //             }
-    //         }, (err, res, body) => {
-    //             var expectedResults = require('./expected/k00_p1.json');
-    //             var results = body;
-    //             expect(results).to.eql(expectedResults);
-    //             done();
-    //         });
-    //     });
-    //     it('Get K00 P2', (done) => {
-    //         request.post({
-    //             url: 'http://localhost:5001/api/v2/states/T14-L2-S12-minimal/metrics/SPU_IO_K00',
-    //             json: true,
-    //             body: {
-    //                 scope: {
-    //                     priority: "P2",
-    //                     node: "*",
-    //                     center: "*",
-    //                     serviceLine: "",
-    //                     activity: ""
-    //                 },
-    //                 window: {
-    //                     type: "static",
-    //                     period: "monthly",
-    //                     initial: "2014-10-16T22:00:00.000Z",
-    //                     timeZone: "Europe/Madrid"
-    //                 },
-    //                 logs: {
-    //                     casdm: "http://logs-devel.sas.governify.io/api/v1/ca-sdm/v10.13"
-    //                 }
-    //             }
-    //         }, (err, res, body) => {
-    //             var expectedResults = require('./expected/k00_p2.json');
-    //             var results = body;
-    //             expect(results).to.eql(expectedResults);
-    //             done();
-    //         });
-    //     });
-    //     it('Get K00 P3', (done) => {
-    //         request.post({
-    //             url: 'http://localhost:5001/api/v2/states/T14-L2-S12-minimal/metrics/SPU_IO_K00',
-    //             json: true,
-    //             body: {
-    //                 scope: {
-    //                     priority: "P3",
-    //                     node: "*",
-    //                     center: "*",
-    //                     serviceLine: "",
-    //                     activity: ""
-    //                 },
-    //                 window: {
-    //                     type: "static",
-    //                     period: "monthly",
-    //                     initial: "2014-10-16T22:00:00.000Z",
-    //                     timeZone: "Europe/Madrid"
-    //                 },
-    //                 logs: {
-    //                     casdm: "http://logs-devel.sas.governify.io/api/v1/ca-sdm/v10.13"
-    //                 }
-    //             }
-    //         }, (err, res, body) => {
-    //             var expectedResults = require('./expected/k00_p3.json');
-    //             var results = body;
-    //             expect(results).to.eql(expectedResults);
-    //             done();
-    //         });
-    //     });
-    // });
 });

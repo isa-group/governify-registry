@@ -20,6 +20,7 @@
     "clone": "^1.0.2",
     "cors": "^2.8.1",
     "deep-diff": "^0.3.4",
+    "docker-composer-manager": "0.0.2",
     "express": "^4.14.0",
     "fs": "0.0.1-security",
     "governify-agreement-manager": "0.0.6",
