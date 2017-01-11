@@ -47,7 +47,7 @@ describe("Integration TEST V3", function () {
 
 
     this.timeout(1000000);
-    // describe('Guarantees request', () => {
+
     it('Get guarantees all periods', (done) => {
         request.get({
             url: 'http://localhost:5001/api/v3/states/T14-L2-S12-minimal/guarantees',
@@ -93,7 +93,7 @@ describe("Integration TEST V3", function () {
                 done(err);
             });
         }).then((res) => {
-            var expectedResults = require('./expected/guaranteesByMonth.json');
+            var expectedResults = require('./expected/guarantees.json');
             //fs.writeFileSync(__dirname + '/guarantees.results.v3.month.json', JSON.stringify(results.sort(testUtils.orderByCenterAndId), null, 2));
             try {
                 expect(testUtils.arrayEqual(results, expectedResults));
@@ -123,5 +123,4 @@ describe("Integration TEST V3", function () {
         });
     });
 
-    // });
 });
