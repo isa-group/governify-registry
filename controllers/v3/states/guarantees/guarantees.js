@@ -170,6 +170,10 @@ function _guaranteeIdPenaltyPOST(args, res, next) {
         //logger.warning("periods: " + JSON.stringify(periods, null, 2));
         var result = [];
         Promise.each(periods, function (element) {
+            var metricPeriod = {
+                from: element.from.toISOString(),
+                to: element.to.toISOString()
+            }
             var p = {
                 from: element.from.subtract(Math.abs(offset), "months").toISOString(),
                 to: element.to.subtract(Math.abs(offset), "months").toISOString()
@@ -219,7 +223,7 @@ function _guaranteeIdPenaltyPOST(args, res, next) {
                         var penalties = manager.current(ret[i]).penalties;
                         for (var penaltyI in penalties) {
                             //logger.warning("element: " + JSON.stringify(element, null, 2));
-                            result.push(new gUtils.penaltyMetric(ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI]));
+                            result.push(new gUtils.penaltyMetric(ret[i].scope, query.parameters, metricPeriod, query.logs, penaltyI, penalties[penaltyI]));
                         }
                     }
                 }

@@ -258,7 +258,12 @@
                     "frequency": 1,
                     "initial": "2014-10-16"
                 },
-                "defaultStateReload": true
+                "defaultStateReload": true,
+                "window": {
+                    "type": "static",
+                    "period": "monthly",
+                    "initial": "2014-10-16"
+                }
             },
             "SPU_IO_K01_evidence": {
                 "schema": {
