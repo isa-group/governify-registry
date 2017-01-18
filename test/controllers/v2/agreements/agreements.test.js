@@ -244,7 +244,7 @@ var isValidAgreeement = (agreement) => {
 
     let isValid = true,
         Ajv = require('ajv'),
-        ajv = new Ajv(),
+        ajv = new Ajv({unknownFormats: ['int32','int64','float','double','byte','binary','date','date-time','password']}),
         schema = require("../../../../schemas/agreementSchema.json"),
         valid = ajv.validate(schema, agreement);
 
