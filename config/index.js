@@ -29,7 +29,7 @@ module.exports = config;
 
 module.exports.setProperty = function (propertyName, newValue) {
     this[propertyName] = newValue;
-}
+};
 
 var logConfig = {
     levels: {
@@ -75,7 +75,7 @@ module.exports.logger = new winston.Logger({
     transports: [
         new winston.transports.File({
             level: module.exports.loggerLevel,
-            filename: 'logs.log',
+            filename: module.exports.logfile,
             handleExceptions: true,
             json: false,
             maxsize: 5242880, //5MB
