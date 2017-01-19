@@ -1,4 +1,7 @@
 {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Root iAgree schema.",
+    "description": "iAgree v2 JSON schema",
     "type": "object",
     "properties": {
         "id": {
@@ -27,8 +30,14 @@
                 },
                 "infrastructure": {
                     "$ref": "#/properties/infrastructure"
+                },
+                "iAgree": {
+                    "type": "string"
                 }
-            }
+            },
+            "required": [
+                "definitions"
+            ]
         },
         "terms": {
             "type": "object",
@@ -40,7 +49,7 @@
                     }
                 },
                 "metrics": {
-                    "$ref": "#/properties/metric"
+                    "$ref": "#/properties/metrics"
                 },
                 "configurations": {
                     "type": "object",
@@ -63,7 +72,12 @@
                         "$ref": "#/properties/rate"
                     }
                 }
-            }
+            },
+            "required": [
+                "pricing",
+                "metrics",
+                "guarantees"
+            ]
         },
         "configuration": {
             "type": "object",
@@ -73,14 +87,24 @@
                     "items": {
                         "$ref": "#/properties/scopedConfiguration"
                     }
+                },
+                "scope": {
+                    "$ref": "#/properties/scope"
                 }
-            }
+            },
+            "required": [
+                "of",
+                "scope"
+            ]
         },
         "scopedConfiguration": {
             "type": "object",
             "properties": {
                 "scope": {
-                    "type": "object"
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-zA-Z0-9]*$": {}
+                    }
                 },
                 "value": {
                     "oneOf": [
@@ -95,7 +119,11 @@
                         }
                     ]
                 }
-            }
+            },
+            "required": [
+                "scope",
+                "value"
+            ]
         },
         "validity": {
             "type": "object",
@@ -109,10 +137,20 @@
                 "end": {
                     "type": "string"
                 }
-            }
+            },
+            "required": [
+                "initial",
+                "timeZone"
+            ]
         },
         "infrastructure": {
-            "type": "object"
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9]*$": {
+                    "type": "string"
+                }
+            }
+
         },
         "definitions": {
             "type": "object",
@@ -126,19 +164,116 @@
                 "logs": {
                     "$ref": "#/properties/log"
                 }
-            }
+            },
+            "required": [
+                "schemas",
+                "scopes"
+            ]
         },
         "_schema": {
-            "type": "object"
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9]*$": {
+                    "type": "object",
+                    "properties": {
+                        "description": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string"
+                        },
+                        "unit": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         },
         "scopes": {
-            "type": "object"
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9]*$": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-zA-Z0-9]*$": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "description": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                },
+                                "metadata": {
+                                    "type": "object",
+                                    "patternProperties": {
+                                        "^[a-zA-Z0-9]*$": {}
+                                    }
+                                },
+                                "format": {
+                                    "type": "string"
+                                },
+                                "default": {
+                                }
+                            },
+                            "required": [
+                                "name",
+                                "description",
+                                "type"
+                            ]
+                        }
+                    }
+                }
+            }
         },
         "scope": {
-            "type": "object"
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9]*$": {}
+            }
         },
         "log": {
-            "type": "object"
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9]*$": {
+                    "type": "object",
+                    "properties": {
+                        "default": {
+                            "type": "boolean"
+                        },
+                        "uri": {
+                            "type": "string"
+                        },
+                        "stateUri": {
+                            "type": "string"
+                        },
+                        "measures": {
+                            "type": "string"
+                        },
+                        "scopes": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[a-zA-Z0-9]*$": {
+                                    "type": "object",
+                                    "patternProperties": {
+                                        "^[a-zA-Z0-9]*$": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": [
+                        "uri",
+                        "stateUri",
+                        "measures"
+                    ]
+                }
+            }
         },
         "pricing": {
             "type": "object",
@@ -153,7 +288,10 @@
                 "billing": {
                     "$ref": "#/properties/billing"
                 }
-            }
+            },
+            "required": [
+                "billing"
+            ]
         },
         "billing": {
             "type": "object",
@@ -178,11 +316,103 @@
                 }
             }
         },
-        "metric": {
-            "type": "object"
+        "metrics": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9]*$": {
+                    "type": "object",
+                    "properties": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "description": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                },
+                                "unit": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "computer": {
+                            "type": "string"
+                        },
+                        "parameters": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[a-zA-Z0-9]*$": {
+                                }
+                            }
+                        },
+                        "scope": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[a-zA-Z0-9]*$": {
+                                }
+                            }
+                        },
+                        "metadata": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[a-zA-Z0-9]*$": {
+                                }
+                            }
+                        },
+                        "defaultStateReload": {
+                            "type": "boolean"
+                        },
+                        "window": {
+                            "$ref": "#/properties/window"
+                        }
+                    }
+                }
+            }
         },
         "rate": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "scope": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-zA-Z0-9]*$": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[a-zA-Z0-9]*$": {
+                                }
+                            }
+                        }
+                    }
+                },
+                "over": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-zA-Z0-9]*$": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[a-zA-Z0-9]*$": {
+                                }
+                            }
+                        }
+                    }
+                },
+                "of": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/properties/scopedRate"
+                    }
+                }
+            },
+            "required": [
+                "id",
+                "scope",
+                "over",
+                "of"
+            ]
         },
         "quota": {
             "type": "object",
@@ -191,10 +421,28 @@
                     "type": "string"
                 },
                 "scope": {
-                    "type": "object"
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-zA-Z0-9]*$": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[a-zA-Z0-9]*$": {
+                                }
+                            }
+                        }
+                    }
                 },
                 "over": {
-                    "type": "object"
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-zA-Z0-9]*$": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[a-zA-Z0-9]*$": {
+                                }
+                            }
+                        }
+                    }
                 },
                 "of": {
                     "type": "array",
@@ -202,13 +450,23 @@
                         "$ref": "#/properties/scopedQuota"
                     }
                 }
-            }
+            },
+            "required": [
+                "id",
+                "scope",
+                "over",
+                "of"
+            ]
         },
         "scopedQuota": {
             "type": "object",
             "properties": {
                 "scope": {
-                    "type": "object"
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-zA-Z0-9]*$": {
+                        }
+                    }
                 },
                 "limits": {
                     "type": "array",
@@ -216,7 +474,33 @@
                         "$ref": "#/properties/limit"
                     }
                 }
-            }
+            },
+            "required": [
+                "scope",
+                "limits"
+            ]
+        },
+        "scopedRate": {
+            "type": "object",
+            "properties": {
+                "scope": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-zA-Z0-9]*$": {
+                        }
+                    }
+                },
+                "limits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/properties/limit"
+                    }
+                }
+            },
+            "required": [
+                "scope",
+                "limits"
+            ]
         },
         "limit": {
             "type": "object",
@@ -227,7 +511,10 @@
                 "period": {
                     "type": "string"
                 }
-            }
+            },
+            "required": [
+                "max"
+            ]
         },
         "guarantee": {
             "type": "object",
@@ -244,10 +531,18 @@
                         "$ref": "#/properties/scoped_guarante"
                     }
                 }
-            }
+            },
+            "required": [
+                "id",
+                "scope",
+                "of"
+            ]
         },
         "guarantee_scope": {
-            "type": "object"
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9]*$": {}
+            }
         },
         "scoped_guarante": {
             "type": "object",
@@ -282,10 +577,24 @@
                         "$ref": "#/properties/compensation"
                     }
                 }
-            }
+            },
+            "required": [
+                "scope",
+                "objective",
+                "with",
+                "window"
+            ]
         },
         "with": {
-            "type": "object"
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9]*$": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-zA-Z0-9]*$": {}
+                    }
+                }
+            }
         },
         "window": {
             "type": "object",
@@ -302,10 +611,32 @@
                 "period": {
                     "type": "string"
                 }
-            }
+            },
+            "required": [
+                "type",
+                "period",
+                "initial"
+            ]
         },
         "evidence": {
-            "type": "object"
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9]*$": {
+                    "type": "object",
+                    "properties": {
+                        "schema": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[a-zA-Z0-9]*$": {
+                                }
+                            }
+                        },
+                        "computer": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         },
         "compensation": {
             "type": "object",
@@ -324,15 +655,23 @@
                 },
                 "groupBy": {
                     "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/properties/groupByObj"
+                    "patternProperties": {
+                        "^[a-zA-Z0-9]*$": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[a-zA-Z0-9]*$": {}
+                            }
+                        }
                     }
                 },
                 "upTo": {
                     "type": "number",
                     "format": "double"
                 }
-            }
+            },
+            "required": [
+                "over"
+            ]
         },
         "compensation_of": {
             "type": "object",
@@ -343,97 +682,29 @@
                 "condition": {
                     "type": "string"
                 }
-            }
+            },
+            "required": [
+                "value"
+            ]
         },
         "over": {
-            "type": "object"
-        },
-        "groupByObj": {
-            "type": "object"
-        },
-        "agreement_state": {
-            "type": "object"
-        },
-        "metrics_state": {
-            "type": "object"
-        },
-        "metric_state": {
-            "type": "object"
-        },
-        "rates_state": {
-            "type": "object"
-        },
-        "rate_state": {
-            "type": "object"
-        },
-        "quotas_state": {
-            "type": "object"
-        },
-        "quota_state": {
-            "type": "object"
-        },
-        "guarantees_state": {
-            "type": "object"
-        },
-        "guarantee_state": {
             "type": "object",
-            "properties": {
-                "guarantee": {
-                    "type": "string"
-                },
-                "scope": {
-                    "$ref": "#/properties/scope"
-                },
-                "logs": {
-                    "$ref": "#/properties/log"
-                },
-                "period": {
-                    "$ref": "#/properties/period"
-                },
-                "evidences": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/properties/evidence_state"
+            "patternProperties": {
+                "^[a-zA-Z0-9]*$": {
+                    "type": "object",
+                    "properties": {
+                        "description": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string"
+                        },
+                        "unit": {
+                            "type": "string"
+                        }
                     }
-                },
-                "fulfilled": {
-                    "type": "boolean"
-                },
-                "penalties": {
-                    "$ref": "#/properties/penalty_state"
                 }
             }
-        },
-        "period": {
-            "type": "object",
-            "properties": {
-                "from": {
-                    "type": "string"
-                },
-                "to": {
-                    "type": "string"
-                }
-            }
-        },
-        "evidence_state": {
-            "type": "object",
-            "properties": {
-                "evidence": {
-                    "type": "boolean"
-                },
-                "issue_init": {
-                    "type": "string"
-                },
-                "issue_end": {
-                    "type": "string"
-                },
-                "issue_duration": {
-                    "type": "string"
-                }
-            }
-        },
-        "penalty_state": {
-            "type": "object"
         },
         "inline_response_400": {
             "properties": {
@@ -445,5 +716,12 @@
                 }
             }
         }
-    }
+    },
+    "required": [
+        "id",
+        "version",
+        "type",
+        "context",
+        "terms"
+    ]
 }
