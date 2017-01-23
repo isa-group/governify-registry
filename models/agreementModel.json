@@ -25,6 +25,9 @@
             },
             "infrastructure": {
                 "$ref": "#/infrastructure"
+            },
+            "iAgree": {
+                "type": "string"
             }
         }
     },
@@ -38,7 +41,7 @@
                 }
             },
             "metrics": {
-                "$ref": "#/metric"
+                "$ref": "#/metrics"
             },
             "configurations": {
                 "type": "object",
@@ -71,6 +74,9 @@
                 "items": {
                     "$ref": "#/scopedConfiguration"
                 }
+            },
+            "scope": {
+                "$ref": "#/scope"
             }
         }
     },
@@ -78,7 +84,10 @@
         "type": "object",
         "properties": {
             "scope": {
-                "type": "object"
+                "type": "object",
+                "patternProperties": {
+                    "^[a-zA-Z0-9]*$": {}
+                }
             },
             "value": {
                 "oneOf": [
@@ -110,7 +119,12 @@
         }
     },
     "infrastructure": {
-        "type": "object"
+        "type": "object",
+        "patternProperties": {
+            "^[a-zA-Z0-9]*$": {
+                "type": "string"
+            }
+        }
     },
     "definitions": {
         "type": "object",
@@ -127,16 +141,99 @@
         }
     },
     "_schema": {
-        "type": "object"
+        "type": "object",
+        "patternProperties": {
+            "^[a-zA-Z0-9]*$": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "unit": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
     },
     "scopes": {
-        "type": "object"
+        "type": "object",
+        "patternProperties": {
+            "^[a-zA-Z0-9]*$": {
+                "type": "object",
+                "patternProperties": {
+                    "^[a-zA-Z0-9]*$": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "type": "string"
+                            },
+                            "metadata": {
+                                "type": "object",
+                                "patternProperties": {
+                                    "^[a-zA-Z0-9]*$": {}
+                                }
+                            },
+                            "format": {
+                                "type": "string"
+                            },
+                            "default": {
+                            }
+                        }
+                    }
+                }
+            }
+        }
     },
     "scope": {
-        "type": "object"
+        "type": "object",
+        "patternProperties": {
+            "^[a-zA-Z0-9]*$": {}
+        }
     },
     "log": {
-        "type": "object"
+        "type": "object",
+        "patternProperties": {
+            "^[a-zA-Z0-9]*$": {
+                "type": "object",
+                "properties": {
+                    "default": {
+                        "type": "boolean"
+                    },
+                    "uri": {
+                        "type": "string"
+                    },
+                    "stateUri": {
+                        "type": "string"
+                    },
+                    "measures": {
+                        "type": "string"
+                    },
+                    "scopes": {
+                        "type": "object",
+                        "patternProperties": {
+                            "^[a-zA-Z0-9]*$": {
+                                "type": "object",
+                                "patternProperties": {
+                                    "^[a-zA-Z0-9]*$": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     },
     "pricing": {
         "type": "object",
@@ -176,11 +273,97 @@
             }
         }
     },
-    "metric": {
-        "type": "object"
+    "metrics": {
+        "type": "object",
+        "patternProperties": {
+            "^[a-zA-Z0-9]*$": {
+                "type": "object",
+                "properties": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "description": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "type": "string"
+                            },
+                            "unit": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "computer": {
+                        "type": "string"
+                    },
+                    "parameters": {
+                        "type": "object",
+                        "patternProperties": {
+                            "^[a-zA-Z0-9]*$": {
+                            }
+                        }
+                    },
+                    "scope": {
+                        "type": "object",
+                        "patternProperties": {
+                            "^[a-zA-Z0-9]*$": {
+                            }
+                        }
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "patternProperties": {
+                            "^[a-zA-Z0-9]*$": {
+                            }
+                        }
+                    },
+                    "defaultStateReload": {
+                        "type": "boolean"
+                    },
+                    "window": {
+                        "$ref": "#/window"
+                    }
+                }
+            }
+        }
     },
     "rate": {
-        "type": "object"
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "string"
+            },
+            "scope": {
+                "type": "object",
+                "patternProperties": {
+                    "^[a-zA-Z0-9]*$": {
+                        "type": "object",
+                        "patternProperties": {
+                            "^[a-zA-Z0-9]*$": {
+                            }
+                        }
+                    }
+                }
+            },
+            "over": {
+                "type": "object",
+                "patternProperties": {
+                    "^[a-zA-Z0-9]*$": {
+                        "type": "object",
+                        "patternProperties": {
+                            "^[a-zA-Z0-9]*$": {
+                            }
+                        }
+                    }
+                }
+            },
+            "of": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/scopedRate"
+                }
+            }
+        }
     },
     "quota": {
         "type": "object",
@@ -189,10 +372,28 @@
                 "type": "string"
             },
             "scope": {
-                "type": "object"
+                "type": "object",
+                "patternProperties": {
+                    "^[a-zA-Z0-9]*$": {
+                        "type": "object",
+                        "patternProperties": {
+                            "^[a-zA-Z0-9]*$": {
+                            }
+                        }
+                    }
+                }
             },
             "over": {
-                "type": "object"
+                "type": "object",
+                "patternProperties": {
+                    "^[a-zA-Z0-9]*$": {
+                        "type": "object",
+                        "patternProperties": {
+                            "^[a-zA-Z0-9]*$": {
+                            }
+                        }
+                    }
+                }
             },
             "of": {
                 "type": "array",
@@ -206,7 +407,29 @@
         "type": "object",
         "properties": {
             "scope": {
-                "type": "object"
+                "type": "object",
+                "patternProperties": {
+                    "^[a-zA-Z0-9]*$": {
+                    }
+                }
+            },
+            "limits": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/limit"
+                }
+            }
+        }
+    },
+    "scopedRate": {
+        "type": "object",
+        "properties": {
+            "scope": {
+                "type": "object",
+                "patternProperties": {
+                    "^[a-zA-Z0-9]*$": {
+                    }
+                }
             },
             "limits": {
                 "type": "array",
@@ -245,7 +468,10 @@
         }
     },
     "guarantee_scope": {
-        "type": "object"
+        "type": "object",
+        "patternProperties": {
+            "^[a-zA-Z0-9]*$": {}
+        }
     },
     "scoped_guarante": {
         "type": "object",
@@ -283,7 +509,15 @@
         }
     },
     "with": {
-        "type": "object"
+        "type": "object",
+        "patternProperties": {
+            "^[a-zA-Z0-9]*$": {
+                "type": "object",
+                "patternProperties": {
+                    "^[a-zA-Z0-9]*$": {}
+                }
+            }
+        }
     },
     "window": {
         "type": "object",
@@ -303,7 +537,24 @@
         }
     },
     "evidence": {
-        "type": "object"
+        "type": "object",
+        "patternProperties": {
+            "^[a-zA-Z0-9]*$": {
+                "type": "object",
+                "properties": {
+                    "schema": {
+                        "type": "object",
+                        "patternProperties": {
+                            "^[a-zA-Z0-9]*$": {
+                            }
+                        }
+                    },
+                    "computer": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
     },
     "compensation": {
         "type": "object",
@@ -322,8 +573,13 @@
             },
             "groupBy": {
                 "type": "object",
-                "additionalProperties": {
-                    "$ref": "#/groupByObj"
+                "patternProperties": {
+                    "^[a-zA-Z0-9]*$": {
+                        "type": "object",
+                        "patternProperties": {
+                            "^[a-zA-Z0-9]*$": {}
+                        }
+                    }
                 }
             },
             "upTo": {
@@ -344,102 +600,21 @@
         }
     },
     "over": {
-        "type": "object"
-    },
-    "groupByObj": {
-        "type": "object"
-    },
-    "agreement_state": {
-        "type": "object"
-    },
-    "metrics_state": {
-        "type": "object"
-    },
-    "metric_state": {
-        "type": "object"
-    },
-    "rates_state": {
-        "type": "object"
-    },
-    "rate_state": {
-        "type": "object"
-    },
-    "quotas_state": {
-        "type": "object"
-    },
-    "quota_state": {
-        "type": "object"
-    },
-    "guarantees_state": {
-        "type": "object"
-    },
-    "guarantee_state": {
         "type": "object",
-        "properties": {
-            "guarantee": {
-                "type": "string"
-            },
-            "scope": {
-                "$ref": "#/scope"
-            },
-            "logs": {
-                "$ref": "#/log"
-            },
-            "period": {
-                "$ref": "#/period"
-            },
-            "evidences": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/evidence_state"
+        "patternProperties": {
+            "^[a-zA-Z0-9]*$": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "unit": {
+                        "type": "string"
+                    }
                 }
-            },
-            "fulfilled": {
-                "type": "boolean"
-            },
-            "penalties": {
-                "$ref": "#/penalty_state"
-            }
-        }
-    },
-    "period": {
-        "type": "object",
-        "properties": {
-            "from": {
-                "type": "string"
-            },
-            "to": {
-                "type": "string"
-            }
-        }
-    },
-    "evidence_state": {
-        "type": "object",
-        "properties": {
-            "evidence": {
-                "type": "boolean"
-            },
-            "issue_init": {
-                "type": "string"
-            },
-            "issue_end": {
-                "type": "string"
-            },
-            "issue_duration": {
-                "type": "string"
-            }
-        }
-    },
-    "penalty_state": {
-        "type": "object"
-    },
-    "inline_response_400": {
-        "properties": {
-            "code": {
-                "type": "number"
-            },
-            "message": {
-                "type": "string"
             }
         }
     }

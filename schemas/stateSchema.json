@@ -1,4 +1,7 @@
 {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Root iAgree states schema.",
+    "description": "iAgree v2 states JSON schema",
     "type": "object",
     "properties": {
         "agreementId": {
