@@ -46,6 +46,13 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-connect-middleware": "^0.3.1",
+    "grunt": "^1.0.1",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-uglify": "^2.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-mocha-test": "^0.13.2",
+    "grunt-release-github": "^1.0.3",
+    "grunt-run": "^0.6.0",
     "mocha": "^3.1.0"
   },
   "scripts": {
