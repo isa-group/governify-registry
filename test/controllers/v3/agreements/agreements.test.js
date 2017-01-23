@@ -1,19 +1,27 @@
-const expect = require("chai").expect,
-    request = require("request"),
-    jsyaml = require('js-yaml'),
-    $RefParser = require('json-schema-ref-parser'),
-    fs = require('fs'),
-    // Required files
-    registry = require('../../../../index'),
-    testUtils = require('../../../utils'),
-    config = require('../../../config.json'),
-    agreementFile = require('../expected/agreements/T14-L2-S12-minimal.json'),
-    // Registry endpoint
-    serverPath = "http://localhost:5001/api/v2",
-    agreementsPath = serverPath + '/agreements',
-    statesPath = serverPath + '/states';
+'use strict';
 
-describe("Agreements unit tests v2 ...", function () {
+const expect = require("chai").expect;
+const request = require("request");
+
+// Names
+const BASE_FILENAME = "T14-L2-S12-minimal";
+const BASE_EXPECTED_FILENAME = "T14-L2-S12-minimal-getresponse";
+const FILENAME_EXTENSION = "json";
+const SERVER_PATH = "http://localhost:5001/api/v3";
+
+// Required files
+const registry = require('../../../../index');
+const testUtils = require('../../../utils');
+const config = require('../../../config.json');
+const agreementFile = require('../expected/agreements/' + BASE_FILENAME + '.' + FILENAME_EXTENSION);
+const expectedAgreement = require('../expected/agreements/' + BASE_EXPECTED_FILENAME + '.' + FILENAME_EXTENSION);
+const schema = require("../../../../schemas/agreementSchema.json");
+
+// Registry endpoints
+const agreementsPath = SERVER_PATH + '/agreements';
+const statesPath = SERVER_PATH + '/states';
+
+describe("Agreement unit tests v3...", function () {
 
     // Deploy registry before all tests
     before((done) => {
@@ -25,18 +33,17 @@ describe("Agreements unit tests v2 ...", function () {
 
     // Remove all data and undeploy registry after all tests
     after((done) => {
-        registry.undeploy(() => {
+        registry.undeploy(() =>
             testUtils.dropDB((err) => {
                 done();
-            });
-        });
+            }));
     });
 
-    // Get all agreements when there is no agreement nonexistent agreement by agreement ID
+// Get all agreements when there is no agreement nonexistent agreement by agreement ID
     describe("GET /agreements", function () {
-        describe("Get all agreements when there is no agreement unit tests", function () {
-
-            let _body = null;
+        describe("Get all agreements when there is no agreement", function () {
+            console.log(agreementsPath)
+            let _body;
             const options = {
                 uri: agreementsPath,
                 method: 'GET'
@@ -58,32 +65,32 @@ describe("Agreements unit tests v2 ...", function () {
         });
     });
 
-    // Get a nonexistent agreement by agreement ID
+// Get a nonexistent agreement by agreement ID
     describe("GET /agreements/:id", function () {
-        describe("Expect an error when there is no agreement with ID unit tests", function () {
+        describe("Expect an error when there is no agreement with ID", function () {
 
-            const agreementId = "T14-L2-S12-minimal",
-                options = {
-                    uri: agreementsPath + "/" + agreementId,
-                    method: 'GET'
-                };
+            let _json;
+            const options = {
+                uri: agreementsPath + "/" + BASE_FILENAME,
+                method: 'GET'
+            };
 
             it("returns status 404 with error message", (done) => {
                 request(options, (error, response, body) => {
-                    let _json = JSON.parse(body);
+                    _json = JSON.parse(body);
                     expect(response.statusCode).to.equal(404);
-                    expect(_json.code === 404 && _json.message === "There is no agreement with id: " + agreementId).to.be.ok;
+                    expect(_json.code === 404 && _json.message === "There is no agreement with id: " + BASE_FILENAME).to.be.ok;
                     done();
                 });
             });
         });
     });
 
-    // Insert an agreement in database using 'POST /agreements' request
+// Insert an agreement in database using 'POST /agreements' request
     describe("POST /agreements", function () {
-        describe("Create an agreement unit tests", function () {
+        describe("Create an agreement", function () {
 
-            let postResponse = null;
+            let postResponse;
             const options = {
                 uri: agreementsPath,
                 method: 'POST',
@@ -105,18 +112,17 @@ describe("Agreements unit tests v2 ...", function () {
         });
     });
 
-    // Get a existent agreement by ID
+// Get a existent agreement by ID
     describe("GET /agreements/:id", function () {
-        describe("Get an agreement by agreement ID unit tests", function () {
+        describe("Get an agreement by agreement ID", function () {
 
-            let agreementJson = null,
-                _body = null;
-            const agreementId = "T14-L2-S12-minimal",
-                expectedAgreement = require('../expected/agreements/T14-L2-S12-minimal-getresponse.json'),
-                options = {
-                    uri: agreementsPath + "/" + agreementId,
-                    method: 'GET'
-                };
+            let agreementJson;
+            let _body;
+            let _json;
+            const options = {
+                uri: agreementsPath + "/" + BASE_FILENAME,
+                method: 'GET'
+            };
 
             it("returns status 200", (done) => {
                 request(options, (error, response, body) => {
@@ -133,30 +139,29 @@ describe("Agreements unit tests v2 ...", function () {
             });
 
             it("returns expected agreement", (done) => {
-                let _json = agreementJson;
+                _json = agreementJson;
                 delete _json['_id'];
                 expect(JSON.stringify(_json)).to.be.equal(JSON.stringify(expectedAgreement));
                 done();
             });
 
             it("returns valid agreement", (done) => {
-                expect(isValidAgreeement(agreementJson)).to.be.ok;
+                expect(testUtils.validateModel(agreementJson, schema)).to.be.ok;
                 done();
             });
         });
     });
 
-    // Get all agreements
+// Get all agreements
     describe("GET /agreements", function () {
-        describe("Get all agreements unit tests", function () {
+        describe("Get all agreements", function () {
 
-            let agreementsJson = null;
-            const agreementId = "T14-L2-S12-minimal",
-                expectedAgreement = require('../expected/agreements/T14-L2-S12-minimal-getresponse.json'),
-                options = {
-                    uri: agreementsPath,
-                    method: 'GET'
-                };
+            let agreementsJson;
+            let _json;
+            const options = {
+                uri: agreementsPath,
+                method: 'GET'
+            };
 
             it("returns status 200", (done) => {
                 request(options, (error, response, body) => {
@@ -173,23 +178,23 @@ describe("Agreements unit tests v2 ...", function () {
             });
 
             it("returns expected agreement", (done) => {
-                let _json = agreementsJson[0];
+                _json = agreementsJson[0];
                 delete _json['_id'];
                 expect(JSON.stringify(_json)).to.be.equal(JSON.stringify(expectedAgreement));
                 done();
             });
 
             it("returns valid agreement", (done) => {
-                expect(isValidAgreeement(agreementsJson[0])).to.be.ok;
+                expect(testUtils.validateModel(agreementsJson[0], schema)).to.be.ok;
                 done();
             });
 
         });
     });
 
-    // Delete all agreements
+// Delete all agreements
     describe("DELETE /agreements", function () {
-        describe("Remove all agreements unit tests", function () {
+        describe("Remove all agreements", function () {
 
             let res = null;
             const options = {
@@ -213,16 +218,15 @@ describe("Agreements unit tests v2 ...", function () {
         });
     });
 
-    // Get all agreements when there is no agreement nonexistent agreement by agreement ID
+// Get all agreements when there is no agreement nonexistent agreement by agreement ID
     describe("GET /agreements", function () {
-        describe("Get all agreements after removing them unit tests", function () {
+        describe("Get all agreements after removing them", function () {
 
             let _body = null;
             const options = {
                 uri: agreementsPath,
                 method: 'GET'
             };
-
             it("returns status 200", (done) => {
                 request(options, (error, response, body) => {
                     _body = body;
@@ -230,17 +234,10 @@ describe("Agreements unit tests v2 ...", function () {
                     done();
                 });
             });
-
             it("returns empty array", (done) => {
                 expect(JSON.parse(_body).length === 0).to.be.ok;
                 done();
             });
-
         });
     });
 });
-
-var isValidAgreeement = (agreement) => {
-    // Since in this version there was any schema validation, it always returns true
-    return true;
-};

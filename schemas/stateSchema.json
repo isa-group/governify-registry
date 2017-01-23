@@ -19,20 +19,22 @@
                 "to": {
                     "type": "string"
                 }
-            }
+            },
+            "required": [
+                "from",
+                "to"
+            ]
         },
         "scope": {
-            "type": "object"
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9]*$": {}
+            }
         },
         "window": {
             "type": "object",
-            "properties": {
-                "_type": {
-                    "type": "string"
-                },
-                "period": {
-                    "type": "string"
-                }
+            "patternProperties": {
+                "^[a-zA-Z0-9]*$": {}
             }
         },
         "records": {
@@ -56,8 +58,21 @@
                     "time": {
                         "type": "string"
                     }
-                }
+                },
+                "required": [
+                    "value",
+                    "time"
+                ]
             }
         }
-    }
+    },
+    "required": [
+        "agreementId",
+        "stateType",
+        "id",
+        "period",
+        "scope",
+        "window",
+        "records"
+    ]
 }

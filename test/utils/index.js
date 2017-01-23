@@ -1,20 +1,24 @@
 'use strict';
 var mongoose = require('mongoose');
 var testConfig = require('../config.json');
+var Ajv = require('ajv');
+var ajv = new Ajv({unknownFormats: ['int32', 'int64', 'float', 'double', 'byte', 'binary', 'date', 'date-time', 'password']});
 
 module.exports = {
     dropDB: _dropDB,
     orderByCenterAndId: _orderByCenterAndId,
     stateEqual: _stateEqual,
-    arrayEqual: _arrayEqual
-}
+    arrayEqual: _arrayEqual,
+    validateModel: _validateModel
+};
 
 
 function _dropDB(callback) {
     mongoose.connect(testConfig.database.url + "/" + testConfig.database.db_name);
     var connection = mongoose.connection;
     connection.on('error', (err) => {
-        if (callback) callback(err);
+        if (callback)
+            callback(err);
     });
     connection.once('open', () => {
         try {
@@ -38,11 +42,15 @@ function _dropDB(callback) {
 }
 
 function _orderByCenterAndId(a, b) {
-    if (a.scope.center > b.scope.center) return 1;
-    if (a.scope.center < b.scope.center) return -1;
-    if (a.scope.center == b.scope.center) {
-        if (a.id > b.id) return 1;
-        else return -1;
+    if (a.scope.center > b.scope.center)
+        return 1;
+    if (a.scope.center < b.scope.center)
+        return -1;
+    if (a.scope.center === b.scope.center) {
+        if (a.id > b.id)
+            return 1;
+        else
+            return -1;
     }
 }
 
@@ -50,8 +58,7 @@ function _orderByCenterAndId(a, b) {
 function _stateEqual(state1, state2) {
     var ret = true;
 
-    ret = ret && (state1.agreementId === state2.agreementId && state1.stateType === state2.stateType &&
-        state1.id == state2.id);
+    ret = ret && (state1.agreementId === state2.agreementId && state1.stateType === state2.stateType && state1.id === state2.id);
 
     //scope equal
     for (var vs1 in state1.scope) {
@@ -106,7 +113,7 @@ function _arrayEqual(array1, array2) {
             return _stateEqual(elementArray1, elementArray2);
         });
 
-        ret = ret && elementOnArray2.length === 1
+        ret = ret && elementOnArray2.length === 1;
     });
 
     //all element of array2 is on array1
@@ -115,8 +122,17 @@ function _arrayEqual(array1, array2) {
             return _stateEqual(elementArray2, elementArray1);
         });
 
-        ret = ret && elementOnArray1.length === 1
+        ret = ret && elementOnArray1.length === 1;
     });
 
     return ret;
 }
+
+function _validateModel(model, schema) {
+    let isValidModel = ajv.validate(schema, model);
+    if (!isValidModel) {
+        console.log(ajv.errors);
+    }
+    return isValidModel;
+}
+;
