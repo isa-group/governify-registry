@@ -705,16 +705,6 @@
                     }
                 }
             }
-        },
-        "inline_response_400": {
-            "properties": {
-                "code": {
-                    "type": "number"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
         }
     },
     "required": [
