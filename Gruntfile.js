@@ -61,7 +61,7 @@ module.exports = function (grunt) {
                 afterBump: [], // optional grunt tasks to run after file versions are bumped
                 beforeRelease: [], // optional grunt tasks to run after release version is bumped up but before release is packaged
                 afterRelease: [], // optional grunt tasks to run after release is packaged
-                updateVars: [], // optional grunt config objects to update (this will update/set the version property on the object specified)
+                updateVars: ['pkg'], // optional grunt config objects to update (this will update/set the version property on the object specified)
                 github: {
                     repo: "isa-group/governify-registry",
                     usernameVar: 'GITHUB_USERNAME',
@@ -81,9 +81,13 @@ module.exports = function (grunt) {
     // grunt.registerTask('default', ['jshint', 'uglify']);
     // grunt.registerTask('build', ['jshint', 'mochaTest', 'uglify']);
 
+    //set version as environment variable to be used from Travis CI
+    grunt.registerTask('setVersionEnv', function () {
+        grunt.file.write('.version', grunt.config('pkg.version'));
+    });
 
     //'jshint',
-    grunt.registerTask('test', ['run:test']);
+    grunt.registerTask('test', ['run:test', 'setVersionEnv']);
 
     //Execute grunt release to make a new relase.
 
