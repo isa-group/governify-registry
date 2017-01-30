@@ -8,7 +8,7 @@
         "registry",
         "agreements"
     ],
-    "license": "Apache-2.0",
+    "license": "GPL-3.0+",
     "private": true,
     "dependencies": {
         "JSONStream": "^1.2.1",
@@ -47,6 +47,7 @@
         "chai": "^3.5.0",
         "chai-connect-middleware": "^0.3.1",
         "grunt": "^1.0.1",
+        "grunt-banner": "^0.6.0",
         "grunt-contrib-jshint": "^1.1.0",
         "grunt-contrib-uglify": "^2.0.0",
         "grunt-contrib-watch": "^1.0.0",
@@ -61,5 +62,16 @@
         "start": "node --max-old-space-size=20480 server.js",
         "docs": "cmd /k generateDocs.bat",
         "dockerhub": "cmd /k buildAndPushToDockerhub.bat"
+    },
+    "author": "ISA Group",
+    "authorWeb": "http://www.isa.us.es/",
+    "packageWeb": "http://registry.governify.io/",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/isa-group/governify-registry.git",
+        "github": "http://github.com/isa-group/governify-registry"
+    },
+    "docker": {
+        "url": "https://hub.docker.com/r/isagroup/governify-registry/"
     }
 }

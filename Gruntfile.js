@@ -1,43 +1,49 @@
 'use strict';
 module.exports = function (grunt) {
 
-    // Load the plugin that provides the "uglify" task.
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-
+    // Load plugin tasks.
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
     grunt.loadNpmTasks('grunt-contrib-watch');
-
-    grunt.loadNpmTasks('grunt-mocha-test');
 
     grunt.loadNpmTasks('grunt-release-github');
 
     grunt.loadNpmTasks('grunt-run');
 
+    grunt.loadNpmTasks('grunt-banner');
+
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        license: grunt.file.read('LICENSE', {
+        license: grunt.file.read('LICENSE_notice', {
             encoding: 'utf8'
         }).toString(),
-        // uglify: {
-        //     options: {
-        //         banner: '/*!\n<%= license %>*/\n'
-        //     },
-        //     // build: {
-        //     //     src: 'app/*.js',
-        //     //     dest: 'build/<%= this.name %>.min.js'
-        //     // },
-        //     all: {
-        //         files: [{
-        //             expand: true,
-        //             cwd: './',
-        //             src: ['index.js','server.js', './**/*.js'],
-        //             dest: './build',
-        //             ext: '.js',
-        //         }]
-        //     }
-        // },
+        releaseNote: grunt.file.read('release-notes', {
+            encoding: 'utf8'
+        }).toString(),
+        usebanner: {
+            // license: {
+            //     options: {
+            //         position: 'top',
+            //         banner: '/*!\n<%= license %>*/\n',
+            //         replace: true
+            //     },
+            //     files: {
+            //         src: ['**/*.js']
+            //     }
+            // },
+            readme: {
+                options: {
+                    position: 'bottom',
+                    banner: '### Latest release\n\n<%= releaseNote %>',
+                    replace: /###\sLatest\srelease(\s||.)+/g,
+                    linebreak: false
+                },
+                files: {
+                    src: ['README.md']
+                }
+            }
+        },
         jshint: {
             all: ['Gruntfile.js', 'index.js', 'server.js', './**/*.js', 'tests/**/*.js'],
             options: {
@@ -57,7 +63,7 @@ module.exports = function (grunt) {
                 //changelogText: '\nhello\n <%= grunt.config.get("pkg.changelog") %>',
                 npm: false, //default: true
                 //npmtag: true, //default: no tag
-                beforeBump: [], // optional grunt tasks to run before file versions are bumped
+                beforeBump: ['usebanner'], // optional grunt tasks to run before file versions are bumped
                 afterBump: [], // optional grunt tasks to run after file versions are bumped
                 beforeRelease: [], // optional grunt tasks to run after release version is bumped up but before release is packaged
                 afterRelease: [], // optional grunt tasks to run after release is packaged
@@ -88,6 +94,8 @@ module.exports = function (grunt) {
 
     //'jshint',
     grunt.registerTask('test', ['run:test', 'setVersionEnv']);
+
+    grunt.registerTask('license', ['usebanner']);
 
     //Execute grunt release to make a new relase.
 
