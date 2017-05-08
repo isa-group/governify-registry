@@ -1,3 +1,29 @@
+### v3.0.0 - 2017-41-8
+
+- [#46](https://github.com/isa-group/governify-registry/issues/46) - Addapt Node JS template for automating
+
+- [#43](https://github.com/isa-group/governify-registry/issues/43) - Remove unused files
+
+- [#39](https://github.com/isa-group/governify-registry/issues/39) - Update package.json old dependencies
+
+- [#37](https://github.com/isa-group/governify-registry/pull/37) - Configurable logger path
+
+- [#36](https://github.com/isa-group/governify-registry/issues/36) - Introduce Travis CI 
+
+- [#35](https://github.com/isa-group/governify-registry/issues/35) - Introduce GRUNT for automating development tasks
+
+- [#32](https://github.com/isa-group/governify-registry/issues/32) - Improve JSON schemas for Agreement and State, and unify
+
+- [#31](https://github.com/isa-group/governify-registry/issues/31) - Update integral test for V3.
+
+- [#29](https://github.com/isa-group/governify-registry/issues/29) - Create tests for stateManager.
+
+- [#23](https://github.com/isa-group/governify-registry/issues/23) - Create tests for controllers of state API.
+
+- [#16](https://github.com/isa-group/governify-registry/issues/16) - Review the models 
+
+- [#10](https://github.com/isa-group/governify-registry/issues/10) - Change route of logger's files
+
 ### v2.2.1 2016-01-27
 
 - fixed some bug on deploy and undeploy
