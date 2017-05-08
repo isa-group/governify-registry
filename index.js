@@ -1,17 +1,39 @@
+/*!
+governify-registry 0.0.1, built on: 2017-01-30
+Copyright (C) 2017 ISA Group
+http://www.isa.us.es/
+http://registry.governify.io/
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 'use strict';
 
 //Server dependencies
 var express = require('express');
 var http = require('http');
+var https = require('https');
+var fs = require('fs');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var app = express();
 
 //Self dependencies
-var config = require('./config');
-var db = require('./database');
-var swaggerUtils = require('./utils/utils').swagger;
-var middlewares = require('./utils/utils').middlewares;
+var config = require('./src/config');
+var db = require('./src/database');
+var swaggerUtils = require('./src/utils/utils').swagger;
+var middlewares = require('./src/utils/utils').middlewares;
 
 app.use(cors());
 app.use(express.static(__dirname + '/public'));
@@ -49,6 +71,9 @@ module.exports = {
  * @alias module:registry.deploy
  * */
 function _deploy(configurations, callback) {
+    if (configurations && configurations.loggerLevel) {
+        config.logger.transports.console.level = configurations.loggerLevel;
+    }
     config.logger.info('Trying to deploy server');
     if (configurations) {
         config.logger.info('Reading configuration...');
@@ -65,18 +90,32 @@ function _deploy(configurations, callback) {
             //list of swagger documents, one for each version of the api.
             var swaggerDocs = [swaggerUtils.getSwaggerDoc(1), swaggerUtils.getSwaggerDoc(2), swaggerUtils.getSwaggerDoc(3)];
             //initialize swagger middleware for each swagger documents.
-            swaggerUtils.initializeMiddleware(app, swaggerDocs, function (middleware) {
+            swaggerUtils.initializeMiddleware(app, swaggerDocs, function () {
 
                 var serverPort = process.env.PORT || config.port;
-                if (!module.exports.server)
+                if (!module.exports.server) {
                     module.exports.server = http.createServer(app);
+                }
                 module.exports.server.timeout = 24 * 3600 * 1000; // 24h
+
+                if (process.env.HTTPS_SERVER === "true") {
+                    var securePort = 443;
+                    https.createServer({
+                        key: fs.readFileSync('certs/privkey.pem'),
+                        cert: fs.readFileSync('certs/cert.pem')
+                    }, app).listen(securePort, function () {
+                        config.logger.info('HTTPS_SERVER mode');
+                        config.logger.info('Your server is listening on port %d (https://localhost:%d)', serverPort, serverPort);
+                        config.logger.info('Swagger-ui is available on https://localhost:%d/api/v1/docs', serverPort);
+                    });
+                }
 
                 module.exports.server.listen(serverPort, function () {
                     config.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
                     config.logger.info('Swagger-ui is available on http://localhost:%d/api/v1/docs', serverPort);
-                    if (callback)
+                    if (callback) {
                         callback(module.exports.server);
+                    }
                 });
             });
         } else {
