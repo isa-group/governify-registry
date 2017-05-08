@@ -2,16 +2,23 @@
 
 Registry is a component of governify's tools for storing and analisys Service Level Agreements (SLA)
 
-Registry is open-source software available under the GNU General Public License (GPL) version 3 (GPL v3).
+## Copyright notice
 
-This repository tracks changes since release 3.0.0 and as of June 30, 2016. The repository prior to that date was the datastore repository which has been discontinued. In [CHANGELOG](./CHANGELOG.md) you can see all release history of this project.
+**governify-registry** is open-source software available under the GNU General Public License (GPL) version 2 (GPL v2).
 
-### Latest release
+All including documentation and code are copyrighted and the copyright is owned by [ISA Group](http://www.isa.us.es), 
+[University of Sevilla](http://www.us.es), unauthorized reproduction or distribution of this copyrighted work is illegal.
+For commercial licensing terms, please [contact](./extra/contact.md) for any inquiry.
 
-The version 0.0.1 is the latest stable version of governify-registry component.
-see [release note](http://github.com/isa-group/governify-registry/releases/tag/0.0.1) for details.
+For technical inquiry please contact to [engineering team](./extra/about.md).
 
-You have two options for running:
+## Latest release
 
-- Download latest version from [0.0.1](http://github.com/isa-group/governify-registry/releases/tag/0.0.1)
-- Run with docker, see [here](https://hub.docker.com/r/isagroup/governify-registry/)
+[![Build Status](https://travis-ci.org/isa-group/governify-registry.svg?branch=master)](https://travis-ci.org/http://github.com/isa-group/governify-registry)
+
+The version 0.0.0 is the latest stable version of governify-registry component.
+see [release note](http://github.com/isa-group/governify-registry/releases/tag/0.0.0) for details.
+
+For running:
+
+- Download latest version from [0.0.0](http://github.com/isa-group/governify-registry/releases/tag/0.0.0)

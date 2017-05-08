@@ -4,8 +4,7 @@
     "camelcase": false,
     "curly": true,
     "loopfunc": true,
-    "eqeqeq": true,
-    "esnext": true,
+    "eqeqeq": false,
     "immed": true,
     "jquery": true,
     "latedef": false,
@@ -18,8 +17,16 @@
     "trailing": true,
     "undef": true,
     "unused": true,
+    "esversion": 6,
+    "validthis": true,
+    "eqnull": true,
 
     "globals": {
-        "module": true
+        "module": true,
+        "describe": true,
+        "it": true,
+        "before": true,
+        "after": true,
+        "expect": true
     }
 }

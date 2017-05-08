@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 'use strict';
 
 var registry = require('./index.js');
-var config = require('./config');
+var config = require('./src/config');
 
 config.logger.info('Deploy request received');
-registry.deploy(null, function (server) {
+registry.deploy(null, function () {
     config.logger.info('Deploy successfully done');
 });

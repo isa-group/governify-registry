@@ -1,0 +1,58 @@
+---
+development:
+  database:
+    url: "mongodb://localhost:27017"
+    db_name: registry
+  models:
+    agreement:
+      name: "AgreementModel"
+      path: "./src/models/agreementModel.json"
+    state:
+      name: "StateModel"
+      path: "./src/models/stateModel.json"
+  port: 8081
+  logfile: "./logs/dev.log"
+  loggerLevel: info
+  parallelProcess:
+    guarantees: false
+    metrics: false
+  streaming: true
+  statusBouncer: false
+  maxAttempts: 10
+  retryDelay: 2000
+  email:
+    mailerApiKey: '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'
+    defaultMailFrom: '"ISA-Group" <no-reply@isa.us.es>'
+    messages:
+      reloadAgreement:
+        mailSubject: '[Governify] Su tarea ha finalizado'
+        mailContent: "El cálculo de SLAs para el contrato <b>%s</b> ha sido actualizado en base a la información cargada en los logs. <p>Número actual de registros que se han tenido en cuenta para realizar los cálculos:</p>"
+
+production:
+  database:
+    url: "mongodb://mongo"
+    db_name: registry
+  models:
+    agreement:
+      name: "AgreementModel"
+      path: "./src/models/agreementModel.json"
+    state:
+      name: "StateModel"
+      path: "./src/models/stateModel.json"
+  port: 8081
+  logfile: "./logs/prod.log"
+  loggerLevel: debug
+  parallelProcess:
+    guarantees: false
+    metrics: false
+  streaming: true
+  statusBouncer: false
+  maxAttempts: 20
+  retryDelay: 5000
+  email:
+    mailerApiKey: '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'
+    defaultMailFrom: '"ISA-Group" <no-reply@isa.us.es>'
+    messages:
+      reloadAgreement:
+        mailSubject: '[Governify] Su tarea ha finalizado'
+        mailContent: "El cálculo de SLAs para el contrato <b>%s</b> ha sido actualizado en base a la información cargada en los logs. <p>Estado actual de los logs:</p>"

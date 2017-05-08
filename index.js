@@ -30,10 +30,10 @@ var cors = require('cors');
 var app = express();
 
 //Self dependencies
-var config = require('./config');
-var db = require('./database');
-var swaggerUtils = require('./utils/utils').swagger;
-var middlewares = require('./utils/utils').middlewares;
+var config = require('./src/config');
+var db = require('./src/database');
+var swaggerUtils = require('./src/utils/utils').swagger;
+var middlewares = require('./src/utils/utils').middlewares;
 
 app.use(cors());
 app.use(express.static(__dirname + '/public'));
@@ -71,7 +71,9 @@ module.exports = {
  * @alias module:registry.deploy
  * */
 function _deploy(configurations, callback) {
-    if (configurations && configurations.loggerLevel) config.logger.transports.console.level = configurations.loggerLevel;
+    if (configurations && configurations.loggerLevel) {
+        config.logger.transports.console.level = configurations.loggerLevel;
+    }
     config.logger.info('Trying to deploy server');
     if (configurations) {
         config.logger.info('Reading configuration...');
@@ -88,11 +90,12 @@ function _deploy(configurations, callback) {
             //list of swagger documents, one for each version of the api.
             var swaggerDocs = [swaggerUtils.getSwaggerDoc(1), swaggerUtils.getSwaggerDoc(2), swaggerUtils.getSwaggerDoc(3)];
             //initialize swagger middleware for each swagger documents.
-            swaggerUtils.initializeMiddleware(app, swaggerDocs, function (middleware) {
+            swaggerUtils.initializeMiddleware(app, swaggerDocs, function () {
 
                 var serverPort = process.env.PORT || config.port;
-                if (!module.exports.server)
+                if (!module.exports.server) {
                     module.exports.server = http.createServer(app);
+                }
                 module.exports.server.timeout = 24 * 3600 * 1000; // 24h
 
                 if (process.env.HTTPS_SERVER === "true") {
@@ -110,8 +113,9 @@ function _deploy(configurations, callback) {
                 module.exports.server.listen(serverPort, function () {
                     config.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
                     config.logger.info('Swagger-ui is available on http://localhost:%d/api/v1/docs', serverPort);
-                    if (callback)
+                    if (callback) {
                         callback(module.exports.server);
+                    }
                 });
             });
         } else {

@@ -1,12 +1,12 @@
 /*!
-governify-registry 0.0.1, built on: 2017-01-30
-Copyright (C) 2017 ISA Group
+governify-registry 0.0.0, built on: 2017-01-01
+Copyright (C) 2017 ISA group
 http://www.isa.us.es/
-http://registry.governify.io/
+https://github.com/isa-group/governify-registry
 
-This program is free software: you can redistribute it and/or modify
+This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
+the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -15,48 +15,53 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
+
 
 'use strict';
+
 module.exports = function (grunt) {
 
-    // Load plugin tasks.
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.loadNpmTasks('grunt-release-github');
+    grunt.loadNpmTasks('grunt-mocha-test');
 
-    grunt.loadNpmTasks('grunt-run');
+    grunt.loadNpmTasks('grunt-release-github');
 
     grunt.loadNpmTasks('grunt-banner');
 
+    grunt.loadNpmTasks('grunt-dockerize');
+
     // Project configuration.
     grunt.initConfig({
+        //Load configurations
         pkg: grunt.file.readJSON('package.json'),
-        license: grunt.file.read('LICENSE_notice', {
+        licenseNotice: grunt.file.read('extra/license-notice', {
             encoding: 'utf8'
         }).toString(),
-        releaseNote: grunt.file.read('release-notes', {
+        latestReleaseNotes: grunt.file.read('extra/latest-release-notes', {
             encoding: 'utf8'
         }).toString(),
+
+        //Add license notice and latest release notes
         usebanner: {
             license: {
                 options: {
                     position: 'top',
-                    banner: '/*!\n<%= license %>*/\n',
+                    banner: '/*!\n<%= licenseNotice %>*/\n',
                     replace: true
                 },
                 files: {
-                    src: ['**/*.js']
+                    src: ['src/**/*.js', 'tests/**/*.js', 'Gruntfile.js'] //If you want to inspect more file, you change this.
                 }
             },
             readme: {
                 options: {
                     position: 'bottom',
-                    banner: '### Latest release\n\n<%= releaseNote %>',
-                    replace: /###\sLatest\srelease(\s||.)+/g,
+                    banner: '## Copyright notice\n\n<%= latestReleaseNotes %>',
+                    replace: /##\sCopyright\snotice(\s||.)+/g,
                     linebreak: false
                 },
                 files: {
@@ -64,61 +69,106 @@ module.exports = function (grunt) {
                 }
             }
         },
+
+        //Lint JS 
         jshint: {
-            all: ['Gruntfile.js', 'index.js', 'server.js', './**/*.js', 'tests/**/*.js'],
+            all: ['Gruntfile.js', 'src/**/*.js', 'tests/**/*.js', 'index.js'], //If you want to inspect more file, you change this.
             options: {
                 jshintrc: '.jshintrc'
             }
         },
-        run: {
-            test: {
-                exec: 'npm test'
+
+        //Execute mocha tests
+        mochaTest: {
+            tests: {
+                options: {
+                    reporter: 'spec',
+                    //captureFile: 'test.results<%= grunt.template.today("yyyy-mm-dd:HH:mm:ss") %>.txt', // Optionally capture the reporter output to a file
+                    quiet: false, // Optionally suppress output to standard out (defaults to false)
+                    clearRequireCache: false, // Optionally clear the require cache before running tests (defaults to false)
+                    noFail: false // Optionally set to not fail on failed tests (will still fail on other errors)
+                },
+                src: ['tests/**/*.js']
             }
         },
+
+        //Make a new release on github
+        //"grunt release" for pacth version
+        //"grunt release:minior" for minior version
+        //"grunt release:major" for major version
         release: {
             options: {
-                changelog: true, //default: false
-                changelogFromGithub: true,
-                githubReleaseBody: 'See [CHANGELOG.md](./CHANGELOG.md) for details.',
-                //changelogText: '\nhello\n <%= grunt.config.get("pkg.changelog") %>',
-                npm: false, //default: true
+                changelog: true, //NOT CHANGE
+                changelogFromGithub: true, //NOT CHANGE
+                githubReleaseBody: 'See [CHANGELOG.md](./CHANGELOG.md) for details.', //NOT CHANGE
+                npm: false, //CHANGE TO TRUE IF YOUR PROJECT IS A NPM MODULE 
                 //npmtag: true, //default: no tag
-                beforeBump: ['usebanner'], // optional grunt tasks to run before file versions are bumped
-                afterBump: [], // optional grunt tasks to run after file versions are bumped
-                beforeRelease: [], // optional grunt tasks to run after release version is bumped up but before release is packaged
-                afterRelease: [], // optional grunt tasks to run after release is packaged
-                updateVars: ['pkg'], // optional grunt config objects to update (this will update/set the version property on the object specified)
+                beforeBump: [], // IS NOT READY YET
+                afterBump: [], // IS NOT READY YET
+                beforeRelease: [], // IS NOT READY YET
+                afterRelease: [], // IS NOT READY YET
+                updateVars: ['pkg'], //NOT CHANGE
                 github: {
                     repo: "isa-group/governify-registry",
-                    usernameVar: 'GITHUB_USERNAME',
-                    accessTokenVar: "GITHUB_ACCESS_TOKEN"
+                    accessTokenVar: "GITHUB_ACCESS_TOKEN", //SET ENVIRONMENT VARIABLE WITH THIS NAME
+                    usernameVar: "GITHUB_USERNAME" //SET ENVIRONMENT VARIABLE WITH THIS NAME
                 }
             }
         },
+
+        //IT IS RECOMENDED TO EXECUTE "grunt watch" while you are working.
         watch: {
             scripts: {
-                files: ['./**/*.js'],
-                tasks: ['jshint', 'uglify']
+                files: ['public/**']
+            },
+            livereload: true
+        },
+
+        //USE THIS TASK FOR BUILDING AND PUSHING docker images
+        dockerize: {
+            'governify-registry-latest': {
+                options: {
+                    auth: {
+                        email: "DOCKER_HUB_EMAIL", //SET ENVIRONMENT VARIABLE WITH THIS NAME
+                        username: "DOCKER_HUB_USERNAME", //SET ENVIRONMENT VARIABLE WITH THIS NAME
+                        password: "DOCKER_HUB_PASSWORD" //SET ENVIRONMENT VARIABLE WITH THIS NAME
+                    },
+                    name: 'governify-registry',
+                    push: true
+                }
+            },
+            'governify-registry-version': {
+                options: {
+                    auth: {
+                        email: "DOCKER_HUB_EMAIL", //SET ENVIRONMENT VARIABLE WITH THIS NAME
+                        username: "DOCKER_HUB_USERNAME", //SET ENVIRONMENT VARIABLE WITH THIS NAME
+                        password: "DOCKER_HUB_PASSWORD" //SET ENVIRONMENT VARIABLE WITH THIS NAME
+                    },
+                    name: 'governify-registry',
+                    tag: '<%= pkg.version %>',
+                    push: true
+                }
             }
         }
     });
 
-    // Default task(s).
-    // grunt.registerTask('default', ['jshint', 'uglify']);
-    // grunt.registerTask('build', ['jshint', 'mochaTest', 'uglify']);
-
-    //set version as environment variable to be used from Travis CI
-    grunt.registerTask('setVersionEnv', function () {
-        grunt.file.write('.version', grunt.config('pkg.version'));
+    grunt.registerTask('buildOn', function () {
+        grunt.config('pkg.buildOn', grunt.template.today("yyyy-mm-dd"));
+        grunt.file.write('package.json', JSON.stringify(grunt.config('pkg'), null, 2));
     });
 
-    //'jshint',
-    grunt.registerTask('test', ['run:test', 'setVersionEnv']);
+    // Default task(s).
+    grunt.registerTask('default', ['jshint', 'usebanner']);
 
-    grunt.registerTask('license', ['usebanner']);
+    //TEST TASK
+    grunt.registerTask('test', ['jshint', 'mochaTest']);
 
-    //Execute grunt release to make a new relase.
+    //BUILD TASK
+    grunt.registerTask('build', ['test', 'buildOn', 'usebanner']);
 
-    // grunt.registerTask('dev', ['watch']);
+    grunt.registerTask('deliver', ['dockerize']);
+
+    //DEVELOPMENT TASK
+    grunt.registerTask('dev', ['watch']);
 
 };
