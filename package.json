@@ -1,6 +1,6 @@
 {
   "name": "governify-registry",
-  "buildOn": "2017-01-01",
+  "buildOn": "2017-05-08",
   "version": "3.0.0",
   "description": "Central repository for agreements",
   "homepage": "https://github.com/isa-group/governify-registry",
