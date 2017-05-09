@@ -20,17 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 'use strict';
 
-var config = require('../../../config');
-var logger = config.logger;
-var db = require('../../../database');
-var agreementState = require('../states/states').agreements;
-var stateRegistySrv = require('../StateRegistryService');
-var ErrorModel = require('../../../errors/index.js').errorModel;
+var config = require('../../../config'),
+    $RefParser = require('json-schema-ref-parser'),
+    logger = config.logger,
+    db = require('../../../database');
 
-var $RefParser = require('json-schema-ref-parser');
-var agreementManager = require('governify-agreement-manager').operations.states;
-
-
+var states = require('../states/states'),
+    ErrorModel = require('../../../errors/index.js').errorModel,
+    agreementManager = require('governify-agreement-manager').operations.states;
 
 /**
  * Registry agreement module.
@@ -54,7 +51,6 @@ module.exports = {
     agreementsAgreementTermsGuaranteesGET: _agreementsAgreementTermsGuaranteesGET,
     agreementsAgreementTermsGuaranteesGuaranteeGET: _agreementsAgreementTermsGuaranteesGuaranteeGET
 };
-
 
 /**
  * Post an agreement
@@ -114,7 +110,7 @@ function _agreementsDELETE(args, res) {
     AgreementModel.remove({}, function (err) {
         if (!err) {
             logger.info("Deleted all agreements");
-            stateRegistySrv.statesDELETE(args, res);
+            states.agreements.statesDELETE(args, res);
         } else {
             res.sendStatus(404);
             logger.warning("Can't delete all agreements: " + err);
@@ -195,7 +191,7 @@ function _agreementIdDELETE(args, res) {
             if (!err) {
                 logger.info("Deleted agreement with id " + agreementId);
                 args.agreements = args.agreement;
-                agreementState.agreementIdDELETE(args, res);
+                states.agreements.agreementIdDELETE(args, res);
             } else {
                 res.sendStatus(404);
                 logger.warning("Can't delete agreement with id " + agreementId);
