@@ -20,8 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 'use strict';
 
-var StateRegistry = require('./StateRegistryService');
-
+var states = require('./states/states.js');
 
 /**
  * Registry states module.
@@ -31,27 +30,28 @@ var StateRegistry = require('./StateRegistryService');
  * @requires StateRegistryService
  * */
 module.exports = {
+    //Agreement
     statesAgreementGET: _statesAgreementGET,
-    statesAgreementDELETE: _statesAgreementDELETE,
     statesAgreementRELOAD: _statesAgreementRELOAD,
+    statesAgreementDELETE: _statesAgreementDELETE,
+    statesDELETE: _statesDELETE,
+    //Guarantees
     statesAgreementGuaranteesGET: _statesAgreementGuaranteesGET,
     statesAgreementGuaranteesGuaranteeGET: _statesAgreementGuaranteesGuaranteeGET,
     statesAgreementGuaranteesGuaranteePenaltiyPOST: _statesAgreementGuaranteesGuaranteePenaltiyPOST,
+    //Metrics
     statesAgreementMetricsPOST: _statesAgreementMetricsPOST,
     statesAgreementMetricsMetricPOST: _statesAgreementMetricsMetricPOST,
-    statesAgreementMetricsMetricHistoryPOST: _statesAgreementMetricsMetricHistoryPOST,
     statesAgreementMetricsMetricIncreasePOST: _statesAgreementMetricsMetricIncreasePOST,
     statesAgreementMetricsMetricPUT: _statesAgreementMetricsMetricPUT,
-    statesAgreementPricingGET: _statesAgreementPricingGET,
+    //Penalties
     statesAgreementPricingBillingPenaltiesPOST: _statesAgreementPricingBillingPenaltiesPOST,
+    //Quotas
     statesAgreementQuotasGET: _statesAgreementQuotasGET,
     statesAgreementQuotasQuotaGET: _statesAgreementQuotasQuotaGET,
-    statesAgreementQuotasQuotaPUT: _statesAgreementQuotasQuotaPUT,
+    //Rates
     statesAgreementRatesGET: _statesAgreementRatesGET,
     statesAgreementRatesRateGET: _statesAgreementRatesRateGET,
-    statesAgreementRatesRatePUT: _statesAgreementRatesRatePUT,
-    statesGET: _statesGET,
-    statesDELETE: _statesDELETE
 };
 
 
@@ -63,7 +63,7 @@ module.exports = {
  * @alias module:StateRegistry.statesAgreementGET
  * */
 function _statesAgreementGET(req, res, next) {
-    StateRegistry.statesAgreementGET(req.swagger.params, res, next);
+    states.agreements.agreementIdGET(req.swagger.params, res, next);
 }
 
 
@@ -75,7 +75,7 @@ function _statesAgreementGET(req, res, next) {
  * @alias module:StateRegistry.statesAgreementDELETE
  * */
 function _statesAgreementDELETE(req, res, next) {
-    StateRegistry.statesAgreementDELETE(req.swagger.params, res, next);
+    states.agreements.agreementIdDELETE(req.swagger.params, res, next);
 }
 
 
@@ -87,7 +87,7 @@ function _statesAgreementDELETE(req, res, next) {
  * @alias module:StateRegistry.statesAgreementRELOAD
  * */
 function _statesAgreementRELOAD(req, res, next) {
-    StateRegistry.statesAgreementRELOAD(req.swagger.params, res, next);
+    states.agreements.agreementIdRELOAD(req.swagger.params, res, next);
 }
 
 
@@ -99,7 +99,7 @@ function _statesAgreementRELOAD(req, res, next) {
  * @alias module:StateRegistry.statesAgreementGuaranteesGET
  * */
 function _statesAgreementGuaranteesGET(req, res, next) {
-    StateRegistry.statesAgreementGuaranteesGET(req.swagger.params, res, next);
+    states.agreements.guaranteesGET(req.swagger.params, res, next);
 }
 
 
@@ -111,7 +111,7 @@ function _statesAgreementGuaranteesGET(req, res, next) {
  * @alias module:StateRegistry.statesAgreementGuaranteesGuaranteeGET
  * */
 function _statesAgreementGuaranteesGuaranteeGET(req, res, next) {
-    StateRegistry.statesAgreementGuaranteesGuaranteeGET(req.swagger.params, res, next);
+    states.agreements.guaranteeIdGET(req.swagger.params, res, next);
 }
 
 
@@ -123,7 +123,7 @@ function _statesAgreementGuaranteesGuaranteeGET(req, res, next) {
  * @alias module:StateRegistry.statesAgreementGuaranteesGuaranteePenaltiyPOST
  * */
 function _statesAgreementGuaranteesGuaranteePenaltiyPOST(req, res, next) {
-    StateRegistry.statesAgreementGuaranteesGuaranteePenaltiyPOST(req.swagger.params, res, next);
+    states.guarantees.guaranteeIdPenaltyPOST(req.swagger.params, res, next);
 }
 
 
@@ -135,7 +135,7 @@ function _statesAgreementGuaranteesGuaranteePenaltiyPOST(req, res, next) {
  * @alias module:StateRegistry.statesAgreementMetricsPOST
  * */
 function _statesAgreementMetricsPOST(req, res, next) {
-    StateRegistry.statesAgreementMetricsPOST(req, res, next);
+    states.metrics.metricsPOST(req, res, next);
 }
 
 
@@ -147,19 +147,7 @@ function _statesAgreementMetricsPOST(req, res, next) {
  * @alias module:StateRegistry.statesAgreementMetricsMetricPOST
  * */
 function _statesAgreementMetricsMetricPOST(req, res, next) {
-    StateRegistry.statesAgreementMetricsMetricPOST(req.swagger.params, res, next);
-}
-
-
-/** 
- * statesAgreementMetricsMetricHistoryPOST.
- * @param {Object} req request
- * @param {Object} res response
- * @param {Object} next next function
- * @alias module:StateRegistry.statesAgreementMetricsMetricHistoryPOST
- * */
-function _statesAgreementMetricsMetricHistoryPOST(req, res, next) {
-    StateRegistry.statesAgreementMetricsMetricHistoryPOST(req.swagger.params, res, next);
+    states.metrics.metricsIdPOST(req.swagger.params, res, next);
 }
 
 
@@ -171,7 +159,7 @@ function _statesAgreementMetricsMetricHistoryPOST(req, res, next) {
  * @alias module:StateRegistry.statesAgreementMetricsMetricIncreasePOST
  * */
 function _statesAgreementMetricsMetricIncreasePOST(req, res, next) {
-    StateRegistry.statesAgreementMetricsMetricIncreasePOST(req.swagger.params, res, next);
+    states.metrics.metricsIdIncrease(req.swagger.params, res, next);
 }
 
 
@@ -183,21 +171,8 @@ function _statesAgreementMetricsMetricIncreasePOST(req, res, next) {
  * @alias module:StateRegistry.statesAgreementMetricsMetricPUT
  * */
 function _statesAgreementMetricsMetricPUT(req, res, next) {
-    StateRegistry.statesAgreementMetricsMetricPUT(req.swagger.params, res, next);
+    states.metrics.metricsIdPUT(req.swagger.params, res, next);
 }
-
-
-/** 
- * statesAgreementPricingGET.
- * @param {Object} req request
- * @param {Object} res response
- * @param {Object} next next function
- * @alias module:StateRegistry.statesAgreementPricingGET
- * */
-function _statesAgreementPricingGET(req, res, next) {
-    StateRegistry.statesAgreementPricingGET(req.swagger.params, res, next);
-}
-
 
 /** 
  * statesAgreementPricingBillingPenaltiesPOST.
@@ -207,7 +182,7 @@ function _statesAgreementPricingGET(req, res, next) {
  * @alias module:StateRegistry.statesAgreementPricingBillingPenaltiesPOST
  * */
 function _statesAgreementPricingBillingPenaltiesPOST(req, res, next) {
-    StateRegistry.statesAgreementPricingBillingPenaltiesPOST(req, res, next);
+    states.pricing.PricingBillingPenaltiesPOST(req, res, next);
 }
 
 
@@ -219,7 +194,7 @@ function _statesAgreementPricingBillingPenaltiesPOST(req, res, next) {
  * @alias module:StateRegistry.statesAgreementQuotasGET
  * */
 function _statesAgreementQuotasGET(req, res, next) {
-    StateRegistry.statesAgreementQuotasGET(req.swagger.params, res, next);
+    states.quotas.quotasGET(req.swagger.params, res, next);
 }
 
 
@@ -231,19 +206,7 @@ function _statesAgreementQuotasGET(req, res, next) {
  * @alias module:StateRegistry.statesAgreementQuotasQuotaGET
  * */
 function _statesAgreementQuotasQuotaGET(req, res, next) {
-    StateRegistry.statesAgreementQuotasQuotaGET(req.swagger.params, res, next);
-}
-
-
-/** 
- * statesAgreementQuotasQuotaPUT.
- * @param {Object} req request
- * @param {Object} res response
- * @param {Object} next next function
- * @alias module:StateRegistry.statesAgreementQuotasQuotaPUT
- * */
-function _statesAgreementQuotasQuotaPUT(req, res, next) {
-    StateRegistry.statesAgreementQuotasQuotaPUT(req.swagger.params, res, next);
+    states.quotas.quotasQuotaGET(req.swagger.params, res, next);
 }
 
 
@@ -255,7 +218,7 @@ function _statesAgreementQuotasQuotaPUT(req, res, next) {
  * @alias module:StateRegistry.statesAgreementRatesGET
  * */
 function _statesAgreementRatesGET(req, res, next) {
-    StateRegistry.statesAgreementRatesGET(req.swagger.params, res, next);
+    states.rates.ratesGET(req.swagger.params, res, next);
 }
 
 
@@ -267,33 +230,8 @@ function _statesAgreementRatesGET(req, res, next) {
  * @alias module:StateRegistry.statesAgreementRatesRateGET
  * */
 function _statesAgreementRatesRateGET(req, res, next) {
-    StateRegistry.statesAgreementRatesRateGET(req.swagger.params, res, next);
+    states.rates.ratesRateGET(req.swagger.params, res, next);
 }
-
-
-/** 
- * statesAgreementRatesRatePUT.
- * @param {Object} req request
- * @param {Object} res response
- * @param {Object} next next function
- * @alias module:StateRegistry.statesAgreementRatesRatePUT
- * */
-function _statesAgreementRatesRatePUT(req, res, next) {
-    StateRegistry.statesAgreementRatesRatePUT(req.swagger.params, res, next);
-}
-
-
-/** 
- * statesGET.
- * @param {Object} req request
- * @param {Object} res response
- * @param {Object} next next function
- * @alias module:StateRegistry.statesGET
- * */
-function _statesGET(req, res, next) {
-    StateRegistry.statesGET(req.swagger.params, res, next);
-}
-
 
 /** 
  * statesDELETE.
@@ -303,5 +241,5 @@ function _statesGET(req, res, next) {
  * @alias module:StateRegistry.statesDELETE
  * */
 function _statesDELETE(req, res, next) {
-    StateRegistry.statesDELETE(req.swagger.params, res, next);
+    states.agreements.statesDELETE(req.swagger.params, res, next);
 }
