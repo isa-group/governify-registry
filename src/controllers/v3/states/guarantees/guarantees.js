@@ -101,7 +101,7 @@ function _guaranteesGET(args, res) {
                 guaranteesQueries.push(query);
             });
 
-            utils.promise.processSequentialPromises(manager, guaranteesQueries, result, res, config.streaming);
+            utils.promise.processSequentialPromises('guarantees', manager, guaranteesQueries, result, res, config.streaming);
 
         }
     }, function (err) {

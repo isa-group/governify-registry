@@ -20,9 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 "use strict";
 
-var config = require('../../config');
-var logger = config.logger;
-var moment = require('moment');
+var config = require('../../config'),
+    logger = config.logger,
+    moment = require('moment'),
+    utils = require('../../utils/utils');
 
 var Promise = require('bluebird');
 
@@ -61,12 +62,10 @@ function _process(manager, parameters) {
                     var ret = guaranteeResults.concat(metricResults);
 
                     return resolve(ret);
-                }, function (err) {
-                    return reject(err);
-                });
-            }, function (err) {
-                return reject(err);
-            });
+                }, reject);
+
+            }, reject);
+
         } catch (e) {
             logger.error(e);
             return reject(e);
@@ -83,6 +82,7 @@ function _process(manager, parameters) {
  * */
 function processMetrics(manager, parameters) {
     return new Promise(function (resolve, reject) {
+        //Getting all guarantee from agreement to be calculated.
         var metrics = [];
         if (!parameters.metrics) {
             metrics = Object.keys(manager.agreement.terms.metrics);
@@ -98,7 +98,7 @@ function processMetrics(manager, parameters) {
             logger.agreement("Processing metrics in parallel mode");
             logger.agreement("- metrics: " + metrics);
 
-
+            //Setting up promise for excecuting in parallel mode
             metrics.forEach(function (metricId) {
                 var priorities = ['P1', 'P2', 'P3'];
                 if (metricId == 'SPU_IO_K00') {
@@ -111,30 +111,14 @@ function processMetrics(manager, parameters) {
                 });
             });
 
-            Promise.settle(processMetrics).then(function (results) {
-                if (results.length > 0) {
-                    var values = [];
-                    for (var i = 0; i < results.length; i++) {
-                        if (results[i].isFulfilled()) {
-                            if (results[i].value().length > 0) {
-                                results[i].value().forEach(function (metricValue) {
-                                    values.push(metricValue);
-                                });
-                            }
-                        }
-                    }
-                    return resolve(values);
-                } else {
-                    return reject('Error processing metric: empty result');
-                }
-            }, function (err) {
-                console.error(err);
-                return reject(err);
-            });
+            //Excecuting parallelly
+            utils.promise.processParallelPromises(manager, processMetrics, null, null, null).then(resolve, reject);
+
         } else {
             logger.agreement("Processing metrics in sequential mode");
             logger.agreement("- metrics: " + metrics);
 
+            //Setting up queries for excecuting in parallel mode
             metrics.forEach(function (metricId) {
                 logger.agreement("-- metricId: " + metricId);
 
@@ -183,28 +167,9 @@ function processMetrics(manager, parameters) {
 
             });
 
-            var ret = [];
+            // Processing metrics in sequential mode.
+            utils.promise.processSequentialPromises('metrics', manager, processMetrics, null, null, null).then(resolve, reject);
 
-            Promise.each(processMetrics, function (metricParam) {
-                logger.agreement("- metricId: " + metricParam.metric);
-                return manager.get('metrics', metricParam).then(function (results) {
-                    for (var i in results) {
-                        ret.push(manager.current(results[i]));
-                    }
-                }, function (err) {
-                    logger.error(err);
-                    return reject(err);
-                });
-            }).then(function () {
-                //if (results.length > 0) {
-                return resolve(ret);
-                //} else {
-                //    return reject('Error processing metric: empty result');
-                //}
-            }, function (err) {
-                console.error(err);
-                return reject(err);
-            });
         }
     });
 }
@@ -219,6 +184,7 @@ function processMetrics(manager, parameters) {
 function processGuarantees(manager, parameters) {
     return new Promise(function (resolve, reject) {
 
+        //Getting all guarantee from agreement to be calculated.
         var guarantees = [];
         if (!parameters.guarantees) {
             guarantees = manager.agreement.terms.guarantees;
@@ -232,6 +198,7 @@ function processGuarantees(manager, parameters) {
             logger.agreement("Processing guarantees in parallel mode");
             logger.agreement("- guarantees: " + guarantees);
 
+            //Setting up promise for excecuting in parallel mode
             var processGuarantees = [];
             guarantees.forEach(function (guarantee) {
                 processGuarantees.push(manager.get('guarantees', {
@@ -239,50 +206,24 @@ function processGuarantees(manager, parameters) {
                 }));
             });
 
-            Promise.settle(processGuarantees).then(function (results) {
-                if (results.length > 0) {
-                    var values = [];
-                    for (var i = 0; i < results.length; i++) {
-                        if (results[i].isFulfilled()) {
-                            if (results[i].value().length > 0) {
-                                results[i].value().forEach(function (guaranteeValue) {
-                                    values.push(guaranteeValue);
-                                });
-                            }
-                        }
-                    }
-                    return resolve(values);
-                } else {
-                    return reject('Error processing compensations: empty result');
-                }
-            }, function (err) {
-                console.error(err);
-                return reject(err);
-            });
+            //Excecuting parallelly
+            utils.promise.processParallelPromises(manager, processGuarantees, null, null, null).then(resolve, reject);
+
         } else {
             logger.agreement("Processing guarantees in sequential mode");
             logger.agreement("- guarantees: " + guarantees);
 
-            var ret = [];
-
-            Promise.each(guarantees, function (guarantee) {
-                logger.agreement("- guaranteeId: " + guarantee.id);
-                return manager.get('guarantees', {
-                    guarantee: guarantee.id
-                }).then(function (results) {
-                    for (var i in results) {
-                        ret.push(manager.current(results[i]));
-                    }
-                }, function (err) {
-                    logger.error(err);
-                    return reject(err);
+            //Setting up queries for excecuting in parallel mode
+            var guaranteeQueries = [];
+            guarantees.forEach(function (element) {
+                guaranteeQueries.push({
+                    guarantee: element.id
                 });
-            }).then(function () {
-                return resolve(ret);
-            }, function (err) {
-                logger.error("Error processing guarantees: ", err);
-                return reject(err);
             });
+
+            //Excecuting sequentially
+            utils.promise.processSequentialPromises('guarantees', manager, guaranteeQueries, null, null, null).then(resolve, reject);
+
         }
     });
 }
