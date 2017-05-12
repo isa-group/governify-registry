@@ -14,22 +14,26 @@
     <link rel="stylesheet" href="css/style.min.css" type="text/css" media="screen,projection" />
 </head>
 
-<body>
+<body ng-app="app">
     <!--HEADER SECTION-->
     <div id="index-banner" class="parallax-container">
         <div class="section no-pad-bot">
             <div class="container">
                 <div class="row">
                     <div class="col l7 m10 s12 offset-l5 offset-m2">
-                        <div class="card-panel blue lighten-5">
+                        <div class="card-panel blue lighten-5" ng-controller="homeCtl">
                             <h1 class="wow fadeIn blue-text text-darken-1 main_card_brand" data-wow-duration="1000ms" data-wow-delay="200ms"><a target="_blank" href="http://www.governify.io">governify</a></h1>
-                            <h1 class="wow fadeIn blue-text text-darken-3 main_card_title" data-wow-duration="1000ms" data-wow-delay="200ms">Registry <strong class="main_card_version blue-grey-text text-darken-2 ">v1</strong></h1>
+                            <h1 class="wow fadeIn blue-text text-darken-3 main_card_title" data-wow-duration="1000ms" data-wow-delay="200ms">Registry <strong class="main_card_version blue-grey-text text-darken-2 ">v{{version}}</strong></h1>
                             <h1 class="wow fadeIn main_card_brand2" data-wow-duration="1000ms" data-wow-delay="200ms"><a class="blue-grey-text text-darken-2" target="_blank" href="http://www.isa.us.es">by <strong>isa-group</strong></a></h1>
                             <p class="wow fadeIn blue-grey-text text-darken-4 main_card_subtitle" data-wow-duration="700ms" data-wow-delay="500ms">Central repository for agreements.</p>
-                            <a class="waves-effect waves-light blue darken-4 btn wow fadeInUp main_card_button " data-wow-duration="1000ms" data-wow-delay="600ms"
-                                href="api/v3/agreements">Endpoint</a>
+                            <!--<a class="waves-effect waves-light blue darken-4 btn wow fadeInUp main_card_button " data-wow-duration="1000ms" data-wow-delay="600ms"
+                                href="api/v3/agreements">Endpoint</a>-->
                             <a class="waves-effect waves-light blue darken-1 btn wow fadeInUp main_card_button" data-wow-duration="1000ms" data-wow-delay="600ms"
-                                href="api/v3/docs">Documentation</a>
+                                href="api/latest/docs">API Documentation (v{{apiversion}})</a>
+                            <a class="wow fadeInUp main_card_button dropdown-button" data-wow-duration="1000ms" data-wow-delay="600ms" href="#" data-activates="pre-versions">Previous versions</a>
+                            <ul id='pre-versions' class='dropdown-content'>
+                                <li ng-repeat="v in previousversions"><a href="api/v{{v}}/docs" class="blue-text">version {{v}}</a></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -89,7 +93,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="js/init.min.js"></script>
+
+    <script type="text/javascript" src="js/angularapp.js"></script>
 
 </body>
 

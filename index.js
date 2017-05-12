@@ -46,6 +46,19 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 app.use('/api/v2/states/:agreement', middlewares.stateInProgress);
 app.use('/api/v3/states/:agreement', middlewares.stateInProgress);
 
+// latest documentation redirection
+const CURRENT_API_VERSION = "v3";
+app.use('/api/latest/docs', function (req, res) {
+    res.redirect('/api/' + CURRENT_API_VERSION + '/docs');
+});
+app.use('/api/latest/api-docs', function (req, res) {
+    res.redirect('/api/' + CURRENT_API_VERSION + '/api-docs');
+});
+
+//servin package info 
+app.use('/api/info', function (req, res) {
+    res.json(require('./package.json'));
+});
 /**
  * Registry module.
  * @module registry
