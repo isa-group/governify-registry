@@ -58,30 +58,9 @@ function processGuarantees(agreement) {
         agreement.terms.guarantees.forEach(function (guarantee) {
             processGuarantees.push(processGuarantee(agreement, guarantee.id));
         });
-        Promise.settle(processGuarantees).then(function (results) {
-            // Once we have all guarantees states calculated...
-            if (results.length > 0) {
-                var values = [];
-                for (var i = 0; i < results.length; i++) {
-                    // We check if the promise has been successfully resolved
-                    if (results[i].isFulfilled()) {
-                        if (results[i].value().length > 0) {
-                            // For each guarantee state, we store it in the array 'values'
-                            results[i].value().forEach(function (guaranteeValue) {
-                                values.push(guaranteeValue);
-                            });
-                        }
-                    }
-                }
 
-                // We return all guarantee values calculated
-                return resolve(values);
-            } else {
-                return reject('Error processing guarantee: empty result');
-            }
-        }, function (err) {
-            return reject(err);
-        });
+        utils.promise.processParallelPromises(null, processGuarantees, null, null, null).then(resolve, reject);
+
     });
 }
 
@@ -114,7 +93,6 @@ function processGuarantee(manager, query) {
             return reject('Guarantee ' + guaranteeId + ' not found.');
         }
         // We prepare the parameters needed by the processScopedGuarantee function
-        //logger.warning("2º ( processGuarantee ) query" + JSON.stringify(query, null, 2));
         if (query.period && query.period.from === "*") {
             delete query.period;
         }
@@ -147,6 +125,7 @@ function processGuarantee(manager, query) {
         logger.guarantees('Processing scoped guarantee (' + guarantee.id + ')...');
         logger.guarantees('With query:  (' + JSON.stringify(query, null, 2) + ')...');
         // processScopedGuarantee is called for each scope (priority, node, serviceLine, activity, etc.) of the guarantee
+
         Promise.each(processScopedGuarantees, function (guaranteeParam) {
             return processScopedGuarantee(guaranteeParam.manager, guaranteeParam.query, guaranteeParam.guarantee, guaranteeParam.ofElement).then(function (value) {
 

@@ -59,7 +59,11 @@ function _processParallelPromises(manager, promisesArray, result, res, streaming
                             var onePromiseResults = promisesResults[r];
                             if (onePromiseResults.isFulfilled()) {
                                 onePromiseResults.value().forEach(function (value) {
-                                    result.push(manager.current(value));
+                                    if (manager) {
+                                        result.push(manager.current(value));
+                                    } else {
+                                        result.push(value);
+                                    }
                                 });
                             }
                         }
@@ -87,7 +91,11 @@ function _processParallelPromises(manager, promisesArray, result, res, streaming
                         var onePromiseResults = promisesResults[r];
                         if (onePromiseResults.isFulfilled()) {
                             onePromiseResults.value().forEach(function (value) {
-                                result.push(manager.current(value));
+                                if (manager) {
+                                    result.push(manager.current(value));
+                                } else {
+                                    result.push(value);
+                                }
                             });
                         }
                     }
@@ -125,7 +133,11 @@ function _processSequentialPromises(type, manager, queries, result, res, streami
                 return manager.get(type, oneQueries).then(function (promiseResult) {
                     for (var i in promiseResult) {
                         var state = promiseResult[i];
-                        result.push(manager.current(state));
+                        if (manager) {
+                            result.push(manager.current(state));
+                        } else {
+                            result.push(state);
+                        }
                     }
                 }, reject);
 
@@ -142,7 +154,11 @@ function _processSequentialPromises(type, manager, queries, result, res, streami
                 for (var i in promiseResult) {
                     var state = promiseResult[i];
                     //feeding stream
-                    result.push(manager.current(state));
+                    if (manager) {
+                        result.push(manager.current(state));
+                    } else {
+                        result.push(state);
+                    }
                 }
             }, function (err) {
                 logger.error(err);
