@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   description: Governify Registry
-  version: "2.0.0"
+  version: "3"
   title: "Governify Registry"
   termsOfService: "www.isa.us.es"
   contact:

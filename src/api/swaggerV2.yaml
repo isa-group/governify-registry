@@ -15,7 +15,7 @@ info:
         ));
       }(window, document, "_pm", "PostmanRunObject", "https://run.pstmn.io/button.js"));
     </script>
-  version: "2.0.0"
+  version: "2"
   title: "Governify Registry"
   termsOfService: "www.isa.us.es"
   contact:
