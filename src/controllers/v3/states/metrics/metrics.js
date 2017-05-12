@@ -26,8 +26,7 @@ var config = require('../../../../config'),
     stateManager = require('../../../../stateManager/v2/stateManager.js'),
     utils = require('../../../../utils/utils');
 
-var Promise = require('bluebird'),
-    JSONStream = require('JSONStream');
+var JSONStream = require('JSONStream');
 
 
 /**
@@ -148,7 +147,7 @@ function _metricsPOST(req, res) {
         id: agreementId
     }).then(function (manager) {
         logger.info("Preparing requests to /states/" + agreementId + "/metrics/{metricId} : ");
-        var ret = [];
+
         if (config.parallelProcess.metrics) {
 
             var processMetrics = [];
@@ -162,45 +161,22 @@ function _metricsPOST(req, res) {
                 processMetrics.push(manager.get('metrics', metricParams));
             }
 
-            Promise.all(processMetrics).then(function (metricsValues) {
-                for (var i in metricsValues) {
-                    result.push(manager.current(metricsValues[i]));
-                }
-                if (config.streaming) {
-                    result.push(null);
-                } else {
-                    result.json(ret);
-                }
-            });
+            utils.promise.processParallelPromises(manager, processMetrics, result, res, config.streaming);
+
         } else {
 
-            Promise.each(Object.keys(manager.agreement.terms.metrics), function (metricId) {
-                logger.info("==> metricId = " + metricId);
+            var metricsQueries = [];
+            Object.keys(manager.agreement.terms.metrics).forEach(function (m) {
                 var metricParams = args.scope.value;
                 metricParams.period = metricParams.period ? metricParams.period : {
                     from: metricParams.window ? metricParams.window.initial : '*',
                     to: metricParams.window ? metricParams.window.end : '*'
                 };
-                metricParams.metric = metricId;
-                return manager.get('metrics', metricParams).then(function (results) {
-                    for (var i in results) {
-                        //feeding stream
-                        result.push(manager.current(results[i]));
-                    }
-                }, function (err) {
-                    logger.error(err);
-                });
-            }).then(function () {
-                //end stream
-                if (config.streaming) {
-                    result.push(null);
-                } else {
-                    res.json(ret);
-                }
-            }, function (err) {
-                logger.error("ERROR processing metrics");
-                res.status(500).json(new ErrorModel(500, err));
+                metricParams.metric = m;
+                metricsQueries.push(metricParams);
             });
+
+            utils.promise.processSequentialPromises('metrics', manager, metricsQueries, result, res, config.streaming);
         }
 
     }, function (err) {

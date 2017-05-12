@@ -47,65 +47,135 @@ module.exports = {
  * @alias module:gUtils.processMode
  * */
 function _processParallelPromises(manager, promisesArray, result, res, streaming) {
+    if (!result && !res) {
+        //Promise mode
+        result = [];
 
-    Promise.settle(promisesArray).then(function (promisesResults) {
-        try {
-            if (promisesResults.length > 0) {
-                for (var r in promisesResults) {
-                    var onePromiseResults = promisesResults[r];
-                    if (onePromiseResults.isFulfilled()) {
-                        onePromiseResults.value().forEach(function (value) {
-                            result.push(manager.current(value));
-                        });
+        return new Promise(function (resolve, reject) {
+            Promise.settle(promisesArray).then(function (promisesResults) {
+                try {
+                    if (promisesResults.length > 0) {
+                        for (var r in promisesResults) {
+                            var onePromiseResults = promisesResults[r];
+                            if (onePromiseResults.isFulfilled()) {
+                                onePromiseResults.value().forEach(function (value) {
+                                    if (manager) {
+                                        result.push(manager.current(value));
+                                    } else {
+                                        result.push(value);
+                                    }
+                                });
+                            }
+                        }
+                        resolve(result);
+                    } else {
+                        var err = 'Error processing Promises: empty result';
+                        logger.error(err);
+                        reject(err.toString());
                     }
+                } catch (err) {
+                    logger.error(err);
+                    reject(err.toString());
                 }
-                if (streaming) {
-                    result.push(null);
+            }, function (err) {
+                logger.error(err);
+                reject(err.toString());
+            });
+        });
+    } else {
+        //Controller mode using streaming
+        Promise.settle(promisesArray).then(function (promisesResults) {
+            try {
+                if (promisesResults.length > 0) {
+                    for (var r in promisesResults) {
+                        var onePromiseResults = promisesResults[r];
+                        if (onePromiseResults.isFulfilled()) {
+                            onePromiseResults.value().forEach(function (value) {
+                                if (manager) {
+                                    result.push(manager.current(value));
+                                } else {
+                                    result.push(value);
+                                }
+                            });
+                        }
+                    }
+                    if (streaming) {
+                        result.push(null);
+                    } else {
+                        res.json(result);
+                    }
                 } else {
-                    res.json(result);
+                    var err = 'Error processing Promises: empty result';
+                    logger.error(err);
+                    res.status(500).json(new ErrorModel(500, err));
                 }
-            } else {
-                var err = 'Error processing Promises: empty result';
+            } catch (err) {
                 logger.error(err);
                 res.status(500).json(new ErrorModel(500, err));
-            }
-        } catch (err) {
-            logger.error(err);
-            res.status(500).json(new ErrorModel(500, err));
-        }
-    }, function (err) {
-        logger.error(err);
-        res.status(500).json(new ErrorModel(500, err));
-    });
-
-}
-
-
-function _processSequentialPromises(manager, queries, result, res, streaming) {
-
-    Promise.each(queries, function (oneQueries) {
-
-        return manager.get('guarantees', oneQueries).then(function (promiseResult) {
-            for (var i in promiseResult) {
-                var state = promiseResult[i];
-                //feeding stream
-                result.push(manager.current(state));
             }
         }, function (err) {
             logger.error(err);
             res.status(500).json(new ErrorModel(500, err));
         });
+    }
+}
 
-    }).then(function () {
-        //end stream
-        if (streaming) {
-            result.push(null);
-        } else {
-            res.json(result);
-        }
-    }, function (err) {
-        logger.error("ERROR processing guarantees: ", err);
-        res.status(500).json(new ErrorModel(500, err));
-    });
+
+function _processSequentialPromises(type, manager, queries, result, res, streaming) {
+
+    if (!result && !res) {
+        //Promise mode
+        result = [];
+
+        return new Promise(function (resolve, reject) {
+            Promise.each(queries, function (oneQueries) {
+
+                return manager.get(type, oneQueries).then(function (promiseResult) {
+                    for (var i in promiseResult) {
+                        var state = promiseResult[i];
+                        if (manager) {
+                            result.push(manager.current(state));
+                        } else {
+                            result.push(state);
+                        }
+                    }
+                }, reject);
+
+            }).then(function () {
+                resolve(result);
+            }, reject);
+        });
+
+    } else {
+        //Controller mode using streaming
+        Promise.each(queries, function (oneQueries) {
+
+            return manager.get(type, oneQueries).then(function (promiseResult) {
+                for (var i in promiseResult) {
+                    var state = promiseResult[i];
+                    //feeding stream
+                    if (manager) {
+                        result.push(manager.current(state));
+                    } else {
+                        result.push(state);
+                    }
+                }
+            }, function (err) {
+                logger.error(err);
+                res.status(500).json(new ErrorModel(500, err));
+            });
+
+        }).then(function () {
+            //end stream
+            if (streaming) {
+                result.push(null);
+            } else {
+                res.json(result);
+            }
+        }, function (err) {
+            logger.error("ERROR processing guarantees: ", err);
+            res.status(500).json(new ErrorModel(500, err));
+        });
+    }
 
 }
