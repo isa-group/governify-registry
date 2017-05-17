@@ -1,44 +1,36 @@
-#idetifier of agreement that generates the state e.g. SPU_IO-Contract
 agreementId:
-  type: string
-
-#State type, one of: [guarantees, metrics, quotas, rates...]
+    type: string
 stateType:
-  type: string
-
-#Identifier of the term that generates the state, e.g. SPU_IO_K01
+    type: string
 id:
-  type: string
-
-#Period in which state is calculated
+    type: string
 period:
-  type: object
-  properties:
-    from:
-      type: string
-    to:
-      type: string
-
-scope:
-  type: object
-
-window:
-  type: object
-  properties:
-    _type:
-      type: string
-    period:
-      type: string
-      
-records:
-  type: array
-  items:
     type: object
     properties:
-      value:
-        oneOf:
-          - type: string
-          - type: number
-          - type: boolean
-      time:
-        type: string
+        from:
+            type: string
+        to:
+            type: string
+scope:
+    type: object
+    patternProperties:
+        '^[a-zA-Z0-9]*$': {}
+window:
+    type: object
+    patternProperties:
+        '^[a-zA-Z0-9]*$': {}
+records:
+    type: array
+    items:
+        type: object
+        properties:
+            value:
+                oneOf:
+                    - 
+                        type: string
+                    - 
+                        type: number
+                    - 
+                        type: boolean
+            time:
+                type: string
