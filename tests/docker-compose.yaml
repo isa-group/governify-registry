@@ -36,3 +36,10 @@ services:
       - 27017:27017
    # command: --auth
     restart: always
+
+  nginx:
+    container_name: nginx-container
+    volumes:
+      - /expected/measures:/usr/share/nginx/html:ro
+    ports:
+      - 8082:8082
