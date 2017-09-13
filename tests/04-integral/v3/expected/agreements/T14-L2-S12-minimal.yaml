@@ -67,7 +67,7 @@ context:
         default: true
         uri: 'http://logs:8083/api/v2/ca-sdm/v10.13'
         stateUri: 'http://logs:8083/api/v2/ca-sdm/v10.13/count'
-        measures: 'http://designer.governify.io:10880/sas/PROSAS/agreement-manager/indicators/SPU_IO.json?accessToken=741b9259-8bbc-4e74-9865-68ce53287a81'
+        measures: 'http://nginx:8082/SPU_IO.json'
         scopes:
           SPU:
             priority: priority
@@ -76,7 +76,7 @@ context:
       jira:
         uri: 'http://logs:8083/api/v2/jira/v01.03'
         stateUri: 'http://logs:8083/api/v2/jira/v01.03/count'
-        measures: 'http://designer.governify.io:10880/sas/PROSAS/agreement-manager/indicators/SPU_IO.json?accessToken=741b9259-8bbc-4e74-9865-68ce53287a81'
+        measures: 'http://nginx:8082/SPU_IO.json'
         scopes:
           SPU:
             priority: priority
