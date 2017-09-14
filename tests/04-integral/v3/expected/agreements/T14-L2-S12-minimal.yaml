@@ -67,7 +67,7 @@ context:
         default: true
         uri: 'http://logs:8083/api/v2/ca-sdm/v10.13'
         stateUri: 'http://logs:8083/api/v2/ca-sdm/v10.13/count'
-        measures: 'http://nginx:8082/SPU_IO.json'
+        measures: 'http://nginx/SPU_IO.json?accessToken=32578346'
         scopes:
           SPU:
             priority: priority
@@ -76,7 +76,7 @@ context:
       jira:
         uri: 'http://logs:8083/api/v2/jira/v01.03'
         stateUri: 'http://logs:8083/api/v2/jira/v01.03/count'
-        measures: 'http://nginx:8082/SPU_IO.json'
+        measures: 'http://nginx/SPU_IO.json?accessToken=32578346'
         scopes:
           SPU:
             priority: priority

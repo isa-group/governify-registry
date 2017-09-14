@@ -25,7 +25,7 @@ services:
       - 8080:8080
     links:
       - logs:logs
-      - nginx:nginx
+      - nginx
     restart: always
     environment:
         - JAVA_OPTS=-Xms128m -Xmx8g -XX:PermSize=64m -XX:MaxPermSize=4g -XX:ParallelGCThreads=4 -XX:+UseParNewGC -server
@@ -44,4 +44,4 @@ services:
     volumes:
       - ./04-integral/v3/expected/measures:/usr/share/nginx/html:ro
     ports:
-      - 8082:8082
+      - 8082:80
