@@ -55,6 +55,14 @@ function processMetric(agreement, metricId, metricParameters) {
             if (!metric) {
                 return reject('Metric ' + metricId + ' not found.');
             }
+
+            //Parameters are only needed if they are present in the metric definition
+            var parametersCount = metric.parameters ? Object.keys(metric.parameters).length : 0;
+            var inParametersCount = metricParameters.parameters ? Object.keys(metricParameters.parameters).length : 0;
+            if (parametersCount !== inParametersCount) {
+                return reject('Metric ' + metricId + ' needs parameters: ' + Object.keys(metric.parameters).join(', '));
+            }
+
             var computerEndpoint = metric.computer;
 
             var data = {};

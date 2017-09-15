@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 var config = require('../../../../config'),
     logger = config.logger,
     ErrorModel = require('../../../../errors/index.js').errorModel,
-    stateManager = require('../../../../stateManager/v2/stateManager.js'),
+    stateManager = require('../../../../stateManager/v2/stateManager'),
     utils = require('../../../../utils/utils');
 
 var JSONStream = require('JSONStream');
@@ -127,9 +127,13 @@ function _metricsIdPUT(args, res) {
  * @alias module:metrics.metricsPOST
  * */
 function _metricsPOST(req, res) {
-    res.setHeader('content-type', 'application/json; charset=utf-8');
     var args = req.swagger.params;
     var agreementId = args.agreement.value;
+    var query = args.scope.value;
+
+    //Parameters is not required add empty object if it is null.
+    if (!query.parameters) { query.parameters = {}; }
+
     logger.info("New request to GET metrics of agreement: " + agreementId);
 
     var result;
@@ -150,30 +154,28 @@ function _metricsPOST(req, res) {
 
         if (config.parallelProcess.metrics) {
 
-            var processMetrics = [];
+            var promises = [];
             for (var metricId in manager.agreement.terms.metrics) {
-                var metricParams = args.scope.value;
-                metricParams.period = metricParams.period ? metricParams.period : {
-                    from: metricParams.window ? metricParams.window.initial : '*',
-                    to: metricParams.window ? metricParams.window.end : '*'
+                query.period = query.period ? query.period : {
+                    from: query.window ? query.window.initial : '*',
+                    to: query.window ? query.window.end : '*'
                 };
-                metricParams.metric = metricId;
-                processMetrics.push(manager.get('metrics', metricParams));
+                query.metric = metricId;
+                promises.push(manager.get('metrics', query));
             }
 
-            utils.promise.processParallelPromises(manager, processMetrics, result, res, config.streaming);
+            utils.promise.processParallelPromises(manager, promises, result, res, config.streaming);
 
         } else {
 
             var metricsQueries = [];
             Object.keys(manager.agreement.terms.metrics).forEach(function (m) {
-                var metricParams = args.scope.value;
-                metricParams.period = metricParams.period ? metricParams.period : {
-                    from: metricParams.window ? metricParams.window.initial : '*',
-                    to: metricParams.window ? metricParams.window.end : '*'
+                query.period = query.period ? query.period : {
+                    from: query.window ? query.window.initial : '*',
+                    to: query.window ? query.window.end : '*'
                 };
-                metricParams.metric = m;
-                metricsQueries.push(metricParams);
+                query.metric = m;
+                metricsQueries.push(query);
             });
 
             utils.promise.processSequentialPromises('metrics', manager, metricsQueries, result, res, config.streaming);
@@ -196,12 +198,15 @@ function _metricsPOST(req, res) {
 function _metricsIdPOST(args, res) {
     var agreementId = args.agreement.value;
     var metricId = args.metric.value;
+    var query = args.scope.value;
 
-    var metricParams = args.scope.value;
-    metricParams.metric = metricId;
-    metricParams.period = metricParams.period ? metricParams.period : {
-        from: metricParams.window ? metricParams.window.initial : '*',
-        to: metricParams.window ? metricParams.window.end : '*'
+    //Parameters is not required add empty object if it is null.
+    if (!query.parameters) { query.parameters = {}; }
+
+    query.metric = metricId;
+    query.period = query.period ? query.period : {
+        from: query.window ? query.window.initial : '*',
+        to: query.window ? query.window.end : '*'
     };
 
     var result;
@@ -218,7 +223,7 @@ function _metricsIdPOST(args, res) {
     stateManager({
         id: agreementId
     }).then(function (manager) {
-        manager.get('metrics', metricParams).then(function (data) {
+        manager.get('metrics', query).then(function (data) {
             if (config.streaming) {
                 res.json(data.map(function (element) {
                     return manager.current(element);

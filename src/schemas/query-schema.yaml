@@ -1,0 +1,29 @@
+scope:
+  require: true
+  type: object
+
+window:
+  require: true
+  type: object
+  properties:
+    initial:
+      type: string
+    period:
+      type: string
+    type:
+      type: string
+    timeZone:
+      type: string
+
+parameters:
+  type: object
+
+evidences:
+  type: array
+  items:
+    type: object
+    properties:
+      id:
+        type: string
+      computer:
+        type: string
