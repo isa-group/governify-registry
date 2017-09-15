@@ -131,9 +131,6 @@ function _metricsPOST(req, res) {
     var agreementId = args.agreement.value;
     var query = args.scope.value;
 
-    //Parameters is not required add empty object if it is null.
-    if (!query.parameters) { query.parameters = {}; }
-
     logger.info("New request to GET metrics of agreement: " + agreementId);
 
     var result;
@@ -152,33 +149,43 @@ function _metricsPOST(req, res) {
     }).then(function (manager) {
         logger.info("Preparing requests to /states/" + agreementId + "/metrics/{metricId} : ");
 
+        var validationErrors = [];
         if (config.parallelProcess.metrics) {
 
             var promises = [];
-            for (var metricId in manager.agreement.terms.metrics) {
-                query.period = query.period ? query.period : {
-                    from: query.window ? query.window.initial : '*',
-                    to: query.window ? query.window.end : '*'
-                };
-                query.metric = metricId;
-                promises.push(manager.get('metrics', query));
-            }
+            Object.keys(manager.agreement.terms.metrics).forEach(function (metricId) {
+                var validation = utils.validators.metricQuery(query, metricId, manager.agreement.terms.metrics[metricId]);
+                if (!validation.valid) {
+                    validation.metric = metricId;
+                    validationErrors.push(validation);
+                } else {
+                    promises.push(manager.get('metrics', query));
+                }
+            });
 
-            utils.promise.processParallelPromises(manager, promises, result, res, config.streaming);
+            if (validationErrors.length === 0) {
+                utils.promise.processParallelPromises(manager, promises, result, res, config.streaming);
+            } else {
+                res.status(400).json(new ErrorModel(400, validationErrors));
+            }
 
         } else {
 
             var metricsQueries = [];
-            Object.keys(manager.agreement.terms.metrics).forEach(function (m) {
-                query.period = query.period ? query.period : {
-                    from: query.window ? query.window.initial : '*',
-                    to: query.window ? query.window.end : '*'
-                };
-                query.metric = m;
-                metricsQueries.push(query);
+            Object.keys(manager.agreement.terms.metrics).forEach(function (metricId) {
+                var validation = utils.validators.metricQuery(query, metricId, manager.agreement.terms.metrics[metricId]);
+                if (!validation.valid) {
+                    validation.metric = metricId;
+                    validationErrors.push(validation);
+                } else {
+                    metricsQueries.push(query);
+                }
             });
-
-            utils.promise.processSequentialPromises('metrics', manager, metricsQueries, result, res, config.streaming);
+            if (validationErrors.length === 0) {
+                utils.promise.processSequentialPromises('metrics', manager, metricsQueries, result, res, config.streaming);
+            } else {
+                res.status(400).json(new ErrorModel(400, validationErrors));
+            }
         }
 
     }, function (err) {
@@ -200,15 +207,6 @@ function _metricsIdPOST(args, res) {
     var metricId = args.metric.value;
     var query = args.scope.value;
 
-    //Parameters is not required add empty object if it is null.
-    if (!query.parameters) { query.parameters = {}; }
-
-    query.metric = metricId;
-    query.period = query.period ? query.period : {
-        from: query.window ? query.window.initial : '*',
-        to: query.window ? query.window.end : '*'
-    };
-
     var result;
     if (config.streaming) {
         logger.ctlState("### Streaming mode ###");
@@ -223,21 +221,29 @@ function _metricsIdPOST(args, res) {
     stateManager({
         id: agreementId
     }).then(function (manager) {
-        manager.get('metrics', query).then(function (data) {
-            if (config.streaming) {
-                res.json(data.map(function (element) {
-                    return manager.current(element);
-                }));
-            } else {
-                data.forEach(function (element) {
-                    result.push(manager.current(element));
-                });
-                result.push(null);
-            }
-        }, function (err) {
-            logger.error(err);
-            res.status(500).json(new ErrorModel(500, err));
-        });
+
+        var validation = utils.validators.metricQuery(query, metricId, manager.agreement.terms.metrics[metricId]);
+        if (!validation.valid) {
+            logger.error("Query validation error");
+            res.status(400).json(new ErrorModel(400, validation));
+        } else {
+            manager.get('metrics', query).then(function (data) {
+                if (config.streaming) {
+                    res.json(data.map(function (element) {
+                        return manager.current(element);
+                    }));
+                } else {
+                    data.forEach(function (element) {
+                        result.push(manager.current(element));
+                    });
+                    result.push(null);
+                }
+            }, function (err) {
+                logger.error(err);
+                res.status(500).json(new ErrorModel(500, err));
+            });
+        }
+
     }, function (err) {
         logger.error(err);
         res.status(500).json(new ErrorModel(500, err));

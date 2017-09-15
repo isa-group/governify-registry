@@ -31,6 +31,11 @@ var diff = require('deep-diff');
 
 module.exports = {
     /**
+     * Validator module.
+     * @see module:utils.validators
+     * */
+    validators: require('./validators.js'),
+    /**
      * Swagger module.
      * @see module:utils.timeAndPeriod
      * */

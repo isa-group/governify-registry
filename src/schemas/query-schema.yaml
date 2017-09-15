@@ -1,29 +1,35 @@
-scope:
-  require: true
-  type: object
-
-window:
-  require: true
-  type: object
-  properties:
-    initial:
-      type: string
-    period:
-      type: string
-    type:
-      type: string
-    timeZone:
-      type: string
-
-parameters:
-  type: object
-
-evidences:
-  type: array
-  items:
+---
+properties:
+  scope:
+    type: object
+  window:
     type: object
     properties:
-      id:
+      initial:
         type: string
-      computer:
+      period:
         type: string
+      type:
+        type: string
+      timeZone:
+        type: string
+  parameters:
+    type: object
+  evidences:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+        computer:
+          type: string
+  period:
+    from:
+      type: string
+      description: Time string in ISO8601
+    to:
+      type: string
+      description: Time string in ISO8601
+required:
+- scope

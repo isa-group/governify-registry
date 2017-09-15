@@ -19,17 +19,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 
 'use strict';
+var Promise = require('bluebird'),
+    JSONStream = require('JSONStream'),
+    moment = require('moment'),
 
-var config = require('../../../../config');
-var logger = config.logger;
-var ErrorModel = require('../../../../errors/index.js').errorModel;
-var stateManager = require('../../../../stateManager/v2/stateManager.js');
-var gUtils = require('./gUtils.js');
-var utils = require('../../../../utils/utils');
-var Promise = require('bluebird');
-var JSONStream = require('JSONStream');
-var moment = require('moment');
+    config = require('../../../../config'),
+    logger = config.logger,
+    ErrorModel = require('../../../../errors').errorModel,
 
+    stateManager = require('../../../../stateManager/v2/stateManager'),
+
+    gUtils = require('./gUtils.js'),
+    utils = require('../../../../utils/utils');
 
 /**
  * Guarantees module
@@ -57,7 +58,6 @@ module.exports = {
  * @alias module:guarantees.guaranteesGET
  * */
 function _guaranteesGET(args, res) {
-    res.setHeader('content-type', 'application/json; charset=utf-8');
     logger.ctlState("New request to GET guarantees");
     var agreementId = args.agreement.value;
     var from = args.from.value;
