@@ -133,7 +133,7 @@ function processMetric(agreement, metricId, metricParameters) {
                     'Please, specify metric log or default log.');
             }
 
-            data.scope = scope ? scope : metricParameters.scope;
+            data.scope = Object.keys(scope).length > 0 ? scope : metricParameters.scope;
             logger.metrics("Sending request to computer (" + computerEndpoint + ") with payload: " + JSON.stringify(data, null, 2));
 
             var compositeResponse = [];
