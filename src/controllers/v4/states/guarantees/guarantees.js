@@ -245,18 +245,14 @@ function _guaranteeIdPenaltyGET(req, res) {
                     var ret = [];
                     for (var ie in success) {
                         var e = success[ie];
-                        //logger.ctlState("Comparing period:  " + e.period.from + ">=" + p.from + " && " + e.period.to + "<=" + p.to);
                         if (moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to) && gUtils.checkQuery(e, query)) {
                             ret.push(e);
                         }
                     }
-                    //logger.ctlState("Resultado para el periodo : " + JSON.stringify(element) + "=>\n" + JSON.stringify(ret, null, 2));
-
                     for (var i in ret) {
                         if (manager.current(ret[i]).penalties) {
                             var penalties = manager.current(ret[i]).penalties;
                             for (var penaltyI in penalties) {
-                                //logger.warning("element: " + JSON.stringify(element, null, 2));
                                 result.push(new gUtils.penaltyMetric(ret[i].scope, query.parameters, metricPeriod, query.logs, penaltyI, penalties[penaltyI]));
                             }
                         }
@@ -264,7 +260,6 @@ function _guaranteeIdPenaltyGET(req, res) {
 
                 }, function (err) {
                     logger.error(err);
-                    //res.status(500).json(new ErrorModel(500, err));
                 });
 
             }).then(function () {
