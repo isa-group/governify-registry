@@ -1,7 +1,11 @@
 ---
 properties:
+  id:
+    type: string
+
   scope:
     type: object
+
   window:
     type: object
     properties:
@@ -13,8 +17,15 @@ properties:
         type: string
       timeZone:
         type: string
+    required:
+      - initial
+      - period
+      - type
+      - timeZone
+
   parameters:
     type: object
+
   evidences:
     type: array
     items:
@@ -24,12 +35,15 @@ properties:
           type: string
         computer:
           type: string
+          
   period:
-    from:
-      type: string
-      description: Time string in ISO8601
-    to:
-      type: string
-      description: Time string in ISO8601
-required:
-- scope
+    type: object
+    properties:
+      from: 
+        type: string
+        description: Time string in ISO8601
+      to:
+        type: string
+        description: Time string in ISO8601
+    required:
+      - from

@@ -11,17 +11,26 @@ module.exports = {
     /**
      * Validate query for metrics
      * @param {Object} query query
+     * @param {Object} metricId ID of the metric
      * @param {Object} metricDefinition Definition of the metric
      * @alias module:validators.metricQuery
      * */
-    metricQuery: _metricQuery
+    metricQuery: _metricQuery,
+    /**
+     * Validate query for guarantee
+     * @param {Object} query query
+     * @param {Object} guaranteeId ID of the guarantee
+     * @param {Object} guaranteeDefinition Definition of the guarantee
+     * @alias module:validators.metricQuery
+     * */
+    guaranteeQuery: _guaranteeQuery
 };
 
 function _metricQuery(query, metricId, metricDefinition) {
     var schema = require('../schemas/query-schema.json');
 
     //windows are required in metrics
-    schema.required.push("window");
+    schema.required = ["scope", "window"];
 
     var schemaValidationResults = schemaValidation(schema, query);
     var validation = true, errors = [];
@@ -48,9 +57,17 @@ function _metricQuery(query, metricId, metricDefinition) {
         errors.push('Metric ' + metricId + ' needs parameters: ' + Object.keys(metricDefinition.parameters || []).join(', '));
     }
 
+    // ADD default values for scopes.
+    var scopeDef = metricDefinition.scope;
+    Object.keys(scopeDef || {}).forEach((s) => {
+        if (!query.scope[s]) {
+            query.scope[s] = scopeDef[s].default;
+        }
+    });
+
     query.metric = metricId;
 
-    schema.required.splice(schema.required.indexOf('window'), 1);
+    delete schema.required;
 
     return {
         valid: validation,
@@ -58,6 +75,39 @@ function _metricQuery(query, metricId, metricDefinition) {
     };
 }
 
+function _guaranteeQuery(query, guaranteeId, guaranteeDefinition) {
+    var schema = require('../schemas/query-schema.json');
+
+    var schemaValidationResults = schemaValidation(schema, query);
+    var validation = true, errors = [];
+
+    if (!schemaValidationResults.isValid) {
+        validation = validation && false;
+        errors = errors.concat(schemaValidationResults.errors.map((e) => { return e.message; }));
+    }
+
+    if (query.parameters) {
+        validation = validation && false;
+        errors.push('Parameters field is not permited for guarantee queries.');
+    }
+
+    if (query.window) {
+        validation = validation && false;
+        errors.push('Window field is not permited for guarantee queries.');
+    }
+
+    if (query.scope) {
+        validation = validation && false;
+        errors.push('Scope field is not permited for guarantee queries.');
+    }
+
+    query.guarantee = guaranteeId;
+
+    return {
+        valid: validation,
+        errors: errors
+    };
+}
 
 function schemaValidation(schema, data) {
     var ajv = new Ajv();

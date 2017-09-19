@@ -1,7 +1,7 @@
 {
     "port": 5001,
     "database": {
-        "url": "mongodb://localhost:27017",
+        "url": "mongodb://localhost:37019",
         "db_name": "registry-tests"
     },
     "loggerLevel": "info"

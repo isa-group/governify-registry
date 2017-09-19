@@ -31,6 +31,16 @@ var diff = require('deep-diff');
 
 module.exports = {
     /**
+     * Scopes module.
+     * @see module:utils.scopes
+     * */
+    scopes: require('./scopes.js'),
+    /**
+     * @class Query Class.
+     * @see module:utils.query
+     * */
+    Query: require('./query.js'),
+    /**
      * Validator module.
      * @see module:utils.validators
      * */

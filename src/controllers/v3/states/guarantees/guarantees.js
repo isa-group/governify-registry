@@ -67,7 +67,7 @@ function _guaranteesGET(args, res) {
     if (config.streaming) {
         logger.ctlState("### Streaming mode ###");
         result = utils.stream.createReadable();
-
+        res.setHeader('content-type', 'application/json; charset=utf-8');
         result.pipe(JSONStream.stringify()).pipe(res);
     } else {
         logger.ctlState("### NO Streaming mode ###");
@@ -132,7 +132,7 @@ function _guaranteeIdGET(args, res) {
     if (config.streaming) {
         logger.ctlState("### Streaming mode ###");
         ret = utils.stream.createReadable();
-
+        res.setHeader('content-type', 'application/json; charset=utf-8');
         ret.pipe(JSONStream.stringify()).pipe(res);
     } else {
         logger.ctlState("### NO Streaming mode ###");

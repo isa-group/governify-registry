@@ -34,7 +34,7 @@ services:
     container_name: tests-mongodb-container
     image: isagroup/governify-tests-mongo-with-synthetic-logs
     ports:
-      - 27017:27017
+      - 127.0.0.1:37019:27017
    # command: --auth
     restart: always
 

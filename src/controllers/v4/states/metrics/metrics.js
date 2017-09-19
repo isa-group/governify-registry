@@ -23,9 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 var config = require('../../../../config'),
     logger = config.logger,
     ErrorModel = require('../../../../errors/index.js').errorModel,
-    stateManager = require('../../../../stateManager/v2/stateManager'),
+    stateManager = require('../../../../stateManager/v3/stateManager'),
     utils = require('../../../../utils/utils');
 
+var Query = utils.Query;
 var JSONStream = require('JSONStream');
 
 
@@ -42,9 +43,9 @@ var JSONStream = require('JSONStream');
  * */
 module.exports = {
     metricsIdIncrease: _metricsIdIncrease,
-    metricsIdPUT: _metricsIdPUT,
-    metricsPOST: _metricsPOST,
-    metricsIdPOST: _metricsIdPOST
+    metricsIdPOST: _metricsIdPOST,
+    metricsGET: _metricsGET,
+    metricsIdGET: _metricsIdGET
 };
 
 
@@ -92,18 +93,19 @@ function _metricsIdIncrease(args, res) {
  * @param {Object} next next function
  * @alias module:metrics.metricsIdPUT
  * */
-function _metricsIdPUT(args, res) {
+function _metricsIdPOST(args, res) {
     var agreementId = args.agreement.value;
     var metricValue = args.metricValue.value;
-    var metricName = args.metric.value;
+    var metricId = args.metric.value;
+    //var query = new Query(req.query);
 
-    logger.info("New request to PUT metrics over: " + metricName + " with value: " + metricValue);
+    logger.info("New request to PUT metrics over: " + metricId + " with value: " + metricValue);
 
     stateManager({
         id: agreementId
     }).then(function (manager) {
         manager.put('metrics', {
-            metric: metricName,
+            metric: metricId,
             scope: metricValue.scope,
             window: metricValue.window
         }, metricValue.value).then(function (success) {
@@ -120,24 +122,23 @@ function _metricsIdPUT(args, res) {
 
 
 /**
- * Post a new metric.
+ * GET all the states of all the metrics
  * @param {Object} req request
  * @param {Object} res response
  * @param {Object} next next function
  * @alias module:metrics.metricsPOST
  * */
-function _metricsPOST(req, res) {
+function _metricsGET(req, res) {
     var args = req.swagger.params;
     var agreementId = args.agreement.value;
-    var query = args.scope.value;
 
     logger.info("New request to GET metrics of agreement: " + agreementId);
 
     var result;
     if (config.streaming) {
+        res.setHeader('content-type', 'application/json; charset=utf-8');
         logger.ctlState("### Streaming mode ###");
         result = utils.stream.createReadable();
-        res.setHeader('content-type', 'application/json; charset=utf-8');
         result.pipe(JSONStream.stringify()).pipe(res);
     } else {
         logger.ctlState("### NO Streaming mode ###");
@@ -154,6 +155,7 @@ function _metricsPOST(req, res) {
 
             var promises = [];
             Object.keys(manager.agreement.terms.metrics).forEach(function (metricId) {
+                var query = new Query(req.query);
                 var validation = utils.validators.metricQuery(query, metricId, manager.agreement.terms.metrics[metricId]);
                 if (!validation.valid) {
                     validation.metric = metricId;
@@ -173,6 +175,7 @@ function _metricsPOST(req, res) {
 
             var metricsQueries = [];
             Object.keys(manager.agreement.terms.metrics).forEach(function (metricId) {
+                var query = new Query(req.query);
                 var validation = utils.validators.metricQuery(query, metricId, manager.agreement.terms.metrics[metricId]);
                 if (!validation.valid) {
                     validation.metric = metricId;
@@ -196,22 +199,23 @@ function _metricsPOST(req, res) {
 
 
 /**
- * Post a new metric by ID.
+ * GET all the states of a metric by metric's ID.
  * @param {Object} args {agreement: String, metric: String}
  * @param {Object} res response
  * @param {Object} next next function
  * @alias module:metrics.metricsIdPOST
  * */
-function _metricsIdPOST(args, res) {
+function _metricsIdGET(req, res) {
+    var args = req.swagger.params;
     var agreementId = args.agreement.value;
     var metricId = args.metric.value;
-    var query = args.scope.value;
+    var query = new Query(req.query);
 
     var result;
     if (config.streaming) {
         logger.ctlState("### Streaming mode ###");
-        result = utils.stream.createReadable();
         res.setHeader('content-type', 'application/json; charset=utf-8');
+        result = utils.stream.createReadable();
         result.pipe(JSONStream.stringify()).pipe(res);
     } else {
         logger.ctlState("### NO Streaming mode ###");

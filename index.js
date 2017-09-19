@@ -45,9 +45,10 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 // middleware to control when an agreement state process is already in progress
 app.use('/api/v2/states/:agreement', middlewares.stateInProgress);
 app.use('/api/v3/states/:agreement', middlewares.stateInProgress);
+app.use('/api/v4/states/:agreement', middlewares.stateInProgress);
 
 // latest documentation redirection
-const CURRENT_API_VERSION = "v3";
+const CURRENT_API_VERSION = "v4";
 app.use('/api/latest/docs', function (req, res) {
     res.redirect('/api/' + CURRENT_API_VERSION + '/docs');
 });
@@ -101,7 +102,11 @@ function _deploy(configurations, callback) {
         config.logger.info('Trying to connect to database');
         if (!err) {
             //list of swagger documents, one for each version of the api.
-            var swaggerDocs = [swaggerUtils.getSwaggerDoc(1), swaggerUtils.getSwaggerDoc(2), swaggerUtils.getSwaggerDoc(3)];
+            var swaggerDocs = [
+                swaggerUtils.getSwaggerDoc(1),
+                swaggerUtils.getSwaggerDoc(2),
+                swaggerUtils.getSwaggerDoc(3),
+                swaggerUtils.getSwaggerDoc(4)];
             //initialize swagger middleware for each swagger documents.
             swaggerUtils.initializeMiddleware(app, swaggerDocs, function () {
 
@@ -119,13 +124,13 @@ function _deploy(configurations, callback) {
                     }, app).listen(securePort, function () {
                         config.logger.info('HTTPS_SERVER mode');
                         config.logger.info('Your server is listening on port %d (https://localhost:%d)', serverPort, serverPort);
-                        config.logger.info('Swagger-ui is available on https://localhost:%d/api/v1/docs', serverPort);
+                        config.logger.info('Swagger-ui is available on https://localhost:%d/api/%s/docs', serverPort, CURRENT_API_VERSION);
                     });
                 }
 
                 module.exports.server.listen(serverPort, function () {
                     config.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
-                    config.logger.info('Swagger-ui is available on http://localhost:%d/api/v1/docs', serverPort);
+                    config.logger.info('Swagger-ui is available on http://localhost:%d/api/%s/docs', serverPort, CURRENT_API_VERSION);
                     if (callback) {
                         callback(module.exports.server);
                     }
