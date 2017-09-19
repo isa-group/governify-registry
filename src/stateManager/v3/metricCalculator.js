@@ -116,6 +116,25 @@ function processMetric(agreement, metricId, metricParameters) {
             logger.metrics("Sending request to computer (" + computerEndpoint + ") with payload: " + JSON.stringify(data, null, 2));
 
             var compositeResponse = [];
+
+            var objectToQuery = (object, raiz) => {
+                var string = "";
+                for (var f in object) {
+                    var field = object[f];
+                    if (field instanceof Object && !(field instanceof Array)) {
+                        string += objectToQuery(field, f);
+                    } else if (field instanceof Array) {
+                        string += f + '=' + field.map((e) => { return e.id; }).join(',');
+                        string += '&';
+                    } else {
+                        string += (raiz || '') + '.' + f + '=' + field + '&';
+                    }
+                }
+                return string;
+            };
+
+            var urlParams = objectToQuery(data);
+
             var computerRequest = request.post({
                 headers: {
                     'Content-Type': 'application/json'
