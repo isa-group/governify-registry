@@ -1,3 +1,7 @@
+### v3.0.1 - 2017-09-20
+
+- [#64](https://github.com/isa-group/governify-registry/issues/64) - Stabilize tests and remove dependencies of designer
+
 ### v3.0.0 - 2017-41-8
 
 - [#46](https://github.com/isa-group/governify-registry/issues/46) - Addapt Node JS template for automating
