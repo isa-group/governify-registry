@@ -232,8 +232,8 @@ function _guaranteeIdPenaltyGET(req, res) {
                 };
 
                 logger.ctlState("Query before parse: " + JSON.stringify(query, null, 2));
-                if (!query.logs) { throw new Error('Logs fields is required'); }
-                var logId = Object.keys(query.logs)[0];
+                if (!query.log) { throw new Error('Logs fields is required'); }
+                var logId = Object.keys(query.log)[0];
                 var log = manager.agreement.context.definitions.logs[logId];
 
                 query.scope = utils.scopes.computerToRegistryParser(query.scope, log.scopes);
