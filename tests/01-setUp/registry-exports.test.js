@@ -23,6 +23,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 var expect = require('chai').expect,
     dockerCompose = require('docker-composer-manager');
 
+describe('Clearing previous testing infrastructure', function () {
+    this.timeout(40000);
+    it('docker-compose down', function (done) {
+        dockerCompose.dockerComposeUp(__dirname, '-d', function () {
+            expect(true);
+            done();
+        }, function (err) {
+            done(err);
+            expect(false);
+        });
+    });
+});
+
 describe('Set up testing infrastructure', function () {
     this.timeout(40000);
     it('docker-compose up -d', function (done) {
