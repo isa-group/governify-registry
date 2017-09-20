@@ -28,3 +28,4 @@ test/integral/v3/guarantees.results.v3.json
 test/integral/v3/agreement.results.v3.json
 .version
 .vscode/
+*lock.*
