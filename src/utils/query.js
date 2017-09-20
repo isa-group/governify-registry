@@ -20,17 +20,13 @@ module.exports = class Query {
         let period = addComplexParameter(args, 'period');
 
         // BUILD period
-        let logs;
-        if (args['logs.id']) {
-            logs = {};
-            logs[args['logs.id']] = {};
-        }
+        let log = addComplexParameter(args, 'log');
 
         if (scope) { this.scope = scope; }
         if (parameters) { this.parameters = parameters; }
         if (window) { this.window = window; }
         if (period) { this.period = period; }
-        if (logs) { this.logs = logs; }
+        if (log) { this.log = log; }
     }
 
 
@@ -47,13 +43,17 @@ function addComplexParameter(args, filter) {
     Object.keys(args).forEach((e) => {
         let name = e.split('.');
 
-        if (name.length !== 2) {
-            throw new Error('The name of query field is not valid: ' + e);
-        }
-
+        var auxQueryObject = {};
         if (e.indexOf(filter) !== -1 && name[0] == filter) {
-            name = name[1];
-            queryObject[name] = args[e];
+            if (name.length > 2) {
+                var fieldName = name[1];
+                name.splice(0, 1);
+                auxQueryObject[name.join('.')] = args[e];
+                queryObject[fieldName] = addComplexParameter(auxQueryObject, name[0])
+            } else {
+                name = name[1];
+                queryObject[name] = args[e];
+            }
         }
     });
 

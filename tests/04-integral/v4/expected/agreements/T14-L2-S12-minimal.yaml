@@ -71,6 +71,13 @@ context:
         uri: 'http://logs:8083/api/v2/ca-sdm/v10.13'
         stateUri: 'http://logs:8083/api/v2/ca-sdm/v10.13/count'
         measures: 'http://nginx/SPU_IO.json?accessToken=32578346'
+        terminator:
+          column: ESTADO
+          values:
+           - Cerrado
+           - Cancelada
+           - Anulada
+           - Cerrada
         scopes:
           priority: priority
           node: NODO
@@ -83,6 +90,13 @@ context:
           priority: priority
           node: ASUNTO_NODO
           center: CENTRO
+        terminator:
+          column: ESTADO
+          values:
+           - Cerrado
+           - Cancelada
+           - Anulada
+           - Cerrada
 terms:
   pricing:
     billing:

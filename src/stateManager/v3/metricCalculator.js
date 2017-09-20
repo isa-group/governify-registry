@@ -87,27 +87,36 @@ function processMetric(agreement, metricId, metricParameters) {
                 }
                 if (!logDefinition) { throw new Error('Agreement is not well defined. It Must has at least a default log.') }
             }
-            //Build logs field on computer request body 
-            var LogsField = function (uri, stateUri, measures, holidays) {
+            //Build logs field on computer request body //, measures, holidays
+            var LogField = function (uri, stateUri) {
                 if (!uri || !stateUri) {
                     throw new Error('The log field of metric is not well defined in the agreement, uri and stateUri are required fields.');
                 }
                 this.uri = uri;
                 this.stateUri = stateUri;
-                if (measures) { this.measures = measures };
-                if (holidays) { this.holidays = holidays };
+                // if (measures) { this.measures = measures };
+                // if (holidays) { this.holidays = holidays };
             };
-            data.logs = {};
-            data.logs[logId] = new LogsField(
+            data.log = {};
+            data.log[logId] = new LogField(
                 logDefinition.uri,
-                logDefinition.stateUri,
-                logDefinition.measures || null,
-                logDefinition.holidays || null
+                logDefinition.stateUri
             );
             // Mapping of columns names in log
             var scope = utils.scopes.registryToComputerParser(metricParameters.scope, logDefinition.scopes);
 
-            if (!data.logs) {
+            // adding computer config
+            var Config = function (measures, holidays) {
+                this.measures = measures;
+                if (holidays) { this.holidays = holidays; }
+            }
+
+            data.config = new Config(
+                logDefinition.measures,
+                logDefinition.holidays || null
+            )
+
+            if (!data.log) {
                 return reject('Log not found for metric ' + metricId + '. ' +
                     'Please, specify metric log or default log.');
             }
@@ -117,23 +126,23 @@ function processMetric(agreement, metricId, metricParameters) {
 
             var compositeResponse = [];
 
-            var objectToQuery = (object, raiz) => {
+            var objectToUrlParser = (object, raiz) => {
                 var string = "";
                 for (var f in object) {
                     var field = object[f];
                     if (field instanceof Object && !(field instanceof Array)) {
-                        string += objectToQuery(field, f);
+                        string += objectToQuery(field, (raiz ? raiz + '.' : '') + f);
                     } else if (field instanceof Array) {
                         string += f + '=' + field.map((e) => { return e.id; }).join(',');
                         string += '&';
                     } else {
-                        string += (raiz || '') + '.' + f + '=' + field + '&';
+                        string += (raiz ? raiz + '.' : '') + f + '=' + field + '&';
                     }
                 }
                 return string;
             };
 
-            var urlParams = objectToQuery(data);
+            var urlParams = objectToUrlParser(data);
 
             var computerRequest = request.post({
                 headers: {
