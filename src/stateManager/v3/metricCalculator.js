@@ -25,10 +25,12 @@ var config = require('../../config'),
     Promise = require('bluebird'),
     request = require('request'),
     JSONStream = require('JSONStream'),
+    qs = require('querystring'),
 
     utils = require('../../utils/utils');
 
 var Query = utils.Query;
+var promiseErrorHandler = utils.errors.promiseErrorHandler;
 
 /**
  * Metric calculator module.
@@ -120,14 +122,14 @@ function processMetric(agreement, metricId, metricQuery) {
             logger.metrics("URL: %s", url);
 
             var computerRequest = request.get({
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                url: url
-            }).on('response', function (httpResponse) {
+                url: computerEndpoint,
+                qs: qs.parse(urlParams)
+            }).on('response', function computerResponseHandler(httpResponse) {
                 if (httpResponse.statusCode !== 200) {
-                    logger.error("Error in PPINOT Computer response", httpResponse.statusCode + ':' + httpResponse.statusMessage);
-                    return reject("Error in PPINOT Computer response", httpResponse.statusCode + ':' + httpResponse.statusMessage);
+
+                    var errorString = "Error in PPINOT Computer response " + httpResponse.statusCode + ':' + httpResponse.statusMessage;
+                    return promiseErrorHandler(reject, "metrics", processMetric.name, httpResponse.statusCode, errorString, errorString);
+
                 }
                 logger.metrics('Processing streaming and mapping of columns names in log...');
                 computerRequest.pipe(JSONStream.parse()).on('data', function (monthMetrics) {
@@ -135,16 +137,14 @@ function processMetric(agreement, metricId, metricQuery) {
 
                         if (monthMetrics && Array.isArray(monthMetrics)) {
                             monthMetrics.forEach(function (metricState) {
-                                if (metricState.logs && metric.scope) {
+                                if (metricState.log && metric.scope) {
 
                                     //Getting the correct log for scope mapping
-                                    var logId = Object.keys(metricState.logs)[0];
+                                    var logId = Object.keys(metricState.log)[0];
                                     var log = agreement.context.definitions.logs[logId];
                                     //doing scope mapping
                                     metricState.scope = utils.scopes.computerToRegistryParser(metricState.scope, log.scopes);
 
-                                } else {
-                                    throw new Error('Fields metricState.logs and metric.scope are required in computer response.');
                                 }
                                 compositeResponse.push(metricState);
                             });

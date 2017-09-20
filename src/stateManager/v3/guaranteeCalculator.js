@@ -133,7 +133,7 @@ function processGuarantee(manager, query) {
                 // Once we have calculated the scoped guarantee state, we add it to the array 'guaranteeValues'
                 guaranteesValues = guaranteesValues.concat(value);
             }).catch(function (err) {
-                logger.error('Error processing scoped guarantee: ', err);
+                logger.error('(*SCOPED GUARANTEE*) Error processing scoped guarantee: ', err);
                 return reject(err);
             });
 
@@ -258,9 +258,10 @@ function processScopedGuarantee(manager, query, guarantee, ofElement) {
                         logger.guarantees('No metrics found for parameters: ' + JSON.stringify(metricParam, null, 2));
                     }
                 }).catch(function (err) {
-                    logger.error('Error processing metric: ', err);
+                    logger.error('(*SCOPED METRICS*) Error processing metric: ', err);
                     return reject(err);
                 });
+
             }).then(function () {
                 var guaranteesValues = [];
                 logger.guarantees('Calculating penalties for scoped guarantee ' + guarantee.id + '...');

@@ -27,7 +27,7 @@ module.exports = class Query {
         if (window) { this.window = window; }
         if (period) { this.period = period; }
         if (log) { this.log = log; }
-    };
+    }
 
     static parseToQueryParams(object, raiz) {
         var string = "";

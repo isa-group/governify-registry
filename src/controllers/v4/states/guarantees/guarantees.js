@@ -247,7 +247,7 @@ function _guaranteeIdPenaltyGET(req, res) {
                     var ret = [];
                     for (var ie in success) {
                         var e = success[ie];
-                        if (moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to) && gUtils.checkQuery(e, query)) {
+                        if (moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to) /*&& gUtils.checkQuery(e, query)*/) {
                             ret.push(e);
                         }
                     }

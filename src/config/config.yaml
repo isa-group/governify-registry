@@ -27,7 +27,8 @@ development:
       reloadAgreement:
         mailSubject: '[Governify] Su tarea ha finalizado'
         mailContent: "El cálculo de SLAs para el contrato <b>%s</b> ha sido actualizado en base a la información cargada en los logs. <p>Número actual de registros que se han tenido en cuenta para realizar los cálculos:</p>"
-
+  errors:
+    trace: true      
 production:
   database:
     url: "mongodb://mongo"
@@ -56,3 +57,5 @@ production:
       reloadAgreement:
         mailSubject: '[Governify] Su tarea ha finalizado'
         mailContent: "El cálculo de SLAs para el contrato <b>%s</b> ha sido actualizado en base a la información cargada en los logs. <p>Estado actual de los logs:</p>"
+  errors:
+    trace: true       

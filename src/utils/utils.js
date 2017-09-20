@@ -31,6 +31,11 @@ var diff = require('deep-diff');
 
 module.exports = {
     /**
+     * Errors module.
+     * @see module:utils.errors
+     * */
+    errors: require('./errors.js'),
+    /**
      * Scopes module.
      * @see module:utils.scopes
      * */
