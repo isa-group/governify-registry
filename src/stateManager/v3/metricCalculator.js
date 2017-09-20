@@ -28,6 +28,8 @@ var config = require('../../config'),
 
     utils = require('../../utils/utils');
 
+var Query = utils.Query;
+
 /**
  * Metric calculator module.
  * @module metricCalculator
@@ -47,10 +49,10 @@ module.exports = {
  * Process all metrics.
  * @param {Object} agreement agreement
  * @param {Object} metricId metric ID
- * @param {Object} metricParameters metric parameters
+ * @param {Object} metricQuery metric query object
  * @alias module:metricCalculator.process
  * */
-function processMetric(agreement, metricId, metricParameters) {
+function processMetric(agreement, metricId, metricQuery) {
     return new Promise(function (resolve, reject) {
         try {
             var metric = agreement.terms.metrics[metricId];
@@ -60,16 +62,16 @@ function processMetric(agreement, metricId, metricParameters) {
 
             var computerEndpoint = metric.computer;
 
-            /**### BUILD COMPUTER REQUEST BODY ###**/
-            var data = {};
-            data.parameters = metricParameters.parameters;
-            data.window = metricParameters.window;
+            /**### BUILD COMPUTER REQUEST QUERY ###**/
+            var computerQuery = {};
+            computerQuery.parameters = metricQuery.parameters;
+            computerQuery.window = metricQuery.window;
 
-            if (metricParameters.evidences) {
-                data.evidences = metricParameters.evidences;
+            if (metricQuery.evidences) {
+                computerQuery.evidences = metricQuery.evidences;
             }
 
-            //Select logs data. If metric has not log select by default log.
+            //Select logs data. If metric has not log, select by default log.
             var logDefinition, logId;
             if (metric.log) {
                 logId = Object.keys(metric.log)[0]; //controlate this potential error
@@ -85,80 +87,51 @@ function processMetric(agreement, metricId, metricParameters) {
                         break;
                     }
                 }
-                if (!logDefinition) { throw new Error('Agreement is not well defined. It Must has at least a default log.') }
+                if (!logDefinition) { throw new Error('Agreement is not well defined. It Must has at least a default log.'); }
             }
-            //Build logs field on computer request body //, measures, holidays
-            var LogField = function (uri, stateUri) {
-                if (!uri || !stateUri) {
-                    throw new Error('The log field of metric is not well defined in the agreement, uri and stateUri are required fields.');
-                }
-                this.uri = uri;
-                this.stateUri = stateUri;
-                // if (measures) { this.measures = measures };
-                // if (holidays) { this.holidays = holidays };
-            };
-            data.log = {};
-            data.log[logId] = new LogField(
+            //Build logs field on computer request body //
+            computerQuery.log = {};
+            computerQuery.log[logId] = new LogField(
                 logDefinition.uri,
                 logDefinition.stateUri
             );
             // Mapping of columns names in log
-            var scope = utils.scopes.registryToComputerParser(metricParameters.scope, logDefinition.scopes);
+            var scope = utils.scopes.registryToComputerParser(metricQuery.scope, logDefinition.scopes);
 
             // adding computer config
-            var Config = function (measures, holidays) {
-                this.measures = measures;
-                if (holidays) { this.holidays = holidays; }
-            }
-
-            data.config = new Config(
+            computerQuery.config = new Config(
                 logDefinition.measures,
                 logDefinition.holidays || null
-            )
+            );
 
-            if (!data.log) {
+            if (!computerQuery.log) {
                 return reject('Log not found for metric ' + metricId + '. ' +
                     'Please, specify metric log or default log.');
             }
+            computerQuery.scope = Object.keys(scope).length > 0 ? scope : metricQuery.scope;
 
-            data.scope = Object.keys(scope).length > 0 ? scope : metricParameters.scope;
-            logger.metrics("Sending request to computer (" + computerEndpoint + ") with payload: " + JSON.stringify(data, null, 2));
-
+            // ### PREPARE REQUEST ###
+            //Build URL query that will use on computer request
+            var urlParams = Query.parseToQueryParams(computerQuery);
+            var url = computerEndpoint + '?' + urlParams;
             var compositeResponse = [];
 
-            var objectToUrlParser = (object, raiz) => {
-                var string = "";
-                for (var f in object) {
-                    var field = object[f];
-                    if (field instanceof Object && !(field instanceof Array)) {
-                        string += objectToQuery(field, (raiz ? raiz + '.' : '') + f);
-                    } else if (field instanceof Array) {
-                        string += f + '=' + field.map((e) => { return e.id; }).join(',');
-                        string += '&';
-                    } else {
-                        string += (raiz ? raiz + '.' : '') + f + '=' + field + '&';
-                    }
-                }
-                return string;
-            };
+            logger.metrics("Sending request to computer ( %s ) with params: %s", computerEndpoint, JSON.stringify(computerQuery, null, 2));
+            logger.metrics("URL: %s", url);
 
-            var urlParams = objectToUrlParser(data);
-
-            var computerRequest = request.post({
+            var computerRequest = request.get({
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                url: computerEndpoint,
-                body: JSON.stringify(data)
+                url: url
             }).on('response', function (httpResponse) {
                 if (httpResponse.statusCode !== 200) {
                     logger.error("Error in PPINOT Computer response", httpResponse.statusCode + ':' + httpResponse.statusMessage);
                     return reject("Error in PPINOT Computer response", httpResponse.statusCode + ':' + httpResponse.statusMessage);
                 }
+                logger.metrics('Processing streaming and mapping of columns names in log...');
                 computerRequest.pipe(JSONStream.parse()).on('data', function (monthMetrics) {
                     try {
-
-                        logger.metrics('Processing mapping of columns names in log...');
 
                         if (monthMetrics && Array.isArray(monthMetrics)) {
                             monthMetrics.forEach(function (metricState) {
@@ -171,7 +144,7 @@ function processMetric(agreement, metricId, metricParameters) {
                                     metricState.scope = utils.scopes.computerToRegistryParser(metricState.scope, log.scopes);
 
                                 } else {
-                                    throw new Error('Fields metricState.logs and metric.scope are required in computer response.')
+                                    throw new Error('Fields metricState.logs and metric.scope are required in computer response.');
                                 }
                                 compositeResponse.push(metricState);
                             });
@@ -201,3 +174,21 @@ function processMetric(agreement, metricId, metricParameters) {
     });
 
 }
+
+
+//### OBJECTS CONSTRUCTORS ###
+
+//constructor of computer request config object
+var Config = function (measures, holidays) {
+    this.measures = measures;
+    if (holidays) { this.holidays = holidays; }
+};
+
+//constructor of computer request log object
+var LogField = function (uri, stateUri) {
+    if (!uri || !stateUri) {
+        throw new Error('The log field of metric is not well defined in the agreement, uri and stateUri are required fields.');
+    }
+    this.uri = uri;
+    this.stateUri = stateUri;
+};

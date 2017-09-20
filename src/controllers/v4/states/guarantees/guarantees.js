@@ -208,7 +208,9 @@ function _guaranteeIdPenaltyGET(req, res) {
     stateManager({
         id: agreementId
     }).then(function (manager) {
-        var validation = utils.validators.metricQuery(query, guarantee.id, guarantee);
+        var validation = utils.validators.metricQuery(query, guaranteeId, manager.agreement.terms.guarantees.find((e) => {
+            return e.id === guaranteeId;
+        }));
 
         if (!validation.valid) {
 
@@ -234,7 +236,7 @@ function _guaranteeIdPenaltyGET(req, res) {
                 var logId = Object.keys(query.logs)[0];
                 var log = manager.agreement.context.definitions.logs[logId];
 
-                query.scope = utils.scopes.computerToRegistryParser(query.scope, log.scopes)
+                query.scope = utils.scopes.computerToRegistryParser(query.scope, log.scopes);
                 logger.ctlState("Query after parse: " + JSON.stringify(query, null, 2));
 
                 return manager.get('guarantees', {

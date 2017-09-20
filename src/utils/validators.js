@@ -75,7 +75,7 @@ function _metricQuery(query, metricId, metricDefinition) {
     };
 }
 
-function _guaranteeQuery(query, guaranteeId, guaranteeDefinition) {
+function _guaranteeQuery(query, guaranteeId /*, guaranteeDefinition*/) {
     var schema = require('../schemas/query-schema.json');
 
     var schemaValidationResults = schemaValidation(schema, query);
