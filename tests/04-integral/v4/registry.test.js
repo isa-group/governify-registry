@@ -36,13 +36,13 @@ var agreementMock = {
     }
 };
 
-describe("Integration TEST V3", function () {
+describe("Integration TEST V4", function () {
     before(function (done) {
         // ppinot.listen(5000, function () {
         testUtils.dropDB(function () {
             registry.deploy(require('../../config.json'), function () {
                 request.post({
-                    url: 'http://localhost:5001/api/v3/agreements',
+                    url: 'http://localhost:5001/api/v4/agreements',
                     body: agreement,
                     json: true
                 }, function (err, res, body) {
@@ -72,7 +72,7 @@ describe("Integration TEST V3", function () {
 
     it('Get guarantees all periods', function (done) {
         request.get({
-            url: 'http://localhost:5001/api/v3/states/T14-L2-S12-minimal/guarantees',
+            url: 'http://localhost:5001/api/v4/states/T14-L2-S12-minimal/guarantees',
             json: true
         }, function (err, res, body) {
             var expectedResults = require('./expected/guarantees.json');
@@ -97,7 +97,7 @@ describe("Integration TEST V3", function () {
 
         Promise.each(periods, function (period) {
             return new Promise(function (resolve, reject) {
-                var url = 'http://localhost:5001/api/v3/states/T14-L2-S12-minimal/guarantees?from=' + period.from.toISOString() + '&to=' + period.to.toISOString();
+                var url = 'http://localhost:5001/api/v4/states/T14-L2-S12-minimal/guarantees?from=' + period.from.toISOString() + '&to=' + period.to.toISOString();
 
                 request.get({
                     url: url,
@@ -134,7 +134,7 @@ describe("Integration TEST V3", function () {
 
     it('Get agreement all periods', function (done) {
         request.get({
-            url: 'http://localhost:5001/api/v3/states/T14-L2-S12-minimal',
+            url: 'http://localhost:5001/api/v4/states/T14-L2-S12-minimal',
             json: true
         }, function (err, res, body) {
             var expectedResults = require('./expected/agreementState.json');

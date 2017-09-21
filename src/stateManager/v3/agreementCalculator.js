@@ -129,12 +129,12 @@ function processMetrics(manager, parameters) {
                     if (metricDef.scope) {
                         scope = {};
                         var metricsScp = metricDef.scope;
-                        for (var s in metricsScp) {
-                            var scopeType = metricsScp[s];
-                            for (var st in scopeType) {
-                                scope[st] = manager.agreement.context.definitions.scopes[s][st].default || '*';
-                            }
+                        // for (var s in metricsScp) {
+                        //     var scopeType = metricsScp[s];
+                        for (var st in metricsScp) {
+                            scope[st] = metricsScp.default || '*';
                         }
+                        // }
                         if (!scope.priority) {
                             scope.priority = 'P2';
                         } //activate for PROSAS agreements

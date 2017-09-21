@@ -262,7 +262,7 @@
           "type": "double",
           "unit": "%"
         },
-        "computer": "http://localhost:5001/api/v3/states/T14-L2-S12-minimal/pricing/billing/penalties",
+        "computer": "http://localhost:5001/api/v4/states/T14-L2-S12-minimal/pricing/billing/penalties",
         "scope": {
           "priority": {
             "$ref": "#/context/definitions/scopes/SPU/priority"
@@ -503,7 +503,7 @@
           "type": "double",
           "unit": "%"
         },
-        "computer": "http://localhost:8081/api/v4/states/T14-L2-S12-minimal/guarantees/SPU_IO_K06_t/penalty",
+        "computer": "http://localhost:5001/api/v4/states/T14-L2-S12-minimal/guarantees/SPU_IO_K06_t/penalty",
         "parameters": {
           "offset": {
             "type": "number",
@@ -538,7 +538,7 @@
           "type": "double",
           "unit": "%"
         },
-        "computer": "http://localhost:8081/api/v4/states/T14-L2-S12-minimal/guarantees/SPU_IO_K06_t/penalty",
+        "computer": "http://localhost:5001/api/v4/states/T14-L2-S12-minimal/guarantees/SPU_IO_K06_t/penalty",
         "parameters": {
           "offset": {
             "type": "number",

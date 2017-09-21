@@ -23,8 +23,34 @@ module.exports = {
      * @param {Object} guaranteeDefinition Definition of the guarantee
      * @alias module:validators.metricQuery
      * */
-    guaranteeQuery: _guaranteeQuery
+    guaranteeQuery: _guaranteeQuery,
+    /**
+     * Validate query for guarantee
+     * @param {Object} query query
+     * @param {Object} guaranteeId ID of the guarantee
+     * @param {Object} guaranteeDefinition Definition of the guarantee
+     * @alias module:validators.metricQuery
+     * */
+    pricingQuery: _pricingQuery
 };
+
+function _pricingQuery(query) {
+    var schema = require('../schemas/query-schema.json');
+
+
+    var schemaValidationResults = schemaValidation(schema, query);
+    var validation = true, errors = [];
+
+    if (!schemaValidationResults.isValid) {
+        validation = validation && false;
+        errors = errors.concat(schemaValidationResults.errors.map((e) => { return e.message; }));
+    }
+
+    return {
+        valid: validation,
+        errors: errors
+    };
+}
 
 function _metricQuery(query, metricId, metricDefinition) {
     var schema = require('../schemas/query-schema.json');

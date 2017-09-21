@@ -45,7 +45,7 @@ module.exports = {
     statesAgreementMetricsMetricIncreasePOST: _statesAgreementMetricsMetricIncreasePOST,
     statesAgreementMetricsMetricPOST: _statesAgreementMetricsMetricPOST,
     //Penalties
-    statesAgreementPricingBillingPenaltiesPOST: _statesAgreementPricingBillingPenaltiesPOST,
+    statesAgreementPricingBillingPenaltiesGET: _statesAgreementPricingBillingPenaltiesGET,
     //Quotas
     statesAgreementQuotasGET: _statesAgreementQuotasGET,
     statesAgreementQuotasQuotaGET: _statesAgreementQuotasQuotaGET,
@@ -175,14 +175,14 @@ function _statesAgreementMetricsMetricPOST(req, res, next) {
 }
 
 /** 
- * statesAgreementPricingBillingPenaltiesPOST.
+ * _statesAgreementPricingBillingPenaltiesGET
  * @param {Object} req request
  * @param {Object} res response
  * @param {Object} next next function
- * @alias module:StateRegistry.statesAgreementPricingBillingPenaltiesPOST
+ * @alias module:StateRegistry._statesAgreementPricingBillingPenaltiesGET
  * */
-function _statesAgreementPricingBillingPenaltiesPOST(req, res, next) {
-    states.pricing.PricingBillingPenaltiesPOST(req, res, next);
+function _statesAgreementPricingBillingPenaltiesGET(req, res, next) {
+    states.pricing.PricingBillingPenaltiesGET(req, res, next);
 }
 
 
