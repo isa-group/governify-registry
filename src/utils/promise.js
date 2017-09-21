@@ -1,8 +1,13 @@
 /*!
-governify-registry 3.0.0, built on: 2017-05-08
+governify-registry 3.0.1, built on: 2017-05-08
 Copyright (C) 2017 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
+
+governify-registry is an Open-source software available under the 
+GNU General Public License (GPL) version 2 (GPL v2) for non-profit 
+applications; for commercial licensing terms, please see README.md 
+for any inquiry.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -15,7 +20,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 
 'use strict';
@@ -121,23 +127,30 @@ function _processParallelPromises(manager, promisesArray, result, res, streaming
 }
 
 
+/**
+ * Process mode.
+ * @param {String} type Type of state to be required (e.g. 'metrics')
+ * @param {StateManager} manager StateManager instance
+ * @param {Array} queries array of queries to processing
+ * @param {Object} result Array or stream with the result
+ * @param {ResponseObject} res To respond the request
+ * @param {Boolean} streaming Decide if stream or not stream response
+ * @alias module:gUtils.processMode
+ * */
 function _processSequentialPromises(type, manager, queries, result, res, streaming) {
+
 
     if (!result && !res) {
         //Promise mode
         result = [];
 
         return new Promise(function (resolve, reject) {
-            Promise.each(queries, function (oneQueries) {
+            Promise.each(queries, function (query) {
 
-                return manager.get(type, oneQueries).then(function (promiseResult) {
-                    for (var i in promiseResult) {
-                        var state = promiseResult[i];
-                        if (manager) {
-                            result.push(manager.current(state));
-                        } else {
-                            result.push(state);
-                        }
+                return manager.get(type, query).then(function (states) {
+                    for (var i in states) {
+                        var state = states[i];
+                        result.push(manager.current(state));
                     }
                 }, reject);
 
@@ -148,17 +161,13 @@ function _processSequentialPromises(type, manager, queries, result, res, streami
 
     } else {
         //Controller mode using streaming
-        Promise.each(queries, function (oneQueries) {
+        Promise.each(queries, function (query) {
 
-            return manager.get(type, oneQueries).then(function (promiseResult) {
-                for (var i in promiseResult) {
-                    var state = promiseResult[i];
+            return manager.get(type, query).then(function (states) {
+                for (var i in states) {
+                    var state = states[i];
                     //feeding stream
-                    if (manager) {
-                        result.push(manager.current(state));
-                    } else {
-                        result.push(state);
-                    }
+                    result.push(manager.current(state));
                 }
             }, function (err) {
                 logger.error(err);

@@ -4,5 +4,5 @@
         "url": "mongodb://localhost:37019",
         "db_name": "registry-tests"
     },
-    "loggerLevel": "info"
+    "loggerLevel": "error"
 }
