@@ -86,7 +86,7 @@ module.exports = function (grunt) {
 
         //Execute mocha tests
         mochaTest: {
-            tests: {
+            full: {
                 options: {
                     reporter: 'spec',
                     //captureFile: 'test.results<%= grunt.template.today("yyyy-mm-dd:HH:mm:ss") %>.txt', // Optionally capture the reporter output to a file
@@ -94,13 +94,53 @@ module.exports = function (grunt) {
                     clearRequireCache: false, // Optionally clear the require cache before running tests (defaults to false)
                     noFail: false // Optionally set to not fail on failed tests (will still fail on other errors)
                 },
-                src: ['tests/**/*.js']
-            }
+                src: ['tests/01-pre-test/**/*.test.js', 'tests/02-test-cases/**/*.test.js', 'tests/03-post-test/**/*.test.js']
+            },
+            database: {
+                options: {
+                    reporter: 'spec',
+                    //captureFile: 'test.results<%= grunt.template.today("yyyy-mm-dd:HH:mm:ss") %>.txt', // Optionally capture the reporter output to a file
+                    quiet: false, // Optionally suppress output to standard out (defaults to false)
+                    clearRequireCache: false, // Optionally clear the require cache before running tests (defaults to false)
+                    noFail: false // Optionally set to not fail on failed tests (will still fail on other errors)
+                },
+                src: ['tests/01-pre-test/**/*.test.js', 'tests/02-test-cases/01-database/*.test.js', 'tests/03-post-test/**/*.test.js']
+            },
+            unit: {
+                options: {
+                    reporter: 'spec',
+                    //captureFile: 'test.results<%= grunt.template.today("yyyy-mm-dd:HH:mm:ss") %>.txt', // Optionally capture the reporter output to a file
+                    quiet: false, // Optionally suppress output to standard out (defaults to false)
+                    clearRequireCache: false, // Optionally clear the require cache before running tests (defaults to false)
+                    noFail: false // Optionally set to not fail on failed tests (will still fail on other errors)
+                },
+                src: ['tests/01-pre-test/**/*.test.js', 'tests/02-test-cases/02-unit/**/*.test.js', 'tests/03-post-test/**/*.test.js']
+            },
+            controllers: {
+                options: {
+                    reporter: 'spec',
+                    //captureFile: 'test.results<%= grunt.template.today("yyyy-mm-dd:HH:mm:ss") %>.txt', // Optionally capture the reporter output to a file
+                    quiet: false, // Optionally suppress output to standard out (defaults to false)
+                    clearRequireCache: false, // Optionally clear the require cache before running tests (defaults to false)
+                    noFail: false // Optionally set to not fail on failed tests (will still fail on other errors)
+                },
+                src: ['tests/01-pre-test/**/*.test.js', 'tests/02-test-cases/03-controllers/**/*.test.js', 'tests/03-post-test/**/*.test.js']
+            },
+            integral: {
+                options: {
+                    reporter: 'spec',
+                    //captureFile: 'test.results<%= grunt.template.today("yyyy-mm-dd:HH:mm:ss") %>.txt', // Optionally capture the reporter output to a file
+                    quiet: false, // Optionally suppress output to standard out (defaults to false)
+                    clearRequireCache: false, // Optionally clear the require cache before running tests (defaults to false)
+                    noFail: false // Optionally set to not fail on failed tests (will still fail on other errors)
+                },
+                src: ['tests/01-pre-test/**/*.test.js', 'tests/02-test-cases/04-integral/**/*.test.js', 'tests/03-post-test/**/*.test.js']
+            },
         },
 
         //Make a new release on github
-        //"grunt release" for pacth version
-        //"grunt release:minior" for minior version
+        //"grunt release" for patch version
+        //"grunt release:minor" for minor version
         //"grunt release:major" for major version
         release: {
             options: {
@@ -122,7 +162,7 @@ module.exports = function (grunt) {
             }
         },
 
-        //IT IS RECOMENDED TO EXECUTE "grunt watch" while you are working.
+        //IT IS RECOMMENDED TO EXECUTE "grunt watch" while you are working.
         watch: {
             scripts: {
                 files: ['public/**']
@@ -167,7 +207,17 @@ module.exports = function (grunt) {
     grunt.registerTask('default', ['jshint', 'usebanner']);
 
     //TEST TASK
-    grunt.registerTask('test', ['jshint', 'mochaTest']);
+    grunt.registerTask('test', ['jshint', 'mochaTest:full']);
+
+    grunt.registerTask('test:full', ['jshint', 'mochaTest:full']);
+
+    grunt.registerTask('test:database', ['jshint', 'mochaTest:database']);
+
+    grunt.registerTask('test:unit', ['jshint', 'mochaTest:unit']);
+
+    grunt.registerTask('test:controllers', ['jshint', 'mochaTest:controllers']);
+
+    grunt.registerTask('test:integral', ['jshint', 'mochaTest:integral']);
 
     //BUILD TASK
     grunt.registerTask('build', ['test', 'buildOn', 'usebanner']);
