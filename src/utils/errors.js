@@ -34,7 +34,7 @@ var logger = config.logger;
  */
 function promiseErrorHandler(reject, level, functionName, code, message, root) {
     //Call to the generic error handler
-    var newError = ErrorHandler(level, functionName, code, message, root);
+    var newError = new ErrorHandler(level, functionName, code, message, root);
     //If progressive trace is true print the progressive trace.
     if (config.errors.progressiveTrace) {
         logger.error(newError.stackTrace());
@@ -56,7 +56,7 @@ function promiseErrorHandler(reject, level, functionName, code, message, root) {
  */
 function controllerErrorHandler(res, level, functionName, code, message, root) {
     //Call to the generic error handler
-    var newError = ErrorHandler(level, functionName, code, message, root);
+    var newError = new ErrorHandler(level, functionName, code, message, root);
     //Print the progressive trace of the error
     logger.error(newError.stackTrace());
     //Send the response to the client.

@@ -27,7 +27,7 @@ var Promise = require('bluebird'),
     logger = config.logger,
     ErrorModel = require('../../../../errors').errorModel,
 
-    stateManager = require('../../../../stateManager/v4/stateManager'),
+    stateManager = require('../../../../stateManager/v4/state-manager'),
 
     gUtils = require('./gUtils.js'),
     utils = require('../../../../utils/utils');

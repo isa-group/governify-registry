@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 var config = require('../../../../config'),
     logger = config.logger,
     ErrorModel = require('../../../../errors/index.js').errorModel,
-    stateManager = require('../../../../stateManager/v4/stateManager'),
+    stateManager = require('../../../../stateManager/v4/state-manager'),
     utils = require('../../../../utils/utils');
 
 var Query = utils.Query;

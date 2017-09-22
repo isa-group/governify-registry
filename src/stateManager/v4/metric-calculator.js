@@ -157,12 +157,12 @@ function processMetric(agreement, metricId, metricQuery) {
                             logger.metrics('Mapping of columns names in log processed.');
 
                         } else {
-                            var errorString = "Error in computer response for metric: " + metricId + ". Response is not an array:  " + JSON.stringify(monthMetrics);
+                            let errorString = "Error in computer response for metric: " + metricId + ". Response is not an array:  " + JSON.stringify(monthMetrics);
                             return promiseErrorHandler(reject, "metrics", processMetric.name, 500, errorString);
                         }
 
                     } catch (err) {
-                        var errorString = "Error processing computer response for metric: " + metricId;
+                        let errorString = "Error processing computer response for metric: " + metricId;
                         return promiseErrorHandler(reject, "metrics", processMetric.name, 500, errorString, err);
                     }
 
