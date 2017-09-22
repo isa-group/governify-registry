@@ -25,24 +25,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
  * @module calculators
  * */
 module.exports = {
-     /** 
-     * Agreement calculator.
-     * @see module:agreementCalculator
-     * */
-    agreementCalculator: require('./agreementCalculator.js'),
+    /** 
+    * Agreement calculator.
+    * @see module:agreementCalculator
+    * */
+    agreementCalculator: require('./agreement-calculator.js'),
     /** 
      * Guarantee calculator.
      * @see module:guaranteeCalculator
      * */
-    guaranteeCalculator: require('./guaranteeCalculator.js'),
+    guaranteeCalculator: require('./guarantee-calculator.js'),
     /** 
      * Metric calculator.
      * @see module:metricCalculator
      * */
-    metricCalculator: require('./metricCalculator.js'),
+    metricCalculator: require('./metric-calculator.js'),
     /** 
      * Pricing calculator.
      * @see module:pricingCalculator
      * */
-    pricingCalculator: require('./pricingCalculator.js')
+    pricingCalculator: require('./pricing-calculator.js')
 };
