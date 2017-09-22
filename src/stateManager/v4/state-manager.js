@@ -283,10 +283,10 @@ function _update(stateType, query, logsState) {
                         //         return reject(err);
                         //     });
                         // });
-                    }, function (err) {
-                        logger.error(err.toString());
-                        return reject(new ErrorModel(500, err));
-                    });
+                    }.catch(function (err) {
+                        errorString = "Error processing agreements";
+                        return promiseErrorHandler(reject, "state-manager", "_update", 500, errorString, err);
+                    }));
                 break;
             case "guarantees":
                 calculators.guaranteeCalculator.process(stateManager, query)
@@ -366,8 +366,8 @@ function _update(stateType, query, logsState) {
                     logger.sm('All pricing states (' + pricingStates.length + ') have been calculated ');
                     return resolve(pricingStates);
                 }, function (err) {
-                    logger.error(err.toString());
-                    return reject(new ErrorModel(500, err));
+                    var errorString = "Error processing pricings";
+                    return promiseErrorHandler(reject, "state-manager", "_update", 500, errorString, err);
                 });
                 break;
 

@@ -111,8 +111,8 @@ function processPricing(agreementDef, query, manager) {
                 });
                 return resolve(penalties);
             }, function (err) {
-                logger.error(err);
-                return reject(err.toString());
+                var errorString = "Error processing pricings";
+                return promiseErrorHandler(reject, "pricings", processPricing.name, err.code || 500, errorString, err);
             });
         } else {
             // ** Sequential calculation **
@@ -135,8 +135,8 @@ function processPricing(agreementDef, query, manager) {
                         guaranteesStates.push(element);
                     });
                 }, function (err) {
-                    logger.pricing("Has ocurred an error getting guarantee = " + guarantee.id + ": " + err.toString());
-                    return reject(err);
+                    var errorString = "Has ocurred an error getting guarantee = " + guarantee.id + ": " + err.toString();
+                    return promiseErrorHandler(reject, "pricings", processPricing.name, err.code || 500, errorString, err);
                 });
             }).then(function () {
                 //Once we have all guarantee States...
@@ -193,17 +193,17 @@ function processPricing(agreementDef, query, manager) {
                                 if (guaranteeState.penalties) {
                                     // Calculate aggregated values of penalty
                                     switch (penalty.aggregatedBy) {
-                                    case 'sum':
-                                        logger.pricing("SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
-                                        classifier.value += guaranteeState.penalties[penaltyId];
-                                        break;
-                                    case 'prod':
-                                        logger.pricing("PROD " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
-                                        classifier.value *= guaranteeState.penalties[penaltyId];
-                                        break;
-                                    default:
-                                        logger.pricing("(DEFAULT) SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
-                                        classifier.value += guaranteeState.penalties[penaltyId];
+                                        case 'sum':
+                                            logger.pricing("SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
+                                            classifier.value += guaranteeState.penalties[penaltyId];
+                                            break;
+                                        case 'prod':
+                                            logger.pricing("PROD " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
+                                            classifier.value *= guaranteeState.penalties[penaltyId];
+                                            break;
+                                        default:
+                                            logger.pricing("(DEFAULT) SUM " + guaranteeState.penalties[penaltyId] + " penalty to classifier");
+                                            classifier.value += guaranteeState.penalties[penaltyId];
                                     }
                                 }
                                 // Control Saturation (maximum value) with UpTo in the definition
@@ -229,8 +229,8 @@ function processPricing(agreementDef, query, manager) {
                 });
                 return resolve(classifiers);
             }, function (err) {
-                logger.pricing(err.toString());
-                return reject(err);
+                var errorString = "Error processing pricings";
+                return promiseErrorHandler(reject, "pricings", processPricing.name, err.code || 500, errorString);
             });
         }
     });
