@@ -22,8 +22,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 var config = require('../../../../config');
 var logger = config.logger;
-var stateManager = require('../../../../stateManager/v3/stateManager.js');
+var stateManager = require('../../../../stateManager/v4/state-manager.js'),
+    utils = require('../../../../utils/utils');
 
+var Error = utils.errors.Error;
+var Query = utils.Query;
 
 /**
  * Pricing state module.
@@ -33,37 +36,43 @@ var stateManager = require('../../../../stateManager/v3/stateManager.js');
  * @requires stateManager
  * */
 module.exports = {
-    PricingBillingPenaltiesPOST: _PricingBillingPenaltiesPOST
+    PricingBillingPenaltiesGET: _PricingBillingPenaltiesGET
 };
 
 
 /**
- * Post pricing billing penalties.
+ * GET pricing billing penalties.
  * @param {Object} req request
  * @param {Object} res response
  * @param {Object} next next function
- * @alias module:pricing.PricingBillingPenaltiesPOST
+ * @alias module:pricing.PricingBillingPenaltiesGET
  * */
-function _PricingBillingPenaltiesPOST(req, res) {
+function _PricingBillingPenaltiesGET(req, res) {
     var args = req.swagger.params;
 
     logger.warning(JSON.stringify(args));
     var agreementId = args.agreement.value;
-    var query = args.query.value;
+    var query = new Query(req.query);
     logger.ctlState("New request to get pricing state for agreementId = " + agreementId);
 
     stateManager({
         id: agreementId
     }).then(function (manager) {
-        manager.get('pricing', query).then(function (data) {
+        var validation = utils.validators.pricingQuery(query);
+        if (!validation.valid) {
+            logger.error("Query validation error");
+            res.status(400).json(new Error(400, validation));
+        } else {
+            manager.get('pricing', query).then(function (data) {
 
-            logger.ctlState("Sending Pricing-Billing-Penalties state");
-            res.json(data);
+                logger.ctlState("Sending Pricing-Billing-Penalties state");
+                res.json(data);
 
-        }, function (err) {
-            logger.ctlState("ERROR: " + err.message);
-            res.status(err.code).json(err);
-        });
+            }, function (err) {
+                logger.ctlState("ERROR: " + err.message);
+                res.status(err.code).json(err);
+            });
+        }
     }, function (err) {
         logger.ctlState("ERROR: " + err.message);
         res.status(err.code).json(err);

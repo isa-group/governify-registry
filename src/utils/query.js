@@ -20,20 +20,35 @@ module.exports = class Query {
         let period = addComplexParameter(args, 'period');
 
         // BUILD period
-        let logs;
-        if (args['logs.id']) {
-            logs = {};
-            logs[args['logs.id']] = {};
-        }
+        let log = addComplexParameter(args, 'log');
 
         if (scope) { this.scope = scope; }
         if (parameters) { this.parameters = parameters; }
         if (window) { this.window = window; }
         if (period) { this.period = period; }
-        if (logs) { this.logs = logs; }
+        if (log) { this.log = log; }
     }
 
-
+    static parseToQueryParams(object, raiz) {
+        var string = "";
+        //For each field in object
+        for (var f in object) {
+            var field = object[f];
+            //Check if it is an Object, an Array or a literal value
+            if (field instanceof Object && !(field instanceof Array)) {
+                //If it is an object do recursive 
+                string += this.parseToQueryParams(field, (raiz ? raiz + '.' : '') + f);
+            } else if (field instanceof Array) {
+                //If it is an array convert to a list of id
+                string += f + '=' + field.map((e) => { return e.id; }).join(',');
+                string += '&';
+            } else {
+                //If it is a literal convert to "name=value&" format
+                string += (raiz ? raiz + '.' : '') + f + '=' + field + '&';
+            }
+        }
+        return string;
+    }
 };
 
 /**
@@ -47,13 +62,17 @@ function addComplexParameter(args, filter) {
     Object.keys(args).forEach((e) => {
         let name = e.split('.');
 
-        if (name.length !== 2) {
-            throw new Error('The name of query field is not valid: ' + e);
-        }
-
+        var auxQueryObject = {};
         if (e.indexOf(filter) !== -1 && name[0] == filter) {
-            name = name[1];
-            queryObject[name] = args[e];
+            if (name.length > 2) {
+                var fieldName = name[1];
+                name.splice(0, 1);
+                auxQueryObject[name.join('.')] = args[e];
+                queryObject[fieldName] = addComplexParameter(auxQueryObject, name[0]);
+            } else {
+                name = name[1];
+                queryObject[name] = args[e];
+            }
         }
     });
 

@@ -24,6 +24,9 @@ var config = require('../../config');
 var logger = config.logger;
 var utils = require('../../utils/utils.js');
 
+var promiseErrorHandler = utils.errors.promiseErrorHandler;
+var Error = utils.errors.Error;
+
 var Promise = require('bluebird');
 var vm = require('vm');
 var moment = require('moment-timezone');
@@ -59,7 +62,12 @@ function processGuarantees(agreement) {
             processGuarantees.push(processGuarantee(agreement, guarantee.id));
         });
 
-        utils.promise.processParallelPromises(null, processGuarantees, null, null, null).then(resolve, reject);
+        utils.promise.processParallelPromises(null, processGuarantees, null, null, null)
+            .then(resolve)
+            .catch(function (err) {
+                let errorString = "Error processing guarantees";
+                return promiseErrorHandler(reject, "guarantees", "processGuarantees", 500, errorString, err);
+            });
 
     });
 }
@@ -90,7 +98,8 @@ function processGuarantee(manager, query) {
 
         logger.debug('Processing guarantee: ' + guaranteeId);
         if (!guarantee) {
-            return reject('Guarantee ' + guaranteeId + ' not found.');
+            let errorString = 'Guarantee ' + guaranteeId + ' not found.';
+            return promiseErrorHandler(reject, "guarantees", "processGuarantees", 404, errorString);
         }
         // We prepare the parameters needed by the processScopedGuarantee function
         if (query.period && query.period.from === "*") {
@@ -132,10 +141,9 @@ function processGuarantee(manager, query) {
                 logger.guarantees('Scoped guarantee has been processed');
                 // Once we have calculated the scoped guarantee state, we add it to the array 'guaranteeValues'
                 guaranteesValues = guaranteesValues.concat(value);
-            }).catch(function (err) {
-                logger.error('Error processing scoped guarantee: ', err);
-                return reject(err);
             });
+            //This catch will be controller by the each.catch in order to stop 
+            //the execution when 1 promise fails
 
         }).then(function () {
             logger.guarantees('All scoped guarantees have been processed');
@@ -145,8 +153,10 @@ function processGuarantee(manager, query) {
                 guaranteeValues: guaranteesValues
             });
         }).catch(function (err) {
-            logger.error(err);
-            return reject(err);
+
+            let errorString = "Error processing scoped guarantee for: " + guarantee.id;
+            return promiseErrorHandler(reject, "guarantees", "processGuarantee", 500, errorString, err);
+
         });
     });
 }
@@ -257,11 +267,12 @@ function processScopedGuarantee(manager, query, guarantee, ofElement) {
                     } else {
                         logger.guarantees('No metrics found for parameters: ' + JSON.stringify(metricParam, null, 2));
                     }
-                }).catch(function (err) {
-                    logger.error('Error processing metric: ', err);
-                    return reject(err);
                 });
+                //This catch will be controller by the each.catch in order to stop 
+                //the execution when 1 promise fails
+
             }).then(function () {
+
                 var guaranteesValues = [];
                 logger.guarantees('Calculating penalties for scoped guarantee ' + guarantee.id + '...');
                 for (var index = 0; index < timedScopes.length; index++) {
@@ -273,13 +284,18 @@ function processScopedGuarantee(manager, query, guarantee, ofElement) {
                 logger.guarantees('All penalties for scoped guarantee ' + guarantee.id + ' calculated.');
                 logger.debug('Guarantees values: ' + JSON.stringify(guaranteesValues, null, 2));
                 return resolve(guaranteesValues);
+
             }).catch(function (err) {
-                logger.error(err);
-                return reject(err);
+
+                let errorString = "Error processing timedScopes metrics for guarantee: " + guarantee.id;
+                return promiseErrorHandler(reject, "guarantees", "processScopedGuarantee", 500, errorString, err);
+
             });
         });
     } catch (err) {
-        logger.error(err);
+        //Controlling errors that are not in promises 
+        var error = new Error(500, "", err);
+        logger.error(error.toString());
     }
 }
 

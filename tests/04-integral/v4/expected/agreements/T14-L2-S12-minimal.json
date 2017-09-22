@@ -90,6 +90,15 @@
           "uri": "http://logs:8083/api/v2/ca-sdm/v10.13",
           "stateUri": "http://logs:8083/api/v2/ca-sdm/v10.13/count",
           "measures": "http://nginx/SPU_IO.json?accessToken=32578346",
+          "terminator": {
+            "column": "ESTADO",
+            "values": [
+              "Cerrado",
+              "Cancelada",
+              "Anulada",
+              "Cerrada"
+            ]
+          },
           "scopes": {
             "priority": "priority",
             "node": "NODO",
@@ -104,6 +113,15 @@
             "priority": "priority",
             "node": "ASUNTO_NODO",
             "center": "CENTRO"
+          },
+          "terminator": {
+            "column": "ESTADO",
+            "values": [
+              "Cerrado",
+              "Cancelada",
+              "Anulada",
+              "Cerrada"
+            ]
           }
         }
       }
@@ -141,14 +159,14 @@
           "description": "Fecha de Inicio de incidencia",
           "type": "string"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/issue_start/"
+        "computer": "http://localhost:8080/api/v5/indicators/issue_start/"
       },
       "issue_end": {
         "schema": {
           "description": "Fecha de Inicio de incidencia",
           "type": "string"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/issue_end/"
+        "computer": "http://localhost:8080/api/v5/indicators/issue_end/"
       },
       "issue_duration": {
         "schema": {
@@ -156,7 +174,7 @@
           "type": "string",
           "unit": "seconds"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/issue_duration/"
+        "computer": "http://localhost:8080/api/v5/indicators/issue_duration/"
       },
       "issue_duration_K05": {
         "schema": {
@@ -164,7 +182,7 @@
           "type": "string",
           "unit": "seconds"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/issue_duration_K05/"
+        "computer": "http://localhost:8080/api/v5/indicators/issue_duration_K05/"
       },
       "issue_area_K18": {
         "schema": {
@@ -172,7 +190,7 @@
           "type": "string",
           "unit": "seconds"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/issue_area_K18/"
+        "computer": "http://localhost:8080/api/v5/indicators/issue_area_K18/"
       },
       "issue_idle_time": {
         "schema": {
@@ -180,63 +198,63 @@
           "type": "string",
           "unit": "seconds"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/issue_idle_time/"
+        "computer": "http://localhost:8080/api/v5/indicators/issue_idle_time/"
       },
       "issue_subject": {
         "schema": {
           "description": "Asunto de la incidencia",
           "type": "string"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/issue_subject/"
+        "computer": "http://localhost:8080/api/v5/indicators/issue_subject/"
       },
       "issue_source": {
         "schema": {
           "description": "Origen de la incidencia",
           "type": "string"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/issue_source/"
+        "computer": "http://localhost:8080/api/v5/indicators/issue_source/"
       },
       "issue_typology": {
         "schema": {
           "description": "Tipologia de la incidencia",
           "type": "string"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/issue_typology/"
+        "computer": "http://localhost:8080/api/v5/indicators/issue_typology/"
       },
       "issue_priority": {
         "schema": {
           "description": "Prioridad de la incidencia",
           "type": "string"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/issue_priority/"
+        "computer": "http://localhost:8080/api/v5/indicators/issue_priority/"
       },
       "issue_resource": {
         "schema": {
           "description": "Recurso de la incidencia",
           "type": "string"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/issue_resource/"
+        "computer": "http://localhost:8080/api/v5/indicators/issue_resource/"
       },
       "issue_node": {
         "schema": {
           "description": "Nodo de la incidencia",
           "type": "string"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/issue_node/"
+        "computer": "http://localhost:8080/api/v5/indicators/issue_node/"
       },
       "issue_center": {
         "schema": {
           "description": "Centro de la incidencia",
           "type": "string"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/issue_center/"
+        "computer": "http://localhost:8080/api/v5/indicators/issue_center/"
       },
       "issue_resolutor": {
         "schema": {
           "description": "Resolutor de la incidencia",
           "type": "string"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/issue_resolutor/"
+        "computer": "http://localhost:8080/api/v5/indicators/issue_resolutor/"
       },
       "SPU_IO_K00": {
         "schema": {
@@ -244,7 +262,7 @@
           "type": "double",
           "unit": "%"
         },
-        "computer": "http://localhost:5001/api/v3/states/T14-L2-S12-minimal/pricing/billing/penalties",
+        "computer": "http://localhost:5001/api/v4/states/T14-L2-S12-minimal/pricing/billing/penalties",
         "scope": {
           "priority": {
             "$ref": "#/context/definitions/scopes/SPU/priority"
@@ -280,7 +298,7 @@
           "description": "Incidencias resueltas en plazo",
           "type": "string"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/SPU_IO_K01_evidence/",
+        "computer": "http://localhost:8080/api/v5/indicators/SPU_IO_K01_evidence/",
         "parameters": {
           "deadline": {
             "schema": {
@@ -314,7 +332,7 @@
           "type": "double",
           "unit": "%"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/SPU_IO_K01/",
+        "computer": "http://localhost:8080/api/v5/indicators/SPU_IO_K01/",
         "parameters": {
           "deadline": {
             "schema": {
@@ -354,7 +372,7 @@
           "description": "Incidencias reabiertas (incluyendo el centro en el scope)",
           "type": "bool"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/SPU_IO_K06_t_evidence/",
+        "computer": "http://localhost:8080/api/v5/indicators/SPU_IO_K06_t_evidence/",
         "parameters": {
           "deadline": {
             "schema": {
@@ -391,7 +409,7 @@
           "type": "double",
           "unit": "%"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/SPU_IO_K06_t/",
+        "computer": "http://localhost:8080/api/v5/indicators/SPU_IO_K06_t/",
         "scope": {
           "priority": {
             "$ref": "#/context/definitions/scopes/SPU/priority"
@@ -422,7 +440,7 @@
           "description": "Incidencias que no fueron correctamente solucionadas (e.d. mal cerradas)",
           "type": "string"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/SPU_IO_K06_evidence/",
+        "computer": "http://localhost:8080/api/v5/indicators/SPU_IO_K06_evidence/",
         "parameters": {
           "deadline": {
             "schema": {
@@ -456,7 +474,7 @@
           "type": "double",
           "unit": "%"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/SPU_IO_K06/",
+        "computer": "http://localhost:8080/api/v5/indicators/SPU_IO_K06/",
         "scope": {
           "priority": {
             "$ref": "#/context/definitions/scopes/SPU/priority"
@@ -485,7 +503,7 @@
           "type": "double",
           "unit": "%"
         },
-        "computer": "http://localhost:5001/api/v3/states/T14-L2-S12-minimal/guarantees/SPU_IO_K06_t/penalty",
+        "computer": "http://localhost:5001/api/v4/states/T14-L2-S12-minimal/guarantees/SPU_IO_K06_t/penalty",
         "parameters": {
           "offset": {
             "type": "number",
@@ -520,7 +538,7 @@
           "type": "double",
           "unit": "%"
         },
-        "computer": "http://localhost:5001/api/v3/states/T14-L2-S12-minimal/guarantees/SPU_IO_K06_t/penalty",
+        "computer": "http://localhost:5001/api/v4/states/T14-L2-S12-minimal/guarantees/SPU_IO_K06_t/penalty",
         "parameters": {
           "offset": {
             "type": "number",
@@ -555,7 +573,7 @@
           "type": "number",
           "unit": "nº"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/SPU_IO_K80/",
+        "computer": "http://localhost:8080/api/v5/indicators/SPU_IO_K80/",
         "defaultStateReload": true,
         "metadata": {
           "name": "Demanda nueva solicitada de incidencias",
@@ -592,7 +610,7 @@
           "type": "number",
           "unit": "nº"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/SPU_IO_K81/",
+        "computer": "http://localhost:8080/api/v5/indicators/SPU_IO_K81/",
         "defaultStateReload": true,
         "metadata": {
           "name": "Demanda resuelta incidencias",
@@ -628,7 +646,7 @@
           "description": "Factor de rotacion del personal",
           "type": "string"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/SPU_IO_K18_evidence/",
+        "computer": "http://localhost:8080/api/v5/indicators/SPU_IO_K18_evidence/",
         "parameters": {
           "deadline": {
             "schema": {
@@ -662,7 +680,7 @@
           "type": "int32",
           "unit": "nº"
         },
-        "computer": "http://localhost:8080/api/v4/indicators/SPU_IO_K18/",
+        "computer": "http://localhost:8080/api/v5/indicators/SPU_IO_K18/",
         "scope": {
           "priority": {
             "$ref": "#/context/definitions/scopes/SPU/priority"

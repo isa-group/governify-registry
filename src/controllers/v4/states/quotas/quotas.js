@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 var config = require('../../../../config');
 var logger = config.logger;
-var stateManager = require('../../../../stateManager/v3/stateManager.js');
+var stateManager = require('../../../../stateManager/v4/state-manager.js');
 
 
 /**

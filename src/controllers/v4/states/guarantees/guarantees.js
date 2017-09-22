@@ -27,12 +27,13 @@ var Promise = require('bluebird'),
     logger = config.logger,
     ErrorModel = require('../../../../errors').errorModel,
 
-    stateManager = require('../../../../stateManager/v3/stateManager'),
+    stateManager = require('../../../../stateManager/v4/state-manager'),
 
     gUtils = require('./gUtils.js'),
     utils = require('../../../../utils/utils');
 
 var Query = utils.Query;
+var controllerErrorHandler = utils.errors.controllerErrorHandler;
 
 /**
  * Guarantees module
@@ -127,7 +128,7 @@ function _guaranteesGET(req, res) {
             }
         }
     }, function (err) {
-        logger.error(err);
+        logger.error('(guarantee controller)' + err);
         res.status(500).json(new ErrorModel(500, err));
     });
 }
@@ -162,8 +163,10 @@ function _guaranteeIdGET(req, res) {
     }).then(function (manager) {
         var validation = utils.validators.guaranteeQuery(query, guaranteeId, manager.agreement.terms.guarantees.find((e) => { return guaranteeId === e.id; }));
         if (!validation.valid) {
-            logger.error("Query validation error");
-            res.status(400).json(new ErrorModel(400, validation));
+
+            let errorString = "Query validation error";
+            return controllerErrorHandler(res, "guarantees-controller", "_guaranteeIdGET", 400, errorString);
+
         } else {
             manager.get('guarantees', query).then(function (success) {
                 if (config.streaming) {
@@ -177,13 +180,17 @@ function _guaranteeIdGET(req, res) {
                     }));
                 }
             }, function (err) {
-                logger.error(err);
-                res.status(500).json(new ErrorModel(500, err));
+
+                let errorString = 'Error retreiving guarantee ' + guaranteeId;
+                return controllerErrorHandler(res, "guarantees-controller", "_guaranteeIdGET", err.code || 500, errorString, err);
+
             });
         }
     }, function (err) {
-        logger.error(err);
-        res.status(500).json(new ErrorModel(500, err));
+
+        let errorString = 'Error initializatin state manager for agreement: ' + agreementId;
+        return controllerErrorHandler(res, "guarantees-controller", "_guaranteeIdGET", err.code || 500, errorString, err);
+
     });
 }
 
@@ -208,7 +215,9 @@ function _guaranteeIdPenaltyGET(req, res) {
     stateManager({
         id: agreementId
     }).then(function (manager) {
-        var validation = utils.validators.metricQuery(query, guarantee.id, guarantee);
+        var validation = utils.validators.metricQuery(query, guaranteeId, manager.agreement.terms.guarantees.find((e) => {
+            return e.id === guaranteeId;
+        }));
 
         if (!validation.valid) {
 
@@ -230,11 +239,11 @@ function _guaranteeIdPenaltyGET(req, res) {
                 };
 
                 logger.ctlState("Query before parse: " + JSON.stringify(query, null, 2));
-                if (!query.logs) { throw new Error('Logs fields is required'); }
-                var logId = Object.keys(query.logs)[0];
+                if (!query.log) { throw new Error('Logs fields is required'); }
+                var logId = Object.keys(query.log)[0];
                 var log = manager.agreement.context.definitions.logs[logId];
 
-                query.scope = utils.scopes.computerToRegistryParser(query.scope, log.scopes)
+                query.scope = utils.scopes.computerToRegistryParser(query.scope, log.scopes);
                 logger.ctlState("Query after parse: " + JSON.stringify(query, null, 2));
 
                 return manager.get('guarantees', {
@@ -245,7 +254,7 @@ function _guaranteeIdPenaltyGET(req, res) {
                     var ret = [];
                     for (var ie in success) {
                         var e = success[ie];
-                        if (moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to) && gUtils.checkQuery(e, query)) {
+                        if (moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to) /*&& gUtils.checkQuery(e, query)*/) {
                             ret.push(e);
                         }
                     }

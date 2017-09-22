@@ -23,9 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 var config = require('../../../../config');
 var db = require('../../../../database');
 var logger = config.logger;
-var stateManager = require('../../../../stateManager/v3/stateManager.js');
+var stateManager = require('../../../../stateManager/v4/state-manager.js');
 var mailer = require('../../../../utils/mailer');
-var calculators = require('../../../../stateManager/v3/calculators.js');
+var calculators = require('../../../../stateManager/v4/calculators.js');
 
 var Promise = require('bluebird');
 var request = require('request');

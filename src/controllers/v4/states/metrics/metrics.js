@@ -23,12 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 var config = require('../../../../config'),
     logger = config.logger,
     ErrorModel = require('../../../../errors/index.js').errorModel,
-    stateManager = require('../../../../stateManager/v3/stateManager'),
+    stateManager = require('../../../../stateManager/v4/state-manager'),
     utils = require('../../../../utils/utils');
 
 var Query = utils.Query;
 var JSONStream = require('JSONStream');
-
+var controllerErrorHandler = utils.errors.controllerErrorHandler;
 
 /**
  * Metrics module
@@ -242,13 +242,15 @@ function _metricsIdGET(req, res) {
                     });
                     result.push(null);
                 }
-            }, function (err) {
-                logger.error(err);
-                res.status(500).json(new ErrorModel(500, err));
+            }).catch(function (err) {
+
+                var errorString = "Error retreiving state values of metric: " + metricId;
+                controllerErrorHandler(res, "metrics-controller", "_metricsIdGET", 500, errorString, err);
+
             });
         }
 
-    }, function (err) {
+    }).catch(function (err) {
         logger.error(err);
         res.status(500).json(new ErrorModel(500, err));
     });
