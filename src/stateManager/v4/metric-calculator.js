@@ -108,7 +108,7 @@ function processMetric(agreement, metricId, metricQuery) {
             );
 
             if (!computerQuery.log) {
-                var errorString = 'Log not found for metric ' + metricId + '. ' + 'Please, specify metric log or default log.';
+                let errorString = 'Log not found for metric ' + metricId + '. ' + 'Please, specify metric log or default log.';
                 return promiseErrorHandler(reject, "metrics", processMetric.name, 400, errorString);
             }
             computerQuery.scope = Object.keys(scope).length > 0 ? scope : metricQuery.scope;
@@ -175,7 +175,7 @@ function processMetric(agreement, metricId, metricQuery) {
                 });
             });
         } catch (err) {
-            var errorString = 'Error processing metric: ' + metricId;
+            let errorString = 'Error processing metric: ' + metricId;
             return promiseErrorHandler(reject, "metrics", processMetric.name, 500, errorString, err);
         }
     });

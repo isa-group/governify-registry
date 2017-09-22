@@ -26,6 +26,7 @@ var config = require('../../config'),
     utils = require('../../utils/utils');
 
 var Promise = require('bluebird');
+var promiseErrorHandler = utils.errors.promiseErrorHandler;
 
 /**
  * Agreement calculator module.
@@ -68,7 +69,7 @@ function _process(manager, parameters) {
 
         } catch (err) {
             var errorString = 'Error processing agreements';
-            return promiseErrorHandler(reject, "agreements", _process.name, e.code || 500, errorString, err);
+            return promiseErrorHandler(reject, "agreements", _process.name, err.code || 500, errorString, err);
         }
     });
 }
@@ -168,7 +169,12 @@ function processMetrics(manager, parameters) {
             });
 
             // Processing metrics in sequential mode.
-            utils.promise.processSequentialPromises('metrics', manager, processMetrics, null, null, null).then(resolve, reject);
+            utils.promise.processSequentialPromises('metrics', manager, processMetrics, null, null, null)
+                .then(resolve)
+                .catch(function (err) {
+                    var errorString = 'Error processing agreements';
+                    return promiseErrorHandler(reject, "agreements", processMetrics.name, err.code || 500, errorString, err);
+                });
 
         }
     });

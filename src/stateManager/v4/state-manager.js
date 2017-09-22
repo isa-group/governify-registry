@@ -284,7 +284,7 @@ function _update(stateType, query, logsState) {
                         //     });
                         // });
                     }.catch(function (err) {
-                        errorString = "Error processing agreements";
+                        let errorString = "Error processing agreements";
                         return promiseErrorHandler(reject, "state-manager", "_update", 500, errorString, err);
                     }));
                 break;
@@ -318,7 +318,7 @@ function _update(stateType, query, logsState) {
                             }
                             return resolve(result);
 
-                        })
+                        });
                     }).catch(function (err) {
 
                         let errorString = "Error processing guarantees";

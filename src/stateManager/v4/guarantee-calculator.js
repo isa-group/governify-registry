@@ -64,7 +64,7 @@ function processGuarantees(agreement) {
 
         utils.promise.processParallelPromises(null, processGuarantees, null, null, null)
             .then(resolve)
-            .catch(function () {
+            .catch(function (err) {
                 let errorString = "Error processing guarantees";
                 return promiseErrorHandler(reject, "guarantees", "processGuarantees", 500, errorString, err);
             });

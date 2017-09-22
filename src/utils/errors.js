@@ -115,7 +115,7 @@ class ErrorModel {
     //Print the progressive trace of the error
     stackTrace(top) {
         var msg = this.message;
-        if (top && this.root) { msg += "\nError trace: " }
+        if (top && this.root) { msg += "\nError trace: "; }
         if (this.root && this.root instanceof ErrorModel) {
             msg += "\n\t" + this.root.stackTrace(false);
         } else if (this.root) {

@@ -27,6 +27,7 @@ var utils = require('../../utils/utils.js');
 var Promise = require('bluebird');
 var moment = require('moment');
 
+var promiseErrorHandler = utils.errors.promiseErrorHandler;
 
 /**
  * Pricing calculator module.

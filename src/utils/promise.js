@@ -32,6 +32,7 @@ var ErrorModel = require('../errors/index.js').errorModel;
 
 var errors = require('./errors');
 var controllerErrorHandler = errors.controllerErrorHandler;
+var promiseErrorHandler = errors.promiseErrorHandler;
 
 /**
  * Utils module.
@@ -161,10 +162,10 @@ function _processSequentialPromises(type, manager, queries, result, res, streami
 
             }).then(function () {
                 resolve(result);
-            }).catch(function () {
+            }).catch(function (err) {
 
                 let errorString = "Error processing sequential promsies";
-                return controllerErrorHandler(res, "promise", "_processSequentialPromises", 500, errorString, err);
+                return promiseErrorHandler(reject, "promise", "_processSequentialPromises", 500, errorString, err);
 
             });
         });
