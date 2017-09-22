@@ -23,6 +23,7 @@ var config = require('../config');
 var logger = config.logger;
 
 
+
 /**
  * Funtion for handling error in promises.
  * @param {Funtion} reject The reject callback of the promise
@@ -37,7 +38,7 @@ function promiseErrorHandler(reject, level, functionName, code, message, root) {
     var newError = new ErrorHandler(level, functionName, code, message, root);
     //If progressive trace is true print the progressive trace.
     if (config.errors.progressiveTrace) {
-        logger.error(newError.stackTrace());
+        logger.error(newError.stackTrace(true));
     } else { // else print the message of the current error.
         logger.error(newError.toString());
     }
@@ -58,9 +59,10 @@ function controllerErrorHandler(res, level, functionName, code, message, root) {
     //Call to the generic error handler
     var newError = new ErrorHandler(level, functionName, code, message, root);
     //Print the progressive trace of the error
-    logger.error(newError.stackTrace());
+    logger.error(newError.stackTrace(true));
     //Send the response to the client.
-    res.status(code).json(new ErrorModel(newError.code, newError.stackTrace()));
+    // res.status(code).json(new ErrorModel(newError.code, newError.stackTrace()));
+    res.status(code).json(new ErrorModel(newError));
 }
 
 /**
@@ -75,10 +77,22 @@ function ErrorHandler(level, functionName, code, message, root) {
     //Get the line of code, where the error has occurred.
     var regexp = /\(.+\)|at\s+.+\d$/;
     var stack = new Error().stack.split('\n')[3];
-    var at = regexp.exec(stack);
+    var at = regexp.exec(stack)[0];
+
+    var path = require('path');
+    var projectRoot = path.dirname(require.main.filename);
+
+    if (at && at[0] === "(") {
+        at = at.replace('(', '').replace(')', '')
+            .substring(projectRoot.length, at.length);
+    } else if (at && at[0] === 'a') {
+        at = at.substring(3 + projectRoot.length, at.length);
+    } else if (!at) {
+        at = stack;
+    }
 
     //Build error message
-    var msg = "[" + level + "][" + functionName + "] - " + message + " " + at;
+    var msg = "[" + level + "][" + functionName + "] - " + message + " at " + at;
 
     //Return the error model
     return new ErrorModel(code, msg, root);
@@ -98,13 +112,20 @@ class ErrorModel {
     }
 
     //Print the progressive trace of the error
-    stackTrace() {
+    stackTrace(top) {
         var msg = this.message;
+        if (top && this.root) { msg += "\nError trace: " }
         if (this.root && this.root instanceof ErrorModel) {
-            msg += " --> FROM: " + this.root.stackTrace();
+            msg += "\n\t" + this.root.stackTrace(false);
         } else if (this.root) {
-            msg += " --> FROM: " + this.root.toString();
+            msg += "\n\t" + this.root.toString();
         }
+
+        // if (this.root && this.root instanceof ErrorModel) {
+        //     msg += " --> FROM: " + this.root.stackTrace();
+        // } else if (this.root) {
+        //     msg += " --> FROM: " + this.root.toString();
+        // }
         return msg;
     }
 

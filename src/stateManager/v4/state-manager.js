@@ -310,13 +310,20 @@ function _update(stateType, query, logsState) {
                         logger.sm('Created parameters array for saving states of guarantee of length ' + processguarantees.length);
                         logger.sm('Persisting guarantee states...');
                         Promise.all(processguarantees).then(function (guarantees) {
+
                             logger.sm('All guarantee states have been persisted');
                             var result = [];
                             for (var a in guarantees) {
                                 result.push(guarantees[a][0]);
                             }
                             return resolve(result);
-                        });
+
+                        })
+                    }).catch(function (err) {
+
+                        let errorString = "Error processing guarantees";
+                        return promiseErrorHandler(reject, "state-manager", "_update", 500, errorString, err);
+
                     });
                 break;
             case "metrics":
