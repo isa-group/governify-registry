@@ -82,6 +82,7 @@ function ErrorHandler(level, functionName, code, message, root) {
     var path = require('path');
     var projectRoot = path.dirname(require.main.filename);
 
+    //Remove project directory in order to show only relative path 
     if (at && at[0] === "(") {
         at = at.replace('(', '').replace(')', '')
             .substring(projectRoot.length, at.length);
@@ -92,7 +93,7 @@ function ErrorHandler(level, functionName, code, message, root) {
     }
 
     //Build error message
-    var msg = "[" + level + "][" + functionName + "] - " + message + " at " + at;
+    var msg = "[" + level + "][" + functionName + "] - " + message + " at ." + at;
 
     //Return the error model
     return new ErrorModel(code, msg, root);

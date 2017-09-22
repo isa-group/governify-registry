@@ -62,7 +62,12 @@ function processGuarantees(agreement) {
             processGuarantees.push(processGuarantee(agreement, guarantee.id));
         });
 
-        utils.promise.processParallelPromises(null, processGuarantees, null, null, null).then(resolve, reject);
+        utils.promise.processParallelPromises(null, processGuarantees, null, null, null)
+            .then(resolve)
+            .catch(function () {
+                let errorString = "Error processing guarantees";
+                return promiseErrorHandler(reject, "guarantees", "processGuarantees", 500, errorString, err);
+            });
 
     });
 }
@@ -93,7 +98,8 @@ function processGuarantee(manager, query) {
 
         logger.debug('Processing guarantee: ' + guaranteeId);
         if (!guarantee) {
-            return reject('Guarantee ' + guaranteeId + ' not found.');
+            let errorString = 'Guarantee ' + guaranteeId + ' not found.';
+            return promiseErrorHandler(reject, "guarantees", "processGuarantees", 404, errorString);
         }
         // We prepare the parameters needed by the processScopedGuarantee function
         if (query.period && query.period.from === "*") {

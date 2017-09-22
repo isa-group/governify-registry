@@ -30,6 +30,9 @@ var config = require('../config');
 var logger = config.logger;
 var ErrorModel = require('../errors/index.js').errorModel;
 
+var errors = require('./errors');
+var controllerErrorHandler = errors.controllerErrorHandler;
+
 /**
  * Utils module.
  * @module utils.promisez
@@ -152,11 +155,18 @@ function _processSequentialPromises(type, manager, queries, result, res, streami
                         var state = states[i];
                         result.push(manager.current(state));
                     }
-                }, reject);
+                });
+                //This catch will be controller by the each.catch in order to stop 
+                //the execution when 1 promise fails
 
             }).then(function () {
                 resolve(result);
-            }, reject);
+            }).catch(function () {
+
+                let errorString = "Error processing sequential promsies";
+                return controllerErrorHandler(res, "promise", "_processSequentialPromises", 500, errorString, err);
+
+            });
         });
 
     } else {
@@ -169,10 +179,9 @@ function _processSequentialPromises(type, manager, queries, result, res, streami
                     //feeding stream
                     result.push(manager.current(state));
                 }
-            }, function (err) {
-                logger.error(err);
-                res.status(500).json(new ErrorModel(500, err));
             });
+            //This catch will be controller by the each.catch in order to stop 
+            //the execution when 1 promise fails
 
         }).then(function () {
             //end stream
@@ -181,9 +190,11 @@ function _processSequentialPromises(type, manager, queries, result, res, streami
             } else {
                 res.json(result);
             }
-        }, function (err) {
-            logger.error("ERROR processing guarantees: ", err);
-            res.status(500).json(new ErrorModel(500, err));
+        }).catch(function (err) {
+
+            let errorString = "Error processing sequential promsies in controllers";
+            return controllerErrorHandler(res, "promise", "_processSequentialPromises", 500, errorString, err);
+
         });
     }
 
