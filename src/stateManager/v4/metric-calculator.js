@@ -59,7 +59,8 @@ function processMetric(agreement, metricId, metricQuery) {
         try {
             var metric = agreement.terms.metrics[metricId];
             if (!metric) {
-                return reject('Metric ' + metricId + ' not found.');
+                var errorString = 'Metric ' + metricId + ' not found.';
+                return promiseErrorHandler(reject, "metrics", processMetric.name, 404, errorString);
             }
 
             var computerEndpoint = metric.computer;
@@ -107,8 +108,8 @@ function processMetric(agreement, metricId, metricQuery) {
             );
 
             if (!computerQuery.log) {
-                return reject('Log not found for metric ' + metricId + '. ' +
-                    'Please, specify metric log or default log.');
+                var errorString = 'Log not found for metric ' + metricId + '. ' + 'Please, specify metric log or default log.';
+                return promiseErrorHandler(reject, "metrics", processMetric.name, 400, errorString);
             }
             computerQuery.scope = Object.keys(scope).length > 0 ? scope : metricQuery.scope;
 
