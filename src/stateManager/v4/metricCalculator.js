@@ -121,43 +121,49 @@ function processMetric(agreement, metricId, metricQuery) {
             logger.metrics("Sending request to computer ( %s ) with params: %s", computerEndpoint, JSON.stringify(computerQuery, null, 2));
             logger.metrics("URL: %s", url);
 
+            //Build and send computer request
             var computerRequest = request.get({
                 url: computerEndpoint,
                 qs: qs.parse(urlParams)
             }).on('response', function computerResponseHandler(httpResponse) {
+                //Processing computer response
+                //If HTTP status code is not equal 200 reject the promise and end the process
                 if (httpResponse.statusCode !== 200) {
-
                     var errorString = "Error in PPINOT Computer response " + httpResponse.statusCode + ':' + httpResponse.statusMessage;
-                    return promiseErrorHandler(reject, "metrics", processMetric.name, httpResponse.statusCode, errorString, errorString);
-
+                    return promiseErrorHandler(reject, "metrics", processMetric.name, httpResponse.statusCode, errorString);
                 }
+
+                //Processing data with streaming usisng JSONStream 
                 logger.metrics('Processing streaming and mapping of columns names in log...');
                 computerRequest.pipe(JSONStream.parse()).on('data', function (monthMetrics) {
                     try {
-
+                        //Check if computer response is correct
                         if (monthMetrics && Array.isArray(monthMetrics)) {
+
+                            //For each state returned by computer map the scope
                             monthMetrics.forEach(function (metricState) {
                                 if (metricState.log && metric.scope) {
 
-                                    //Getting the correct log for scope mapping
+                                    //Getting the correct log for mapping scope
                                     var logId = Object.keys(metricState.log)[0];
                                     var log = agreement.context.definitions.logs[logId];
                                     //doing scope mapping
                                     metricState.scope = utils.scopes.computerToRegistryParser(metricState.scope, log.scopes);
 
                                 }
+                                //aggregate metrics in order to return all
                                 compositeResponse.push(metricState);
                             });
                             logger.metrics('Mapping of columns names in log processed.');
 
                         } else {
-                            logger.error('Error in computer response. Response is not an array: ', JSON.stringify(monthMetrics, null, 2));
-                            return reject('There was a problem retrieving indicator ' + metricId);
+                            var errorString = "Error in computer response for metric: " + metricId + ". Response is not an array:  " + JSON.stringify(monthMetrics);
+                            return promiseErrorHandler(reject, "metrics", processMetric.name, 500, errorString);
                         }
 
-                    } catch (error) {
-                        logger.error("Error in computer response: " + error.toString() + "\nResponse: " + JSON.stringify(monthMetrics, null, 2));
-                        return reject("Error in computer response: " + error.toString() + "\nResponse: " + JSON.stringify(monthMetrics, null, 2));
+                    } catch (err) {
+                        var errorString = "Error processing computer response for metric: " + metricId;
+                        return promiseErrorHandler(reject, "metrics", processMetric.name, 500, errorString, err);
                     }
 
                 }).on('end', function () {
@@ -168,8 +174,8 @@ function processMetric(agreement, metricId, metricQuery) {
                 });
             });
         } catch (err) {
-            logger.error('Error processing metric: ' + metricId + ': ', err);
-            return reject('Error processing metric: ' + metricId + ': ' + JSON.stringify(err.toString(), null, 2));
+            var errorString = 'Error processing metric: ' + metricId;
+            return promiseErrorHandler(reject, "metrics", processMetric.name, 500, errorString, err);
         }
     });
 

@@ -28,7 +28,7 @@ var config = require('../../../../config'),
 
 var Query = utils.Query;
 var JSONStream = require('JSONStream');
-
+var controllerErrorHandler = utils.errors.controllerErrorHandler;
 
 /**
  * Metrics module
@@ -242,13 +242,15 @@ function _metricsIdGET(req, res) {
                     });
                     result.push(null);
                 }
-            }, function (err) {
-                logger.error(err);
-                res.status(500).json(new ErrorModel(500, err));
+            }).catch(function (err) {
+
+                var errorString = "Error retreiving state values of metric: " + metricId;
+                controllerErrorHandler(res, "metrics-controller", "_metricsIdGET", 500, errorString, err);
+
             });
         }
 
-    }, function (err) {
+    }).catch(function (err) {
         logger.error(err);
         res.status(500).json(new ErrorModel(500, err));
     });

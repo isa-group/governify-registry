@@ -27,8 +27,10 @@ development:
       reloadAgreement:
         mailSubject: '[Governify] Su tarea ha finalizado'
         mailContent: "El cálculo de SLAs para el contrato <b>%s</b> ha sido actualizado en base a la información cargada en los logs. <p>Número actual de registros que se han tenido en cuenta para realizar los cálculos:</p>"
-  errors:
-    trace: true      
+  errors: 
+    progressiveTrace: false #If it is true, the cumulative trace will be show in each error, 
+                           #else the cumulative trace will be show in the last error
+       
 production:
   database:
     url: "mongodb://mongo"
@@ -57,5 +59,7 @@ production:
       reloadAgreement:
         mailSubject: '[Governify] Su tarea ha finalizado'
         mailContent: "El cálculo de SLAs para el contrato <b>%s</b> ha sido actualizado en base a la información cargada en los logs. <p>Estado actual de los logs:</p>"
-  errors:
-    trace: true       
+  errors: 
+    progressiveTrace: false #If it is true, the cumulative trace will be show in each error, 
+                           #else the cumulative trace will be show in the last error
+    

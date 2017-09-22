@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 var config = require('../../config');
 var logger = config.logger;
+
 var db = require('../../database');
 var ErrorModel = require('../../errors/index.js').errorModel;
 var calculators = require('./calculators.js');
@@ -30,6 +31,8 @@ var Promise = require('bluebird');
 var request = require('requestretry');
 //var iso8601 = require('iso8601');
 var moment = require("moment");
+var utils = require('../../utils/utils');
+var promiseErrorHandler = utils.errors.promiseErrorHandler;
 
 
 /**
@@ -150,8 +153,11 @@ function _get(stateType, query) {
                     } else {
                         stateManager.update(stateType, query, data.logsState).then(function (states) {
                             return resolve(states);
-                        }, function (err) {
-                            return reject(err);
+                        }).catch(function (err) {
+
+                            var errorString = "Error getting metrics";
+                            return promiseErrorHandler(reject, "state-manager", "_get", 500, errorString, err);
+
                         });
                     }
                 }, function (err) {
@@ -333,7 +339,7 @@ function _update(stateType, query, logsState) {
                         });
                         logger.sm('Created parameters array for saving states of metric of length ' + processMetrics.length);
                         logger.sm('Persisting metric states...');
-                        Promise.all(processMetrics).then(function (metrics) {
+                        return Promise.all(processMetrics).then(function (metrics) {
                             logger.sm('All metric states have been persisted');
                             var result = [];
                             for (var a in metrics) {
@@ -341,9 +347,11 @@ function _update(stateType, query, logsState) {
                             }
                             return resolve(result);
                         });
-                    }, function (err) {
-                        logger.error('(*STATE MANAGER*) ' + err.toString());
-                        return reject(new ErrorModel(500, err));
+                    }).catch(function (err) {
+
+                        var errorString = "Error processing metrics";
+                        return promiseErrorHandler(reject, "state-manager", "_update", 500, errorString, err);
+
                     });
                 break;
             case "pricing":
