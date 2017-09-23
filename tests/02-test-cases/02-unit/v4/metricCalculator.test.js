@@ -38,7 +38,7 @@ var FILENAME_EXTENSION = "json";
 var METRIC_ID = "SPU_IO_K01";
 
 // Used modules
-var metricCalculator = require(__base + '/src/stateManager/' + VERSION + '/metricCalculator');
+var metricCalculator = require(__base + '/src/stateManager/' + VERSION + '/metric-calculator');
 
 // Required files
 var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + BASE_FILENAME + '.' + FILENAME_EXTENSION);
