@@ -29,3 +29,4 @@ test/integral/v3/agreement.results.v3.json
 .version
 .vscode/
 *lock.*
+public/coverage/
