@@ -40,19 +40,18 @@ var config = require(__base + '/tests/required/config.json');
 
 // Names
 var VERSION = "v3";
-var BASE_FILENAME = "T14-L2-S12-minimal";
+var AGREEMENT_ID = "T14-L2-S12-minimal";
 var MOCK_FILENAME = "agreementMock";
 var AGREEMENT_STATE_FILENAME = "agreementState";
 var GUARANTEES_FILENAME = "guarantees";
-var WINDOW_FILENAME = "window";
 
 var FILENAME_EXTENSION = "json";
 var SERVER_PATH = "http://localhost:5001/api/" + VERSION;
 
 // Required files
-var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + BASE_FILENAME + '.' + FILENAME_EXTENSION);
+var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
 var agreementMock = require(__base + '/tests/required/agreements/' + VERSION + '/' + MOCK_FILENAME + '.' + FILENAME_EXTENSION);
-var window = require(__base + '/tests/required/windows/' + VERSION + '/' + WINDOW_FILENAME + '.' + FILENAME_EXTENSION);
+var window = require(__base + '/tests/required/windows/' + VERSION + '/' + 'window' + '-' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
 
 // Expected files
 var expectedAgreementState = require(__base + '/tests/expected/agreementState/' + VERSION + '/' + AGREEMENT_STATE_FILENAME + '.' + FILENAME_EXTENSION);
@@ -101,7 +100,7 @@ describe("Integration TEST V3", function () {
 
     it('Get guarantees all periods', function (done) {
         request.get({
-            url: AGREEMENT_STATES_PATH + '/' + BASE_FILENAME + '/guarantees',
+            url: AGREEMENT_STATES_PATH + '/' + AGREEMENT_ID + '/guarantees',
             json: true
         }, function (err, res, body) {
             var results = body;
@@ -119,7 +118,7 @@ describe("Integration TEST V3", function () {
         var results = [];
         Promise.each(periods, function (period) {
             return new Promise(function (resolve, reject) {
-                var url = AGREEMENT_STATES_PATH + '/' + BASE_FILENAME + '/guarantees?from=' + period.from.toISOString() + '&to=' + period.to.toISOString();
+                var url = AGREEMENT_STATES_PATH + '/' + AGREEMENT_ID + '/guarantees?from=' + period.from.toISOString() + '&to=' + period.to.toISOString();
 
                 request.get({
                     url: url,
@@ -155,7 +154,7 @@ describe("Integration TEST V3", function () {
 
     it('Get agreement all periods', function (done) {
         request.get({
-            url: AGREEMENT_STATES_PATH + '/' + BASE_FILENAME,
+            url: AGREEMENT_STATES_PATH + '/' + AGREEMENT_ID,
             json: true
         }, function (err, res, body) {
             var results = body;

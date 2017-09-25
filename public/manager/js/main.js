@@ -68,10 +68,18 @@ $(document).ready(function () {
         var level3 = [];
         var level4 = [];
 
-        var optgroup1 = $("<optgroup>", {label: "logs.sas"});
-        var optgroup2 = $("<optgroup>", {label: "logs-devel.sas"});
-        var optgroup3 = $("<optgroup>", {label: "logs.sas-devel"});
-        var optgroup4 = $("<optgroup>", {label: "logs-devel.sas-devel"});
+        var optgroup1 = $("<optgroup>", {
+            label: "logs.sas"
+        });
+        var optgroup2 = $("<optgroup>", {
+            label: "logs-devel.sas"
+        });
+        var optgroup3 = $("<optgroup>", {
+            label: "logs.sas-devel"
+        });
+        var optgroup4 = $("<optgroup>", {
+            label: "logs-devel.sas-devel"
+        });
 
         optgroup1.appendTo(selectAgreement);
         optgroup2.appendTo(selectAgreement);
@@ -132,8 +140,7 @@ function getAgreementContent(selectedAgVal, registryEndpoint, deleteIfExists) {
     $.ajax({
         url: selectedAgVal,
         type: "GET",
-        beforeSend: function (request)
-        {
+        beforeSend: function (request) {
             request.setRequestHeader("Content-Type", "text/plain; charset=utf-8");
         }
     }).done(function (res) {
@@ -156,11 +163,11 @@ function checkIfAgreementExists(agreement, registryEndpoint) {
     }).done(function (res) {
         if (res) {
             printToastMessage("This agreement (" + agreement["id"] + ") already exists", 2500);
-        } else { //TODO change when server logic improve
+        } else { //TODO: change when server logic improve
             uploadAgreement(agreement, registryEndpoint);
         }
     }).fail(function (err) {
-        if (err.status === 404) {//TODO change when server logic improve
+        if (err.status === 404) { //TODO: change when server logic improve
             uploadAgreement(agreement, registryEndpoint);
         } else {
             printToastMessage("Error while checking agreement existence", 2500);

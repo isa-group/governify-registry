@@ -56,6 +56,8 @@ module.exports = {
  * @param {Object} manager manager
  * @alias module:pricingCalculator.process
  * */
+
+// TODO: uniformizar la cabecera del método y estandarizarla con otros. ie el agDef ya se pasa en el manager!
 function processPricing(agreementDef, query, manager) {
     logger.pricing("Preparing Promise to calculate pricing states");
     return new Promise(function (resolve, reject) {

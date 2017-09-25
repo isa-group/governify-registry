@@ -33,7 +33,7 @@ var request = require("request");
 
 // Names
 var VERSION = "v3";
-var BASE_FILENAME = "T14-L2-S12-minimal";
+var AGREEMENT_ID = "T14-L2-S12-minimal";
 var BASE_EXPECTED_FILENAME = "T14-L2-S12-minimal-getresponse";
 var FILENAME_EXTENSION = "json";
 var SERVER_PATH = "http://localhost:5001/api/" + VERSION;
@@ -45,7 +45,7 @@ var testUtils = require(__base + '/tests/utils');
 var config = require(__base + '/tests/required/config.json');
 
 // Required files
-var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + BASE_FILENAME + '.' + FILENAME_EXTENSION);
+var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
 var schema = require(__base + '/src/schemas/agreementSchema.json');
 
 // Expected files
@@ -108,7 +108,7 @@ describe("Agreement unit tests v3...", function () {
 
             var _json;
             var options = {
-                uri: AGREEMENT_PATH + "/" + BASE_FILENAME,
+                uri: AGREEMENT_PATH + "/" + AGREEMENT_ID,
                 method: 'GET'
             };
 
@@ -116,7 +116,7 @@ describe("Agreement unit tests v3...", function () {
                 request(options, function (error, response, body) {
                     _json = JSON.parse(body);
                     expect(response.statusCode).to.equal(404);
-                    expect(_json.code === 404 && _json.message === "There is no agreement with id: " + BASE_FILENAME);
+                    expect(_json.code === 404 && _json.message === "There is no agreement with id: " + AGREEMENT_ID);
                     done();
                 });
             });
@@ -157,7 +157,7 @@ describe("Agreement unit tests v3...", function () {
             var _body;
             var _json;
             var options = {
-                uri: AGREEMENT_PATH + "/" + BASE_FILENAME,
+                uri: AGREEMENT_PATH + "/" + AGREEMENT_ID,
                 method: 'GET'
             };
 

@@ -28,36 +28,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var __base = "../../../..";
 
+var rewire = require('rewire'); // for accessing to non-exported methods
 var expect = require('chai').expect;
 var $RefParser = require('json-schema-ref-parser');
 
 // Names
 var VERSION = "v4";
-var BASE_FILENAME = "T14-L2-S12-minimal";
+var AGREEMENT_ID = "T14-L2-S12-minimal";
 var FILENAME_EXTENSION = "json";
 var METRIC_ID = "SPU_IO_K01";
 
 // Used modules
-var metricCalculator = require(__base + '/src/stateManager/' + VERSION + '/metric-calculator');
+var metricCalculator = rewire(__base + '/src/stateManager/' + VERSION + '/metric-calculator');
+
+// Non-exported methods
+var processMetric = metricCalculator.__get__('processMetric');
 
 // Required files
-var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + BASE_FILENAME + '.' + FILENAME_EXTENSION);
+var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
 var metricParameters = require(__base + '/tests/required/metrics/' + VERSION + '/' + 'metricParameters.json');
 
 // Expected files
 var expectedMetricParameters = require(__base + '/tests/expected/metrics/' + VERSION + '/' + 'metricParameters.json');
 
-describe("metricsCalculator unit tests v4...", function () {
+describe("metric-calculator unit tests v4...", function () {
     this.timeout(1000000);
     it('process metric', function (done) {
-        $RefParser.dereference(agreementFile, function (err, schema) {
+        $RefParser.dereference(agreementFile, function (err, agreement) {
             if (err) {
                 done(err);
             }
-            console.log(schema);
-            metricCalculator.process(schema, METRIC_ID, metricParameters).then(function (metricStates) {
+            console.log(agreement);
+            processMetric(agreement, METRIC_ID, metricParameters).then(function (metricStates) {
                 expect(metricStates).to.deep.equals(expectedMetricParameters);
                 done();
+            }, function (err) {
+                done(err);
             });
         });
     });

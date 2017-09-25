@@ -33,7 +33,7 @@ var request = require("request");
 
 // Names
 var VERSION = "v2";
-var BASE_FILENAME = "T14-L2-S12-minimal";
+var AGREEMENT_ID = "T14-L2-S12-minimal";
 var BASE_EXPECTED_FILENAME = "T14-L2-S12-minimal-getresponse";
 var FILENAME_EXTENSION = "json";
 var SERVER_PATH = "http://localhost:5001/api/" + VERSION;
@@ -44,7 +44,7 @@ var testUtils = require(__base + '/tests/utils');
 var config = require(__base + '/tests/required/config.json');
 
 // Required files
-var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + BASE_FILENAME + '.' + FILENAME_EXTENSION);
+var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
 
 // Expected files
 var expectedAgreement = require(__base + '/tests/expected/agreements/' + VERSION + '/' + BASE_EXPECTED_FILENAME + '.' + FILENAME_EXTENSION);
@@ -105,7 +105,7 @@ describe("Agreements unit tests v2 ...", function () {
         describe("Expect an error when there is no agreement with ID unit tests", function () {
 
             var options = {
-                uri: AGREEMENT_PATH + "/" + BASE_FILENAME,
+                uri: AGREEMENT_PATH + "/" + AGREEMENT_ID,
                 method: 'GET'
             };
 
@@ -113,7 +113,7 @@ describe("Agreements unit tests v2 ...", function () {
                 request(options, function (error, response, body) {
                     var _json = JSON.parse(body);
                     expect(response.statusCode).to.equal(404);
-                    expect(_json.code === 404 && _json.message === "There is no agreement with id: " + BASE_FILENAME);
+                    expect(_json.code === 404 && _json.message === "There is no agreement with id: " + AGREEMENT_ID);
                     done();
                 });
             });
@@ -153,7 +153,7 @@ describe("Agreements unit tests v2 ...", function () {
             var agreementJson = null;
             var _body = null;
             var options = {
-                uri: AGREEMENT_PATH + "/" + BASE_FILENAME,
+                uri: AGREEMENT_PATH + "/" + AGREEMENT_ID,
                 method: 'GET'
             };
 

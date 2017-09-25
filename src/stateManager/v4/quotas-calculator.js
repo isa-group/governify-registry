@@ -58,8 +58,8 @@ function processQuotas(stateManager, query) {
         var agreement = stateManager.agreement;
 
         var quotaDef = null;
-        for (var q in agreement.term.quotas) {
-            var indexQuota = agreement.term.quotas[q];
+        for (var q in agreement.terms.quotas) {
+            var indexQuota = agreement.terms.quotas[q];
             if (indexQuota.id === query.quota) {
                 quotaDef = indexQuota;
             }

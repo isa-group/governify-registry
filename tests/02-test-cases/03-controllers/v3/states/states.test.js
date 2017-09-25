@@ -33,7 +33,7 @@ var request = require("request");
 
 // Names
 var VERSION = "v3";
-var BASE_FILENAME = "T14-L2-S12-minimal-states";
+var AGREEMENT_ID = "T14-L2-S12-minimal-states";
 var BASE_EXPECTED_FILENAME = "T14-L2-S12-minimal-states-getresponse";
 var FILENAME_EXTENSION = "json";
 var SERVER_PATH = "http://localhost:5001/api/" + VERSION;
@@ -108,7 +108,7 @@ describe("Agreement states unit tests v3 ...", function () {
 
             var _json;
             var options = {
-                uri: AGREEMENT_STATES_PATH + "/" + BASE_FILENAME,
+                uri: AGREEMENT_STATES_PATH + "/" + AGREEMENT_ID,
                 method: 'GET'
             };
 
@@ -165,7 +165,7 @@ describe("Agreement states unit tests v3 ...", function () {
     //            var _body;
     //            var _json;
     //            var options = {
-    //                uri: AGREEMENT_STATES_PATH + "/" + BASE_FILENAME,
+    //                uri: AGREEMENT_STATES_PATH + "/" + AGREEMENT_ID,
     //                method: 'GET'
     //            };
     //
