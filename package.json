@@ -55,10 +55,13 @@
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-dockerize": "0.0.2",
+    "grunt-mocha-istanbul": "^5.0.2",
     "grunt-mocha-test": "^0.13.2",
     "grunt-release-github": "^2.0.0",
     "grunt-run": "^0.6.0",
-    "mocha": "^3.1.0"
+    "istanbul": "^0.4.5",
+    "mocha": "^3.5.3",
+    "rewire": "^2.5.2"
   },
   "scripts": {
     "eslint": "eslint lib/**/*.js test/**/*.js",

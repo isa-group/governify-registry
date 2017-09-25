@@ -40,6 +40,8 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-dockerize');
 
+    grunt.loadNpmTasks('grunt-mocha-istanbul');
+
     // Project configuration.
     grunt.initConfig({
         //Load configurations
@@ -195,6 +197,48 @@ module.exports = function (grunt) {
                     push: true
                 }
             }
+        },
+        mocha_istanbul: {
+            full: {
+                src: ['tests/01-pre-test/**/*.test.js', 'tests/02-test-cases/**/*.test.js', 'tests/03-post-test/**/*.test.js'],
+                options: {
+                    mask: '*.test.js',
+                    istanbulOptions: ['--harmony', '--handle-sigint'],
+                    coverageFolder: 'public/coverage',
+                }
+            },
+            database: {
+                src: ['tests/01-pre-test/**/*.test.js', 'tests/02-test-cases/01-database/*.test.js', 'tests/03-post-test/**/*.test.js'],
+                options: {
+                    mask: '*.test.js',
+                    istanbulOptions: ['--harmony', '--handle-sigint'],
+                    coverageFolder: 'public/coverage',
+                }
+            },
+            unit: {
+                src: ['tests/01-pre-test/**/*.test.js', 'tests/02-test-cases/02-unit/**/*.test.js', 'tests/03-post-test/**/*.test.js'],
+                options: {
+                    mask: '*.test.js',
+                    istanbulOptions: ['--harmony', '--handle-sigint'],
+                    coverageFolder: 'public/coverage',
+                }
+            },
+            controllers: {
+                src: ['tests/01-pre-test/**/*.test.js', 'tests/02-test-cases/03-controllers/**/*.test.js', 'tests/03-post-test/**/*.test.js'],
+                options: {
+                    mask: '*.test.js',
+                    istanbulOptions: ['--harmony', '--handle-sigint'],
+                    coverageFolder: 'public/coverage',
+                }
+            },
+            integral: {
+                src: ['tests/01-pre-test/**/*.test.js', 'tests/02-test-cases/04-integral/**/*.test.js', 'tests/03-post-test/**/*.test.js'],
+                options: {
+                    mask: '*.test.js',
+                    istanbulOptions: ['--harmony', '--handle-sigint'],
+                    coverageFolder: 'public/coverage',
+                }
+            }
         }
     });
 
@@ -213,11 +257,22 @@ module.exports = function (grunt) {
 
     grunt.registerTask('test:database', ['jshint', 'mochaTest:database']);
 
-    grunt.registerTask('test:unit', ['jshint', 'mochaTest:unit']);
+    grunt.registerTask('test:unit', ['mochaTest:unit']);
 
     grunt.registerTask('test:controllers', ['jshint', 'mochaTest:controllers']);
 
     grunt.registerTask('test:integral', ['jshint', 'mochaTest:integral']);
+
+    //TEST AND COVERAGE TASK
+    grunt.registerTask('coverage:full', ['jshint', 'mochaTest:full']);
+
+    grunt.registerTask('coverage:database', ['jshint', 'mochaTest:database']);
+
+    grunt.registerTask('coverage:unit', ['mochaTest:unit']);
+
+    grunt.registerTask('coverage:controllers', ['jshint', 'mochaTest:controllers']);
+
+    grunt.registerTask('coverage:integral', ['jshint', 'mochaTest:integral']);
 
     //BUILD TASK
     grunt.registerTask('build', ['test', 'buildOn', 'usebanner']);
