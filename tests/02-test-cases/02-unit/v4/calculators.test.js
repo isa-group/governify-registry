@@ -23,7 +23,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+/*jshint expr:true */
 'use strict';
 
 var __base = "../../../..";
@@ -33,17 +33,16 @@ var expect = require('chai').expect;
 // Names
 var VERSION = "v4";
 
-
 // Used modules
 var calculators = require(__base + '/src/stateManager/' + VERSION + '/calculators');
 
 describe("calculators unit tests v4...", function () {
     this.timeout(1000000);
     it('calculators has exported all the expected methods', function (done) {
-        expect(calculators.agreementCalculator).not.to.be.undefined;
-        expect(calculators.guaranteeCalculator).not.to.be.undefined;
-        expect(calculators.metricCalculator).not.to.be.undefined;
-        expect(calculators.pricingCalculator).not.to.be.undefined;
+        expect(calculators.agreementCalculator).to.exist;
+        expect(calculators.guaranteeCalculator).to.exist;
+        expect(calculators.metricCalculator).to.exist;
+        expect(calculators.pricingCalculator).to.exist;
         done();
     });
 });

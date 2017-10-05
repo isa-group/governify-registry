@@ -23,7 +23,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+/*jshint expr:true */
 'use strict';
 
 var __base = "../../../../..";
@@ -95,7 +95,7 @@ describe("Agreement unit tests v3...", function () {
             });
 
             it("returns empty array", function (done) {
-                expect(JSON.parse(_body).length === 0);
+                expect(JSON.parse(_body).length === 0).to.be.true;
                 done();
             });
 
@@ -116,7 +116,7 @@ describe("Agreement unit tests v3...", function () {
                 request(options, function (error, response, body) {
                     _json = JSON.parse(body);
                     expect(response.statusCode).to.equal(404);
-                    expect(_json.code === 404 && _json.message === "There is no agreement with id: " + AGREEMENT_ID);
+                    expect(_json.code === 404 && _json.message === "There is no agreement with id: " + AGREEMENT_ID).to.be.true;
                     done();
                 });
             });
@@ -143,7 +143,7 @@ describe("Agreement unit tests v3...", function () {
             });
 
             it("returns OK message", function (done) {
-                expect(postResponse === "OK");
+                expect(postResponse === "OK").to.be.true;
                 done();
             });
         });
@@ -171,7 +171,7 @@ describe("Agreement unit tests v3...", function () {
 
             it("returns JSON with values", function (done) {
                 agreementJson = JSON.parse(_body);
-                expect(!!agreementJson);
+                expect(!!agreementJson).to.be.true;
                 done();
             });
 
@@ -183,7 +183,7 @@ describe("Agreement unit tests v3...", function () {
             });
 
             it("returns valid agreement", function (done) {
-                expect(testUtils.validateModel(agreementJson, schema));
+                expect(testUtils.validateModel(agreementJson, schema)).to.be.true;
                 done();
             });
         });
@@ -210,7 +210,7 @@ describe("Agreement unit tests v3...", function () {
 
             // Expecting 1 agreement
             it("returns 1 agreement", function (done) {
-                expect(agreementsJson.length === 1);
+                expect(agreementsJson.length === 1).to.be.true;
                 done();
             });
 
@@ -222,7 +222,7 @@ describe("Agreement unit tests v3...", function () {
             });
 
             it("returns valid agreement", function (done) {
-                expect(testUtils.validateModel(agreementsJson[0], schema));
+                expect(testUtils.validateModel(agreementsJson[0], schema)).to.be.true;
                 done();
             });
 
@@ -248,7 +248,7 @@ describe("Agreement unit tests v3...", function () {
             });
 
             it("returns OK message", function (done) {
-                expect(res === "OK");
+                expect(res === "OK").to.be.true;
                 done();
             });
 
@@ -272,7 +272,7 @@ describe("Agreement unit tests v3...", function () {
                 });
             });
             it("returns empty array", function (done) {
-                expect(JSON.parse(_body).length === 0);
+                expect(JSON.parse(_body).length === 0).to.be.true;
                 done();
             });
         });

@@ -33,11 +33,9 @@ describe('Clear infrastructure', function () {
     this.timeout(1000000);
     it('docker-compose down', function (done) {
         dockerCompose.dockerComposeDown(__dirname + '/../', '', function () {
-            expect(true);
             done();
         }, function (err) {
             done(err);
-            expect(false);
         });
     });
 });

@@ -23,7 +23,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+/*jshint expr:true */
 'use strict';
 
 var __base = "../../../";
@@ -37,26 +37,20 @@ describe('Connection Methods Tests', function () {
     it('Connection method', function (done) {
         database.connect(function (err) {
             if (!err) {
-                expect(true);
                 done();
             } else {
-                expect(false);
                 done();
             }
         });
     });
 
     it('Setup AgreementModel ', function (done) {
-        /* jshint ignore:start */
         expect(database.models.AgreementModel).to.exist;
-        /* jshint ignore:end */
         done();
     });
 
     it('Setup StateModel', function (done) {
-        /* jshint ignore:start */
         expect(database.models.StateModel).to.exist;
-        /* jshint ignore:end */
         done();
     });
 
@@ -64,10 +58,8 @@ describe('Connection Methods Tests', function () {
 
         database.close(function (err) {
             if (!err) {
-                expect(true);
                 done();
             } else {
-                expect(false);
                 done();
             }
         });

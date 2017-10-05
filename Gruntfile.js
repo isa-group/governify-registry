@@ -264,15 +264,15 @@ module.exports = function (grunt) {
     grunt.registerTask('test:integral', ['jshint', 'mochaTest:integral']);
 
     //TEST AND COVERAGE TASK
-    grunt.registerTask('coverage:full', ['jshint', 'mochaTest:full']);
+    grunt.registerTask('coverage:full', ['jshint', 'mocha_istanbul:full']);
 
-    grunt.registerTask('coverage:database', ['jshint', 'mochaTest:database']);
+    grunt.registerTask('coverage:database', ['jshint', 'mocha_istanbul:database']);
 
-    grunt.registerTask('coverage:unit', ['mochaTest:unit']);
+    grunt.registerTask('coverage:unit', ['mocha_istanbul:unit']);
 
-    grunt.registerTask('coverage:controllers', ['jshint', 'mochaTest:controllers']);
+    grunt.registerTask('coverage:controllers', ['jshint', 'mocha_istanbul:controllers']);
 
-    grunt.registerTask('coverage:integral', ['jshint', 'mochaTest:integral']);
+    grunt.registerTask('coverage:integral', ['jshint', 'mocha_istanbul:integral']);
 
     //BUILD TASK
     grunt.registerTask('build', ['test', 'buildOn', 'usebanner']);

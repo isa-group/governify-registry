@@ -23,7 +23,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+/*jshint expr:true */
 'use strict';
 
 var __base = "../../../../..";
@@ -95,7 +95,7 @@ describe("Agreement states unit tests v3 ...", function () {
             });
 
             it("returns empty array", function (done) {
-                expect(JSON.parse(_body).length === 0);
+                expect(JSON.parse(_body).length === 0).to.be.true;
                 done();
             });
 
@@ -126,7 +126,7 @@ describe("Agreement states unit tests v3 ...", function () {
 
         it("the stored agreement state is valid according to the schema", function (done) {
 
-            expect(testUtils.validateModel(expectedAgreementStates, schema));
+            expect(testUtils.validateModel(expectedAgreementStates, schema)).to.be.true;
             done();
         });
     });
@@ -151,7 +151,7 @@ describe("Agreement states unit tests v3 ...", function () {
     //        });
     //
     //        it("returns OK message", function (done) {
-    //            expect(postResponse === "OK").to.be.ok;
+    //            expect(postResponse === "OK").to.be.true;
     //            done();
     //        });
     //    });
@@ -179,7 +179,7 @@ describe("Agreement states unit tests v3 ...", function () {
     //
     //            it("returns JSON with values", function (done) {
     //                agreementJson = JSON.parse(_body);
-    //                expect(!!agreementJson).to.be.ok;
+    //                expect(!!agreementJson).to.be.true;
     //                done();
     //            });
     //
@@ -191,7 +191,7 @@ describe("Agreement states unit tests v3 ...", function () {
     //            });
     //
     //            it("returns valid agreement", function (done) {
-    //                expect(testUtils.validateModel(agreementJson, schema)).to.be.ok;
+    //                expect(testUtils.validateModel(agreementJson, schema)).to.be.true;
     //                done();
     //            });
     //        });
@@ -218,7 +218,7 @@ describe("Agreement states unit tests v3 ...", function () {
     //
     //            // Expecting 1 agreement state
     //            it("returns 1 agreement state", function (done) {
-    //                expect(agreementsJson.length === 1).to.be.ok;
+    //                expect(agreementsJson.length === 1).to.be.true;
     //                done();
     //            });
     //
@@ -230,7 +230,7 @@ describe("Agreement states unit tests v3 ...", function () {
     //            });
     //
     //            it("returns valid agreement state", function (done) {
-    //                expect(testUtils.validateModel(agreementsJson[0], schema)).to.be.ok;
+    //                expect(testUtils.validateModel(agreementsJson[0], schema)).to.be.true;
     //                done();
     //            });
     //
@@ -275,7 +275,7 @@ describe("Agreement states unit tests v3 ...", function () {
                 });
             });
             it("returns empty array", function (done) {
-                expect(JSON.parse(_body).length === 0);
+                expect(JSON.parse(_body).length === 0).to.be.true;
                 done();
             });
         });

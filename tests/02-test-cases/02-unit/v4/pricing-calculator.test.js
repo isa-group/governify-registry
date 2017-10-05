@@ -94,9 +94,9 @@ describe("pricing-calculator unit tests v4...", function () {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            var agreementDef = manager.agreement; //TODO: esto no se debería pasar por aquí, ya está contenido en manager
+            var agreementDef = manager.agreement;
             processPricing(agreementDef, query, manager).then(function (pricing) {
-                expect(pricing.length).to.be.equals(expectedPricing.length); // TODO: comprobación muy laxa, ver como hacer el deep equals de verdad
+                expect(pricing.length).to.be.equals(expectedPricing.length); // TODO: weak check that should be improved
                 // expect(pricing).to.deep.equals(expectedPricing);
                 done();
             }, function (err) {

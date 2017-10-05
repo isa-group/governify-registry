@@ -23,7 +23,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+/*jshint expr:true */
 'use strict';
 
 var expect = require('chai').expect;
@@ -38,33 +38,28 @@ describe('Clearing previous testing infrastructure', function () {
     this.timeout(1000000);
     it('docker-compose down', function (done) {
         dockerCompose.dockerComposeUp(__dirname, '-d', function () {
-            expect(true);
             done();
         }, function (err) {
             done(err);
-            expect(false);
         });
     });
 });
-
 describe('Set up testing infrastructure', function () {
     this.timeout(1000000);
     it('docker-compose up -d', function (done) {
         dockerCompose.dockerComposeUp(__dirname, '-d', function () {
-            expect(true);
             done();
         }, function (err) {
             done(err);
-            expect(false);
         });
     });
 });
 
 describe('Registry Module Tests', function () {
     it('.deploy() Function', function () {
-        expect(registry.deploy).to.not.equal(null);
+        expect(registry.deploy).to.exist;
     });
     it('.undeploy Function', function () {
-        expect(registry.undeploy).to.not.equal(null);
+        expect(registry.undeploy).to.exist;
     });
 });

@@ -23,7 +23,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // */
 
-
+/*jshint expr:true */
 // 'use strict';
 
 // var __base = "../../../..";
@@ -99,10 +99,10 @@
 //             id: AGREEMENT_ID
 //         }).then(function (manager) {
 //             processQuotas(manager, query).then(function (something) {
-//                 // expect(something).to.deep.equals(expectedAlgo);
+//                 // expect(something).to.deep.equals(expectedSomething);
 //                 // fs.writeFileSync(__dirname + '/quotas.results.v3.json', JSON.stringify(results.sort(orderByCenterAndId))
 //                 console.log(something);
-//                 expect(1 == 1);
+//                 expect(1 == 1).to.be.true;;
 //                 done();
 //             }, function (err) {
 //                 done(err);
