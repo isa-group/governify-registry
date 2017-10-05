@@ -106,7 +106,7 @@ describe("Integration TEST V4", function () {
             var results = body;
             // fs.writeFileSync(__dirname + '/guarantees.results.v4.json', JSON.stringify(results.sort(orderByCenterAndId)));
             try {
-                expect(testUtils.arrayEqual(results, expectedGuarantees));
+                expect(testUtils.arrayEqual(results, expectedGuarantees)).to.be.true;
                 done();
             } catch (e) {
                 done(e);
@@ -142,7 +142,7 @@ describe("Integration TEST V4", function () {
         }).then(function () {
             //fs.writeFileSync(__dirname + '/guarantees.results.v4.month.json', JSON.stringify(results.sort(testUtils.orderByCenterAndId), null, 2));
             try {
-                expect(testUtils.arrayEqual(results, expectedGuarantees));
+                expect(testUtils.arrayEqual(results, expectedGuarantees)).to.be.true;
                 done();
             } catch (e) {
                 done(e);
@@ -160,7 +160,7 @@ describe("Integration TEST V4", function () {
             var results = body;
             // fs.writeFileSync(__dirname + '/agreement.results.v4.json', JSON.stringify(results.sort(testUtils.orderByCenterAndId), null, 2));
             try {
-                expect(testUtils.arrayEqual(results, expectedAgreementState));
+                expect(testUtils.arrayEqual(results, expectedAgreementState)).to.be.true;
                 done();
             } catch (e) {
                 done(e);
