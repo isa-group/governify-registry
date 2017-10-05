@@ -37,6 +37,8 @@ var VERSION = "v4";
 var AGREEMENT_ID = "T14-L2-S12-minimal";
 var FILENAME_EXTENSION = "json";
 var METRIC_ID = "SPU_IO_K01";
+var OPERATOR = ">=";
+var SLO_VALUE = "90";
 var SERVER_PATH = "http://localhost:5001/api/" + VERSION;
 var AGREEMENT_PATH = SERVER_PATH + '/agreements';
 
@@ -55,20 +57,22 @@ var calculatePenalty = guaranteeCalculator.__get__('calculatePenalty');
 // Required files
 var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
 var config = require(__base + '/tests/required/config.json');
-var guarantee = require(__base + '/tests/required/guarantees/' + VERSION + '/' + 'guarantee' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
 var ofElement = require(__base + '/tests/required/ofElements/' + VERSION + '/' + 'ofElement' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
+var guarantee = require(__base + '/tests/required/guarantees/' + VERSION + '/' + 'guarantee' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
+var timedScope = require(__base + '/tests/required/timedScopes/' + VERSION + '/' + 'timedScope' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
+var metricsValues = require(__base + '/tests/required/metricValues/' + VERSION + '/' + 'metricValue' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);;
+var penalties = require(__base + '/tests/required/penalties/' + VERSION + '/' + 'penalty' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);;
+var slo = METRIC_ID + OPERATOR + SLO_VALUE;
 var query = {
     guarantee: METRIC_ID
 };
-// TODO: define these vars for the remaining test
-var timedScope = undefined;
-var metricsValues = undefined;
-var slo = undefined;
-var penalties = undefined;
 
 
 // Expected files
-// var expectedAlgo = require(__base + '/tests/expected/metrics/' + VERSION + '/' + 'metricParameters.json');
+var expectedCalculatePenalty = require(__base + '/tests/expected/calculatePenalties/' + VERSION + '/' + 'calculatePenalty' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
+var expectedScopedGuarantee = require(__base + '/tests/expected/scopedGuarantees/' + VERSION + '/' + 'scopedGuarantee' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
+var expectedGuarantee = require(__base + '/tests/expected/guarantees/' + VERSION + '/' + 'processGuarantee' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
+var expectedGuarantees = require(__base + '/tests/expected/guarantees/' + VERSION + '/' + 'processGuarantees' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
 
 describe("guarantee-calculator unit tests v4...", function () {
     this.timeout(1000000);
@@ -107,15 +111,13 @@ describe("guarantee-calculator unit tests v4...", function () {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            processGuarantees(manager).then(function (something) {
-                // expect(something).to.deep.equals(expectedAlgo);
-                // fs.writeFileSync(__dirname + '/guarantees.results.v3.json', JSON.stringify(results.sort(orderByCenterAndId))
-                console.log(something);
-                expect(1 == 1);
+            processGuarantees(manager.agreement).then(function (guarantees) {
+                expect(guarantees).to.deep.equals(expectedGuarantees);
                 done();
             }, function (err) {
                 done(err);
-            });;
+            });
+
         });
     });
 
@@ -124,11 +126,8 @@ describe("guarantee-calculator unit tests v4...", function () {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            processGuarantee(manager, METRIC_ID).then(function (something) {
-                // expect(something).to.deep.equals(expectedAlgo);
-                // fs.writeFileSync(__dirname + '/guarantees.results.v3.json', JSON.stringify(results.sort(orderByCenterAndId))
-                console.log(something);
-                expect(1 == 1);
+            processGuarantee(manager, query).then(function (guarantee) {
+                expect(guarantee).to.deep.equals(expectedGuarantee);
                 done();
             }, function (err) {
                 done(err);
@@ -140,11 +139,8 @@ describe("guarantee-calculator unit tests v4...", function () {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            manager.getScopedGuarantee(manager, query, guarantee, ofElement).then(function (something) {
-                // expect(something).to.deep.equals(expectedAlgo);
-                // fs.writeFileSync(__dirname + '/guarantees.results.v3.json', JSON.stringify(results.sort(orderByCenterAndId))
-                console.log(something);
-                expect(1 == 1);
+            processScopedGuarantee(manager, query, guarantee, ofElement).then(function (scopedGuarantee) {
+                expect(scopedGuarantee).to.deep.equals(expectedScopedGuarantee);
                 done();
             }, function (err) {
                 done(err);
@@ -156,15 +152,10 @@ describe("guarantee-calculator unit tests v4...", function () {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            calculatePenalty(manager, guarantee, ofElement, timedScope, metricsValues, slo, penalties).then(function (something) {
-                // expect(something).to.deep.equals(expectedAlgo);
-                // fs.writeFileSync(__dirname + '/guarantees.results.v3.json', JSON.stringify(results.sort(orderByCenterAndId))
-                console.log(something);
-                expect(1 == 1);
-                done();
-            }, function (err) {
-                done(err);
-            });
+            var penalty = calculatePenalty(manager, guarantee, ofElement, timedScope, metricsValues, slo, penalties);
+            expect(penalty).to.deep.equals(expectedCalculatePenalty);
+            done();
         });
     });
+
 });
