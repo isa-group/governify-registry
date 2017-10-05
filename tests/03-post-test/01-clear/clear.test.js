@@ -26,8 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var expect = require('chai').expect,
-    dockerCompose = require('docker-composer-manager');
+var dockerCompose = require('docker-composer-manager');
 
 describe('Clear infrastructure', function () {
     this.timeout(1000000);

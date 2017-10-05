@@ -60,8 +60,8 @@ var config = require(__base + '/tests/required/config.json');
 var ofElement = require(__base + '/tests/required/ofElements/' + VERSION + '/' + 'ofElement' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
 var guarantee = require(__base + '/tests/required/guarantees/' + VERSION + '/' + 'guarantee' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
 var timedScope = require(__base + '/tests/required/timedScopes/' + VERSION + '/' + 'timedScope' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
-var metricsValues = require(__base + '/tests/required/metricValues/' + VERSION + '/' + 'metricValue' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);;
-var penalties = require(__base + '/tests/required/penalties/' + VERSION + '/' + 'penalty' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);;
+var metricsValues = require(__base + '/tests/required/metricValues/' + VERSION + '/' + 'metricValue' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
+var penalties = require(__base + '/tests/required/penalties/' + VERSION + '/' + 'penalty' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
 var slo = METRIC_ID + OPERATOR + SLO_VALUE;
 var query = {
     guarantee: METRIC_ID

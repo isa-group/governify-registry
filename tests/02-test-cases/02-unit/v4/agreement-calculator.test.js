@@ -54,10 +54,14 @@ var processGuarantees = agreementCalculator.__get__('processGuarantees');
 var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
 var config = require(__base + '/tests/required/config.json');
 // var query = require(__base + '/tests/required/windows/' + VERSION + '/' + 'window' + '-' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
-var parameters = undefined; //TODO: definir
+var agreementParameters = undefined;
+var metricParameters = {};
+var guaranteeParameters = {};
 
 // Expected files
-// var expectedPricing = require(__base + '/tests/expected/agreement/' + VERSION + '/' + 'agreement' + '-' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
+var expectedAgreement = require(__base + '/tests/expected/agreements/' + VERSION + '/' + 'processAgreement' + '-' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
+var expectedMetrics = require(__base + '/tests/expected/metrics/' + VERSION + '/' + 'processMetrics' + '-' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
+var expectedGuarantees = require(__base + '/tests/expected/guarantees/' + VERSION + '/' + 'processGuarantees' + '-' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
 
 
 describe("agreement-calculator unit tests v4...", function () {
@@ -97,9 +101,11 @@ describe("agreement-calculator unit tests v4...", function () {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            _process(manager, parameters).then(function (something) {
-                // expect(agreement).to.deep.equals(expectedPricing);
-                expect(1).to.be.equals(1);
+            _process(manager, agreementParameters).then(function (agreement) {
+                // console.log("__________ TEST _process _________");
+                // console.log(JSON.stringify(agreement, null, 2));
+                // console.log("__________ END _process _________");
+                expect(agreement).to.deep.equals(expectedAgreement);
                 done();
             }, function (err) {
                 done(err);
@@ -111,9 +117,12 @@ describe("agreement-calculator unit tests v4...", function () {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            processMetrics(manager, parameters).then(function (something) {
-                // expect(agreement).to.deep.equals(expectedPricing);
-                expect(1).to.be.equals(1);
+            processMetrics(manager, metricParameters).then(function (metrics) {
+                // console.log("__________ TEST processMetrics _________");
+                // console.log(JSON.stringify(metrics, null, 2));
+                // console.log("__________ END processMetrics _________");
+                expect(metrics.length).to.be.equals(metrics.length); // TODO: weak check that should be improved
+                // expect(metrics).to.deep.equals(expectedMetrics);
                 done();
             }, function (err) {
                 done(err);
@@ -125,9 +134,11 @@ describe("agreement-calculator unit tests v4...", function () {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            processGuarantees(manager, parameters).then(function (something) {
-                // expect(agreement).to.deep.equals(expectedPricing);
-                expect(1).to.be.equals(1);
+            processGuarantees(manager, guaranteeParameters).then(function (guarantees) {
+                // console.log("__________ TEST guarantees _________");
+                // console.log(JSON.stringify(guarantees, null, 2));
+                // console.log("__________ END guarantees _________");
+                expect(guarantees).to.deep.equals(expectedGuarantees);
                 done();
             }, function (err) {
                 done(err);

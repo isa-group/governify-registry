@@ -102,7 +102,7 @@
 //                 // expect(something).to.deep.equals(expectedSomething);
 //                 // fs.writeFileSync(__dirname + '/quotas.results.v3.json', JSON.stringify(results.sort(orderByCenterAndId))
 //                 console.log(something);
-//                 expect(1 == 1).to.be.true;;
+//                 expect(1 == 1).to.be.true;
 //                 done();
 //             }, function (err) {
 //                 done(err);
