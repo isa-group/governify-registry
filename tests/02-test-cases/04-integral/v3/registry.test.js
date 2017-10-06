@@ -23,7 +23,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+/*jshint expr:true */
 'use strict';
 
 var __base = "../../../..";
@@ -42,8 +42,6 @@ var config = require(__base + '/tests/required/config.json');
 var VERSION = "v3";
 var AGREEMENT_ID = "T14-L2-S12-minimal";
 var MOCK_FILENAME = "agreementMock";
-var AGREEMENT_STATE_FILENAME = "agreementState";
-var GUARANTEES_FILENAME = "guarantees";
 
 var FILENAME_EXTENSION = "json";
 var SERVER_PATH = "http://localhost:5001/api/" + VERSION;
@@ -54,8 +52,8 @@ var agreementMock = require(__base + '/tests/required/agreements/' + VERSION + '
 var window = require(__base + '/tests/required/windows/' + VERSION + '/' + 'window' + '-' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
 
 // Expected files
-var expectedAgreementState = require(__base + '/tests/expected/agreementState/' + VERSION + '/' + AGREEMENT_STATE_FILENAME + '.' + FILENAME_EXTENSION);
-var expectedGuarantees = require(__base + '/tests/expected/guarantees/' + VERSION + '/' + GUARANTEES_FILENAME + '.' + FILENAME_EXTENSION);
+var expectedAgreementState = require(__base + '/tests/expected/states/' + VERSION + '/' + 'metricStates' + '-' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
+var expectedGuarantees = require(__base + '/tests/expected/states/' + VERSION + '/' + 'metricStates' + '-' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
 
 // Endpoints
 var AGREEMENT_PATH = SERVER_PATH + '/agreements';

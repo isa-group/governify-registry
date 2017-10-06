@@ -69,7 +69,7 @@ var query = {
 
 
 // Expected files
-var expectedCalculatePenalty = require(__base + '/tests/expected/calculatePenalties/' + VERSION + '/' + 'calculatePenalty' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
+var expectedCalculatePenalty = require(__base + '/tests/expected/penalties/' + VERSION + '/' + 'calculatePenalty' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
 var expectedScopedGuarantee = require(__base + '/tests/expected/scopedGuarantees/' + VERSION + '/' + 'scopedGuarantee' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
 var expectedGuarantee = require(__base + '/tests/expected/guarantees/' + VERSION + '/' + 'processGuarantee' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
 var expectedGuarantees = require(__base + '/tests/expected/guarantees/' + VERSION + '/' + 'processGuarantees' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);

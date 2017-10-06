@@ -33,8 +33,7 @@ var request = require("request");
 
 // Names
 var VERSION = "v3";
-var AGREEMENT_ID = "T14-L2-S12-minimal-states";
-var BASE_EXPECTED_FILENAME = "T14-L2-S12-minimal-states-getresponse";
+var AGREEMENT_ID = "T14-L2-S12-minimal";
 var FILENAME_EXTENSION = "json";
 var SERVER_PATH = "http://localhost:5001/api/" + VERSION;
 
@@ -47,8 +46,7 @@ var config = require(__base + '/tests/required/config.json');
 var schema = require(__base + '/src/schemas/agreementSchema.json');
 
 // Expected files
-var expectedAgreementStates = require(__base + '/tests/expected/states/' + VERSION + '/' + BASE_EXPECTED_FILENAME + '.' + FILENAME_EXTENSION);
-
+var expectedAgreementStates = require(__base + '/tests/expected/states/' + VERSION + '/' + 'metricStates' + '-' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
 // Endpoints
 var AGREEMENT_STATES_PATH = SERVER_PATH + '/agreements';
 
