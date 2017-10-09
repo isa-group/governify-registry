@@ -61,22 +61,18 @@ var projectionBuilder = stateManager.__get__('projectionBuilder');
 var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
 var config = require(__base + '/tests/required/config.json');
 // var query = require(__base + '/tests/required/windows/' + VERSION + '/' + 'window' + '-' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
-var stateType = undefined; //TODO: definir
-var query = undefined; //TODO: definir
-var value = undefined; //TODO: definir
-var metadata = undefined; //TODO: definir
-var logsState = undefined; //TODO: definir
-var _agreement = undefined; //TODO: definir
-var agreement = undefined; //TODO: definir
-var agreementId = undefined; //TODO: definir
-var states = undefined; //TODO: definir
+var queryGuarantees = require(__base + "/tests/expected/query/v4/queryGuarantees.json");
+var queryMetrics = require(__base + "/tests/expected/query/v4/queryMetrics.json");
+var metadata = require(__base + "/tests/expected/metadata/v4/metadata.json");
+var agreement = require(__base + "/tests/expected/states/v4/T14-L2-S12-minimal-initialize.json");
+var expectedState = require(__base + "/tests/expected/states/v4/T14-L2-S12-minimal-expected-state.json");
 
 
 // Expected files
 // var expectedPricing = require(__base + '/tests/expected/agreement/' + VERSION + '/' + 'agreement' + '-' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
 
 
-describe("agreement-calculator unit tests v4...", function () {
+describe("state-manager unit tests v4...", function () {
     this.timeout(1000000);
 
     before(function (done) {
@@ -109,13 +105,37 @@ describe("agreement-calculator unit tests v4...", function () {
         });
     });
 
-    it('xxxxxxxxxx', function (done) {
+    it("Initialize a state manager from an agreement", function (done) {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            initialize(_agreement).then(function (something) {
-                // expect(agreement).to.deep.equals(expectedPricing);
-                expect(1).to.be.equals(1);
+            expect(manager.agreement.id).to.be.equals(AGREEMENT_ID);
+            expect(manager).to.include.keys("agreement", "get", "put", "update", "current");
+            expect(manager.agreement.context).to.deep.equals(agreement.context);
+            expect(manager.agreement.terms).to.deep.equals(agreement.terms);
+            done();
+        }, function (err) {
+            done(err);
+        });
+    });
+
+    // describe("Put states", function () {
+    it('Put agreement guarantee state on StateManager', function (done) {
+        stateManager({
+            id: AGREEMENT_ID
+        }).then(function (manager) {
+            const stateType = "guarantees";
+            const value = "72.72727272727273";
+            manager.put(stateType, queryGuarantees, value, metadata).then(function (result) {
+                expect(result).to.be.an("array");
+                const model = result[0];
+                expect(model.agreementId).to.be.equals(AGREEMENT_ID);
+                expect(model.id).to.be.equals(queryGuarantees.guarantee);
+                expect(model.records).to.be.an("array");
+                expect(model.records[0]).to.include.all.keys("evidences", "logsState", "parameters");
+                //TODO: deeply check record data
+                // expect(model.records[0]).to.deep.include(metadata);
+                expect(model.records[0].value).to.be.equals(value);
                 done();
             }, function (err) {
                 done(err);
@@ -123,13 +143,48 @@ describe("agreement-calculator unit tests v4...", function () {
         });
     });
 
-    it('xxxxxxxxxx', function (done) {
+    it('Put agreement metric state on StateManager', function (done) {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            _get(stateType, query).then(function (something) {
-                // expect(agreement).to.deep.equals(expectedPricing);
-                expect(1).to.be.equals(1);
+            const stateType = "metrics";
+            const value = "72.72727272727273";
+            manager.put(stateType, queryMetrics, value, metadata).then(function (result) {
+                expect(result).to.be.an("array");
+                const model = result[0];
+                expect(model.agreementId).to.be.equals(AGREEMENT_ID);
+                expect(model.id).to.be.equals(queryMetrics.metric);
+                expect(model.records).to.be.an("array");
+                expect(model.records[0]).to.include.all.keys("evidences", "logsState", "parameters");
+                //TODO: deeply check record data
+                // expect(model.records[0]).to.deep.include(metadata);
+                expect(model.records[0].value).to.be.equals(value);
+                done();
+            }, function (err) {
+                done(err);
+            });
+        });
+    });
+    // });
+
+    // describe("Get states", function () {
+
+    it("Get guarantees state from a specific query", function (done) {
+        stateManager({
+            id: AGREEMENT_ID
+        }).then(function (manager) {
+            const stateType = "guarantees";
+            const expectedValue = "72.72727272727273";
+            manager.get(stateType, queryGuarantees).then(function (states) {
+                expect(states).to.be.an("array");
+                const model = states[0];
+                expect(model.agreementId).to.be.equals(AGREEMENT_ID);
+                expect(model.id).to.be.equals(queryGuarantees.guarantee);
+                expect(model.records).to.be.an("array");
+                expect(model.records[0]).to.include.all.keys("evidences", "logsState", "parameters");
+                //TODO: deeply check record data
+                // expect(model.records[0]).to.deep.include(metadata);
+                expect(model.records[0].value).to.be.equals(expectedValue);
                 done();
             }, function (err) {
                 done(err);
@@ -137,13 +192,22 @@ describe("agreement-calculator unit tests v4...", function () {
         });
     });
 
-    it('xxxxxxxxxx', function (done) {
+    it("Get metrics state from a specific query", function (done) {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            _put(stateType, query, value, metadata).then(function (something) {
-                // expect(agreement).to.deep.equals(expectedPricing);
-                expect(1).to.be.equals(1);
+            const stateType = "metrics";
+            const expectedValue = "72.72727272727273";
+            manager.get(stateType, queryMetrics).then(function (states) {
+                expect(states).to.be.an("array");
+                const model = states[0];
+                expect(model.agreementId).to.be.equals(AGREEMENT_ID);
+                expect(model.id).to.be.equals(queryMetrics.metric);
+                expect(model.records).to.be.an("array");
+                expect(model.records[0]).to.include.all.keys("evidences", "logsState", "parameters");
+                //TODO: deeply check record data
+                // expect(model.records[0]).to.deep.include(metadata);
+                expect(model.records[0].value).to.be.equals(expectedValue);
                 done();
             }, function (err) {
                 done(err);
@@ -151,13 +215,46 @@ describe("agreement-calculator unit tests v4...", function () {
         });
     });
 
-    it('xxxxxxxxxx', function (done) {
+    // it("Get agreement state from a specific query", function (done) {
+    //     stateManager({
+    //         id: AGREEMENT_ID
+    //     }).then(function (manager) {
+    //         const expectedValue = "72.72727272727273";
+    //         manager.get("agreement", undefined).then(function (states) {
+    //             // expect(agreement).to.deep.equals(expectedPricing);
+    //             expect(states[0].agreementId).to.be.equals(AGREEMENT_ID);
+    //             expect(states[0].records[0].value).to.be.equals(expectedValue);
+    //             done();
+    //         }, function (err) {
+    //             done(err);
+    //         });
+    //     });
+    // });
+    // });
+
+    it('Update states with a specific query', function (done) {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            _update(stateType, query, logsState).then(function (something) {
-                // expect(agreement).to.deep.equals(expectedPricing);
-                expect(1).to.be.equals(1);
+            const stateType = "guarantees";
+            const queryGuarantees = {
+                "guarantee": "SPU_IO_K01"
+            };
+            const penalty = {
+                "porcentajePTOT": -5
+            };
+            const logsState = 14;
+            manager.update(stateType, queryGuarantees, logsState).then(function (states) {
+                expect(states).to.be.an("array");
+                const model = states[0];
+                expect(model.agreementId).to.be.equals(AGREEMENT_ID);
+                expect(model.id).to.be.equals(queryGuarantees.guarantee);
+                expect(model.records).to.be.an("array");
+                expect(model.records[0]).to.include.all.keys("evidences", "logsState", "metrics", "penalties");
+                //TODO: deeply check record data
+                // expect(model.records[0]).to.deep.include(metadata);
+                expect(model.records[0].logsState).to.be.equals(14);
+                expect(model.records[0].penalties.porcentajePTOT).to.be.equals(penalty.porcentajePTOT);
                 done();
             }, function (err) {
                 done(err);
@@ -165,13 +262,50 @@ describe("agreement-calculator unit tests v4...", function () {
         });
     });
 
-    it('xxxxxxxxxx', function (done) {
+    it('State', function (done) {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            State(value, query, metadata).then(function (something) {
-                // expect(agreement).to.deep.equals(expectedPricing);
-                expect(1).to.be.equals(1);
+            const value = "100.0";
+            const state = new State(value, queryMetrics, metadata);
+
+            expect(state).to.include.keys("evidences", "metric", "period", "scope", "window", "records");
+            expect(state).to.include.keys("metric");
+            expect(state.evidences).to.deep.equal(expectedState.evidences);
+            expect(state.metric).to.deep.equal(expectedState.metric);
+            expect(state.period).to.deep.equal(expectedState.period);
+            expect(state.scope).to.deep.equal(expectedState.scope);
+            expect(state.window).to.deep.equal(expectedState.window);
+
+            expect(state.records).to.be.an("array");
+            expect(state.records[0].evidences.length).to.be.equal(expectedState.records[0].evidences.length);
+            expect(state.records[0].logsState).to.be.equal(expectedState.records[0].logsState);
+            expect(state.records[0].value).to.be.equal(expectedState.records[0].value);
+            expect(state.records[0].parameters).to.include(expectedState.records[0].parameters);
+
+            done();
+        }, function (err) {
+            done(err);
+        });
+    });
+
+    it('Record to build record object', function (done) {
+        const value = "72.72727272727273";
+        const record = new Record(value, metadata);
+        expect(record).to.include.keys("evidences", "logsState", "parameters", "time", "value");
+        expect(record.value).to.be.equals(value);
+        done();
+    });
+
+    it('isUpdated', function (done) {
+        stateManager({
+            id: AGREEMENT_ID
+        }).then(function (manager) {
+            const agreement = manager.agreement;
+            const states = undefined;
+            isUpdated(agreement, states).then(function (state) {
+                expect(state).to.include.keys("logsState", "isUpdated");
+                expect(state.isUpdated).to.be.false;
                 done();
             }, function (err) {
                 done(err);
@@ -179,13 +313,22 @@ describe("agreement-calculator unit tests v4...", function () {
         });
     });
 
-    it('xxxxxxxxxx', function (done) {
+    it('getCurrent', function (done) {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            Record(value, metadata).then(function (something) {
-                // expect(agreement).to.deep.equals(expectedPricing);
-                expect(1).to.be.equals(1);
+            const stateType = "guarantees";
+            manager.get(stateType, queryGuarantees).then(function (states) {
+                expect(states).to.be.an("array");
+                expect(states[0].records).to.be.an("array");
+
+                var record = getCurrent(states[0]);
+                expect(states[0].records[0]).to.be.equals(record);
+                expect(states[0].records[0].evidences.length).to.be.equal(record.evidences.length);
+                expect(states[0].records[0].logsState).to.be.equal(record.logsState);
+                expect(states[0].records[0].value).to.be.equal(record.value);
+                expect(states[0].records[0].parameters).to.include(record.parameters);
+
                 done();
             }, function (err) {
                 done(err);
@@ -193,13 +336,18 @@ describe("agreement-calculator unit tests v4...", function () {
         });
     });
 
-    it('xxxxxxxxxx', function (done) {
+    it('_current', function (done) {
         stateManager({
             id: AGREEMENT_ID
         }).then(function (manager) {
-            isUpdated(agreement, states).then(function (something) {
-                // expect(agreement).to.deep.equals(expectedPricing);
-                expect(1).to.be.equals(1);
+            const stateType = "guarantees";
+            manager.get(stateType, queryGuarantees).then(function (states) {
+                expect(states).to.be.an("array");
+                expect(states[0].records).to.be.an("array");
+
+                var record = _current(states[0]);
+                expect(record).to.include.keys("stateType", "agreementId", "id", "scope", "period", "window", "value", "evidences");
+
                 done();
             }, function (err) {
                 done(err);
@@ -207,63 +355,37 @@ describe("agreement-calculator unit tests v4...", function () {
         });
     });
 
-    it('xxxxxxxxxx', function (done) {
-        stateManager({
-            id: AGREEMENT_ID
-        }).then(function (manager) {
-            getCurrent(state).then(function (something) {
-                // expect(agreement).to.deep.equals(expectedPricing);
-                expect(1).to.be.equals(1);
-                done();
-            }, function (err) {
-                done(err);
-            });
-        });
+    it('refineQuery', function (done) {
+        const agreementId = "T14-L2-S12-minimal";
+        const stateType = "guarantees";
+        const query = {
+            "guarantee": "SPU_IO_K01"
+        };
+        const expectedRefinedQuery = {
+            "stateType": "guarantees",
+            "agreementId": "T14-L2-S12-minimal",
+            "id": "SPU_IO_K01"
+        };
+        var refinedQuery = refineQuery(agreementId, stateType, query);
+        expect(refinedQuery).to.deep.equals(expectedRefinedQuery);
+        done();
     });
 
-    it('xxxxxxxxxx', function (done) {
-        stateManager({
-            id: AGREEMENT_ID
-        }).then(function (manager) {
-            _current(state).then(function (something) {
-                // expect(agreement).to.deep.equals(expectedPricing);
-                expect(1).to.be.equals(1);
-                done();
-            }, function (err) {
-                done(err);
-            });
-        });
+    it('projectionBuilder', function (done) {
+        const stateType = "guarantees";
+        const query = {
+            "stateType": "guarantees",
+            "agreementId": "T14-L2-S12-minimal",
+            "id": "SPU_IO_K01"
+        };
+        const expectedProjection = {
+            "stateType": "guarantees",
+            "agreementId": "T14-L2-S12-minimal",
+            "id": "SPU_IO_K01"
+        };
+        var projection = projectionBuilder(stateType, query);
+        expect(projection).to.deep.equals(expectedProjection);
+        done();
     });
-
-    it('xxxxxxxxxx', function (done) {
-        stateManager({
-            id: AGREEMENT_ID
-        }).then(function (manager) {
-            refineQuery(agreementId, stateType, query).then(function (something) {
-                // expect(agreement).to.deep.equals(expectedPricing);
-                expect(1).to.be.equals(1);
-                done();
-            }, function (err) {
-                done(err);
-            });
-        });
-    });
-
-    it('xxxxxxxxxx', function (done) {
-        stateManager({
-            id: AGREEMENT_ID
-        }).then(function (manager) {
-            projectionBuilder(stateType, query).then(function (something) {
-                // expect(agreement).to.deep.equals(expectedPricing);
-                expect(1).to.be.equals(1);
-                done();
-            }, function (err) {
-                done(err);
-            });
-        });
-    });
-
-
-
 
 });
