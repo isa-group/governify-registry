@@ -23,7 +23,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+/* jshint -W080 */
+/* jshint expr:true */
 'use strict';
 
 var __base = "../../../..";
@@ -117,6 +118,14 @@ describe("state-manager unit tests v4...", function () {
         }, function (err) {
             done(err);
         });
+    });
+
+    //TODO: Dummy test in order to remember that tests over these methods should be done.
+    it('Functions extistence', function () {
+        expect(initialize).to.exist;
+        expect(_get).to.exist;
+        expect(_put).to.exist;
+        expect(_update).to.exist;
     });
 
     // describe("Put states", function () {
@@ -268,6 +277,8 @@ describe("state-manager unit tests v4...", function () {
         }).then(function (manager) {
             const value = "100.0";
             const state = new State(value, queryMetrics, metadata);
+
+            expect(manager).to.exist;
 
             expect(state).to.include.keys("evidences", "metric", "period", "scope", "window", "records");
             expect(state).to.include.keys("metric");

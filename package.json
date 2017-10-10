@@ -17,8 +17,6 @@
     "ajv": "^4.7.7",
     "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
-    "chai": "^3.5.0",
-    "chai-connect-middleware": "^0.3.1",
     "clone": "^2.1.0",
     "cors": "^2.8.1",
     "deep-diff": "^0.3.4",
