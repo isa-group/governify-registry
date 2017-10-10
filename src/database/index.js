@@ -112,7 +112,7 @@ function setupModel(instance, modelName, jsonModelUri) {
     var referencedJsonModel = jsyaml.safeLoad(fs.readFileSync(jsonModelUri));
     $RefParser.dereference(referencedJsonModel, function (err, dereferencedJsonModel) {
         if (err) {
-            console.log(err);
+            config.logger.info('dereference error in setupModel');
         }
         var mongooseSchema = new mongoose.Schema(dereferencedJsonModel, {
             minimize: false

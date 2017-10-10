@@ -58,7 +58,6 @@ describe("metric-calculator unit tests v4...", function () {
             if (err) {
                 done(err);
             }
-            console.log(agreement);
             processMetric(agreement, METRIC_ID, metricParameters).then(function (metricStates) {
                 expect(metricStates).to.deep.equals(expectedMetricParameters);
                 done();
