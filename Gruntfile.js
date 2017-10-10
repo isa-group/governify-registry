@@ -264,6 +264,8 @@ module.exports = function (grunt) {
     grunt.registerTask('test:integral', ['jshint', 'mochaTest:integral']);
 
     //TEST AND COVERAGE TASK
+    grunt.registerTask('coverage', ['jshint', 'mocha_istanbul:full']);
+
     grunt.registerTask('coverage:full', ['jshint', 'mocha_istanbul:full']);
 
     grunt.registerTask('coverage:database', ['jshint', 'mocha_istanbul:database']);
