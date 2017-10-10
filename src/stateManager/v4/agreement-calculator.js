@@ -73,9 +73,9 @@ function _process(manager, parameters) {
 
             }, reject);
 
-        } catch (err) {
-            var errorString = 'Error processing agreements';
-            return promiseErrorHandler(reject, "agreements", _process.name, err.code || 500, errorString, err);
+        } catch (e) {
+            logger.error(e);
+            return reject(e);
         }
     });
 }
