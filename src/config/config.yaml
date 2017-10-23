@@ -20,7 +20,7 @@ development:
   maxAttempts: 10
   retryDelay: 2000
   email:
-    mailerApiKey: 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
+    mailerApiKey: 'this API key has been revoked. Pass it as an environment var to avoid public disclosure'
     defaultMailFrom: '"ISA-Group" <no-reply@isa.us.es>'
     messages:
       reloadAgreement:
@@ -53,7 +53,7 @@ production:
   maxAttempts: 20
   retryDelay: 5000
   email:
-    mailerApiKey: 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
+    mailerApiKey: 'this API key has been revoked. Pass it as an environment var to avoid public disclosure'
     defaultMailFrom: '"ISA-Group" <no-reply@isa.us.es>'
     messages:
       reloadAgreement:
