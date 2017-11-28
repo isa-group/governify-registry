@@ -221,6 +221,7 @@ function sendMail(agreement, mail) {
     var logStates = [];
     Promise.each(logRequests, function (log) {
         return new Promise(function (resolve, reject) {
+            process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
             request.get({
                 uri: log.stateUri
             }, function (err, response, body) {

@@ -30,6 +30,9 @@ var config = require('../../config');
 var logger = config.logger;
 var utils = require('../../utils/utils.js');
 
+var promiseErrorHandler = utils.errors.promiseErrorHandler;
+var Error = utils.errors.Error;
+
 var Promise = require('bluebird');
 var vm = require('vm');
 var moment = require('moment-timezone');
@@ -64,30 +67,14 @@ function processGuarantees(agreement) {
         agreement.terms.guarantees.forEach(function (guarantee) {
             processGuarantees.push(processGuarantee(agreement, guarantee.id));
         });
-        Promise.settle(processGuarantees).then(function (results) {
-            // Once we have all guarantees states calculated...
-            if (results.length > 0) {
-                var values = [];
-                for (var i = 0; i < results.length; i++) {
-                    // We check if the promise has been successfully resolved
-                    if (results[i].isFulfilled()) {
-                        if (results[i].value().length > 0) {
-                            // For each guarantee state, we store it in the array 'values'
-                            results[i].value().forEach(function (guaranteeValue) {
-                                values.push(guaranteeValue);
-                            });
-                        }
-                    }
-                }
 
-                // We return all guarantee values calculated
-                return resolve(values);
-            } else {
-                return reject('Error processing guarantee: empty result');
-            }
-        }, function (err) {
-            return reject(err);
-        });
+        utils.promise.processParallelPromises(null, processGuarantees, null, null, null)
+            .then(resolve)
+            .catch(function (err) {
+                let errorString = "Error processing guarantees";
+                return promiseErrorHandler(reject, "guarantees", "processGuarantees", 500, errorString, err);
+            });
+
     });
 }
 
@@ -99,40 +86,70 @@ function processGuarantees(agreement) {
  * @param {Object} manager manager
  * @alias module:guaranteeCalculator.process
  * */
-function processGuarantee(agreement, guaranteeId, manager) {
+function processGuarantee(manager, query) {
+
+    var agreement = manager.agreement;
+    var guaranteeId = query.guarantee;
+
     var processScopedGuarantees = [];
-    return new Promise(function (resolve, reject) {
+
+    return new Promise((resolve, reject) => {
+
         logger.debug("Searching guarantee '%s' in array:\n %s", guaranteeId, JSON.stringify(agreement.terms.guarantees, null, 2));
+
         // We retrieve the guarantee definition from the agreement that matches with the provided ID
         var guarantee = agreement.terms.guarantees.find(function (guarantee) {
             return guarantee.id === guaranteeId;
         });
+
         logger.debug('Processing guarantee: ' + guaranteeId);
         if (!guarantee) {
-            return reject('Guarantee ' + guaranteeId + ' not found.');
+            let errorString = 'Guarantee ' + guaranteeId + ' not found.';
+            return promiseErrorHandler(reject, "guarantees", "processGuarantees", 404, errorString);
         }
         // We prepare the parameters needed by the processScopedGuarantee function
-        guarantee.of.forEach(function (ofElement) {
-            processScopedGuarantees.push({
-                agreement: agreement,
-                guarantee: guarantee,
-                ofElement: ofElement,
-                manager: manager
-            });
+        if (query.period && query.period.from === "*") {
+            delete query.period;
+        }
+        guarantee.of.forEach(function (ofElement, index) {
+            var guaranteeCalculationPeriods = utils.time.getPeriods(agreement, ofElement.window);
+            var realPeriod = null;
+            if (query.period) {
+                realPeriod = guaranteeCalculationPeriods.find((element) => {
+                    return element.to.isSame(moment.utc(moment.tz(query.period.to, agreement.context.validity.timeZone)));
+                });
+            }
+            if (realPeriod || !query.period) {
+                if (realPeriod) {
+                    query.period = {
+                        from: realPeriod.from.toISOString(),
+                        to: realPeriod.to.toISOString()
+                    };
+                }
+                logger.guarantees(index + "- ( processScopedGuarantee ) with query" + JSON.stringify(query, null, 2));
+                processScopedGuarantees.push({
+                    manager: manager,
+                    query: query,
+                    guarantee: guarantee,
+                    ofElement: ofElement
+                });
+            }
         });
 
         var guaranteesValues = [];
         logger.guarantees('Processing scoped guarantee (' + guarantee.id + ')...');
+        logger.guarantees('With query:  (' + JSON.stringify(query, null, 2) + ')...');
         // processScopedGuarantee is called for each scope (priority, node, serviceLine, activity, etc.) of the guarantee
+
         Promise.each(processScopedGuarantees, function (guaranteeParam) {
-            return processScopedGuarantee(guaranteeParam.agreement, guaranteeParam.guarantee, guaranteeParam.ofElement, guaranteeParam.manager).then(function (value) {
+            return processScopedGuarantee(guaranteeParam.manager, guaranteeParam.query, guaranteeParam.guarantee, guaranteeParam.ofElement).then(function (value) {
+
                 logger.guarantees('Scoped guarantee has been processed');
                 // Once we have calculated the scoped guarantee state, we add it to the array 'guaranteeValues'
                 guaranteesValues = guaranteesValues.concat(value);
-            }).catch(function (err) {
-                logger.error('Error processing scoped guarantee: ', err);
-                return reject(err);
             });
+            //This catch will be controller by the each.catch in order to stop 
+            //the execution when 1 promise fails
 
         }).then(function () {
             logger.guarantees('All scoped guarantees have been processed');
@@ -142,12 +159,13 @@ function processGuarantee(agreement, guaranteeId, manager) {
                 guaranteeValues: guaranteesValues
             });
         }).catch(function (err) {
-            logger.error(err);
-            return reject(err);
+
+            let errorString = "Error processing scoped guarantee for: " + guarantee.id;
+            return promiseErrorHandler(reject, "guarantees", "processGuarantee", 500, errorString, err);
+
         });
     });
 }
-
 
 /**
  * Process a scoped guarantee.
@@ -157,16 +175,19 @@ function processGuarantee(agreement, guaranteeId, manager) {
  * @param {Object} ofElement of element
  * @param {Object} manager manager
  * */
-function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
+function processScopedGuarantee(manager, query, guarantee, ofElement) {
     try {
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
+
+            var agreement = manager.agreement;
+
             // We retrieve the SLO from the scoped guarantee and the penalties to apply
             var slo = ofElement.objective;
             var penalties = ofElement.penalties;
             var processMetrics = [];
             // If some scope is not specified, we set it with default values
             var scopeWithDefault = {};
-            var definedScopes = Object.keys(ofElement.scope);
+            var definedScopes = Object.keys(ofElement.scope || {});
             for (var guaranteeScope in guarantee.scope) {
                 if (definedScopes.indexOf(guaranteeScope) > -1) {
                     scopeWithDefault[guaranteeScope] = ofElement.scope[guaranteeScope];
@@ -190,8 +211,12 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
             }
             // We get the metrics to calculate from the with section of the scoped guarantee
             if (ofElement.with) {
+
                 var window = ofElement.window;
-                window.initial = moment.utc(moment.tz(ofElement.window.initial, agreement.context.validity.timeZone)).format();
+                window.initial = moment.utc(moment.tz(query.period && query.period.from ? query.period.from : ofElement.window.initial, agreement.context.validity.timeZone)).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
+                if (query.period && query.period.to) {
+                    window.end = moment.utc(moment.tz(query.period.to, agreement.context.validity.timeZone)).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
+                }
                 window.timeZone = agreement.context.validity.timeZone;
                 // For each metric, we create an object with the parameters needed by the manager to be able to calculate the metric state
                 for (var metricId in ofElement.with) {
@@ -202,17 +227,19 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                         evidences: evidences,
                         window: window,
                         period: {
-                            from: '*',
-                            to: '*'
+                            from: query.period ? query.period.from : '*',
+                            to: query.period ? query.period.to : '*'
                         }
                     });
                 }
             }
             // timedScope array will group all metric values by the same scope and period
+            //logger.warning("This scopedguarantee need these metric: " + JSON.stringify(processMetrics, null, 2));
             var timedScopes = [];
             var metricValues = [];
             logger.guarantees('Obtaining required metrics states for scoped guarantee ' + guarantee.id + '...');
             Promise.each(processMetrics, function (metricParam) {
+
                 return manager.get('metrics', metricParam).then(function (scopedMetricValues) {
                     // Once we have all metrics involved in the scoped guarantee calculated...
                     if (scopedMetricValues.length > 0) {
@@ -247,11 +274,12 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                     } else {
                         logger.guarantees('No metrics found for parameters: ' + JSON.stringify(metricParam, null, 2));
                     }
-                }).catch(function (err) {
-                    logger.error('Error processing metric: ', err);
-                    return reject(err);
                 });
+                //This catch will be controller by the each.catch in order to stop 
+                //the execution when 1 promise fails
+
             }).then(function () {
+
                 var guaranteesValues = [];
                 logger.guarantees('Calculating penalties for scoped guarantee ' + guarantee.id + '...');
                 for (var index = 0; index < timedScopes.length; index++) {
@@ -263,13 +291,18 @@ function processScopedGuarantee(agreement, guarantee, ofElement, manager) {
                 logger.guarantees('All penalties for scoped guarantee ' + guarantee.id + ' calculated.');
                 logger.debug('Guarantees values: ' + JSON.stringify(guaranteesValues, null, 2));
                 return resolve(guaranteesValues);
+
             }).catch(function (err) {
-                logger.error(err);
-                return reject(err);
+
+                let errorString = "Error processing timedScopes metrics for guarantee: " + guarantee.id;
+                return promiseErrorHandler(reject, "guarantees", "processScopedGuarantee", 500, errorString, err);
+
             });
         });
     } catch (err) {
-        logger.error(err);
+        //Controlling errors that are not in promises 
+        var error = new Error(500, "", err);
+        logger.error(error.toString());
     }
 }
 

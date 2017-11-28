@@ -45,16 +45,16 @@ module.exports = class Query {
         let period = addComplexParameter(args, 'period');
 
         // BUILD period
-        let log = addComplexParameter(args, 'log');
+        let logs = addComplexParameter(args, 'logs');
 
         if (scope) { this.scope = scope; }
         if (parameters) { this.parameters = parameters; }
         if (window) { this.window = window; }
         if (period) { this.period = period; }
-        if (log) { this.log = log; }
+        if (logs) { this.logs = logs; }
     }
 
-    static parseToQueryParams(object, raiz) {
+    static parseToQueryParams(object, root) {
         var string = "";
         //For each field in object
         for (var f in object) {
@@ -62,14 +62,22 @@ module.exports = class Query {
             //Check if it is an Object, an Array or a literal value
             if (field instanceof Object && !(field instanceof Array)) {
                 //If it is an object do recursive 
-                string += this.parseToQueryParams(field, (raiz ? raiz + '.' : '') + f);
+                string += this.parseToQueryParams(field, (root ? root + '.' : '') + f);
             } else if (field instanceof Array) {
                 //If it is an array convert to a list of id
-                string += f + '=' + field.map((e) => { return e.id; }).join(',');
+                string += (root ? root + "." : "") + f + '=' + field.map((e) => {
+                    if (typeof e === "string") {
+                        return e;
+                    } else if (e.id) {
+                        return e.id;
+                    } else {
+                        return this.parseToQueryParams(e, (root ? root + '.' : '') + f); //FIXME
+                    }
+                }).join(',');
                 string += '&';
             } else {
                 //If it is a literal convert to "name=value&" format
-                string += (raiz ? raiz + '.' : '') + f + '=' + field + '&';
+                string += (root ? root + '.' : '') + f + '=' + field + '&';
             }
         }
         return string;

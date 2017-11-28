@@ -193,8 +193,8 @@ function _processSequentialPromises(type, manager, queries, result, res, streami
             }
         }).catch(function (err) {
 
-            let errorString = "Error processing sequential promsies in controllers";
-            return controllerErrorHandler(res, "promise", "_processSequentialPromises", 500, errorString, err);
+            let errorString = "Error processing sequential promises in controllers";
+            return controllerErrorHandler(res, "promise", "_processSequentialPromises", 500, errorString, JSON.stringify(err));
 
         });
     }

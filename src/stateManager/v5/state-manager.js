@@ -28,13 +28,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var config = require('../../config');
 var logger = config.logger;
+
 var db = require('../../database');
 var ErrorModel = require('../../errors/index.js').errorModel;
 var calculators = require('./calculators.js');
 
 var Promise = require('bluebird');
 var request = require('requestretry');
-var iso8601 = require('iso8601');
+//var iso8601 = require('iso8601');
+var moment = require("moment");
+var utils = require('../../utils/utils');
+var promiseErrorHandler = utils.errors.promiseErrorHandler;
 
 
 /**
@@ -46,7 +50,7 @@ var iso8601 = require('iso8601');
  * @requires calculators
  * @requires bluebird
  * @requires requestretry
- * @requires iso8601
+ * @requires moment
  * */
 module.exports = initialize;
 
@@ -107,6 +111,9 @@ function _get(stateType, query) {
     return new Promise(function (resolve, reject) {
         logger.sm("Getting " + stateType + " state for query =  " + JSON.stringify(query));
         var StateModel = db.models.StateModel;
+        if (!query) {
+            query = {};
+        }
         //Executes a mongodb query to search States file that match with query
         // projectionBuilder(...) builds a mongodb query from StateManagerQuery
         // refineQuery(...) ensures that the query is well formed, chooses and renames fields to make a well formed query.
@@ -152,8 +159,11 @@ function _get(stateType, query) {
                     } else {
                         stateManager.update(stateType, query, data.logsState).then(function (states) {
                             return resolve(states);
-                        }, function (err) {
-                            return reject(err);
+                        }).catch(function (err) {
+
+                            var errorString = "Error getting metrics";
+                            return promiseErrorHandler(reject, "state-manager", "_get", 500, errorString, err);
+
                         });
                     }
                 }, function (err) {
@@ -270,20 +280,22 @@ function _update(stateType, query, logsState) {
     return new Promise(function (resolve, reject) {
         switch (stateType) {
             case "agreement":
-                calculators.agreementCalculator.process(stateManager.agreement, stateManager)
-                    .then(function (agreementState) {
-                        stateManager.put(stateType, agreementState).then(function (data) {
-                            return resolve(data);
-                        }, function (err) {
-                            return reject(err);
-                        });
+                calculators.agreementCalculator.process(stateManager)
+                    .then(function (states) {
+                        // states.forEach((state)=>{
+                        // 	stateManager.put(state.stateType, agreementState).then(function (data) {
+                        return resolve(states);
+                        //     }, function (err) {
+                        //         return reject(err);
+                        //     });
+                        // });
                     }, function (err) {
                         logger.error(err.toString());
                         return reject(new ErrorModel(500, err));
                     });
                 break;
             case "guarantees":
-                calculators.guaranteeCalculator.process(stateManager.agreement, query.guarantee, stateManager)
+                calculators.guaranteeCalculator.process(stateManager, query)
                     .then(function (guaranteeStates) {
                         logger.sm('Guarantee states for ' + guaranteeStates.guaranteeId + ' have been calculated (' + guaranteeStates.guaranteeValues.length + ') ');
                         logger.debug('Guarantee states: ' + JSON.stringify(guaranteeStates, null, 2));
@@ -304,16 +316,20 @@ function _update(stateType, query, logsState) {
                         logger.sm('Created parameters array for saving states of guarantee of length ' + processguarantees.length);
                         logger.sm('Persisting guarantee states...');
                         Promise.all(processguarantees).then(function (guarantees) {
+
                             logger.sm('All guarantee states have been persisted');
                             var result = [];
                             for (var a in guarantees) {
                                 result.push(guarantees[a][0]);
                             }
                             return resolve(result);
+
                         });
-                    }, function (err) {
-                        logger.error(err.toString());
-                        return reject(new ErrorModel(500, err));
+                    }).catch(function (err) {
+
+                        let errorString = "Error processing guarantees";
+                        return promiseErrorHandler(reject, "state-manager", "_update", 500, errorString, err);
+
                     });
                 break;
             case "metrics":
@@ -336,7 +352,7 @@ function _update(stateType, query, logsState) {
                         });
                         logger.sm('Created parameters array for saving states of metric of length ' + processMetrics.length);
                         logger.sm('Persisting metric states...');
-                        Promise.all(processMetrics).then(function (metrics) {
+                        return Promise.all(processMetrics).then(function (metrics) {
                             logger.sm('All metric states have been persisted');
                             var result = [];
                             for (var a in metrics) {
@@ -344,9 +360,11 @@ function _update(stateType, query, logsState) {
                             }
                             return resolve(result);
                         });
-                    }, function (err) {
-                        logger.error(err.toString());
-                        return reject(new ErrorModel(500, err));
+                    }).catch(function (err) {
+
+                        var errorString = "Error processing metrics";
+                        return promiseErrorHandler(reject, "state-manager", "_update", 500, errorString, err);
+
                     });
                 break;
             case "pricing":
@@ -400,7 +418,7 @@ function State(value, query, metadata) {
  * */
 function Record(value, metadata) {
     this.value = value;
-    this.time = iso8601.fromDate(new Date());
+    this.time = moment().toISOString();
     if (metadata) {
         for (var v in metadata) {
             this[v] = metadata[v];
@@ -486,9 +504,6 @@ function isUpdated(agreement, states) {
     });
 }
 
-
-
-
 /**
  * Get current state.
  * @function getCurrent
@@ -573,7 +588,8 @@ function projectionBuilder(stateType, query) {
         metrics: "metric",
         quotas: "quota",
         rates: "rate",
-        pricing: "pricing"
+        pricing: "pricing",
+        agreement: "agreement"
     };
     var projection = {};
     var singularStateType = singular[stateType];

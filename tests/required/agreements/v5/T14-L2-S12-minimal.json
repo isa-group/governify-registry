@@ -71,15 +71,13 @@
           "stateUri": "http://naos.logs.chap.governify.io/api/v1/count",
           "structure": {
             "instanceIdColumn": "INCIDENT_ID",
-            "timestampColumn": "CREATION_DATE"
+            "timestampColumn": "CREATION_DATE",
+            "actionColumn": "SID"
           },
           "terminator": {
-            "column": "ESTADO",
+            "column": "ACTION",
             "values": [
-              "Cerrado",
-              "Cancelada",
-              "Anulada",
-              "Cerrada"
+              "SDK_HIST_ACCEPT_CLOSE"
             ]
           },
           "scopes": {
@@ -87,6 +85,31 @@
               "priority": "PRIORIDAD",
               "type": "TIPO"
             }
+          }
+        }
+      },
+      "computers": {
+        "ppinot": {
+          "url": "http://localhost:8080/",
+          "apiVersion": "5",
+          "config": {
+            "measures": "http://localhost:8082/GAUSS_IO.json?accessToken=32578346",
+            "schedules": {
+              "24x7": "L-DT00:00-24:00",
+              "regular": [
+                {
+                  "from": "--07-16",
+                  "to": "--09-14",
+                  "schedule": "L-VT09:00-13:00H"
+                },
+                {
+                  "from": "--09-15",
+                  "to": "--07-15",
+                  "schedule": "L-VT09:00-18:00H"
+                }
+              ]
+            },
+            "holidays": "http://localhost:8082/holidays.json"
           }
         }
       }
