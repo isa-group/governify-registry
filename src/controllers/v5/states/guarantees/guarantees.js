@@ -118,7 +118,7 @@ function _guaranteesGET(req, res) {
 
             var guaranteesQueries = [];
             manager.agreement.terms.guarantees.forEach(function (guarantee) {
-                var query = new Query(req.query);
+                var query = gUtils.buildGuaranteeQuery(guarantee.id, req.query.from, req.query.to);
                 var validation = utils.validators.guaranteeQuery(query, guarantee.id, guarantee);
                 if (!validation.valid) {
                     validation.guarantee = guarantee.id;
@@ -167,7 +167,9 @@ function _guaranteeIdGET(req, res) {
     stateManager({
         id: agreementId
     }).then(function (manager) {
-        var validation = utils.validators.guaranteeQuery(query, guaranteeId, manager.agreement.terms.guarantees.find((e) => { return guaranteeId === e.id; }));
+        var validation = utils.validators.guaranteeQuery(query, guaranteeId, manager.agreement.terms.guarantees.find((e) => {
+            return guaranteeId === e.id;
+        }));
         if (!validation.valid) {
 
             let errorString = "Query validation error";
@@ -245,7 +247,9 @@ function _guaranteeIdPenaltyGET(req, res) {
                 };
 
                 logger.ctlState("Query before parse: " + JSON.stringify(query, null, 2));
-                if (!query.log) { throw new Error('Logs fields is required'); }
+                if (!query.log) {
+                    throw new Error('Logs fields is required');
+                }
                 var logId = Object.keys(query.log)[0];
                 var log = manager.agreement.context.definitions.logs[logId];
 
@@ -260,7 +264,7 @@ function _guaranteeIdPenaltyGET(req, res) {
                     var ret = [];
                     for (var ie in success) {
                         var e = success[ie];
-                        if (moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to) /*&& gUtils.checkQuery(e, query)*/) {
+                        if (moment(e.period.from).isSameOrAfter(p.from) && moment(e.period.to).isSameOrBefore(p.to) /*&& gUtils.checkQuery(e, query)*/ ) {
                             ret.push(e);
                         }
                     }
