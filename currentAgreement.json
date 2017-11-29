@@ -1,2461 +1,1029 @@
-[
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K01",
-    "scope": {
-      "NODO": "SEVILLA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
+{
+    "id": "SCO",
+    "version": "1.0.0",
+    "iagree": "5.0.0",
+    "type": "agreement",
+    "context": {
+        "provider": "Oracle",
+        "consumer": "CHAP",
+        "validity": {
+            "initial": "2017-10-01",
+            "timeZone": "Europe/Madrid"
+        },
+        "infrastructure": {
+            "designer": "http://designer.governify.io",
+            "portal": "http://portal.governify.io",
+            "registry": "http://registry.chap.governify.io",
+            "reporter": "http://reporter.services.chap.governify.io"
+        },
+        "definitions": {
+            "schemas": {
+                "porcentajePCAP": {
+                    "description": "Porcentaje de penalizacion sobre la facturacion mensual SCO",
+                    "type": "double",
+                    "unit": "%"
+                },
+                "deadline": {
+                    "description": "Plazo de resolucion de una inicidencia",
+                    "type": "string",
+                    "unit": "hours"
+                },
+                "schedule": {
+                    "description": "Horario del servicio",
+                    "type": "string"
+                }
+            },
+            "scopes": {
+                "SCO": {
+                    "priority": {
+                        "name": "Priority",
+                        "description": "Priority de la incidencia",
+                        "type": "string",
+                        "metadata": {
+                            "reported": true
+                        }
+                    },
+                    "type": {
+                        "name": "Type",
+                        "description": "Type de log",
+                        "type": "string",
+                        "metadata": {
+                            "reported": true
+                        }
+                    },
+                    "serviceLine": {
+                        "name": "LineaServicio",
+                        "description": "Linea de Servicio",
+                        "type": "string",
+                        "default": "Gestión de Incidencia"
+                    },
+                    "activity": {
+                        "name": "Actividad",
+                        "description": "Actividad",
+                        "type": "string",
+                        "default": "Servicio Avanzado de Soporte"
+                    }
+                }
+            },
+            "logs": {
+                "naos": {
+                    "default": true,
+                    "uri": "http://localhost:8011/log-sintetico_close.json",
+                    "stateUri": "https://naos.logs.chap.governify.io/api/v1/count",
+                    "structure": {
+                        "instanceIdColumn": "INCIDENT_ID",
+                        "timestampColumn": "CREATION_DATE",
+                        "actionColumn": "SID"
+                    },
+                    "terminator": {
+                        "column": "ACTION",
+                        "values": [
+                            "SDK_HIST_ACCEPT_CLOSE"
+                        ]
+                    },
+                    "scopes": {
+                        "SCO": {
+                            "priority": "PRIORITY",
+                            "type": "TYPE"
+                        }
+                    }
+                }
+            },
+            "computers": {
+                "ppinot": {
+                    "url": "http://localhost:8080/ppinot/",
+                    "apiVersion": "6",
+                    "config": {
+                        "measures": "https://repo.designer.governify.io/chap/chap/GAUSS/indicators/SCO_IO.json?accessToken=710a4950250286365cf841f765a790f1",
+                        "schedules": {
+                            "regular": "L-DT00:00-23:59",
+                            "limping": [{
+                                    "from": "07-16",
+                                    "to": "09-14",
+                                    "schedule": "L-VT09:00-13:00H"
+                                },
+                                {
+                                    "from": "09-15",
+                                    "to": "07-15",
+                                    "schedule": "L-VT09:00-18:00H"
+                                }
+                            ]
+                        },
+                        "holidays": ""
+                    }
+                }
+            }
+        }
     },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-02-15T22:59:59.999Z"
-    },
-    "value": false,
-    "metrics": {
-      "SPU_IO_K01": "72.72727272727273"
-    },
-    "evidences": [
-      {
-        "id": "4444444"
-      },
-      {
-        "id": "11111111"
-      },
-      {
-        "id": "16161611616"
-      },
-      {
-        "id": "13131313"
-      },
-      {
-        "id": "8888888"
-      },
-      {
-        "id": "9866666666"
-      },
-      {
-        "id": "984444444"
-      },
-      {
-        "id": "5555555"
-      },
-      {
-        "id": "985555555"
-      },
-      {
-        "id": "777777"
-      },
-      {
-        "id": "121212122"
-      }
-    ],
-    "penalties": {
-      "porcentajePTOT": -3
+    "terms": {
+        "pricing": {
+            "billing": {
+                "period": "monthly",
+                "initial": "2016-05-12T10:35:36.000",
+                "penalties": [{
+                    "over": {
+                        "porcentajePCAP": {
+                            "$ref": "#/context/definitions/schemas/porcentajePCAP"
+                        }
+                    },
+                    "aggregatedBy": "sum",
+                    "groupBy": {
+                        "serviceLine": {
+                            "$ref": "#/context/definitions/scopes/SCO/serviceLine"
+                        },
+                        "activity": {
+                            "$ref": "#/context/definitions/scopes/SCO/activity"
+                        }
+                    },
+                    "upTo": -10
+                }]
+            }
+        },
+        "metrics": {
+            "issue_trs_duration": {
+                "schema": {
+                    "description": "Fecha de Inicio de incidencia",
+                    "type": "string"
+                },
+                "computer": {
+                    "$ref": "#/context/definitions/computers/ppinot",
+                    "name": "/indicators/issue_trs_duration"
+                }
+            },
+            "issue_pu_duration": {
+                "schema": {
+                    "description": "Fecha de Inicio de incidencia",
+                    "type": "string"
+                },
+                "computer": {
+                    "$ref": "#/context/definitions/computers/ppinot",
+                    "name": "/indicators/issue_pu_duration"
+                }
+            },
+            "issue_trl_duration": {
+                "schema": {
+                    "description": "Duracion de una incidencia",
+                    "type": "string",
+                    "unit": "seconds"
+                },
+                "computer": {
+                    "$ref": "#/context/definitions/computers/ppinot",
+                    "name": "/indicators/issue_trl_duration"
+                }
+            },
+            "CHAP_TRS_evidence": {
+                "schema": {
+                    "description": "Incidencias resueltas en plazo",
+                    "type": "string"
+                },
+                "computer": {
+                    "$ref": "#/context/definitions/computers/ppinot",
+                    "name": "/indicators/CHAP_TRS_evidence"
+                },
+                "parameters": {
+                    "deadline": {
+                        "schema": {
+                            "$ref": "#/context/definitions/schemas/deadline"
+                        }
+                    },
+                    "schedule": {
+                        "schema": {
+                            "$ref": "#/context/definitions/schemas/schedule"
+                        }
+                    }
+                },
+                "scope": {
+                    "$ref": "#/context/definitions/scopes/SCO"
+                }
+            },
+            "CHAP_TRS": {
+                "schema": {
+                    "description": "Porcentaje incidencias resueltas en plazo",
+                    "type": "double",
+                    "unit": "%"
+                },
+                "computer": {
+                    "$ref": "#/context/definitions/computers/ppinot",
+                    "name": "/indicators/CHAP_TRS"
+                },
+                "parameters": {
+                    "deadline": {
+                        "schema": {
+                            "$ref": "#/context/definitions/schemas/deadline"
+                        }
+                    },
+                    "schedule": {
+                        "schema": {
+                            "$ref": "#/context/definitions/schemas/schedule"
+                        }
+                    }
+                },
+                "scope": {
+                    "$ref": "#/context/definitions/scopes/SCO"
+                },
+                "metadata": {
+                    "name": "Porcentaje incidencias respondidas en plazo",
+                    "description": "Porcentaje de incidencias respondidas en plazo respecto del total de incidencias comunicadas.",
+                    "kind": "Penalizador",
+                    "class": "Negocio",
+                    "reportable": false
+                }
+            },
+            "CHAP_TRL_evidence": {
+                "schema": {
+                    "description": "Incidencias resueltas en plazo",
+                    "type": "string"
+                },
+                "computer": {
+                    "$ref": "#/context/definitions/computers/ppinot",
+                    "name": "/indicators/CHAP_TRL_evidence"
+                },
+                "parameters": {
+                    "deadline": {
+                        "schema": {
+                            "$ref": "#/context/definitions/schemas/deadline"
+                        }
+                    },
+                    "schedule": {
+                        "schema": {
+                            "$ref": "#/context/definitions/schemas/schedule"
+                        }
+                    }
+                },
+                "scope": {
+                    "$ref": "#/context/definitions/scopes/SCO"
+                }
+            },
+            "CHAP_TRL": {
+                "schema": {
+                    "description": "Porcentaje incidencias resueltas en plazo",
+                    "type": "double",
+                    "unit": "%"
+                },
+                "computer": {
+                    "$ref": "#/context/definitions/computers/ppinot",
+                    "name": "/indicators/CHAP_TRL"
+                },
+                "parameters": {
+                    "deadline": {
+                        "schema": {
+                            "$ref": "#/context/definitions/schemas/deadline"
+                        }
+                    },
+                    "schedule": {
+                        "schema": {
+                            "$ref": "#/context/definitions/schemas/schedule"
+                        }
+                    }
+                },
+                "scope": {
+                    "$ref": "#/context/definitions/scopes/SCO"
+                },
+                "metadata": {
+                    "name": "Porcentaje incidencias resueltas en plazo",
+                    "description": "Porcentaje de incidencias resueltas en plazo respecto del total de incidencias comunicadas.",
+                    "kind": "Penalizador",
+                    "class": "Negocio",
+                    "reportable": false
+                }
+            },
+            "CHAP_PU_evidence": {
+                "schema": {
+                    "description": "Incidencias resueltas en plazo",
+                    "type": "string"
+                },
+                "computer": {
+                    "$ref": "#/context/definitions/computers/ppinot",
+                    "name": "/indicators/CHAP_PU_evidence"
+                },
+                "parameters": {
+                    "deadline": {
+                        "schema": {
+                            "$ref": "#/context/definitions/schemas/deadline"
+                        }
+                    },
+                    "schedule": {
+                        "schema": {
+                            "$ref": "#/context/definitions/schemas/schedule"
+                        }
+                    }
+                },
+                "scope": {
+                    "$ref": "#/context/definitions/scopes/SCO"
+                }
+            },
+            "CHAP_PU": {
+                "schema": {
+                    "description": "Porcentaje incidencias resueltas en plazo",
+                    "type": "double",
+                    "unit": "%"
+                },
+                "computer": {
+                    "$ref": "#/context/definitions/computers/ppinot",
+                    "name": "/indicators/CHAP_PU"
+                },
+                "parameters": {
+                    "deadline": {
+                        "schema": {
+                            "$ref": "#/context/definitions/schemas/deadline"
+                        }
+                    },
+                    "schedule": {
+                        "schema": {
+                            "$ref": "#/context/definitions/schemas/schedule"
+                        }
+                    }
+                },
+                "scope": {
+                    "$ref": "#/context/definitions/scopes/SCO"
+                },
+                "metadata": {
+                    "name": "Porcentaje de tiempo de pendiente de usuario",
+                    "description": "Porcentaje de tiempo de incidencia en fase pendiente usuario respecto del tiempo total de incidencias comunicadas.",
+                    "kind": "Penalizador",
+                    "class": "Negocio",
+                    "reportable": false
+                }
+            }
+        },
+        "guarantees": [{
+                "id": "CHAP_TRS",
+                "scope": {
+                    "priority": {
+                        "$ref": "#/context/definitions/scopes/SCO/priority"
+                    },
+                    "type": {
+                        "$ref": "#/context/definitions/scopes/SCO/type"
+                    },
+                    "serviceLine": {
+                        "$ref": "#/context/definitions/scopes/SCO/serviceLine"
+                    },
+                    "activity": {
+                        "$ref": "#/context/definitions/scopes/SCO/activity"
+                    }
+                },
+                "of": [{
+                        "scope": {
+                            "priority": "P1",
+                            "type": "*"
+                        },
+                        "objective": "CHAP_TRS >= 90.00",
+                        "with": {
+                            "CHAP_TRS": {
+                                "deadline": "<= 2",
+                                "schedule": {
+                                    "$ref": "#/context/definitions/computers/ppinot/config/schedules/regular"
+                                }
+                            }
+                        },
+                        "window": {
+                            "type": "static",
+                            "period": "monthly",
+                            "initial": "2017-10-01"
+                        },
+                        "evidences": [{
+                                "CHAP_TRS_evidence": {
+                                    "$ref": "#/terms/metrics/CHAP_TRS_evidence"
+                                }
+                            },
+                            {
+                                "issue_trs_duration": {
+                                    "$ref": "#/terms/metrics/issue_trs_duration"
+                                }
+                            },
+                            {
+                                "issue_pu_duration": {
+                                    "$ref": "#/terms/metrics/issue_pu_duration"
+                                }
+                            },
+                            {
+                                "issue_trl_duration": {
+                                    "$ref": "#/terms/metrics/issue_trl_duration"
+                                }
+                            }
+                        ],
+                        "penalties": [{
+                            "over": {
+                                "porcentajePCAP": {
+                                    "$ref": "#/context/definitions/schemas/porcentajePCAP"
+                                }
+                            },
+                            "of": [{
+                                "value": "-1",
+                                "condition": "CHAP_TRS >= 0 && CHAP_TRS < 90.00"
+                            }]
+                        }]
+                    },
+                    {
+                        "scope": {
+                            "priority": "P2",
+                            "type": "*"
+                        },
+                        "objective": "CHAP_TRS >= 90.00",
+                        "with": {
+                            "CHAP_TRS": {
+                                "deadline": "<= 7",
+                                "schedule": {
+                                    "$ref": "#/context/definitions/computers/ppinot/config/schedules/regular"
+                                }
+                            }
+                        },
+                        "window": {
+                            "type": "static",
+                            "period": "monthly",
+                            "initial": "2017-10-01"
+                        },
+                        "evidences": [{
+                                "CHAP_TRS_evidence": {
+                                    "$ref": "#/terms/metrics/CHAP_TRS_evidence"
+                                }
+                            },
+                            {
+                                "issue_trs_duration": {
+                                    "$ref": "#/terms/metrics/issue_trs_duration"
+                                }
+                            },
+                            {
+                                "issue_pu_duration": {
+                                    "$ref": "#/terms/metrics/issue_pu_duration"
+                                }
+                            },
+                            {
+                                "issue_trl_duration": {
+                                    "$ref": "#/terms/metrics/issue_trl_duration"
+                                }
+                            }
+                        ],
+                        "penalties": [{
+                            "over": {
+                                "porcentajePCAP": {
+                                    "$ref": "#/context/definitions/schemas/porcentajePCAP"
+                                }
+                            },
+                            "of": [{
+                                "value": "-0.1",
+                                "condition": "CHAP_TRS >= 0 && CHAP_TRS < 90.00"
+                            }]
+                        }]
+                    },
+                    {
+                        "scope": {
+                            "priority": "P3",
+                            "type": "*"
+                        },
+                        "objective": "CHAP_TRS >= 90.00",
+                        "with": {
+                            "CHAP_TRS": {
+                                "deadline": "<= 24",
+                                "schedule": {
+                                    "$ref": "#/context/definitions/computers/ppinot/config/schedules/regular"
+                                }
+                            }
+                        },
+                        "window": {
+                            "type": "static",
+                            "period": "monthly",
+                            "initial": "2017-10-01"
+                        },
+                        "evidences": [{
+                                "CHAP_TRS_evidence": {
+                                    "$ref": "#/terms/metrics/CHAP_TRS_evidence"
+                                }
+                            },
+                            {
+                                "issue_trs_duration": {
+                                    "$ref": "#/terms/metrics/issue_trs_duration"
+                                }
+                            },
+                            {
+                                "issue_pu_duration": {
+                                    "$ref": "#/terms/metrics/issue_pu_duration"
+                                }
+                            },
+                            {
+                                "issue_trl_duration": {
+                                    "$ref": "#/terms/metrics/issue_trl_duration"
+                                }
+                            }
+                        ],
+                        "penalties": [{
+                            "over": {
+                                "porcentajePCAP": {
+                                    "$ref": "#/context/definitions/schemas/porcentajePCAP"
+                                }
+                            },
+                            "of": [{
+                                "value": "0",
+                                "condition": "CHAP_TRS >= 0 && CHAP_TRS < 90.00"
+                            }]
+                        }]
+                    },
+                    {
+                        "scope": {
+                            "priority": "P4",
+                            "type": "*"
+                        },
+                        "objective": "CHAP_TRS >= 90.00",
+                        "with": {
+                            "CHAP_TRS": {
+                                "deadline": "<= 24",
+                                "schedule": {
+                                    "$ref": "#/context/definitions/computers/ppinot/config/schedules/regular"
+                                }
+                            }
+                        },
+                        "window": {
+                            "type": "static",
+                            "period": "monthly",
+                            "initial": "2017-10-01"
+                        },
+                        "evidences": [{
+                                "CHAP_TRS_evidence": {
+                                    "$ref": "#/terms/metrics/CHAP_TRS_evidence"
+                                }
+                            },
+                            {
+                                "issue_trs_duration": {
+                                    "$ref": "#/terms/metrics/issue_trs_duration"
+                                }
+                            },
+                            {
+                                "issue_pu_duration": {
+                                    "$ref": "#/terms/metrics/issue_pu_duration"
+                                }
+                            },
+                            {
+                                "issue_trl_duration": {
+                                    "$ref": "#/terms/metrics/issue_trl_duration"
+                                }
+                            }
+                        ],
+                        "penalties": [{
+                            "over": {
+                                "porcentajePCAP": {
+                                    "$ref": "#/context/definitions/schemas/porcentajePCAP"
+                                }
+                            },
+                            "of": [{
+                                "value": "0",
+                                "condition": "CHAP_TRS >= 0 && CHAP_TRS < 90.00"
+                            }]
+                        }]
+                    }
+                ]
+            },
+            {
+                "id": "CHAP_TRL",
+                "scope": {
+                    "priority": {
+                        "$ref": "#/context/definitions/scopes/SCO/priority"
+                    },
+                    "type": {
+                        "$ref": "#/context/definitions/scopes/SCO/type"
+                    },
+                    "serviceLine": {
+                        "$ref": "#/context/definitions/scopes/SCO/serviceLine"
+                    },
+                    "activity": {
+                        "$ref": "#/context/definitions/scopes/SCO/activity"
+                    }
+                },
+                "of": [{
+                        "scope": {
+                            "priority": "P1",
+                            "type": "*"
+                        },
+                        "objective": "CHAP_TRL >= 90.00",
+                        "with": {
+                            "CHAP_TRL": {
+                                "deadline": "<= 8",
+                                "schedule": {
+                                    "$ref": "#/context/definitions/computers/ppinot/config/schedules/regular"
+                                }
+                            }
+                        },
+                        "window": {
+                            "type": "static",
+                            "period": "monthly",
+                            "initial": "2017-10-01"
+                        },
+                        "evidences": [{
+                                "CHAP_TRL_evidence": {
+                                    "$ref": "#/terms/metrics/CHAP_TRL_evidence"
+                                }
+                            },
+                            {
+                                "issue_trs_duration": {
+                                    "$ref": "#/terms/metrics/issue_trs_duration"
+                                }
+                            },
+                            {
+                                "issue_pu_duration": {
+                                    "$ref": "#/terms/metrics/issue_pu_duration"
+                                }
+                            },
+                            {
+                                "issue_trl_duration": {
+                                    "$ref": "#/terms/metrics/issue_trl_duration"
+                                }
+                            }
+                        ],
+                        "penalties": [{
+                            "over": {
+                                "porcentajePCAP": {
+                                    "$ref": "#/context/definitions/schemas/porcentajePCAP"
+                                }
+                            },
+                            "of": [{
+                                "value": "-1",
+                                "condition": "CHAP_TRL >= 0 && CHAP_TRL < 90.00"
+                            }]
+                        }]
+                    },
+                    {
+                        "scope": {
+                            "priority": "P2",
+                            "type": "*"
+                        },
+                        "objective": "CHAP_TRL >= 90.00",
+                        "with": {
+                            "CHAP_TRL": {
+                                "deadline": "<= 240",
+                                "schedule": {
+                                    "$ref": "#/context/definitions/computers/ppinot/config/schedules/regular"
+                                }
+                            }
+                        },
+                        "window": {
+                            "type": "static",
+                            "period": "monthly",
+                            "initial": "2017-10-01"
+                        },
+                        "evidences": [{
+                                "CHAP_TRL_evidence": {
+                                    "$ref": "#/terms/metrics/CHAP_TRL_evidence"
+                                }
+                            },
+                            {
+                                "issue_trs_duration": {
+                                    "$ref": "#/terms/metrics/issue_trs_duration"
+                                }
+                            },
+                            {
+                                "issue_pu_duration": {
+                                    "$ref": "#/terms/metrics/issue_pu_duration"
+                                }
+                            },
+                            {
+                                "issue_trl_duration": {
+                                    "$ref": "#/terms/metrics/issue_trl_duration"
+                                }
+                            }
+                        ],
+                        "penalties": [{
+                            "over": {
+                                "porcentajePCAP": {
+                                    "$ref": "#/context/definitions/schemas/porcentajePCAP"
+                                }
+                            },
+                            "of": [{
+                                "value": "-0.1",
+                                "condition": "CHAP_TRL >= 0 && CHAP_TRL < 90.00"
+                            }]
+                        }]
+                    },
+                    {
+                        "scope": {
+                            "priority": "P3",
+                            "type": "*"
+                        },
+                        "objective": "CHAP_TRL >= 90.00",
+                        "with": {
+                            "CHAP_TRL": {
+                                "deadline": "<= 280",
+                                "schedule": {
+                                    "$ref": "#/context/definitions/computers/ppinot/config/schedules/regular"
+                                }
+                            }
+                        },
+                        "window": {
+                            "type": "static",
+                            "period": "monthly",
+                            "initial": "2017-10-01"
+                        },
+                        "evidences": [{
+                                "CHAP_TRL_evidence": {
+                                    "$ref": "#/terms/metrics/CHAP_TRL_evidence"
+                                }
+                            },
+                            {
+                                "issue_trs_duration": {
+                                    "$ref": "#/terms/metrics/issue_trs_duration"
+                                }
+                            },
+                            {
+                                "issue_pu_duration": {
+                                    "$ref": "#/terms/metrics/issue_pu_duration"
+                                }
+                            },
+                            {
+                                "issue_trl_duration": {
+                                    "$ref": "#/terms/metrics/issue_trl_duration"
+                                }
+                            }
+                        ],
+                        "penalties": [{
+                            "over": {
+                                "porcentajePCAP": {
+                                    "$ref": "#/context/definitions/schemas/porcentajePCAP"
+                                }
+                            },
+                            "of": [{
+                                "value": "0",
+                                "condition": "CHAP_TRL >= 0 && CHAP_TRL < 90.00"
+                            }]
+                        }]
+                    },
+                    {
+                        "scope": {
+                            "priority": "P4",
+                            "type": "*"
+                        },
+                        "objective": "CHAP_TRL >= 90.00",
+                        "with": {
+                            "CHAP_TRL": {
+                                "deadline": "<= 280",
+                                "schedule": {
+                                    "$ref": "#/context/definitions/computers/ppinot/config/schedules/regular"
+                                }
+                            }
+                        },
+                        "window": {
+                            "type": "static",
+                            "period": "monthly",
+                            "initial": "2017-10-01"
+                        },
+                        "evidences": [{
+                                "CHAP_TRL_evidence": {
+                                    "$ref": "#/terms/metrics/CHAP_TRL_evidence"
+                                }
+                            },
+                            {
+                                "issue_trs_duration": {
+                                    "$ref": "#/terms/metrics/issue_trs_duration"
+                                }
+                            },
+                            {
+                                "issue_pu_duration": {
+                                    "$ref": "#/terms/metrics/issue_pu_duration"
+                                }
+                            },
+                            {
+                                "issue_trl_duration": {
+                                    "$ref": "#/terms/metrics/issue_trl_duration"
+                                }
+                            }
+                        ],
+                        "penalties": [{
+                            "over": {
+                                "porcentajePCAP": {
+                                    "$ref": "#/context/definitions/schemas/porcentajePCAP"
+                                }
+                            },
+                            "of": [{
+                                "value": "0",
+                                "condition": "CHAP_TRL >= 0 && CHAP_TRL < 90.00"
+                            }]
+                        }]
+                    }
+                ]
+            },
+            {
+                "id": "CHAP_PU",
+                "scope": {
+                    "priority": {
+                        "$ref": "#/context/definitions/scopes/SCO/priority"
+                    },
+                    "type": {
+                        "$ref": "#/context/definitions/scopes/SCO/type"
+                    },
+                    "serviceLine": {
+                        "$ref": "#/context/definitions/scopes/SCO/serviceLine"
+                    },
+                    "activity": {
+                        "$ref": "#/context/definitions/scopes/SCO/activity"
+                    }
+                },
+                "of": [{
+                        "scope": {
+                            "priority": "P1",
+                            "type": "*"
+                        },
+                        "objective": "CHAP_PU >= 50.00",
+                        "with": {
+                            "CHAP_PU": {
+                                "deadline": "<= 3",
+                                "schedule": {
+                                    "$ref": "#/context/definitions/computers/ppinot/config/schedules/regular"
+                                }
+                            }
+                        },
+                        "window": {
+                            "type": "static",
+                            "period": "monthly",
+                            "initial": "2017-10-01"
+                        },
+                        "evidences": [{
+                                "CHAP_PU_evidence": {
+                                    "$ref": "#/terms/metrics/CHAP_PU_evidence"
+                                }
+                            },
+                            {
+                                "issue_trs_duration": {
+                                    "$ref": "#/terms/metrics/issue_trs_duration"
+                                }
+                            },
+                            {
+                                "issue_pu_duration": {
+                                    "$ref": "#/terms/metrics/issue_pu_duration"
+                                }
+                            },
+                            {
+                                "issue_trl_duration": {
+                                    "$ref": "#/terms/metrics/issue_trl_duration"
+                                }
+                            }
+                        ],
+                        "penalties": [{
+                            "over": {
+                                "porcentajePCAP": {
+                                    "$ref": "#/context/definitions/schemas/porcentajePCAP"
+                                }
+                            },
+                            "of": [{
+                                "value": "-1",
+                                "condition": "CHAP_PU >= 0 && CHAP_PU < 90.00"
+                            }]
+                        }]
+                    },
+                    {
+                        "scope": {
+                            "priority": "P2",
+                            "type": "*"
+                        },
+                        "objective": "CHAP_PU >= 50.00",
+                        "with": {
+                            "CHAP_PU": {
+                                "deadline": "<= 6",
+                                "schedule": {
+                                    "$ref": "#/context/definitions/computers/ppinot/config/schedules/regular"
+                                }
+                            }
+                        },
+                        "window": {
+                            "type": "static",
+                            "period": "monthly",
+                            "initial": "2017-10-01"
+                        },
+                        "evidences": [{
+                                "CHAP_PU_evidence": {
+                                    "$ref": "#/terms/metrics/CHAP_PU_evidence"
+                                }
+                            },
+                            {
+                                "issue_trs_duration": {
+                                    "$ref": "#/terms/metrics/issue_trs_duration"
+                                }
+                            },
+                            {
+                                "issue_pu_duration": {
+                                    "$ref": "#/terms/metrics/issue_pu_duration"
+                                }
+                            },
+                            {
+                                "issue_trl_duration": {
+                                    "$ref": "#/terms/metrics/issue_trl_duration"
+                                }
+                            }
+                        ],
+                        "penalties": [{
+                            "over": {
+                                "porcentajePCAP": {
+                                    "$ref": "#/context/definitions/schemas/porcentajePCAP"
+                                }
+                            },
+                            "of": [{
+                                "value": "-0.1",
+                                "condition": "CHAP_PU >= 0 && CHAP_PU < 90.00"
+                            }]
+                        }]
+                    },
+                    {
+                        "scope": {
+                            "priority": "P3",
+                            "type": "*"
+                        },
+                        "objective": "CHAP_PU >= 50.00",
+                        "with": {
+                            "CHAP_PU": {
+                                "deadline": "<= 12",
+                                "schedule": {
+                                    "$ref": "#/context/definitions/computers/ppinot/config/schedules/regular"
+                                }
+                            }
+                        },
+                        "window": {
+                            "type": "static",
+                            "period": "monthly",
+                            "initial": "2017-10-01"
+                        },
+                        "evidences": [{
+                                "CHAP_PU_evidence": {
+                                    "$ref": "#/terms/metrics/CHAP_PU_evidence"
+                                }
+                            },
+                            {
+                                "issue_trs_duration": {
+                                    "$ref": "#/terms/metrics/issue_trs_duration"
+                                }
+                            },
+                            {
+                                "issue_pu_duration": {
+                                    "$ref": "#/terms/metrics/issue_pu_duration"
+                                }
+                            },
+                            {
+                                "issue_trl_duration": {
+                                    "$ref": "#/terms/metrics/issue_trl_duration"
+                                }
+                            }
+                        ],
+                        "penalties": [{
+                            "over": {
+                                "porcentajePCAP": {
+                                    "$ref": "#/context/definitions/schemas/porcentajePCAP"
+                                }
+                            },
+                            "of": [{
+                                "value": "0",
+                                "condition": "CHAP_PU >= 0 && CHAP_PU < 90.00"
+                            }]
+                        }]
+                    },
+                    {
+                        "scope": {
+                            "priority": "P4",
+                            "type": "*"
+                        },
+                        "objective": "CHAP_PU >= 50.00",
+                        "with": {
+                            "CHAP_PU": {
+                                "deadline": "<= 24",
+                                "schedule": {
+                                    "$ref": "#/context/definitions/computers/ppinot/config/schedules/regular"
+                                }
+                            }
+                        },
+                        "window": {
+                            "type": "static",
+                            "period": "monthly",
+                            "initial": "2017-10-01"
+                        },
+                        "evidences": [{
+                                "CHAP_PU_evidence": {
+                                    "$ref": "#/terms/metrics/CHAP_PU_evidence"
+                                }
+                            },
+                            {
+                                "issue_trs_duration": {
+                                    "$ref": "#/terms/metrics/issue_trs_duration"
+                                }
+                            },
+                            {
+                                "issue_pu_duration": {
+                                    "$ref": "#/terms/metrics/issue_pu_duration"
+                                }
+                            },
+                            {
+                                "issue_trl_duration": {
+                                    "$ref": "#/terms/metrics/issue_trl_duration"
+                                }
+                            }
+                        ],
+                        "penalties": [{
+                            "over": {
+                                "porcentajePCAP": {
+                                    "$ref": "#/context/definitions/schemas/porcentajePCAP"
+                                }
+                            },
+                            "of": [{
+                                "value": "0",
+                                "condition": "CHAP_PU >= 0 && CHAP_PU < 90.00"
+                            }]
+                        }]
+                    }
+                ]
+            }
+        ]
     }
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K01",
-    "scope": {
-      "NODO": "HUELVA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-02-15T23:00:00.000Z",
-      "to": "2016-03-15T22:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K01": "100.0"
-    },
-    "evidences": [
-      {
-        "id": "2222222"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K01",
-    "scope": {
-      "NODO": "GRANADA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-03-15T23:00:00.000Z",
-      "to": "2016-04-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K01": "100.0"
-    },
-    "evidences": [
-      {
-        "id": "1212121212121"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K01",
-    "scope": {
-      "NODO": "CORDOBA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-04-15T22:00:00.000Z",
-      "to": "2016-05-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K01": "100.0"
-    },
-    "evidences": [
-      {
-        "id": "13131313131313"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K06_t",
-    "scope": {
-      "CENTRO": "H. U. DE JEREZ",
-      "NODO": "SEVILLA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-02-15T22:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K06_t": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "16161611616"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K06_t",
-    "scope": {
-      "CENTRO": "PUERTA BLANCA",
-      "NODO": "SEVILLA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-02-15T22:59:59.999Z"
-    },
-    "value": false,
-    "metrics": {
-      "SPU_IO_K06_t": "50.0"
-    },
-    "evidences": [
-      {
-        "id": "4444444"
-      },
-      {
-        "id": "11111111"
-      },
-      {
-        "id": "984444444"
-      },
-      {
-        "id": "5555555"
-      }
-    ],
-    "penalties": {
-      "porcentajePTOT": -3
-    }
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K06_t",
-    "scope": {
-      "CENTRO": "H. U. VIRGEN DEL ROCIO",
-      "NODO": "SEVILLA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-02-15T22:59:59.999Z"
-    },
-    "value": false,
-    "metrics": {
-      "SPU_IO_K06_t": "50.0"
-    },
-    "evidences": [
-      {
-        "id": "9866666666"
-      },
-      {
-        "id": "985555555"
-      }
-    ],
-    "penalties": {
-      "porcentajePTOT": -3
-    }
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K06_t",
-    "scope": {
-      "CENTRO": "H. C. AXARQUIA",
-      "NODO": "HUELVA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-02-15T23:00:00.000Z",
-      "to": "2016-03-15T22:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K06_t": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "2222222"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K06_t",
-    "scope": {
-      "CENTRO": "H. C. AXARQUIA",
-      "NODO": "GRANADA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-03-15T23:00:00.000Z",
-      "to": "2016-04-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K06_t": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1212121212121"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K06_t",
-    "scope": {
-      "CENTRO": "H. C. AXARQUIA",
-      "NODO": "CORDOBA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-04-15T22:00:00.000Z",
-      "to": "2016-05-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K06_t": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "13131313131313"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K06",
-    "scope": {
-      "NODO": "SEVILLA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-02-15T22:59:59.999Z"
-    },
-    "value": false,
-    "metrics": {
-      "SPU_IO_K06": "42.857142857142854"
-    },
-    "evidences": [
-      {
-        "id": "4444444"
-      },
-      {
-        "id": "11111111"
-      },
-      {
-        "id": "16161611616"
-      },
-      {
-        "id": "9866666666"
-      },
-      {
-        "id": "984444444"
-      },
-      {
-        "id": "5555555"
-      },
-      {
-        "id": "985555555"
-      }
-    ],
-    "penalties": {
-      "porcentajePTOT": -3
-    }
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K06",
-    "scope": {
-      "NODO": "HUELVA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-02-15T23:00:00.000Z",
-      "to": "2016-03-15T22:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K06": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "2222222"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K06",
-    "scope": {
-      "NODO": "GRANADA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-03-15T23:00:00.000Z",
-      "to": "2016-04-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K06": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1212121212121"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K06",
-    "scope": {
-      "NODO": "CORDOBA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-04-15T22:00:00.000Z",
-      "to": "2016-05-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K06": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "13131313131313"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K06_C",
-    "scope": {
-      "CENTRO": "H. U. VIRGEN DEL ROCIO",
-      "NODO": "SEVILLA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-02-15T23:00:00.000Z",
-      "to": "2016-03-15T22:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K06_last_penalty": -3,
-      "SPU_IO_K06_current_penalty": 0
-    },
-    "evidences": [],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K06_C",
-    "scope": {
-      "CENTRO": "PUERTA BLANCA",
-      "NODO": "SEVILLA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-02-15T23:00:00.000Z",
-      "to": "2016-03-15T22:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K06_last_penalty": -3,
-      "SPU_IO_K06_current_penalty": 0
-    },
-    "evidences": [],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K06_C",
-    "scope": {
-      "CENTRO": "H. U. VIRGEN DEL ROCIO",
-      "NODO": "SEVILLA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-02-15T22:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K06_last_penalty": 0,
-      "SPU_IO_K06_current_penalty": -3
-    },
-    "evidences": [],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K06_C",
-    "scope": {
-      "CENTRO": "PUERTA BLANCA",
-      "NODO": "SEVILLA",
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada",
-      "priority": "P2"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-02-15T22:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K06_last_penalty": 0,
-      "SPU_IO_K06_current_penalty": -3
-    },
-    "evidences": [],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Granada",
-      "activity": "Actividad no planificada",
-      "nodeETC": "< 20"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-04-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000040"
-      },
-      {
-        "id": "1000031"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Huelva",
-      "activity": "Actividad no planificada",
-      "nodeETC": "< 20"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-04-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000028"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Jaen",
-      "activity": "Actividad no planificada",
-      "nodeETC": "< 20"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-04-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000026"
-      },
-      {
-        "id": "1000044"
-      },
-      {
-        "id": "1000035"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Almeria",
-      "activity": "Actividad no planificada",
-      "nodeETC": "< 20"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-04-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000032"
-      },
-      {
-        "id": "1000023"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Granada",
-      "activity": "Actividad no planificada",
-      "nodeETC": "< 20"
-    },
-    "period": {
-      "from": "2016-04-15T22:00:00.000Z",
-      "to": "2016-07-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000049"
-      },
-      {
-        "id": "1000067"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Huelva",
-      "activity": "Actividad no planificada",
-      "nodeETC": "< 20"
-    },
-    "period": {
-      "from": "2016-04-15T22:00:00.000Z",
-      "to": "2016-07-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000055"
-      },
-      {
-        "id": "1000046"
-      },
-      {
-        "id": "1000064"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Jaen",
-      "activity": "Actividad no planificada",
-      "nodeETC": "< 20"
-    },
-    "period": {
-      "from": "2016-04-15T22:00:00.000Z",
-      "to": "2016-07-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000062"
-      },
-      {
-        "id": "1000053"
-      },
-      {
-        "id": "1000071"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Almeria",
-      "activity": "Actividad no planificada",
-      "nodeETC": "< 20"
-    },
-    "period": {
-      "from": "2016-04-15T22:00:00.000Z",
-      "to": "2016-07-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000068"
-      },
-      {
-        "id": "1000050"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Granada",
-      "activity": "Actividad no planificada",
-      "nodeETC": "< 20"
-    },
-    "period": {
-      "from": "2016-07-15T22:00:00.000Z",
-      "to": "2016-10-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000076"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Huelva",
-      "activity": "Actividad no planificada",
-      "nodeETC": "< 20"
-    },
-    "period": {
-      "from": "2016-07-15T22:00:00.000Z",
-      "to": "2016-10-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000073"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Jaen",
-      "activity": "Actividad no planificada",
-      "nodeETC": "< 20"
-    },
-    "period": {
-      "from": "2016-07-15T22:00:00.000Z",
-      "to": "2016-10-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000080"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Almeria",
-      "activity": "Actividad no planificada",
-      "nodeETC": "< 20"
-    },
-    "period": {
-      "from": "2016-07-15T22:00:00.000Z",
-      "to": "2016-10-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000077"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Cadiz",
-      "activity": "Actividad no planificada",
-      "nodeETC": ">= 20"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-04-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000038"
-      },
-      {
-        "id": "1000020"
-      },
-      {
-        "id": "1000029"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Malaga",
-      "activity": "Actividad no planificada",
-      "nodeETC": ">= 20"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-04-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000039"
-      },
-      {
-        "id": "1000021"
-      },
-      {
-        "id": "1000030"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Sevilla",
-      "activity": "Actividad no planificada",
-      "nodeETC": ">= 20"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-04-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000033"
-      },
-      {
-        "id": "1000042"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Cordoba",
-      "activity": "Actividad no planificada",
-      "nodeETC": ">= 20"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-04-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000025"
-      },
-      {
-        "id": "1000043"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "SSCC",
-      "activity": "Actividad no planificada",
-      "nodeETC": ">= 20"
-    },
-    "period": {
-      "from": "2016-01-15T23:00:00.000Z",
-      "to": "2016-04-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000036"
-      },
-      {
-        "id": "1000027"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Cadiz",
-      "activity": "Actividad no planificada",
-      "nodeETC": ">= 20"
-    },
-    "period": {
-      "from": "2016-04-15T22:00:00.000Z",
-      "to": "2016-07-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000047"
-      },
-      {
-        "id": "1000065"
-      },
-      {
-        "id": "1000056"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Malaga",
-      "activity": "Actividad no planificada",
-      "nodeETC": ">= 20"
-    },
-    "period": {
-      "from": "2016-04-15T22:00:00.000Z",
-      "to": "2016-07-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000066"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Sevilla",
-      "activity": "Actividad no planificada",
-      "nodeETC": ">= 20"
-    },
-    "period": {
-      "from": "2016-04-15T22:00:00.000Z",
-      "to": "2016-07-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000069"
-      },
-      {
-        "id": "1000051"
-      },
-      {
-        "id": "1000060"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Cordoba",
-      "activity": "Actividad no planificada",
-      "nodeETC": ">= 20"
-    },
-    "period": {
-      "from": "2016-04-15T22:00:00.000Z",
-      "to": "2016-07-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000061"
-      },
-      {
-        "id": "1000052"
-      },
-      {
-        "id": "1000070"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "SSCC",
-      "activity": "Actividad no planificada",
-      "nodeETC": ">= 20"
-    },
-    "period": {
-      "from": "2016-04-15T22:00:00.000Z",
-      "to": "2016-07-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000054"
-      },
-      {
-        "id": "1000072"
-      },
-      {
-        "id": "1000063"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Cadiz",
-      "activity": "Actividad no planificada",
-      "nodeETC": ">= 20"
-    },
-    "period": {
-      "from": "2016-07-15T22:00:00.000Z",
-      "to": "2016-10-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000074"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Malaga",
-      "activity": "Actividad no planificada",
-      "nodeETC": ">= 20"
-    },
-    "period": {
-      "from": "2016-07-15T22:00:00.000Z",
-      "to": "2016-10-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000075"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "Sevilla",
-      "activity": "Actividad no planificada",
-      "nodeETC": ">= 20"
-    },
-    "period": {
-      "from": "2016-07-15T22:00:00.000Z",
-      "to": "2016-10-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000078"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "guarantees",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K18",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "ASUNTO_NODO": "SSCC",
-      "activity": "Actividad no planificada",
-      "nodeETC": ">= 20"
-    },
-    "period": {
-      "from": "2016-07-15T22:00:00.000Z",
-      "to": "2016-10-15T21:59:59.999Z"
-    },
-    "value": true,
-    "metrics": {
-      "SPU_IO_K18": "0.0"
-    },
-    "evidences": [
-      {
-        "id": "1000081"
-      }
-    ],
-    "penalties": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K81",
-    "scope": {
-      "priority": "P2",
-      "activity": "*",
-      "serviceLine": "*",
-      "NODO": "SEVILLA",
-      "CENTRO": "H. C. AXARQUIA"
-    },
-    "period": {
-      "to": "2016-02-15T22:59:59.999Z",
-      "from": "2016-01-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": "2.0",
-    "evidences": [
-      {
-        "id": "8888888"
-      },
-      {
-        "id": "777777"
-      }
-    ],
-    "parameters": {}
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K81",
-    "scope": {
-      "priority": "P2",
-      "activity": "*",
-      "serviceLine": "*",
-      "NODO": "SEVILLA",
-      "CENTRO": "H. U. DE JEREZ"
-    },
-    "period": {
-      "to": "2016-02-15T22:59:59.999Z",
-      "from": "2016-01-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": "1.0",
-    "evidences": [
-      {
-        "id": "16161611616"
-      }
-    ],
-    "parameters": {}
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K81",
-    "scope": {
-      "priority": "P2",
-      "activity": "*",
-      "serviceLine": "*",
-      "NODO": "SEVILLA",
-      "CENTRO": "PUERTA BLANCA"
-    },
-    "period": {
-      "to": "2016-02-15T22:59:59.999Z",
-      "from": "2016-01-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": "4.0",
-    "evidences": [
-      {
-        "id": "4444444"
-      },
-      {
-        "id": "11111111"
-      },
-      {
-        "id": "984444444"
-      },
-      {
-        "id": "5555555"
-      }
-    ],
-    "parameters": {}
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K81",
-    "scope": {
-      "priority": "P2",
-      "activity": "*",
-      "serviceLine": "*",
-      "NODO": "SEVILLA",
-      "CENTRO": "H. U. VIRGEN DEL ROCIO"
-    },
-    "period": {
-      "to": "2016-02-15T22:59:59.999Z",
-      "from": "2016-01-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": "4.0",
-    "evidences": [
-      {
-        "id": "13131313"
-      },
-      {
-        "id": "9866666666"
-      },
-      {
-        "id": "985555555"
-      },
-      {
-        "id": "121212122"
-      }
-    ],
-    "parameters": {}
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K81",
-    "scope": {
-      "priority": "P2",
-      "activity": "*",
-      "serviceLine": "*",
-      "NODO": "HUELVA",
-      "CENTRO": "H. C. AXARQUIA"
-    },
-    "period": {
-      "to": "2016-03-15T22:59:59.999Z",
-      "from": "2016-02-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": "1.0",
-    "evidences": [
-      {
-        "id": "2222222"
-      }
-    ],
-    "parameters": {}
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K81",
-    "scope": {
-      "priority": "P2",
-      "activity": "*",
-      "serviceLine": "*",
-      "NODO": "GRANADA",
-      "CENTRO": "H. C. AXARQUIA"
-    },
-    "period": {
-      "to": "2016-04-15T21:59:59.999Z",
-      "from": "2016-03-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": "1.0",
-    "evidences": [
-      {
-        "id": "1212121212121"
-      }
-    ],
-    "parameters": {}
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K81",
-    "scope": {
-      "priority": "P2",
-      "activity": "*",
-      "serviceLine": "*",
-      "NODO": "CORDOBA",
-      "CENTRO": "H. C. AXARQUIA"
-    },
-    "period": {
-      "to": "2016-05-15T21:59:59.999Z",
-      "from": "2016-04-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": "1.0",
-    "evidences": [
-      {
-        "id": "13131313131313"
-      }
-    ],
-    "parameters": {}
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K80",
-    "scope": {
-      "priority": "P2",
-      "activity": "*",
-      "serviceLine": "*",
-      "NODO": "SEVILLA",
-      "CENTRO": "H. U. DE JEREZ"
-    },
-    "period": {
-      "to": "2016-02-15T22:59:59.999Z",
-      "from": "2016-01-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": "1.0",
-    "evidences": [
-      {
-        "id": "16161611616"
-      }
-    ],
-    "parameters": {}
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K80",
-    "scope": {
-      "priority": "P2",
-      "activity": "*",
-      "serviceLine": "*",
-      "NODO": "SEVILLA",
-      "CENTRO": "H. C. AXARQUIA"
-    },
-    "period": {
-      "to": "2016-02-15T22:59:59.999Z",
-      "from": "2016-01-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": "2.0",
-    "evidences": [
-      {
-        "id": "8888888"
-      },
-      {
-        "id": "777777"
-      }
-    ],
-    "parameters": {}
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K80",
-    "scope": {
-      "priority": "P2",
-      "activity": "*",
-      "serviceLine": "*",
-      "NODO": "SEVILLA",
-      "CENTRO": "PUERTA BLANCA"
-    },
-    "period": {
-      "to": "2016-02-15T22:59:59.999Z",
-      "from": "2016-01-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": "4.0",
-    "evidences": [
-      {
-        "id": "4444444"
-      },
-      {
-        "id": "11111111"
-      },
-      {
-        "id": "984444444"
-      },
-      {
-        "id": "5555555"
-      }
-    ],
-    "parameters": {}
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K80",
-    "scope": {
-      "priority": "P2",
-      "activity": "*",
-      "serviceLine": "*",
-      "NODO": "SEVILLA",
-      "CENTRO": "H. U. VIRGEN DEL ROCIO"
-    },
-    "period": {
-      "to": "2016-02-15T22:59:59.999Z",
-      "from": "2016-01-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": "4.0",
-    "evidences": [
-      {
-        "id": "13131313"
-      },
-      {
-        "id": "9866666666"
-      },
-      {
-        "id": "985555555"
-      },
-      {
-        "id": "121212122"
-      }
-    ],
-    "parameters": {}
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K80",
-    "scope": {
-      "priority": "P2",
-      "activity": "*",
-      "serviceLine": "*",
-      "NODO": "HUELVA",
-      "CENTRO": "H. C. AXARQUIA"
-    },
-    "period": {
-      "to": "2016-03-15T22:59:59.999Z",
-      "from": "2016-02-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": "1.0",
-    "evidences": [
-      {
-        "id": "2222222"
-      }
-    ],
-    "parameters": {}
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K80",
-    "scope": {
-      "priority": "P2",
-      "activity": "*",
-      "serviceLine": "*",
-      "NODO": "GRANADA",
-      "CENTRO": "H. C. AXARQUIA"
-    },
-    "period": {
-      "to": "2016-04-15T21:59:59.999Z",
-      "from": "2016-03-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": "1.0",
-    "evidences": [
-      {
-        "id": "1212121212121"
-      }
-    ],
-    "parameters": {}
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K80",
-    "scope": {
-      "priority": "P2",
-      "activity": "*",
-      "serviceLine": "*",
-      "NODO": "CORDOBA",
-      "CENTRO": "H. C. AXARQUIA"
-    },
-    "period": {
-      "to": "2016-05-15T21:59:59.999Z",
-      "from": "2016-04-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": "1.0",
-    "evidences": [
-      {
-        "id": "13131313131313"
-      }
-    ],
-    "parameters": {}
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2014-11-15T22:59:59.999Z",
-      "from": "2014-10-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2014-12-15T22:59:59.999Z",
-      "from": "2014-11-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2015-01-15T22:59:59.999Z",
-      "from": "2014-12-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2015-02-15T22:59:59.999Z",
-      "from": "2015-01-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2015-03-15T22:59:59.999Z",
-      "from": "2015-02-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2015-04-15T21:59:59.999Z",
-      "from": "2015-03-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2015-05-15T21:59:59.999Z",
-      "from": "2015-04-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2015-06-15T21:59:59.999Z",
-      "from": "2015-05-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2015-07-15T21:59:59.999Z",
-      "from": "2015-06-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2015-08-15T21:59:59.999Z",
-      "from": "2015-07-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2015-09-15T21:59:59.999Z",
-      "from": "2015-08-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2015-10-15T21:59:59.999Z",
-      "from": "2015-09-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2015-11-15T22:59:59.999Z",
-      "from": "2015-10-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2015-12-15T22:59:59.999Z",
-      "from": "2015-11-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2016-01-15T22:59:59.999Z",
-      "from": "2015-12-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2016-02-15T22:59:59.999Z",
-      "from": "2016-01-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": -10,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2016-03-15T22:59:59.999Z",
-      "from": "2016-02-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2016-04-15T21:59:59.999Z",
-      "from": "2016-03-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2016-05-15T21:59:59.999Z",
-      "from": "2016-04-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2016-06-15T21:59:59.999Z",
-      "from": "2016-05-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2016-07-15T21:59:59.999Z",
-      "from": "2016-06-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2016-08-15T21:59:59.999Z",
-      "from": "2016-07-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2016-09-15T21:59:59.999Z",
-      "from": "2016-08-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2016-10-15T21:59:59.999Z",
-      "from": "2016-09-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2016-11-15T22:59:59.999Z",
-      "from": "2016-10-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2016-12-15T22:59:59.999Z",
-      "from": "2016-11-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2017-01-15T22:59:59.999Z",
-      "from": "2016-12-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2017-02-15T22:59:59.999Z",
-      "from": "2017-01-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2017-03-15T22:59:59.999Z",
-      "from": "2017-02-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2017-04-15T21:59:59.999Z",
-      "from": "2017-03-15T23:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2017-05-15T21:59:59.999Z",
-      "from": "2017-04-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2017-06-15T21:59:59.999Z",
-      "from": "2017-05-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2017-07-15T21:59:59.999Z",
-      "from": "2017-06-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2017-08-15T21:59:59.999Z",
-      "from": "2017-07-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  },
-  {
-    "stateType": "metrics",
-    "agreementId": "T14-L2-S12-minimal",
-    "id": "SPU_IO_K00",
-    "scope": {
-      "serviceLine": "Línea de servicio de operación",
-      "activity": "Actividad no planificada"
-    },
-    "period": {
-      "to": "2017-09-15T21:59:59.999Z",
-      "from": "2017-08-15T22:00:00.000Z"
-    },
-    "window": {
-      "type": "static",
-      "period": "monthly",
-      "timeZone": "Europe/Madrid",
-      "initial": "2014-10-15T22:00:00.000Z"
-    },
-    "value": 0,
-    "evidences": null,
-    "parameters": null
-  }
-]
+}
