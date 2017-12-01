@@ -20,7 +20,7 @@ services:
 
   computer:
     container_name: tests-computer-container
-    image: isagroup/governify-computer-ppinot:5.0.0
+    image: isagroup/governify-computer-ppinot:6.0.0
     ports:
       - 8080:8080
     links:
