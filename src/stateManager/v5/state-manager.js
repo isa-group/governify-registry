@@ -146,7 +146,7 @@ function _get(stateType, query) {
                     }
                 }, function (err) {
                     logger.sm(JSON.stringify(err));
-                    return reject(new ErrorModel(500, "Error while checking if it is update: " + err));
+                    return reject(new ErrorModel(500, "Error while checking if " + stateType + " is is updated: " + err));
                 });
             } else {
                 logger.sm("There are not " + stateType + " state for query =  " + JSON.stringify(query) + " in DB");
@@ -168,7 +168,7 @@ function _get(stateType, query) {
                     }
                 }, function (err) {
                     logger.sm(JSON.stringify(err));
-                    return reject(new ErrorModel(500, "Error while checking if it is update: " + err));
+                    return reject(new ErrorModel(500, "Error while checking if " + stateType + " state is updated: " + err));
                 });
             }
         });
@@ -307,11 +307,11 @@ function _update(stateType, query, logsState) {
                                 period: guaranteeState.period,
                                 scope: guaranteeState.scope
                             }, guaranteeState.value, {
-                                "logsState": logsState,
-                                metrics: guaranteeState.metrics,
-                                evidences: guaranteeState.evidences,
-                                penalties: guaranteeState.penalties ? guaranteeState.penalties : null
-                            }));
+                                    "logsState": logsState,
+                                    metrics: guaranteeState.metrics,
+                                    evidences: guaranteeState.evidences,
+                                    penalties: guaranteeState.penalties ? guaranteeState.penalties : null
+                                }));
                         });
                         logger.sm('Created parameters array for saving states of guarantee of length ' + processguarantees.length);
                         logger.sm('Persisting guarantee states...');
@@ -345,10 +345,10 @@ function _update(stateType, query, logsState) {
                                     period: metricValue.period,
                                     window: query.window
                                 }, metricValue.value, {
-                                    "logsState": logsState,
-                                    evidences: metricValue.evidences,
-                                    parameters: metricValue.parameters
-                                }));
+                                        "logsState": logsState,
+                                        evidences: metricValue.evidences,
+                                        parameters: metricValue.parameters
+                                    }));
                         });
                         logger.sm('Created parameters array for saving states of metric of length ' + processMetrics.length);
                         logger.sm('Persisting metric states...');
@@ -444,14 +444,16 @@ function isUpdated(agreement, states) {
         logger.sm("LogUris = " + logUris);
         if (logUris) {
             var current = states;
-            if (current) {
+            var uri = logUris;
+            if (!!!current && typeof current !== 'undefined') {
                 current = getCurrent(current[0]);
+                uri += + "?endgte=" + states[0].period.from + "&endlte=" + states[0].period.to;
             }
 
             logger.sm('Sending request to LOG state URI...');
             process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
             request.get({
-                uri: logUris + "?endgte=" + states[0].period.from + "&endlte=" + states[0].period.to,
+                uri: uri,
                 json: true,
                 // The below parameters are specific to request-retry
                 maxAttempts: config.maxAttempts,
