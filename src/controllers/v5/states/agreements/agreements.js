@@ -35,6 +35,7 @@ var calculators = require('../../../../stateManager/v5/calculators.js');
 
 var Promise = require('bluebird');
 var request = require('request');
+var JSONStream = require('JSONStream');
 
 
 /**
@@ -146,7 +147,7 @@ function _statesDELETE(args, res) {
  * @alias module:agreements.statesFilter
  * */
 function _statesFilter(req, res) {
-    logger.info("New request to GET filtered agreements (states/agreements/agreements.js)");
+    logger.info("New request to GET filtered agreements states (states/agreements/agreements.js) with params: " + JSON.stringify(req.query));
 
     var agreementId = req.swagger.params.agreement.value;
     var indicator = req.query.indicator;
@@ -157,42 +158,43 @@ function _statesFilter(req, res) {
 
     var StateModel = db.models.StateModel;
     StateModel.aggregate([{
-                $match: {
-                    $and: [{
-                        "agreementId": {
-                            $eq: agreementId
-                        },
-                        "id": {
-                            $eq: indicator
-                        },
-                        "stateType": {
-                            $eq: type
-                        },
-                        "period.from": {
-                            $eq: from
-                        },
-                        "period.to": {
-                            $eq: to
-                        },
-                        "scope.priority": {
-                            $eq: priority
-                        }
-                    }]
+        $match: {
+            $and: [{
+                "agreementId": {
+                    $eq: agreementId
+                },
+                "id": {
+                    $eq: indicator
+                },
+                "stateType": {
+                    $eq: type
+                },
+                "period.from": {
+                    $eq: from
+                },
+                "period.to": {
+                    $eq: to
+                },
+                "scope.priority": {
+                    $eq: priority
                 }
-            },
-            {
-                $unwind: "$records"
-            },
-            {
-                $project: {
-                    _id: 0,
-                    evidences: "$records.evidences"
-                }
-            }
-        ],
-        function (err, result) {
-            return res.json(err ? err : result);
-        });
+            }]
+        }
+    },
+    {
+        $unwind: "$records"
+    },
+    {
+        $project: {
+            evidences: "$records.evidences"
+        }
+    }
+    ])
+        .allowDiskUse(true)
+        .cursor()
+        .exec()
+        .pipe(JSONStream.stringify())
+        .pipe(res);
 }
 
 
