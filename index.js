@@ -26,7 +26,6 @@ var http = require('http');
 var https = require('https');
 var fs = require('fs');
 var bodyParser = require('body-parser');
-var cors = require('cors');
 var app = express();
 
 //Self dependencies
@@ -35,7 +34,6 @@ var db = require('./src/database');
 var swaggerUtils = require('./src/utils/utils').swagger;
 var middlewares = require('./src/utils/utils').middlewares;
 
-app.use(cors());
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
@@ -67,7 +65,6 @@ app.use('/api/info', function (req, res) {
  * @requires express
  * @requires http
  * @requires body-parser
- * @requires cors
  * @requires config
  * @requires database
  * @requires swagger
