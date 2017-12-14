@@ -169,6 +169,33 @@ paths:
             $ref: "#/definitions/error_model"
       x-swagger-router-controller: "StateRegistry"
 
+  
+  # Filtered
+  /states/{agreement}/filtered:
+    get:
+      tags:
+      - "state-registry"
+      description: "XXX"
+      operationId: "statesFilter"
+      parameters:
+      - name: "agreement"
+        in: "path"
+        description: "XXX"
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/agreement_state"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/error_model"
+      x-swagger-router-controller: "StateRegistry"
+
   # GET ALL STATES OF AN AGREEMENTS
   /states/{agreement}:
     get:

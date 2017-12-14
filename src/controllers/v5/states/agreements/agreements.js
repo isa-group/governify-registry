@@ -54,7 +54,8 @@ module.exports = {
     agreementIdRELOAD: _agreementIdRELOAD,
     statesDELETE: _statesDELETE,
     guaranteesGET: require('../guarantees/guarantees.js').guaranteesGET,
-    guaranteeIdGET: require('../guarantees/guarantees.js').guaranteeIdGET
+    guaranteeIdGET: require('../guarantees/guarantees.js').guaranteeIdGET,
+    statesFilter: _statesFilter
 };
 
 
@@ -134,6 +135,64 @@ function _statesDELETE(args, res) {
             logger.warning("Can't delete state for all agreements: " + err);
         }
     });
+}
+
+
+/**
+ * States filter
+ * @param {Object} req {agreement: String}
+ * @param {Object} res response
+ * @param {Object} next next function
+ * @alias module:agreements.statesFilter
+ * */
+function _statesFilter(req, res) {
+    logger.info("New request to GET filtered agreements (states/agreements/agreements.js)");
+
+    var agreementId = req.swagger.params.agreement.value;
+    var indicator = req.query.indicator;
+    var type = req.query.type;
+    var from = req.query.from;
+    var to = req.query.to;
+    var priority = req.query.priority;
+
+    var StateModel = db.models.StateModel;
+    StateModel.aggregate([{
+                $match: {
+                    $and: [{
+                        "agreementId": {
+                            $eq: agreementId
+                        },
+                        "id": {
+                            $eq: indicator
+                        },
+                        "stateType": {
+                            $eq: type
+                        },
+                        "period.from": {
+                            $eq: from
+                        },
+                        "period.to": {
+                            $eq: to
+                        },
+                        "scope.priority": {
+                            $eq: priority
+                        }
+                    }]
+                }
+            },
+            {
+                $unwind: "$records"
+            },
+            {
+                $project: {
+                    _id: 0,
+                    evidences: "$records.evidences"
+                }
+            }
+        ],
+        function (err, result) {
+            return res.json(err ? err : result);
+        });
 }
 
 

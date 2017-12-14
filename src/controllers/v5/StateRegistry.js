@@ -58,6 +58,8 @@ module.exports = {
     //Rates
     statesAgreementRatesGET: _statesAgreementRatesGET,
     statesAgreementRatesRateGET: _statesAgreementRatesRateGET,
+
+    statesFilter: _statesFilter
 };
 
 
@@ -248,4 +250,15 @@ function _statesAgreementRatesRateGET(req, res, next) {
  * */
 function _statesDELETE(req, res, next) {
     states.agreements.statesDELETE(req.swagger.params, res, next);
+}
+
+/** 
+ * statesFilter.
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
+ * @alias module:StateRegistry.statesFilter
+ * */
+function _statesFilter(req, res, next) {
+    states.agreements.statesFilter(req, res, next);
 }
