@@ -62,7 +62,7 @@ function _connect(callback) {
     var databaseFullURL = databaseURL + config.database.db_name;
     config.logger.info('Connecting to ' + databaseFullURL);
     mongoose.Promise = global.Promise;
-    mongoose.connect(databaseFullURL);
+    mongoose.connect(databaseFullURL, { useMongoClient: true });
     var db = mongoose.connection;
     db.on('error', function (err) {
         config.logger.error(err);
