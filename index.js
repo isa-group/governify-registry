@@ -40,6 +40,11 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
 
+// Bypassing 405 status put by swagger when no request handler is defined
+app.options("/*", (req, res, next) => {
+    return res.sendStatus(200);
+});
+
 // middleware to control when an agreement state process is already in progress
 app.use('/api/v2/states/:agreement', middlewares.stateInProgress);
 app.use('/api/v3/states/:agreement', middlewares.stateInProgress);
