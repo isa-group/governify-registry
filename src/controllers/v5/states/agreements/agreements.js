@@ -74,7 +74,7 @@ function _agreementIdGET(args, res) {
     stateManager({
         id: agreementId
     }).then(function (manager) {
-        manager.get("agreement").then(function (agreement) {
+        manager.get(agreementId).then(function (agreement) {
             res.json(agreement);
         }, function (err) {
             logger.error(err.message.toString());
@@ -95,13 +95,13 @@ function _agreementIdGET(args, res) {
  * @alias module:agreements.agreementIdDELETE
  * */
 function _agreementIdDELETE(args, res) {
-    var agreementId = args.agreements.value;
+    var agreementId = args.agreement.value;
     logger.info("New request to DELETE agreement state for agreement " + agreementId);
     if (agreementId) {
         var StateModel = db.models.StateModel;
-        StateModel.find({
+        StateModel.remove({
             "agreementId": agreementId
-        }).remove(function (err) {
+        }, function (err) {
             if (!err) {
                 res.sendStatus(200);
                 logger.ctlState("Deleted state for agreement " + agreementId);
