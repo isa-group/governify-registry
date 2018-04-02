@@ -17,10 +17,10 @@ var config = jsyaml.safeLoad(configString)[process.env.NODE_ENV ? process.env.NO
 
 
 config.parallelProcess.guarantees = process.env.GUARANTEES_PARALLEL_PROCESS ?
-                                            process.env.GUARANTEES_PARALLEL_PROCESS : config.parallelProcess.guarantees;
+    process.env.GUARANTEES_PARALLEL_PROCESS : config.parallelProcess.guarantees;
 
 config.parallelProcess.metrics = process.env.METRICS_PARALLEL_PROCESS ?
-                                            process.env.METRICS_PARALLEL_PROCESS : config.parallelProcess.metrics;
+    process.env.METRICS_PARALLEL_PROCESS : config.parallelProcess.metrics;
 
 config.state = state;
 module.exports = config;
@@ -86,36 +86,41 @@ module.exports.logger = new winston.Logger({
     exitOnError: false
 });
 module.exports.stream = {
-    write: function(message, encoding) {
+    write: function (message, encoding) {
         module.exports.logger.info(message);
     }
 };
 
 // MongoDB configuration
 module.exports.db = {};
-module.exports.db.connect = function() {
+module.exports.db.connect = function (done) {
     if (state.db) return;
     mongoose.connect(config.database.url);
     var db = mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error:'));
-    db.on('open', function() {
+    db.on('open', function () {
         state.db = db;
         module.exports.logger.info('Connected to db!');
-        if (state.models) return;
-        state.models = {};
-        setupModel('AgreementModel', './models/agreementModel.json');
-        setupModel('StateModel', './models/stateModel.json');
-        module.exports.db.models = state.models;
+        if (state.models) {
+            done();
+            return;
+        } else {
+            state.models = {};
+            setupModel('AgreementModel', './models/agreementModel.json');
+            setupModel('StateModel', './models/stateModel.json');
+            module.exports.db.models = state.models;
+            done();
+        }
     });
 };
 
-module.exports.db.get = function() {
+module.exports.db.get = function () {
     return state.db;
 };
 
-module.exports.db.close = function(done) {
+module.exports.db.close = function (done) {
     if (state.db) {
-        state.db.close(function(err, result) {
+        state.db.close(function (err, result) {
             state.db = null;
             state.mode = null;
         });
@@ -124,7 +129,7 @@ module.exports.db.close = function(done) {
 
 function setupModel(modelName, jsonModel) {
     var jsonModel = jsyaml.safeLoad(fs.readFileSync(jsonModel));
-    $RefParser.dereference(jsonModel, function(err, model) {
+    $RefParser.dereference(jsonModel, function (err, model) {
         if (err)
             console.log(err);
         var modelSchema = new mongoose.Schema(model, {
