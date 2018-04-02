@@ -9,6 +9,7 @@ var fs = require('fs');
 var config = require('./config');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+var mongoose = require('mongoose');
 
 // swaggerRouter configuration
 var options = {
@@ -32,12 +33,11 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 // Setup logger
 //config.logger.setup();
 
-// Connect to mongodb
-config.db.connect();
+
 
 
 // Initialize the Swagger middleware
-swaggerTools.initializeMiddleware(swaggerDoc, function(middleware) {
+swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
   // Interpret Swagger resources and attach metadata to request - must be first in swagger-tools middleware chain
   app.use(middleware.swaggerMetadata());
 
@@ -55,9 +55,14 @@ swaggerTools.initializeMiddleware(swaggerDoc, function(middleware) {
 
   // Start the server
   var serverPort = process.env.PORT || config.port;
-  var server = app.listen(serverPort, function() {
-    config.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
-    config.logger.info('Swagger-ui is available on http://localhost:%d/api/v1/docs', serverPort);
+
+  // Connect to mongodb
+  config.db.connect(function () {
+    var server = app.listen(serverPort, function () {
+      config.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
+      config.logger.info('Swagger-ui is available on http://localhost:%d/api/v1/docs', serverPort);
+    });
+    server.timeout = 24 * 3600 * 1000; // 24h
+
   });
-  server.timeout = 24 * 3600 * 1000; // 24h
 });
