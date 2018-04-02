@@ -1,7 +1,7 @@
 ---
 development:
   database:
-    url: "mongodb://localhost:27017/prosas"
+    url: "mongodb://mongo:27017/prosas"
   port: 8081
   logfile: "./logs/dev.log"
   parallelProcess:
