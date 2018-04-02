@@ -1,0 +1,302 @@
+{
+  "agreementId": "SPU_IO-Contract",
+  "fulfilled": true,
+  "scope": {
+    "resource": "*",
+    "operation": "*",
+    "level": "*"
+  },
+  "pricing": {
+    "cost": {
+      "value": 50
+    },
+    "period": {},
+    "penalties": {}
+  },
+  "metrics": [
+    {
+      "metric": "animalTypes",
+      "scope": {
+        "resource": "/pets",
+        "operation": "post",
+        "level": "account"
+      },
+      "schema": {
+        "type": "integer",
+        "format": "int64",
+        "description": "Number of different animal types.",
+        "resolution": "check"
+      },
+      "window": {
+        "type": "static"
+      },
+      "records": [
+        {
+          "value": 2,
+          "time": "2016-06-23T09:36:36.042Z",
+          "parameters": {}
+        }
+      ]
+    },
+    {
+      "metric": "resourceInstances",
+      "scope": {
+        "resource": "/pets",
+        "operation": "post",
+        "level": "account"
+      },
+      "schema": {
+        "type": "integer",
+        "format": "int64",
+        "description": "Number of pet resources",
+        "resolution": "consumption"
+      },
+      "window": {
+        "type": "static"
+      },
+      "records": [
+        {
+          "value": 2,
+          "time": "2016-06-23T09:36:36.042Z",
+          "parameters": {}
+        }
+      ]
+    },
+    {
+      "metric": "requests",
+      "scope": {
+        "resource": "/pets",
+        "operation": "get",
+        "level": "account"
+      },
+      "schema": {
+        "type": "int64",
+        "description": "Number of requests",
+        "resolution": "consumption"
+      },
+      "window": {
+        "type": "static",
+        "period": "secondly"
+      },
+      "records": [
+        {
+          "value": 2,
+          "time": "2016-06-23T09:36:36.042Z",
+          "parameters": {}
+        }
+      ]
+    },
+    {
+      "metric": "requests",
+      "scope": {
+        "resource": "/pets",
+        "operation": "get",
+        "level": "tenant"
+      },
+      "schema": {
+        "type": "int64",
+        "description": "Number of requests",
+        "resolution": "consumption"
+      },
+      "window": {
+        "type": "static",
+        "period": "secondly"
+      },
+      "records": [
+        {
+          "value": 2,
+          "time": "2016-06-23T09:36:36.042Z",
+          "parameters": {}
+        }
+      ]
+    },
+    {
+      "metric": "requests",
+      "scope": {
+        "resource": "/pets",
+        "operation": "post",
+        "level": "account"
+      },
+      "schema": {
+        "type": "int64",
+        "description": "Number of requests",
+        "resolution": "consumption"
+      },
+      "window": {
+        "type": "static",
+        "period": "minutely"
+      },
+      "records": [
+        {
+          "value": 2,
+          "time": "2016-06-23T09:36:36.042Z",
+          "parameters": {}
+        }
+      ]
+    },
+    {
+      "metric": "responseTime",
+      "scope": {
+        "resource": "*",
+        "operation": "*",
+        "level": "*"
+      },
+      "schema": {
+        "type": "int64",
+        "description": "Number of requests",
+        "resolution": "consumption"
+      },
+      "window": {
+        "type": "static",
+        "period": "minutely"
+      },
+      "records": [
+        {
+          "value": 2,
+          "time": "2016-06-23T09:36:36.042Z",
+          "parameters": {}
+        }
+      ]
+    }
+  ],
+  "guarantees": [
+    {
+      "guarantee": "guarantees_avgResponseTimeMs",
+      "scope": {
+        "resource": "*",
+        "operation": "*",
+        "level": "*"
+      },
+      "logs": {
+        "oai": "http://logs.oai.governify.io/api/v1/"
+      },
+      "period": {},
+      "evidences": [],
+      "records": [
+        {
+          "fulfilled": true,
+          "penalties": {},
+          "time": "2016-06-23T09:36:36.042Z"
+        }
+      ]
+    }
+  ],
+  "quotas": [
+    {
+      "quota": "quotas_requests",
+      "scope": {
+        "resource": "/pets",
+        "operation": "get",
+        "level": "account"
+      },
+      "logs": {
+        "oai": "http://logs.oai.governify.io/api/v1/"
+      },
+      "period": {},
+      "evidences": [],
+      "records": [
+        {
+          "fulfilled": true,
+          "time": "2016-06-23T09:36:36.042Z"
+        }
+      ]
+    },
+    {
+      "quota": "quotas_requests",
+      "scope": {
+        "resource": "/pets",
+        "operation": "get",
+        "level": "tenant"
+      },
+      "logs": {
+        "oai": "http://logs.oai.governify.io/api/v1/"
+      },
+      "period": {},
+      "evidences": [],
+      "records": [
+        {
+          "fulfilled": true,
+          "time": "2016-06-23T09:36:36.042Z",
+        }
+      ]
+    },
+    {
+      "quota": "quotas_requests",
+      "scope": {
+        "resource": "/pets",
+        "operation": "post",
+        "level": "account"
+      },
+      "logs": {
+        "oai": "http://logs.oai.governify.io/api/v1/"
+      },
+      "period": {},
+      "evidences": [],
+      "records": [
+        {
+          "fulfilled": true,
+          "time": "2016-06-23T09:36:36.042Z"
+        }
+      ]
+    },
+    {
+      "quota": "quotas_resourceInstances",
+      "scope": {
+        "resource": "/pets",
+        "operation": "post",
+        "level": "account"
+      },
+      "logs": {
+        "oai": "http://logs.oai.governify.io/api/v1/"
+      },
+      "period": {},
+      "evidences": [],
+      "records": [
+        {
+          "fulfilled": true,
+          "time": "2016-06-23T09:36:36.042Z"
+        }
+      ]
+    },
+    {
+      "quota": "quotas_animalTypes",
+      "scope": {
+        "resource": "/pets",
+        "operation": "post",
+        "level": "account"
+      },
+      "logs": {
+        "oai": "http://logs.oai.governify.io/api/v1/"
+      },
+      "period": {},
+      "evidences": [],
+      "records": [
+        {
+          "fulfilled": true,
+          "time": "2016-06-23T09:36:36.042Z"
+        }
+      ]
+    }
+  ],
+  "rates": [
+    {
+      "rate": "rates_requests",
+      "scope": {
+        "resource": "/pets/{id}",
+        "operation": "get",
+        "level": "account"
+      },
+      "logs": {
+        "oai": "http://logs.oai.governify.io/api/v1/"
+      },
+      "period": {},
+      "evidences": [],
+      "records": [
+        {
+          "fulfilled": true,
+          "time": "2016-06-23T09:36:36.042Z"
+        }
+      ]
+    }
+  ]
+}
