@@ -276,12 +276,33 @@ module.exports = function (grunt) {
 
     grunt.registerTask('coverage:integral', ['jshint', 'mocha_istanbul:integral']);
 
-    //BUILD TASK
-    grunt.registerTask('build', ['test', 'buildOn', 'usebanner']);
 
-    grunt.registerTask('deliver', ['dockerize']);
+
+    // # DEVELOPER TASKS # 
+
+    //DEFAULT TASK
+    grunt.registerTask('default', ['jshint']);
 
     //DEVELOPMENT TASK
+    grunt.registerTask('watch', ['watch']);
     grunt.registerTask('dev', ['watch']);
+
+    //TEST TASK
+    grunt.registerTask('test', ['jshint', 'mochaTest:full']);
+
+    //TEST AND COVERAGE TASK
+    grunt.registerTask('coverage', ['test', 'mocha_istanbul:full']);
+
+    // # RELEASE MANAGER TASKS # 
+    //** HOW YO USE THEM: load env vars -next-> grunt build -next-> grunt release:xxx -next-> grunt deliver */
+
+    //BUILD TASK
+    grunt.registerTask('build', ['buildOn', 'usebanner']);
+
+    //RELEASE TASK
+    // already defined. Usage: grunt release:0.0.1" for patch versions; grunt release:0.1.0" for minor versions; grunt release:1.0.0" for major versions
+
+    //DELIVER TASK
+    grunt.registerTask('deliver', ['test', 'dockerize']);
 
 };
