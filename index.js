@@ -31,6 +31,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const compression = require("compression");
 const fs = require('fs');
+const path = require('path');
 
 //Self dependencies
 const config = require("./src/configurations");
@@ -42,10 +43,12 @@ const middlewares = require('./src/utils/utils').middlewares;
 let server = null;
 const app = express();
 
-const frontendPath = __dirname + '/public';
+const frontendPath = path.join(__dirname, '/public');
 const serverPort = process.env.PORT || config.server.port;
+const CURRENT_API_VERSION = "v5";
 
 app.use(express.static(frontendPath));
+
 // Default server options
 app.use(compression());
 
@@ -77,7 +80,7 @@ if (config.server.useHelmet) {
 }
 
 if (config.server.httpOptionsOK) {
-    app.options("/*", (req, res) => {
+    app.options("/*", function (req, res) {
         logger.info("Bypassing 405 status put by swagger when no request handler is defined");
         return res.sendStatus(200);
     });
@@ -85,7 +88,7 @@ if (config.server.httpOptionsOK) {
 
 if (config.server.servePackageInfo) {
     app.use('/api/info', function (req, res) {
-        logger.info("Serving package.json at '%s'", "/api/info");
+        logger.debug("Serving package.json at '%s'", "/api/info");
         res.json(require('./package.json'));
     });
 }
@@ -97,7 +100,6 @@ app.use('/api/v4/states/:agreement', middlewares.stateInProgress);
 app.use('/api/v5/states/:agreement', middlewares.stateInProgress);
 
 // latest documentation redirection
-const CURRENT_API_VERSION = "v5";
 app.use('/api/latest/docs', function (req, res) {
     res.redirect('/api/' + CURRENT_API_VERSION + '/docs');
 });
@@ -157,11 +159,6 @@ function _deploy(configurations, callback) {
             //initialize swagger middleware for each swagger documents.
             swaggerUtils.initializeMiddleware(app, swaggerDocs, function () {
 
-                if (!module.exports.server) {
-                    module.exports.server = http.createServer(app);
-                }
-                module.exports.server.timeout = config.server.timeout;
-
                 if (process.env.HTTPS_SERVER === "true" || config.server.listenOnHttps) {
                     https.createServer({
                         key: fs.readFileSync('certs/privkey.pem'),
@@ -172,11 +169,11 @@ function _deploy(configurations, callback) {
                         logger.info('Swagger-ui is available on https://localhost:%d/api/%s/docs', serverPort, CURRENT_API_VERSION);
                     });
                 } else {
-                    module.exports.server.listen(serverPort, function () {
+                    http.createServer(app).listen(serverPort, function () {
                         logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
                         logger.info('Swagger-ui is available on http://localhost:%d/api/%s/docs', serverPort, CURRENT_API_VERSION);
                         if (callback) {
-                            callback(module.exports.server);
+                            callback(server);
                         }
                     });
                 }
@@ -196,7 +193,7 @@ function _deploy(configurations, callback) {
  * */
 function _undeploy(callback) {
     db.close(function () {
-        module.exports.server.close(function () {
+        server.close(function () {
             logger.info('Server has been closed');
             callback();
         });
