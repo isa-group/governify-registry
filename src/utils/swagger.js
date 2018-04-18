@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 

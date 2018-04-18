@@ -292,12 +292,12 @@ guarantee:
         of:
             type: array
             items:
-                $ref: '#/scoped_guarante'
+                $ref: '#/scoped_guarantee'
 guarantee_scope:
     type: object
     patternProperties:
         '^[a-zA-Z0-9]*$': {}
-scoped_guarante:
+scoped_guarantee:
     type: object
     properties:
         scope:
@@ -359,7 +359,7 @@ compensation:
             type: array
             items:
                 $ref: '#/compensation_of'
-        aggegatedBy:
+        aggregatedBy:
             type: string
         groupBy:
             type: object

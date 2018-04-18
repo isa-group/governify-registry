@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -223,7 +223,7 @@ function processScopedGuarantee(manager, query, guarantee, ofElement) {
                 }
             }
             // timedScope array will group all metric values by the same scope and period
-            //logger.warning("This scopedguarantee need these metric: " + JSON.stringify(processMetrics, null, 2));
+            //logger.warning("This scopedGuarantee need these metric: " + JSON.stringify(processMetrics, null, 2));
             var timedScopes = [];
             var metricValues = [];
             logger.guarantees('Obtaining required metrics states for scoped guarantee ' + guarantee.id + '...');
@@ -339,11 +339,11 @@ function calculatePenalty(agreement, guarantee, ofElement, timedScope, metricsVa
         guaranteeValue.penalties = {};
         penalties.forEach(function (penalty) {
             var penaltyVar = Object.keys(penalty.over)[0];
-            var penaltyFufilled = penalty.of.filter(function (compensationOf) {
+            var penaltyFulfilled = penalty.of.filter(function (compensationOf) {
                 return vm.runInThisContext(compensationOf.condition);
             });
-            if (penaltyFufilled.length > 0) {
-                guaranteeValue.penalties[penaltyVar] = parseFloat(vm.runInThisContext(penaltyFufilled[0].value));
+            if (penaltyFulfilled.length > 0) {
+                guaranteeValue.penalties[penaltyVar] = parseFloat(vm.runInThisContext(penaltyFulfilled[0].value));
             } else {
                 guaranteeValue.penalties[penaltyVar] = 0;
                 logger.error('SLO not fulfilled and no penalty found: ');

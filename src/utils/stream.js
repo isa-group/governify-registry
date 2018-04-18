@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -58,7 +58,7 @@ function _createReadable(readFunction) {
 
         logger.streaming("Error while streaming: " + err.toString());
 
-        //can recive data parametre
+        //can receive data parameters
     }).on('data', function () {
 
         logger.streaming("Streaming data...");
@@ -66,7 +66,7 @@ function _createReadable(readFunction) {
     });
 
     if (!readFunction) {
-        streamReadable._read = function () {};
+        streamReadable._read = function () { };
     } else {
         streamReadable._read = readFunction;
     }

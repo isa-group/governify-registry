@@ -863,12 +863,12 @@ definitions:
       of:
         type: array
         items:
-          $ref: "#/definitions/scoped_guarante"
+          $ref: "#/definitions/scoped_guarantee"
 
   guarantee_scope:
     type: object
 
-  scoped_guarante:
+  scoped_guarantee:
     type: object
     properties:
       scope:

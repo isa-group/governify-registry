@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -250,7 +250,7 @@ function _metricsIdGET(req, res) {
                 }
             }).catch(function (err) {
 
-                var errorString = "Error retreiving state values of metric: " + metricId;
+                var errorString = "Error retrieving state values of metric: " + metricId;
                 controllerErrorHandler(res, "metrics-controller", "_metricsIdGET", 500, errorString, err);
 
             });

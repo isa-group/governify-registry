@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -41,7 +41,7 @@ module.exports = {
 
 /**
  * This method return a well formed query for stateManager.
- * @param {String} guranteeId Id of guarantee which will be calculated
+ * @param {String} guaranteeId Id of guarantee which will be calculated
  * @param {ISODateString} from YYYY-MM-DDTHH:mm:ss.SSSZ
  * @return {ISODateString} to YYYY-MM-DDTHH:mm:ss.SSSZ
  * @alias module:gUtils.getPeriods

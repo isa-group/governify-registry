@@ -150,7 +150,6 @@
                     "type": "string"
                 }
             }
-
         },
         "definitions": {
             "type": "object",
@@ -216,8 +215,7 @@
                                 "format": {
                                     "type": "string"
                                 },
-                                "default": {
-                                }
+                                "default": {}
                             },
                             "required": [
                                 "name",
@@ -342,22 +340,19 @@
                         "parameters": {
                             "type": "object",
                             "patternProperties": {
-                                "^[a-zA-Z0-9]*$": {
-                                }
+                                "^[a-zA-Z0-9]*$": {}
                             }
                         },
                         "scope": {
                             "type": "object",
                             "patternProperties": {
-                                "^[a-zA-Z0-9]*$": {
-                                }
+                                "^[a-zA-Z0-9]*$": {}
                             }
                         },
                         "metadata": {
                             "type": "object",
                             "patternProperties": {
-                                "^[a-zA-Z0-9]*$": {
-                                }
+                                "^[a-zA-Z0-9]*$": {}
                             }
                         },
                         "defaultStateReload": {
@@ -382,8 +377,7 @@
                         "^[a-zA-Z0-9]*$": {
                             "type": "object",
                             "patternProperties": {
-                                "^[a-zA-Z0-9]*$": {
-                                }
+                                "^[a-zA-Z0-9]*$": {}
                             }
                         }
                     }
@@ -394,8 +388,7 @@
                         "^[a-zA-Z0-9]*$": {
                             "type": "object",
                             "patternProperties": {
-                                "^[a-zA-Z0-9]*$": {
-                                }
+                                "^[a-zA-Z0-9]*$": {}
                             }
                         }
                     }
@@ -426,8 +419,7 @@
                         "^[a-zA-Z0-9]*$": {
                             "type": "object",
                             "patternProperties": {
-                                "^[a-zA-Z0-9]*$": {
-                                }
+                                "^[a-zA-Z0-9]*$": {}
                             }
                         }
                     }
@@ -438,8 +430,7 @@
                         "^[a-zA-Z0-9]*$": {
                             "type": "object",
                             "patternProperties": {
-                                "^[a-zA-Z0-9]*$": {
-                                }
+                                "^[a-zA-Z0-9]*$": {}
                             }
                         }
                     }
@@ -464,8 +455,7 @@
                 "scope": {
                     "type": "object",
                     "patternProperties": {
-                        "^[a-zA-Z0-9]*$": {
-                        }
+                        "^[a-zA-Z0-9]*$": {}
                     }
                 },
                 "limits": {
@@ -486,8 +476,7 @@
                 "scope": {
                     "type": "object",
                     "patternProperties": {
-                        "^[a-zA-Z0-9]*$": {
-                        }
+                        "^[a-zA-Z0-9]*$": {}
                     }
                 },
                 "limits": {
@@ -528,7 +517,7 @@
                 "of": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/properties/scoped_guarante"
+                        "$ref": "#/properties/scoped_guarantee"
                     }
                 }
             },
@@ -544,7 +533,7 @@
                 "^[a-zA-Z0-9]*$": {}
             }
         },
-        "scoped_guarante": {
+        "scoped_guarantee": {
             "type": "object",
             "properties": {
                 "scope": {
@@ -627,8 +616,7 @@
                         "schema": {
                             "type": "object",
                             "patternProperties": {
-                                "^[a-zA-Z0-9]*$": {
-                                }
+                                "^[a-zA-Z0-9]*$": {}
                             }
                         },
                         "computer": {
@@ -650,7 +638,7 @@
                         "$ref": "#/properties/compensation_of"
                     }
                 },
-                "aggegatedBy": {
+                "aggregatedBy": {
                     "type": "string"
                 },
                 "groupBy": {

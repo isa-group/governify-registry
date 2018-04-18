@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -323,11 +323,11 @@ function calculatePenalty(agreement, guarantee, ofElement, timedScope, metricsVa
         guaranteeValue.penalties = {};
         penalties.forEach(function (penalty) {
             var penaltyVar = Object.keys(penalty.over)[0];
-            var penaltyFufilled = penalty.of.filter(function (compensationOf) {
+            var penaltyFulfilled = penalty.of.filter(function (compensationOf) {
                 return vm.runInThisContext(compensationOf.condition);
             });
-            if (penaltyFufilled.length > 0) {
-                guaranteeValue.penalties[penaltyVar] = parseFloat(vm.runInThisContext(penaltyFufilled[0].value));
+            if (penaltyFulfilled.length > 0) {
+                guaranteeValue.penalties[penaltyVar] = parseFloat(vm.runInThisContext(penaltyFulfilled[0].value));
             } else {
                 guaranteeValue.penalties[penaltyVar] = 0;
                 logger.error('SLO not fulfilled and no penalty found: ');

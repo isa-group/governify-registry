@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -30,7 +30,7 @@ var config = require('../../../config');
 var logger = config.logger;
 var db = require('../../../database');
 var agreementState = require('../states/states').agreements;
-var stateRegistySrv = require('../StateRegistryService');
+var stateRegistrySrv = require('../StateRegistryService');
 var ErrorModel = require('../../../errors/index.js').errorModel;
 
 var $RefParser = require('json-schema-ref-parser');
@@ -120,7 +120,7 @@ function _agreementsDELETE(args, res) {
     AgreementModel.remove({}, function (err) {
         if (!err) {
             logger.info("Deleted all agreements");
-            stateRegistySrv.statesDELETE(args, res);
+            stateRegistrySrv.statesDELETE(args, res);
         } else {
             res.sendStatus(404);
             logger.warning("Can't delete all agreements: " + err);

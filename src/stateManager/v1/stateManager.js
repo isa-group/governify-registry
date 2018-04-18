@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -52,7 +52,7 @@ module.exports = initialize;
 
 
 /**
- * Intialize the StateManager for an agreement.
+ * Initialize the StateManager for an agreement.
  * @param {String} _agreement agreement ID
  * @return {Promise} Promise that will return a StateManager object
  * @alias module:stateManager.initialize
@@ -203,7 +203,7 @@ function _put(stateType, query, value, metadata) {
                 stateSignature += "]";
                 logger.sm(stateSignature);
 
-                // Check if there already is an stete
+                // Check if there already is an state
                 if (result.nModified === 0) {
                     // There is no state for Guarantee / Metric , ....
                     logger.sm("Creating new " + stateType + " state with the record...");
@@ -287,10 +287,10 @@ function _update(stateType, query, logsState) {
                     .then(function (guaranteeStates) {
                         logger.sm('Guarantee states for ' + guaranteeStates.guaranteeId + ' have been calculated (' + guaranteeStates.guaranteeValues.length + ') ');
                         logger.debug('Guarantee states: ' + JSON.stringify(guaranteeStates, null, 2));
-                        var processguarantees = [];
+                        var processGuarantees = [];
                         guaranteeStates.guaranteeValues.forEach(function (guaranteeState) {
                             logger.debug('Guarantee state: ' + JSON.stringify(guaranteeState, null, 2));
-                            processguarantees.push(stateManager.put(stateType, {
+                            processGuarantees.push(stateManager.put(stateType, {
                                 guarantee: query.guarantee,
                                 period: guaranteeState.period,
                                 scope: guaranteeState.scope
@@ -301,9 +301,9 @@ function _update(stateType, query, logsState) {
                                     penalties: guaranteeState.penalties ? guaranteeState.penalties : null
                                 }));
                         });
-                        logger.sm('Created parameters array for saving states of guarantee of length ' + processguarantees.length);
+                        logger.sm('Created parameters array for saving states of guarantee of length ' + processGuarantees.length);
                         logger.sm('Persisting guarantee states...');
-                        Promise.all(processguarantees).then(function (guarantees) {
+                        Promise.all(processGuarantees).then(function (guarantees) {
                             logger.sm('All guarantee states have been persisted');
                             var result = [];
                             for (var a in guarantees) {

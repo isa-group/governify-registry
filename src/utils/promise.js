@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -36,7 +36,7 @@ var promiseErrorHandler = errors.promiseErrorHandler;
 
 /**
  * Utils module.
- * @module utils.promisez
+ * @module utils.promises
  * @requires stream
  * @requires config
  * @requires errors
@@ -50,7 +50,7 @@ module.exports = {
 /**
  * Process mode.
  * @param {StateManager} manager StateManager instance
- * @param {Array} promisesArray array of primises to processing
+ * @param {Array} promisesArray array of promises to processing
  * @param {Object} result Array or stream with the result
  * @param {ResponseObject} res To respond the request
  * @param {Boolean} streaming Decide if stream or not stream response
@@ -164,7 +164,7 @@ function _processSequentialPromises(type, manager, queries, result, res, streami
                 resolve(result);
             }).catch(function (err) {
 
-                let errorString = "Error processing sequential promsies";
+                let errorString = "Error processing sequential promises";
                 return promiseErrorHandler(reject, "promise", "_processSequentialPromises", 500, errorString, err);
 
             });

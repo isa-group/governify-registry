@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -171,7 +171,7 @@ function _guaranteeIdGET(args, res) {
 
 
 /**
- * Post gurantee penalty by ID.
+ * Post guarantee penalty by ID.
  * @param {Object} args {agreement: String, guarantee: String}
  * @param {Object} res response
  * @param {Object} next next function
@@ -242,7 +242,7 @@ function _guaranteeIdPenaltyPOST(args, res) {
                         ret.push(e);
                     }
                 }
-                //logger.ctlState("Resultado para el periodo : " + JSON.stringify(element) + "=>\n" + JSON.stringify(ret, null, 2));
+                //logger.ctlState("Result for the period : " + JSON.stringify(element) + "=>\n" + JSON.stringify(ret, null, 2));
 
                 for (var i in ret) {
                     if (manager.current(ret[i]).penalties) {

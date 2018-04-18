@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -82,7 +82,7 @@ function processMetric(agreement, metricId, metricQuery) {
             //Select logs data. If metric has not log, select by default log.
             var logDefinition, logId;
             if (metric.log) {
-                logId = Object.keys(metric.log)[0]; //controlate this potential error
+                logId = Object.keys(metric.log)[0]; //FIXME: handle this potential error
                 if (!logId) { throw new Error('The log field of metric is not well defined in the agreement'); }
                 logDefinition = metric.log[logId];
             } else {
@@ -139,7 +139,7 @@ function processMetric(agreement, metricId, metricQuery) {
                     return promiseErrorHandler(reject, "metrics", processMetric.name, httpResponse.statusCode, errorString);
                 }
 
-                //Processing data with streaming usisng JSONStream 
+                //Processing data with streaming using JSONStream 
                 logger.metrics('Processing streaming and mapping of columns names in log...');
                 computerRequest.pipe(JSONStream.parse()).on('data', function (monthMetrics) {
                     try {

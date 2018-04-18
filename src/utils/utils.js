@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -88,7 +88,7 @@ module.exports = {
 
 /**
  * Check if an array contains a given object
- * @param {Object} obj object to seach for
+ * @param {Object} obj object to search for
  * @param {array} array array to search into
  * @alias module:utils.containsObject
  * */

@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -29,7 +29,7 @@ var moment = require('moment-timezone');
 
 /**
  * Utils module.
- * @module utils.promisez
+ * @module utils.promises
  * @requires config
  * */
 
@@ -41,7 +41,7 @@ module.exports = {
 
 /**
  * Check if an array contains a given object
- * @param {AgreementModel} agreement object to seach for
+ * @param {AgreementModel} agreement object to search for
  * @param {WindowModel} window array to search into
  * @alias module:utils.getPeriodsFrom
  * */
@@ -79,7 +79,7 @@ var slots = {
 };
 
 /**
- * Periods in miliseconds
+ * Periods in milliseconds
  * @alias module:utils.periods
  * */
 var periods = {
@@ -101,11 +101,11 @@ var periods = {
  * */
 function _convertPeriod(billingCycle) {
     switch (billingCycle) {
-    case "yearly":
-        return "years";
-    case "monthly":
-        return "months";
-    case "daily":
-        return "days";
+        case "yearly":
+            return "years";
+        case "monthly":
+            return "months";
+        case "daily":
+            return "days";
     }
 }

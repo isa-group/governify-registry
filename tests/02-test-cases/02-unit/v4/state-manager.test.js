@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -22,6 +22,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 
 /* jshint -W080 */
 /* jshint expr:true */
@@ -121,7 +122,7 @@ describe("state-manager unit tests v4...", function () {
     });
 
     //TODO: Dummy test in order to remember that tests over these methods should be done.
-    it('Functions extistence', function () {
+    it('Functions existence', function () {
         expect(initialize).to.exist;
         expect(_get).to.exist;
         expect(_put).to.exist;

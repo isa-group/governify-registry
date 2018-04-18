@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -187,14 +187,14 @@ function _guaranteeIdGET(req, res) {
                 }
             }, function (err) {
 
-                let errorString = 'Error retreiving guarantee ' + guaranteeId;
+                let errorString = 'Error retrieving guarantee ' + guaranteeId;
                 return controllerErrorHandler(res, "guarantees-controller", "_guaranteeIdGET", err.code || 500, errorString, err);
 
             });
         }
     }, function (err) {
 
-        let errorString = 'Error initializatin state manager for agreement: ' + agreementId;
+        let errorString = 'Error while initializing state manager for agreement: ' + agreementId;
         return controllerErrorHandler(res, "guarantees-controller", "_guaranteeIdGET", err.code || 500, errorString, err);
 
     });
@@ -202,7 +202,7 @@ function _guaranteeIdGET(req, res) {
 
 
 /**
- * Post gurantee penalty by ID.
+ * Post guarantee penalty by ID.
  * @param {Object} args {agreement: String, guarantee: String}
  * @param {Object} res response
  * @param {Object} next next function

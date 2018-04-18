@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -81,7 +81,7 @@ function processPricing(agreementDef, query, manager) {
                     pricingPenaltiesDef.forEach(function (penalty) {
                         var penaltyId = Object.keys(penalty.over)[0];
                         var groupBy = Object.keys(penalty.groupBy);
-                        logger.pricing("Calculating pricing state with values: [penalty=" + penaltyId + ", aggegatedBy=" + penalty.aggegatedBy + ", groupBy= " + groupBy.toString() + "]");
+                        logger.pricing("Calculating pricing state with values: [penalty=" + penaltyId + ", aggregatedBy=" + penalty.aggregatedBy + ", groupBy= " + groupBy.toString() + "]");
                         for (var i = 0; i < guaranteeStates.length; i++) {
                             var guaranteeState = manager.current(guaranteeStates[i]);
                             logger.info("Processing guaranteeState " + i + " node: " + guaranteeState.scope.node);
@@ -139,7 +139,7 @@ function processPricing(agreementDef, query, manager) {
             }).then(function () {
                 //Once we have all guarantee States...
                 // For each penalty in the definition of pricing/billing/penalties...
-                // Generar una entrada en el array penalties por cada serviceLine, por cada activity, por cada period
+                // Generate an item in the penalties array for each serviceLine, for each activity, for each period
                 var classifiers = [];
                 pricingPenaltiesDef.forEach(function (penalty) {
                     // initialize Id of penalty (e.g. PTOT)

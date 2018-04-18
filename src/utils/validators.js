@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -22,6 +22,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 
 'use strict';
 
@@ -139,17 +140,17 @@ function _guaranteeQuery(query, guaranteeId /*, guaranteeDefinition*/) {
 
     if (query.parameters) {
         validation = validation && false;
-        errors.push('Parameters field is not permited for guarantee queries.');
+        errors.push('Parameters field is not permitted for guarantee queries.');
     }
 
     if (query.window) {
         validation = validation && false;
-        errors.push('Window field is not permited for guarantee queries.');
+        errors.push('Window field is not permitted for guarantee queries.');
     }
 
     if (query.scope) {
         validation = validation && false;
-        errors.push('Scope field is not permited for guarantee queries.');
+        errors.push('Scope field is not permitted for guarantee queries.');
     }
 
     query.guarantee = guaranteeId;

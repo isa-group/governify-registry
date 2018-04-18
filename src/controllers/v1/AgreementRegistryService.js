@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -352,7 +352,7 @@ exports.agreementsAgreementTermsPricingBillingPenaltiesPenaltyGET = function (ar
     examples['application/json'] = {
         "over": {},
         "upTo": 1.3579000000000001069366817318950779736042022705078125,
-        "aggegatedBy": "aeiou",
+        "aggregatedBy": "aeiou",
         "of": "",
         "id": "aeiou",
         "groupBy": [{}]
@@ -394,7 +394,7 @@ exports.agreementsAgreementTermsPricingBillingRewardsRewardGET = function (args,
     examples['application/json'] = {
         "over": {},
         "upTo": 1.3579000000000001069366817318950779736042022705078125,
-        "aggegatedBy": "aeiou",
+        "aggregatedBy": "aeiou",
         "of": "",
         "id": "aeiou",
         "groupBy": [{}]

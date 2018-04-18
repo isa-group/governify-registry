@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -104,7 +104,7 @@ function processMetrics(manager, parameters) {
             logger.agreement("Processing metrics in parallel mode");
             logger.agreement("- metrics: " + metrics);
 
-            //Setting up promise for excecuting in parallel mode
+            //Setting up promise for executing in parallel mode
             metrics.forEach(function (metricId) {
                 var priorities = ['P1', 'P2', 'P3'];
                 if (metricId == 'SPU_IO_K00') {
@@ -117,20 +117,20 @@ function processMetrics(manager, parameters) {
                 });
             });
 
-            //Excecuting parallelly
+            //Executing in parallel
             utils.promise.processParallelPromises(manager, processMetrics, null, null, null).then(resolve, reject);
 
         } else {
             logger.agreement("Processing metrics in sequential mode");
             logger.agreement("- metrics: " + metrics);
 
-            //Setting up queries for excecuting in parallel mode
+            //Setting up queries for executing in parallel mode
             metrics.forEach(function (metricId) {
                 logger.agreement("-- metricId: " + metricId);
 
                 var metricDef = manager.agreement.terms.metrics[metricId];
                 if (metricDef.defaultStateReload) {
-                    // it's suposed that computer accepts always scope[key] = '*';
+                    // it's supposed that computer accepts always scope[key] = '*';
                     var scope = null;
                     if (metricDef.scope) {
                         scope = {};
@@ -204,7 +204,7 @@ function processGuarantees(manager, parameters) {
             logger.agreement("Processing guarantees in parallel mode");
             logger.agreement("- guarantees: " + guarantees);
 
-            //Setting up promise for excecuting in parallel mode
+            //Setting up promise for executing in parallel mode
             var processGuarantees = [];
             guarantees.forEach(function (guarantee) {
                 processGuarantees.push(manager.get('guarantees', {
@@ -212,14 +212,14 @@ function processGuarantees(manager, parameters) {
                 }));
             });
 
-            //Excecuting parallelly
+            //Executing in parallel
             utils.promise.processParallelPromises(manager, processGuarantees, null, null, null).then(resolve, reject);
 
         } else {
             logger.agreement("Processing guarantees in sequential mode");
             logger.agreement("- guarantees: " + guarantees);
 
-            //Setting up queries for excecuting in parallel mode
+            //Setting up queries for executing in parallel mode
             var guaranteeQueries = [];
             guarantees.forEach(function (element) {
                 guaranteeQueries.push({
@@ -227,7 +227,7 @@ function processGuarantees(manager, parameters) {
                 });
             });
 
-            //Excecuting sequentially
+            //Executing sequentially
             utils.promise.processSequentialPromises('guarantees', manager, guaranteeQueries, null, null, null).then(resolve, reject);
 
         }

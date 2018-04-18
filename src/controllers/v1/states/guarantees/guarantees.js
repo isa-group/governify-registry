@@ -1,6 +1,6 @@
 /*!
-governify-registry 3.0.1, built on: 2017-05-08
-Copyright (C) 2017 ISA group
+governify-registry 3.0.1, built on: 2018-04-18
+Copyright (C) 2018 ISA group
 http://www.isa.us.es/
 https://github.com/isa-group/governify-registry
 
@@ -157,7 +157,7 @@ module.exports.guaranteeIdPenaltyPOST = function (args, res) {
 
         var periods = getPeriods(manager.agreement, query.window);
 
-        var resul = [];
+        var result = [];
         Promise.each(periods, function (element) {
             var p = {
                 from: moment.utc(moment.tz(element.from, manager.agreement.context.validity.timeZone).subtract(Math.abs(offset), "months")).toISOString(),
@@ -199,13 +199,13 @@ module.exports.guaranteeIdPenaltyPOST = function (args, res) {
                         ret.push(e);
                     }
                 }
-                //logger.ctlState("Resultado para el periodo : " + JSON.stringify(element) + "=>\n" + JSON.stringify(ret, null, 2));
+                //logger.ctlState("Result for the period : " + JSON.stringify(element) + "=>\n" + JSON.stringify(ret, null, 2));
 
                 for (var i in ret) {
                     if (manager.current(ret[i]).penalties) {
                         var penalties = manager.current(ret[i]).penalties;
                         for (var penaltyI in penalties) {
-                            resul.push(new PenaltyMetric(ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI]));
+                            result.push(new PenaltyMetric(ret[i].scope, query.parameters, element, query.logs, penaltyI, penalties[penaltyI]));
                         }
                     }
                 }
@@ -216,7 +216,7 @@ module.exports.guaranteeIdPenaltyPOST = function (args, res) {
             });
 
         }).then(function () {
-            res.json(resul);
+            res.json(result);
         }, function (err) {
             logger.error(err);
             res.status(500).json(new ErrorModel(500, err));
