@@ -40,6 +40,7 @@ production:
     useHelmet: false
     httpOptionsOK: true
     servePackageInfo: true
+    listenOnHttps: false
   statusBouncer: false
   streaming: true
 development:
@@ -83,7 +84,8 @@ development:
     bypassCORS: true
     useHelmet: true
     httpOptionsOK: true
-    servePackageInfo: true   
+    servePackageInfo: true
+    listenOnHttps: false
   statusBouncer: false
   streaming: true
 testing:
@@ -128,5 +130,6 @@ testing:
     useHelmet: true
     httpOptionsOK: true
     servePackageInfo: true
+    listenOnHttps: false
   statusBouncer: false
   streaming: true
