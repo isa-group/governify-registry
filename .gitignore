@@ -4,3 +4,4 @@ package-lock.json
 *.log
 public/coverage/
 public/docs/
+logs/
