@@ -20,30 +20,75 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-//Server dependencies
-var express = require('express');
-var http = require('http');
-var https = require('https');
-var fs = require('fs');
-var bodyParser = require('body-parser');
-var app = express();
+/*
+ * Put here your dependencies
+ */
+const http = require("http"); // Use http if your app will be behind a proxy.
+const https = require("https"); // Use https if your app will not be behind a proxy.
+const bodyParser = require("body-parser");
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
+const compression = require("compression");
+const fs = require('fs');
 
 //Self dependencies
-var config = require('./src/config');
-var db = require('./src/database');
-var swaggerUtils = require('./src/utils/utils').swagger;
-var middlewares = require('./src/utils/utils').middlewares;
+const config = require("./src/configurations");
+const logger = require("./src/logger");
+const db = require('./src/database');
+const swaggerUtils = require('./src/utils/utils').swagger;
+const middlewares = require('./src/utils/utils').middlewares;
 
-app.use(express.static(__dirname + '/public'));
-app.use(bodyParser.json()); // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
-    extended: true
-}));
+let server = null;
+const app = express();
 
-// Bypassing 405 status put by swagger when no request handler is defined
-app.options("/*", (req, res, next) => {
-    return res.sendStatus(200);
-});
+const frontendPath = __dirname + '/public';
+const serverPort = process.env.PORT || config.server.port;
+
+app.use(express.static(frontendPath));
+// Default server options
+app.use(compression());
+
+logger.info("Using '%s' as HTTP body size", config.server.bodySize);
+app.use(
+    bodyParser.urlencoded({
+        limit: config.server.bodySize,
+        extended: "true"
+    })
+);
+
+app.use(
+    bodyParser.json({
+        limit: config.server.bodySize,
+        type: "application/json"
+    })
+);
+
+// Configurable server options
+
+if (config.server.bypassCORS) {
+    logger.info("Adding 'Access-Control-Allow-Origin: *' header to every path.");
+    app.use(cors());
+}
+
+if (config.server.useHelmet) {
+    logger.info("Adding Helmet related headers.");
+    app.use(helmet());
+}
+
+if (config.server.httpOptionsOK) {
+    app.options("/*", (req, res) => {
+        logger.info("Bypassing 405 status put by swagger when no request handler is defined");
+        return res.sendStatus(200);
+    });
+}
+
+if (config.server.servePackageInfo) {
+    app.use('/api/info', function (req, res) {
+        logger.info("Serving package.json at '%s'", "/api/info");
+        res.json(require('./package.json'));
+    });
+}
 
 // middleware to control when an agreement state process is already in progress
 app.use('/api/v2/states/:agreement', middlewares.stateInProgress);
@@ -60,10 +105,7 @@ app.use('/api/latest/api-docs', function (req, res) {
     res.redirect('/api/' + CURRENT_API_VERSION + '/api-docs');
 });
 
-//servin package info 
-app.use('/api/info', function (req, res) {
-    res.json(require('./package.json'));
-});
+
 /**
  * Registry module.
  * @module registry
@@ -115,31 +157,29 @@ function _deploy(configurations, callback) {
             //initialize swagger middleware for each swagger documents.
             swaggerUtils.initializeMiddleware(app, swaggerDocs, function () {
 
-                var serverPort = process.env.PORT || config.port;
                 if (!module.exports.server) {
                     module.exports.server = http.createServer(app);
                 }
-                module.exports.server.timeout = 24 * 3600 * 1000; // 24h
+                module.exports.server.timeout = config.server.timeout;
 
-                if (process.env.HTTPS_SERVER === "true") {
-                    var securePort = 443;
+                if (process.env.HTTPS_SERVER === "true" || config.server.listenOnHttps) {
                     https.createServer({
                         key: fs.readFileSync('certs/privkey.pem'),
                         cert: fs.readFileSync('certs/cert.pem')
-                    }, app).listen(securePort, function () {
-                        config.logger.info('HTTPS_SERVER mode');
-                        config.logger.info('Your server is listening on port %d (https://localhost:%d)', serverPort, serverPort);
-                        config.logger.info('Swagger-ui is available on https://localhost:%d/api/%s/docs', serverPort, CURRENT_API_VERSION);
+                    }, app).listen(serverPort, function () {
+                        logger.info('HTTPS_SERVER mode');
+                        logger.info('Your server is listening on port %d (https://localhost:%d)', serverPort, serverPort);
+                        logger.info('Swagger-ui is available on https://localhost:%d/api/%s/docs', serverPort, CURRENT_API_VERSION);
+                    });
+                } else {
+                    module.exports.server.listen(serverPort, function () {
+                        logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
+                        logger.info('Swagger-ui is available on http://localhost:%d/api/%s/docs', serverPort, CURRENT_API_VERSION);
+                        if (callback) {
+                            callback(module.exports.server);
+                        }
                     });
                 }
-
-                module.exports.server.listen(serverPort, function () {
-                    config.logger.info('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
-                    config.logger.info('Swagger-ui is available on http://localhost:%d/api/%s/docs', serverPort, CURRENT_API_VERSION);
-                    if (callback) {
-                        callback(module.exports.server);
-                    }
-                });
             });
         } else {
             logger.error('Database connection failed', err);

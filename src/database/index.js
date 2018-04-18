@@ -59,20 +59,14 @@ module.exports = {
  * */
 function _connect(callback) {
     var instance = this;
-    var databaseURL = config.database.url[config.database.url.length - 1] === "/" ? config.database.url : config.database.url + '/';
-    var databaseFullURL = databaseURL + config.database.db_name;
-    config.logger.info('Connecting to ' + databaseFullURL);
+    var db = null;
+    let databaseFullURL = "mongodb://" + config.database.host + ":" + config.database.port + "/" + config.database.name;
+    logger.info('Connecting to ' + databaseFullURL);
     mongoose.Promise = global.Promise;
-    mongoose.connect(databaseFullURL, { useMongoClient: true });
-    var db = mongoose.connection;
-    db.on('error', function (err) {
-        config.logger.error(err);
-        if (callback) {
-            callback(err);
-        }
-    });
-    db.once('open', function () {
-        config.logger.info('Connected to db!');
+    mongoose.connect(databaseFullURL).then(() => {
+        db = mongoose.connection;
+
+        logger.info('Connected to db!');
         instance.db = db;
         if (!instance.models) {
             instance.models = {};
@@ -83,7 +77,13 @@ function _connect(callback) {
             callback();
         }
 
+    }).catch(err => {
+        if (callback) {
+            callback(err);
+        }
     });
+
+
 }
 
 
