@@ -26,9 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var config = require('../../../../config');
+var logger = require('../../../../logger');
 var db = require('../../../../database');
-var logger = config.logger;
 var stateManager = require('../../../../stateManager/v1/stateManager.js');
 var Promise = require("bluebird");
 var request = require('request');

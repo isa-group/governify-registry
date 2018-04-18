@@ -26,8 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var config = require('../../../../config'),
-    logger = config.logger,
+var config = require('../../../../configurations'),
+    logger = logger,
     ErrorModel = require('../../../../errors/index.js').errorModel,
     stateManager = require('../../../../stateManager/v5/state-manager'),
     utils = require('../../../../utils/utils');

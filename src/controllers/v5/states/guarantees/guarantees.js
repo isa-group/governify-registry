@@ -29,8 +29,8 @@ var Promise = require('bluebird'),
     JSONStream = require('JSONStream'),
     moment = require('moment'),
 
-    config = require('../../../../config'),
-    logger = config.logger,
+    config = require('../../../../configurations'),
+    logger = logger,
     ErrorModel = require('../../../../errors').errorModel,
 
     stateManager = require('../../../../stateManager/v5/state-manager'),

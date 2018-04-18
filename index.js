@@ -89,20 +89,20 @@ module.exports = {
  * */
 function _deploy(configurations, callback) {
     if (configurations && configurations.loggerLevel) {
-        config.logger.transports.console.level = configurations.loggerLevel;
+        logger.transports.console.level = configurations.loggerLevel;
     }
-    config.logger.info('Trying to deploy server');
+    logger.info('Trying to deploy server');
     if (configurations) {
-        config.logger.info('Reading configuration...');
+        logger.info('Reading configuration...');
         for (var c in configurations) {
             var prop = configurations[c];
-            config.logger.info('Setting property' + c + ' with value ' + prop);
+            logger.info('Setting property' + c + ' with value ' + prop);
             config.setProperty(c, prop);
         }
     }
 
     db.connect(function (err) {
-        config.logger.info('Trying to connect to database');
+        logger.info('Initializing app after db connection');
         if (!err) {
             //list of swagger documents, one for each version of the api.
             var swaggerDocs = [
@@ -142,7 +142,7 @@ function _deploy(configurations, callback) {
                 });
             });
         } else {
-            config.logger.error('Database connection failed', err);
+            logger.error('Database connection failed', err);
 
         }
     });
@@ -157,7 +157,7 @@ function _deploy(configurations, callback) {
 function _undeploy(callback) {
     db.close(function () {
         module.exports.server.close(function () {
-            config.logger.info('Server has been closed');
+            logger.info('Server has been closed');
             callback();
         });
     });

@@ -26,14 +26,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-var config = require('../../config'),
-    logger = config.logger,
-    Promise = require('bluebird'),
-    request = require('request'),
-    JSONStream = require('JSONStream'),
-    qs = require('querystring'),
+var logger = require('../../logger');
+var Promise = require('bluebird');
+var request = require('request');
+var JSONStream = require('JSONStream');
+var qs = require('querystring');
 
-    utils = require('../../utils/utils');
+var utils = require('../../utils/utils');
 
 var Query = utils.Query;
 var promiseErrorHandler = utils.errors.promiseErrorHandler;

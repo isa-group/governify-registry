@@ -27,14 +27,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 'use strict';
 
 var $RefParser = require('json-schema-ref-parser');
-var config = require('../../../config');
+var logger = require('../../../logger');
 var db = require('../../../database');
 var agreementManager = require('governify-agreement-manager').operations.states;
 
 var agreementState = require('../states/agreements/agreements');
 var stateRegistrySrv = require('../StateRegistryService');
 var ErrorModel = require('../../../errors/index.js').errorModel;
-var logger = config.logger;
 
 module.exports = {
     agreementsPOST: _agreementsPOST,

@@ -26,12 +26,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var config = require('../../config');
+var logger = require('../../logger');
 var db = require('../../database');
 // Requiring states controllers
 var states = require("./states/states.js");
-
-var logger = config.logger;
 
 module.exports = {
     // Agreement controllers

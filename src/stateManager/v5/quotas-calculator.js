@@ -26,8 +26,8 @@
 
 // 'use strict';
 
-// var config = require('../../config');
-// var logger = config.logger;
+// var config = require('../../configurations');
+// var logger = require('../../logger');
 // var ErrorModel = require('../../errors/index.js').errorModel;
 
 // var Promise = require('bluebird');

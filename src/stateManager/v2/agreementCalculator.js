@@ -26,10 +26,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-var config = require('../../config'),
-    logger = config.logger,
-    moment = require('moment'),
-    utils = require('../../utils/utils');
+var config = require('../../configurations');
+var logger = require('../../logger');
+var moment = require('moment');
+var utils = require('../../utils/utils');
 
 var Promise = require('bluebird');
 

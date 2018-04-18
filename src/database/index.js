@@ -26,7 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var config = require('../config');
+var config = require('../configurations');
+var logger = require('../logger');
 
 var jsyaml = require('js-yaml');
 var fs = require('fs');
@@ -112,7 +113,7 @@ function setupModel(instance, modelName, jsonModelUri) {
     var referencedJsonModel = jsyaml.safeLoad(fs.readFileSync(jsonModelUri));
     $RefParser.dereference(referencedJsonModel, function (err, dereferencedJsonModel) {
         if (err) {
-            config.logger.info('dereference error in setupModel');
+            logger.info('dereference error in setupModel');
         }
         var mongooseSchema = new mongoose.Schema(dereferencedJsonModel, {
             minimize: false

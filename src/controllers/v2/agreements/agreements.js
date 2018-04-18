@@ -26,8 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var config = require('../../../config');
-var logger = config.logger;
+var logger = require('../../../logger');
 var db = require('../../../database');
 var agreementState = require('../states/states').agreements;
 var stateRegistrySrv = require('../StateRegistryService');
