@@ -29,8 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var __base = "../../../../..";
 
-var expect = require("chai").expect;
-var request = require("request");
+const expect = require("chai").expect;
+const request = require("request");
 
 // Names
 var VERSION = "v2";
@@ -40,9 +40,9 @@ var FILENAME_EXTENSION = "json";
 var SERVER_PATH = "http://localhost:5001/api/" + VERSION;
 
 // Used modules
-var registry = require(__base + '/index');
-var testUtils = require(__base + '/tests/utils');
-var config = require(__base + '/tests/required/config.json');
+const registry = require(__base + '/index');
+const testUtils = require(__base + '/tests/utils');
+const config = require(__base + '/tests/required/config.json');
 
 // Required files
 var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);

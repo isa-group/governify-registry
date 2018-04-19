@@ -29,9 +29,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var __base = "../../../..";
 
-var rewire = require('rewire'); // for accessing to non-exported methods
-var expect = require('chai').expect;
-var request = require('request');
+const rewire = require('rewire'); // for accessing to non-exported methods
+const expect = require('chai').expect;
+const request = require('request');
 
 // Names
 var VERSION = "v5";
@@ -44,10 +44,10 @@ var SERVER_PATH = "http://localhost:5001/api/" + VERSION;
 var AGREEMENT_PATH = SERVER_PATH + '/agreements';
 
 // Used modules
-var guaranteeCalculator = rewire(__base + '/src/stateManager/' + VERSION + '/guarantee-calculator');
-var stateManager = require(__base + '/src/stateManager/' + VERSION + '/state-manager');
-var testUtils = require(__base + '/tests/utils');
-var registry = require(__base + '/index');
+const guaranteeCalculator = rewire(__base + '/src/stateManager/' + VERSION + '/guarantee-calculator');
+const stateManager = require(__base + '/src/stateManager/' + VERSION + '/state-manager');
+const testUtils = require(__base + '/tests/utils');
+const registry = require(__base + '/index');
 
 // Non-exported methods
 var processGuarantees = guaranteeCalculator.__get__('processGuarantees');
@@ -57,7 +57,7 @@ var calculatePenalty = guaranteeCalculator.__get__('calculatePenalty');
 
 // Required files
 var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
-var config = require(__base + '/tests/required/config.json');
+const config = require(__base + '/tests/required/config.json');
 var ofElement = require(__base + '/tests/required/ofElements/' + VERSION + '/' + 'ofElement' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
 var guarantee = require(__base + '/tests/required/guarantees/' + VERSION + '/' + 'guarantee' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);
 var timedScope = require(__base + '/tests/required/timedScopes/' + VERSION + '/' + 'timedScope' + '-' + AGREEMENT_ID + '-' + METRIC_ID + '.' + FILENAME_EXTENSION);

@@ -26,8 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var stream = require('stream');
-var logger = require('../logger');
+const stream = require('stream');
+const logger = require('../logger');
 
 /**
  * Utils module.

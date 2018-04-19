@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var Agreement = require('./AgreementRegistryService');
+const Agreement = require('./AgreementRegistryService');
 
 module.exports.agreementsAgreementContextDefinitionsGET = function agreementsAgreementContextDefinitionsGET(req, res, next) {
     Agreement.agreementsAgreementContextDefinitionsGET(req.swagger.params, res, next);

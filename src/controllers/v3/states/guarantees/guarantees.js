@@ -25,19 +25,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 'use strict';
-var Promise = require('bluebird');
-var JSONStream = require('JSONStream');
-var moment = require('moment');
+const Promise = require('bluebird');
+const JSONStream = require('JSONStream');
+const moment = require('moment');
 
-var config = require('../../../../configurations');
-var logger = require('../../../../logger');
+const config = require('../../../../configurations');
+const logger = require('../../../../logger');
 
-var ErrorModel = require('../../../../errors').errorModel;
+const ErrorModel = require('../../../../errors').errorModel;
 
-var stateManager = require('../../../../stateManager/v2/stateManager');
+const stateManager = require('../../../../stateManager/v2/stateManager');
 
-var gUtils = require('./gUtils.js');
-var utils = require('../../../../utils/utils');
+const gUtils = require('./gUtils.js');
+const utils = require('../../../../utils');
 
 /**
  * Guarantees module

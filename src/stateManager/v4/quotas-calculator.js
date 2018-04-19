@@ -26,11 +26,11 @@
 
 // 'use strict';
 
-// var config = require('../../configurations');
-// var logger = require('../../logger');
-// var ErrorModel = require('../../errors/index.js').errorModel;
+// const config = require('../../configurations');
+// const logger = require('../../logger');
+// const ErrorModel = require('../../errors/index.js').errorModel;
 
-// var Promise = require('bluebird');
+// const Promise = require('bluebird');
 
 
 // /**

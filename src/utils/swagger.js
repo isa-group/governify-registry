@@ -26,9 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var fs = require('fs');
-var jsyaml = require('js-yaml');
-var swaggerTools = require('swagger-tools');
+const fs = require('fs');
+const jsyaml = require('js-yaml');
+const swaggerTools = require('swagger-tools');
 
 /**
  * Swagger module.

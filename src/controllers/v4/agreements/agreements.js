@@ -26,14 +26,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var logger = require('../../../logger');
-var $RefParser = require('json-schema-ref-parser');
+const logger = require('../../../logger');
+const $RefParser = require('json-schema-ref-parser');
 
-var db = require('../../../database');
+const db = require('../../../database');
 
-var states = require('../states/states');
-var ErrorModel = require('../../../errors/index.js').errorModel;
-var agreementManager = require('governify-agreement-manager').operations.states;
+const states = require('../states/states');
+const ErrorModel = require('../../../errors/index.js').errorModel;
+const agreementManager = require('governify-agreement-manager').operations.states;
 
 /**
  * Registry agreement module.

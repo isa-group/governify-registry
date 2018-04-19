@@ -26,14 +26,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var config = require('../../configurations');
-var logger = require('../../logger');
-var utils = require('../../utils/utils.js');
+const config = require('../../configurations');
+const logger = require('../../logger');
+const utils = require('../../utils');
 
-var Promise = require('bluebird');
-var moment = require('moment');
+const Promise = require('bluebird');
+const moment = require('moment');
 
-// var promiseErrorHandler = utils.errors.promiseErrorHandler;
+// const promiseErrorHandler = utils.errors.promiseErrorHandler;
 
 /**
  * Pricing calculator module.

@@ -1,11 +1,13 @@
 {
     "name": "governify-registry",
     "description": "Central repository for agreements",
-    "main": "server.js",
-    "authors": [{
-        "name": "ISA group",
-        "web": "http://www.isa.us.es/"
-    }],
+    "main": "index.js",
+    "authors": [
+        {
+            "name": "ISA group",
+            "web": "http://www.isa.us.es/"
+        }
+    ],
     "license": "GPL-2.0",
     "keywords": [
         "governify",

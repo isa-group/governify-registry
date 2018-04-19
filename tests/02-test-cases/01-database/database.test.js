@@ -29,8 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var __base = "../../../";
 
-var expect = require("chai").expect;
-var database = require(__base + '/src/database');
+const expect = require("chai").expect;
+const database = require(__base + '/src/database');
 
 describe('Connection Methods Tests', function () {
     this.timeout(200000);

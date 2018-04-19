@@ -26,12 +26,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var config = require('../configurations');
-var logger = require('../logger');
+const config = require('../configurations');
+const logger = require('../logger');
 
-var jsyaml = require('js-yaml');
-var fs = require('fs');
-var mongoose = require('mongoose');
+const jsyaml = require('js-yaml');
+const fs = require('fs');
+const mongoose = require('mongoose');
 var $RefParser = require('json-schema-ref-parser');
 
 
@@ -115,10 +115,10 @@ function setupModel(instance, modelName, jsonModelUri) {
         if (err) {
             logger.info('dereference error in setupModel');
         }
-        var mongooseSchema = new mongoose.Schema(dereferencedJsonModel, {
+        const mongooseSchema = new mongoose.Schema(dereferencedJsonModel, {
             minimize: false
         });
-        var mongooseModel = mongoose.model(modelName, mongooseSchema);
+        const mongooseModel = mongoose.model(modelName, mongooseSchema);
         instance.models[modelName] = mongooseModel;
     });
 }

@@ -28,8 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var __base = "../../../..";
 
-var rewire = require('rewire'); // for accessing to non-exported methods
-var expect = require('chai').expect;
+const rewire = require('rewire'); // for accessing to non-exported methods
+const expect = require('chai').expect;
 var $RefParser = require('json-schema-ref-parser');
 
 // Names
@@ -39,7 +39,7 @@ var FILENAME_EXTENSION = "json";
 var METRIC_ID = "SPU_IO_K01";
 
 // Used modules
-var metricCalculator = rewire(__base + '/src/stateManager/' + VERSION + '/metric-calculator');
+const metricCalculator = rewire(__base + '/src/stateManager/' + VERSION + '/metric-calculator');
 
 // Non-exported methods
 var processMetric = metricCalculator.__get__('processMetric');

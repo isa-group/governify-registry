@@ -26,19 +26,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var config = require('../../configurations');
-var logger = require('../../logger');
+const config = require('../../configurations');
+const logger = require('../../logger');
 
-var db = require('../../database');
-var ErrorModel = require('../../errors/index.js').errorModel;
-var calculators = require('./calculators.js');
+const db = require('../../database');
+const ErrorModel = require('../../errors/index.js').errorModel;
+const calculators = require('./calculators.js');
 
-var Promise = require('bluebird');
-var request = require('requestretry');
-//var iso8601 = require('iso8601');
-var moment = require("moment");
-var utils = require('../../utils/utils');
-var promiseErrorHandler = utils.errors.promiseErrorHandler;
+const Promise = require('bluebird');
+const request = require('requestretry');
+//const iso8601 = require('iso8601');
+const moment = require("moment");
+const utils = require('../../utils');
+const promiseErrorHandler = utils.errors.promiseErrorHandler;
 
 
 /**

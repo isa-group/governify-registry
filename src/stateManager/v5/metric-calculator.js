@@ -26,16 +26,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-var logger = require('../../logger');
-var Promise = require('bluebird');
-var request = require('request');
-var JSONStream = require('JSONStream');
-var qs = require('querystring');
+const logger = require('../../logger');
+const Promise = require('bluebird');
+const request = require('request');
+const JSONStream = require('JSONStream');
+const qs = require('querystring');
 
-var utils = require('../../utils/utils');
+const utils = require('../../utils');
 
-var Query = utils.Query;
-var promiseErrorHandler = utils.errors.promiseErrorHandler;
+const Query = utils.Query;
+const promiseErrorHandler = utils.errors.promiseErrorHandler;
 
 /**
  * Metric calculator module.
@@ -184,7 +184,7 @@ function processMetric(agreement, metricId, metricQuery) {
                 });
             });
         } catch (err) {
-            let errorString = 'Error processing metric: ' + metricId;
+            let errorString = 'Error processing metric: ' + metricId + '(' + err + ')';
             return promiseErrorHandler(reject, "metrics", processMetric.name, 500, errorString, err);
         }
     });
@@ -195,19 +195,24 @@ function processMetric(agreement, metricId, metricQuery) {
 //### OBJECTS CONSTRUCTORS ###
 
 //constructor of computer request config object
-var Config = function (measures, schedules, holidays) {
-    this.measures = measures;
-    this.schedules = schedules;
-    this.holidays = holidays;
-};
+class Config {
+    constructor(measures, schedules, holidays) {
+        this.measures = measures;
+        this.schedules = schedules;
+        this.holidays = holidays;
+    }
+}
 
 //constructor of computer request log object
-var LogField = function (uri, stateUri, terminator, structure) {
-    if (!!!uri || !!!stateUri || !!!terminator || !!!structure) {
-        throw new Error('The log field of metric is not well defined in the agreement, uri, stateUri, terminator and structure are required fields.');
+class LogField {
+    constructor(uri, stateUri, terminator, structure) {
+        if (!!!uri || !!!stateUri || !!!terminator || !!!structure) {
+            throw new Error('The log field of metric is not well defined in the agreement, uri, stateUri, terminator and structure are required fields.');
+        }
+        this.uri = uri;
+        this.stateUri = stateUri;
+        this.terminator = terminator;
+        this.structure = structure;
     }
-    this.uri = uri;
-    this.stateUri = stateUri;
-    this.terminator = terminator;
-    this.structure = structure;
-};
+
+}

@@ -26,11 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var ErrorModel = require('../../../../errors/index.js').errorModel;
-var config = require('../../../../configurations');
-var logger = require('../../../../logger');
-var stateManager = require('../../../../stateManager/v1/stateManager.js');
-var Promise = require("bluebird");
+const ErrorModel = require('../../../../errors/index.js').errorModel;
+const config = require('../../../../configurations');
+const logger = require('../../../../logger');
+const stateManager = require('../../../../stateManager/v1/stateManager.js');
+const Promise = require("bluebird");
 
 
 module.exports.metricsIdIncrease = function (args, res) {

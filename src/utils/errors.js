@@ -25,13 +25,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 'use strict';
-var config = require('../configurations');
-var logger = require('../logger');
+const config = require('../configurations');
+const logger = require('../logger');
 
 
 /**
- * Funtion for handling error in promises.
- * @param {Funtion} reject The reject callback of the promise
+ * Function for handling error in promises.
+ * @param {Function} reject The reject callback of the promise
  * @param {String} level The level where the error has occurred
  * @param {String} functionName The name of the function where the error has occurred
  * @param {Number} code Status Code
@@ -52,8 +52,8 @@ function promiseErrorHandler(reject, level, functionName, code, message, root) {
 }
 
 /**
- * Funtion for handling error in controllers.
- * @param {Funtion} res Express response object given in controller
+ * Function for handling error in controllers.
+ * @param {Function} res Express response object given in controller
  * @param {String} level The level where the error has occurred
  * @param {String} functionName The name of the function where the error has occurred
  * @param {Number} code Status Code
@@ -71,7 +71,7 @@ function controllerErrorHandler(res, level, functionName, code, message, root) {
 }
 
 /**
- * Funtion for handling error.
+ * Function for handling error.
  * @param {String} level The level where the error has occurred
  * @param {String} functionName The name of the function where the error has occurred
  * @param {Number} code Status Code
@@ -84,7 +84,7 @@ function ErrorHandler(level, functionName, code, message, root) {
     var stack = new Error().stack.split('\n')[3];
     var at = regexp.exec(stack)[0];
 
-    var path = require('path');
+    const path = require('path');
     var projectRoot = path.dirname(require.main.filename);
 
     //Remove project directory in order to show only relative path 

@@ -30,8 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Module dependencies.
  * */
 
-var winston = require('winston');
-var config = require('../configurations');
+const winston = require('winston');
+const config = require('../configurations');
 
 /**
  * Configure here your custom levels.
@@ -40,29 +40,39 @@ var customLevels = {
   levels: {
     error: 7,
     warning: 8,
-    singleProxy: 9,
-    multiProxy: 9,
-    pipeBuilder: 9,
-    servicesCtl: 9,
-    db: 9,
-    info: 10,
-    debug: 11
+    ctlAgreement: 9,
+    ctlState: 9,
+    agreement: 10,
+    pricing: 10,
+    quotas: 10,
+    rates: 10,
+    guarantees: 10,
+    metrics: 10,
+    sm: 11,
+    streaming: 13,
+    info: 12,
+    debug: 13
   },
   colors: {
     error: 'red',
     warning: 'yellow',
-    singleProxy: 'yellow',
-    multiProxy: 'cyan',
-    pipeBuilder: 'green',
-    servicesCtl: 'blue',
-    db: 'magenta',
+    ctlAgreement: 'blue',
+    ctlState: 'blue',
+    agreement: 'magenta',
+    pricing: 'green',
+    quotas: 'green',
+    rates: 'green',
+    guarantees: 'green',
+    metrics: 'cyan',
+    sm: 'grey',
+    streaming: 'green',
     info: 'white',
-    debug: 'grey'
+    debug: 'black'
   }
 };
 
 winston.emitErrs = true;
-var logger = new winston.Logger({
+const logger = new winston.Logger({
   levels: customLevels.levels,
   colors: customLevels.colors,
   transports: [

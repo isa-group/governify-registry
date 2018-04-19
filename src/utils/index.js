@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var diff = require('deep-diff');
+const diff = require('deep-diff');
 /**
  * Utils module.
  * @module utils

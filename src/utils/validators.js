@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var Ajv = require('ajv');
+const Ajv = require('ajv');
 
 /**
  * Metrics module
@@ -61,7 +61,7 @@ module.exports = {
 };
 
 function _pricingQuery(query) {
-    var schema = require('../schemas/query-schema.json');
+    const schema = require('../schemas/query-schema.json');
 
 
     var schemaValidationResults = schemaValidation(schema, query);
@@ -79,7 +79,7 @@ function _pricingQuery(query) {
 }
 
 function _metricQuery(query, metricId, metricDefinition) {
-    var schema = require('../schemas/query-schema.json');
+    const schema = require('../schemas/query-schema.json');
 
     //windows are required in metrics
     schema.required = ["scope", "window"];
@@ -128,7 +128,7 @@ function _metricQuery(query, metricId, metricDefinition) {
 }
 
 function _guaranteeQuery(query, guaranteeId /*, guaranteeDefinition*/) {
-    var schema = require('../schemas/query-schema.json');
+    const schema = require('../schemas/query-schema.json');
 
     var schemaValidationResults = schemaValidation(schema, query);
     var validation = true, errors = [];

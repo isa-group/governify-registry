@@ -29,15 +29,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var __base = "../../../..";
 
-var expect = require('chai').expect;
-var request = require('request');
-var Promise = require('bluebird');
+const expect = require('chai').expect;
+const request = require('request');
+const Promise = require('bluebird');
 
 // Used modules
-var registry = require(__base + '/index');
-var testUtils = require(__base + '/tests/utils');
-var utils = require(__base + '/src/utils/utils');
-var config = require(__base + '/tests/required/config.json');
+const registry = require(__base + '/index');
+const testUtils = require(__base + '/tests/utils');
+const utils = require(__base + '/src/utils');
+const config = require(__base + '/tests/required/config.json');
 
 // Names
 var VERSION = "v4";

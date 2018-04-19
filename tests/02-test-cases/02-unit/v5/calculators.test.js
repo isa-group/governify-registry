@@ -29,13 +29,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var __base = "../../../..";
 
-var expect = require('chai').expect;
+const expect = require('chai').expect;
 
 // Names
 var VERSION = "v5";
 
 // Used modules
-var calculators = require(__base + '/src/stateManager/' + VERSION + '/calculators');
+const calculators = require(__base + '/src/stateManager/' + VERSION + '/calculators');
 
 describe("calculators unit tests v5...", function () {
     this.timeout(1000000);

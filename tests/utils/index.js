@@ -26,14 +26,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var __base = "../..";
+const __base = "../..";
 
-var mongoose = require('mongoose');
-var Ajv = require('ajv');
+const mongoose = require('mongoose');
+const Ajv = require('ajv');
 
-var testConfig = require(__base + '/tests/required/config.json');
+const testConfig = require(__base + '/tests/required/config.json');
 
-var ajv = new Ajv({
+const ajv = new Ajv({
     unknownFormats: ['int32', 'int64', 'float', 'double', 'byte', 'binary', 'date', 'date-time', 'password']
 });
 

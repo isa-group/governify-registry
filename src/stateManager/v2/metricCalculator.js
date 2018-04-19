@@ -26,10 +26,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-var logger = require('../../logger');
-var Promise = require('bluebird');
-var request = require('request');
-var JSONStream = require('JSONStream');
+const logger = require('../../logger');
+const Promise = require('bluebird');
+const request = require('request');
+const JSONStream = require('JSONStream');
 
 /**
  * Metric calculator module.

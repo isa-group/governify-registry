@@ -25,9 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 'use strict';
-var db = require('../../database');
+const db = require('../../database');
 
-var agreements = require('./agreements/agreements.js');
+const agreements = require('./agreements/agreements.js');
 
 exports.agreementsGET = agreements.agreementsGET;
 

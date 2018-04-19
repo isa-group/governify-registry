@@ -4,7 +4,7 @@
   "version": "3.0.1",
   "description": "Central repository for agreements",
   "homepage": "https://github.com/isa-group/governify-registry",
-  "main": "server.js",
+  "main": "index.js",
   "keywords": [
     "governify",
     "registry",
@@ -64,9 +64,9 @@
   "scripts": {
     "old_eslint": "eslint lib/**/*.js test/**/*.js",
     "old_test": "./node_modules/.bin/mocha --reporter spec --require test/bootstrap/node test/*.test.js test/**/*.test.js",
-    "old_start": "node --max-old-space-size=20480 server.js",
+    "old_start": "node --max-old-space-size=20480 index.js",
     "old_docs": "cmd /k generateDocs.bat",
-    "start": "node server.js",
+    "start": "node index.js",
     "dev": "concurrently --kill-others \"yarn run start\" \"grunt watch\"",
     "watch": "grunt watch",
     "test": "grunt test",

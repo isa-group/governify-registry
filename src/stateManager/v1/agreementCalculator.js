@@ -26,10 +26,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-var config = require('../../configurations');
-var logger = require('../../logger');
+const config = require('../../configurations');
+const logger = require('../../logger');
 
-var Promise = require('bluebird');
+const Promise = require('bluebird');
 
 /**
  * Agreement calculator module.

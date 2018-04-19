@@ -26,15 +26,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var config = require('../../../../configurations'),
-    logger = logger,
-    ErrorModel = require('../../../../errors/index.js').errorModel,
-    stateManager = require('../../../../stateManager/v5/state-manager'),
-    utils = require('../../../../utils/utils');
+const config = require('../../../../configurations');
+const logger = require('../../../../logger');
 
-var Query = utils.Query;
-var JSONStream = require('JSONStream');
-var controllerErrorHandler = utils.errors.controllerErrorHandler;
+const ErrorModel = require('../../../../errors/index.js').errorModel;
+const stateManager = require('../../../../stateManager/v5/state-manager');
+const utils = require('../../../../utils');
+
+const Query = utils.Query;
+const JSONStream = require('JSONStream');
+const controllerErrorHandler = utils.errors.controllerErrorHandler;
 
 /**
  * Metrics module
@@ -159,7 +160,7 @@ function _metricsGET(req, res) {
         var validationErrors = [];
         if (config.parallelProcess.metrics) {
 
-            var promises = [];
+            const Promises = [];
             Object.keys(manager.agreement.terms.metrics).forEach(function (metricId) {
                 var query = new Query(req.query);
                 var validation = utils.validators.metricQuery(query, metricId, manager.agreement.terms.metrics[metricId]);

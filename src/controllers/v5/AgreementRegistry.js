@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var agreements = require('./agreements/agreements.js');
+const agreements = require('./agreements/agreements.js');
 
 
 /**

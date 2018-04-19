@@ -26,15 +26,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-var logger = require('../../logger');
-var utils = require('../../utils/utils.js');
+const logger = require('../../logger');
+const utils = require('../../utils');
 
-var promiseErrorHandler = utils.errors.promiseErrorHandler;
+const promiseErrorHandler = utils.errors.promiseErrorHandler;
 var Error = utils.errors.Error;
 
-var Promise = require('bluebird');
-var vm = require('vm');
-var moment = require('moment-timezone');
+const Promise = require('bluebird');
+const vm = require('vm');
+const moment = require('moment-timezone');
 
 
 /**

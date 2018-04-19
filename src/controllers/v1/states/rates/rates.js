@@ -25,8 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 'use strict';
-var logger = require('../../../../logger');
-var stateManager = require('../../../../stateManager/v1/stateManager.js');
+const logger = require('../../../../logger');
+const stateManager = require('../../../../stateManager/v1/stateManager.js');
 
 module.exports.ratesGET = function (args, res) {
     /**

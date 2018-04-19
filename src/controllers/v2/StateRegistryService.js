@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var states = require('./states/states.js');
+const states = require('./states/states.js');
 
 
 /**

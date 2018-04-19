@@ -25,13 +25,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 'use strict';
-var Promise = require('bluebird');
-var logger = require('../logger');
-var ErrorModel = require('../errors/index.js').errorModel;
+const Promise = require('bluebird');
+const logger = require('../logger');
+const ErrorModel = require('../errors/index.js').errorModel;
 
-var errors = require('./errors');
-var controllerErrorHandler = errors.controllerErrorHandler;
-var promiseErrorHandler = errors.promiseErrorHandler;
+const errors = require('./errors');
+const controllerErrorHandler = errors.controllerErrorHandler;
+const promiseErrorHandler = errors.promiseErrorHandler;
 
 /**
  * Utils module.

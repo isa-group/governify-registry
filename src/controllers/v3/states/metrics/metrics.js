@@ -26,13 +26,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var config = require('../../../../configurations'),
-    logger = logger,
-    ErrorModel = require('../../../../errors/index.js').errorModel,
-    stateManager = require('../../../../stateManager/v2/stateManager'),
-    utils = require('../../../../utils/utils');
+const config = require('../../../../configurations');
+const logger = require('../../../../logger');
+const ErrorModel = require('../../../../errors/index.js').errorModel;
+const stateManager = require('../../../../stateManager/v2/stateManager');
+const utils = require('../../../../utils');
 
-var JSONStream = require('JSONStream');
+const JSONStream = require('JSONStream');
 
 
 /**
@@ -158,7 +158,7 @@ function _metricsPOST(req, res) {
         var validationErrors = [];
         if (config.parallelProcess.metrics) {
 
-            var promises = [];
+            const Promises = [];
             Object.keys(manager.agreement.terms.metrics).forEach(function (metricId) {
                 var validation = utils.validators.metricQuery(query, metricId, manager.agreement.terms.metrics[metricId]);
                 if (!validation.valid) {

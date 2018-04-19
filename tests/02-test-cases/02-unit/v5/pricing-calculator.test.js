@@ -28,9 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var __base = "../../../..";
 
-var rewire = require('rewire'); // for accessing to non-exported methods
-var expect = require('chai').expect;
-var request = require('request');
+const rewire = require('rewire'); // for accessing to non-exported methods
+const expect = require('chai').expect;
+const request = require('request');
 
 // Names
 var VERSION = "v5";
@@ -40,17 +40,17 @@ var SERVER_PATH = "http://localhost:5001/api/" + VERSION;
 var AGREEMENT_PATH = SERVER_PATH + '/agreements';
 
 // Used modules
-var pricingCalculator = rewire(__base + '/src/stateManager/' + VERSION + '/pricing-calculator');
-var stateManager = require(__base + '/src/stateManager/' + VERSION + '/state-manager');
-var testUtils = require(__base + '/tests/utils');
-var registry = require(__base + '/index');
+const pricingCalculator = rewire(__base + '/src/stateManager/' + VERSION + '/pricing-calculator');
+const stateManager = require(__base + '/src/stateManager/' + VERSION + '/state-manager');
+const testUtils = require(__base + '/tests/utils');
+const registry = require(__base + '/index');
 
 // Non-exported methods
 var processPricing = pricingCalculator.__get__('processPricing');
 
 // Required files
 var agreementFile = require(__base + '/tests/required/agreements/' + VERSION + '/' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
-var config = require(__base + '/tests/required/config.json');
+const config = require(__base + '/tests/required/config.json');
 var query = require(__base + '/tests/required/windows/' + VERSION + '/' + 'window' + '-' + AGREEMENT_ID + '.' + FILENAME_EXTENSION);
 
 // Expected files

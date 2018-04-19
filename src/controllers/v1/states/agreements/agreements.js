@@ -26,13 +26,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var logger = require('../../../../logger');
-var db = require('../../../../database');
-var stateManager = require('../../../../stateManager/v1/stateManager.js');
-var Promise = require("bluebird");
-var request = require('request');
-var mailer = require('../../../../utils/mailer');
-var calculators = require('../../../../stateManager/v1/calculators.js');
+const logger = require('../../../../logger');
+const db = require('../../../../database');
+const stateManager = require('../../../../stateManager/v1/stateManager.js');
+const Promise = require("bluebird");
+const request = require('request');
+const mailer = require('../../../../utils/mailer');
+const calculators = require('../../../../stateManager/v1/calculators.js');
 
 module.exports = {
     agreementIdGET: _agreementIdGET,

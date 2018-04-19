@@ -25,11 +25,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 'use strict';
-var config = require('../configurations');
-var logger = require('../logger');
+const config = require('../configurations');
+const logger = require('../logger');
 
-var nodemailer = require('nodemailer');
-var sgTransport = require('nodemailer-sendgrid-transport');
+const nodemailer = require('nodemailer');
+const sgTransport = require('nodemailer-sendgrid-transport');
 
 // it is necessary to create this object since it is passed to sendGrid transport nodemailer
 var options = {

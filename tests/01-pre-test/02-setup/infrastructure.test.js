@@ -27,12 +27,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /*jshint expr:true */
 'use strict';
 
-var expect = require('chai').expect;
-var dockerCompose = require('docker-composer-manager');
+const expect = require('chai').expect;
+const dockerCompose = require('docker-composer-manager');
 
 var __base = "../../../";
 
-var registry = require(__base + '/index');
+const registry = require(__base + '/index');
 
 
 describe('Clearing previous testing infrastructure', function () {

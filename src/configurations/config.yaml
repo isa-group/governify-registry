@@ -16,7 +16,7 @@ production:
   errors:
     progressiveTrace: false
   log:
-    file: "./logs/test-logs.log"
+    file: "./logs/prod-logs.log"
     level: debug
     maxFiles: 30
     maxSize: 10000000

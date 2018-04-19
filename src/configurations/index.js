@@ -26,10 +26,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var jsyaml = require('js-yaml');
-var fs = require('fs');
-var winston = require('winston');
-var path = require('path');
+const jsyaml = require('js-yaml');
+const fs = require('fs');
+const winston = require('winston');
+const path = require('path');
 
 
 /**

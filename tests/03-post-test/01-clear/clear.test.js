@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var dockerCompose = require('docker-composer-manager');
+const dockerCompose = require('docker-composer-manager');
 
 describe('Clear infrastructure', function () {
     this.timeout(1000000);

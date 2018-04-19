@@ -26,16 +26,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-var logger = require('../../logger');
-var Promise = require('bluebird');
-var request = require('request');
-var JSONStream = require('JSONStream');
-var qs = require('querystring');
+const logger = require('../../logger');
+const Promise = require('bluebird');
+const request = require('request');
+const JSONStream = require('JSONStream');
+const qs = require('querystring');
 
-var utils = require('../../utils/utils');
+const utils = require('../../utils');
 
-var Query = utils.Query;
-var promiseErrorHandler = utils.errors.promiseErrorHandler;
+const Query = utils.Query;
+const promiseErrorHandler = utils.errors.promiseErrorHandler;
 
 /**
  * Metric calculator module.
@@ -190,7 +190,7 @@ function processMetric(agreement, metricId, metricQuery) {
 //### OBJECTS CONSTRUCTORS ###
 
 //constructor of computer request config object
-var Config = function (measures, holidays) {
+const config = function (measures, holidays) {
     this.measures = measures;
     if (holidays) { this.holidays = holidays; }
 };

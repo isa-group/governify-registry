@@ -25,18 +25,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 'use strict';
-var Promise = require('bluebird'),
-    JSONStream = require('JSONStream'),
-    moment = require('moment'),
+const Promise = require('bluebird');
+const JSONStream = require('JSONStream');
+const moment = require('moment');
 
-    config = require('../../../../configurations'),
-    logger = logger,
-    ErrorModel = require('../../../../errors').errorModel,
+const config = require('../../../../configurations');
+const logger = require('../../../../logger');
+const ErrorModel = require('../../../../errors').errorModel;
 
-    stateManager = require('../../../../stateManager/v5/state-manager'),
+const stateManager = require('../../../../stateManager/v5/state-manager');
 
-    gUtils = require('./gUtils.js'),
-    utils = require('../../../../utils/utils');
+const gUtils = require('./gUtils.js');
+const utils = require('../../../../utils');
 
 var Query = utils.Query;
 var controllerErrorHandler = utils.errors.controllerErrorHandler;

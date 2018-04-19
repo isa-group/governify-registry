@@ -26,14 +26,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-var config = require('../../../../configurations');
-var logger = require('../../../../logger');
-var ErrorModel = require('../../../../errors/index.js').errorModel;
-var stateManager = require('../../../../stateManager/v1/stateManager.js');
+const config = require('../../../../configurations');
+const logger = require('../../../../logger');
+const ErrorModel = require('../../../../errors/index.js').errorModel;
+const stateManager = require('../../../../stateManager/v1/stateManager.js');
 
-var Promise = require('bluebird');
-var JSONStream = require('JSONStream');
-var stream = require('stream');
+const Promise = require('bluebird');
+const JSONStream = require('JSONStream');
+const stream = require('stream');
 
 
 /**
