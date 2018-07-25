@@ -340,6 +340,97 @@ paths:
           schema:
             $ref: '#/definitions/error_model'
       x-swagger-router-controller: StateRegistry
+  '/states/{agreement}/guarantees/{guarantee}/overrides':
+    get:
+      tags:
+        - state-registry
+      description: Return all existing overrides for that agreement and guarantee
+      operationId: statesAgreementGuaranteesGuaranteeOverridesGET
+      parameters:
+        - name: agreement
+          in: path
+          description: XXX
+          required: true
+          type: string
+        - name: guarantee
+          in: path
+          description: XXX
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/override'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/error_model'
+      x-swagger-router-controller: OverrideRegistry
+    post:
+      tags:
+        - state-registry
+      description: Add one override to an existing agreement and guarantee
+      operationId: statesAgreementGuaranteesGuaranteeOverridesPOST
+      parameters:
+        - name: agreement
+          in: path
+          description: XXX
+          required: true
+          type: string
+        - name: guarantee
+          in: path
+          description: XXX
+          required: true
+          type: string
+        - in: body
+          name: override
+          description: The override to create.
+          schema:
+            $ref: '#/definitions/override'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: string
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/error_model'
+      x-swagger-router-controller: OverrideRegistry
+    delete:
+      tags:
+        - state-registry
+      description: Delete one override to an existing agreement and guarantee
+      operationId: statesAgreementGuaranteesGuaranteeOverridesDELETE
+      parameters:
+        - name: agreement
+          in: path
+          description: XXX
+          required: true
+          type: string
+        - name: guarantee
+          in: path
+          description: XXX
+          required: true
+          type: string
+        - in: body
+          name: override
+          description: The override to delete.
+          schema:
+            $ref: '#/definitions/override'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: string
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/error_model'
+      x-swagger-router-controller: OverrideRegistry
   '/states/{agreement}/metrics':
     get:
       tags:
@@ -905,6 +996,11 @@ definitions:
         type: string
       to:
         type: string
+  evidence_ref:
+    type: object
+    properties:
+      evidence:
+        type: boolean
   evidence_state:
     type: object
     properties:
@@ -927,6 +1023,20 @@ definitions:
         format: int32
       message:
         type: string
+  override:
+    type: object
+    properties:
+      scope:
+        $ref: '#/definitions/scope'
+      period:
+        $ref: '#/definitions/period'
+      id:
+        type: integer
+      evidences:
+        type: object
+      comment:
+        type: string
+
 responses:
   error:
     description: Bad request

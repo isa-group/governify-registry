@@ -72,6 +72,7 @@ function _connect(callback) {
             instance.models = {};
             setupModel(instance, config.models.agreement.name, config.models.agreement.path);
             setupModel(instance, config.models.state.name, config.models.state.path);
+            setupModel(instance, config.models.overrides.name, config.models.overrides.path);
         }
         if (callback) {
             callback();
@@ -113,7 +114,7 @@ function setupModel(instance, modelName, jsonModelUri) {
     var referencedJsonModel = jsyaml.safeLoad(fs.readFileSync(jsonModelUri));
     $RefParser.dereference(referencedJsonModel, function (err, dereferencedJsonModel) {
         if (err) {
-            logger.info('dereference error in setupModel');
+            logger.info('dereference error in setupModel: ' + err);
         }
         const mongooseSchema = new mongoose.Schema(dereferencedJsonModel, {
             minimize: false

@@ -104,6 +104,7 @@ function processMetric(agreement, metricId, metricQuery) {
                 logDefinition.terminator,
                 logDefinition.structure
             );
+           
             // Mapping of columns names in log
             var scope = utils.scopes.registryToComputerParser(metricQuery.scope, logDefinition.scopes);
 
@@ -111,7 +112,8 @@ function processMetric(agreement, metricId, metricQuery) {
             computerQuery.config = new Config(
                 computerObj.config.measures,
                 computerObj.config.schedules,
-                computerObj.config.holidays || null
+                computerObj.config.holidays || null,
+                agreement.context.infrastructure.registry + "/states/" + agreement.id + "/guarantees/" + metricId + "/overrides"
             );
 
             if (!computerQuery.logs) {
@@ -196,10 +198,11 @@ function processMetric(agreement, metricId, metricQuery) {
 
 //constructor of computer request config object
 class Config {
-    constructor(measures, schedules, holidays) {
+    constructor(measures, schedules, holidays, overrides) {
         this.measures = measures;
         this.schedules = schedules;
         this.holidays = holidays;
+        this.overrides = overrides;
     }
 }
 

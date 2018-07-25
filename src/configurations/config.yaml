@@ -28,6 +28,9 @@ production:
     state:
       name: StateModel
       path: "./src/models/stateModel.json"
+    overrides:
+      name: OverridesModel
+      path: "./src/models/overridesModel.json"
   parallelProcess:
     guarantees: false
     metrics: false
@@ -73,6 +76,9 @@ development:
     state:
       name: StateModel
       path: "./src/models/stateModel.json"
+    overrides:
+      name: OverridesModel
+      path: "./src/models/overridesModel.json"
   parallelProcess:
     guarantees: false
     metrics: false
@@ -118,6 +124,9 @@ testing:
     state:
       name: StateModel
       path: "./src/models/stateModel.json"
+    overrides:
+      name: OverridesModel
+      path: "./src/models/overridesModel.json"
   parallelProcess:
     guarantees: false
     metrics: false
