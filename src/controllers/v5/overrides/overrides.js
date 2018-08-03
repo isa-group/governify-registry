@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 const logger = require('../../../logger');
 const $RefParser = require('json-schema-ref-parser');
 const db = require('../../../database');
+const request = require('request');
 
 const states = require('../states/states');
 const ErrorModel = require('../../../errors/index.js').errorModel;
@@ -76,7 +77,7 @@ function _statesAgreementGuaranteesGuaranteeOverridesPOST(args, res) {
                 }
                 console.log(JSON.stringify(result));
                 if (!result || result.length < 1){
-                    var newAgreementOverrides = new OverridesModel({ 'agreement': args.agreement.value, 'guarantee': args.guarantee.value, 'overrides': [args.override.value]});
+                    var newAgreementOverrides = new OverridesModel({ 'agreement': args.agreement.value, 'guarantee': args.guarantee.value, 'version': 0, 'overrides': [args.override.value]});
                     newAgreementOverrides.save(function (err) {
                         if (err) {
                             logger.error("Mongo error saving agreement: " + err.toString());
@@ -84,20 +85,56 @@ function _statesAgreementGuaranteesGuaranteeOverridesPOST(args, res) {
                         } else {
                             logger.info('New override saved successfully!');
                             logger.info('Initializing agreement state');
+                            logger.info('2'); //TODO: Remove
                             //Initialize state
+                            var urlReload = "http://localhost:8081/api/v5/states/" + args.agreement.value + "/guarantees?from=" + args.override.value.period.from + "&to= " + args.override.value.period.to + "&forceUpdate=true";
+                            logger.info("URLL: " + urlReload) //TODO: Remove
+                            var computerRequest = request.get({
+                                url: urlReload,
+                             //   qs: qs.parse(urlParams)
+                            }).on('response', function computerResponseHandler(httpResponse) {
+                                //Processing computer response
+                                //If HTTP status code is not equal 200 reject the promise and end the process
+                                var result;
+                                if (httpResponse.statusCode !== 200) {
+                                   result = "Error in forceUpdate state " + httpResponse.statusCode + ':' + httpResponse.statusMessage;
+                                }
+                                else
+                                {
+                                    result = httpResponse;
+                                }
+                                res.status(200).send(result);
+                            });
+                           
                         }
                     });
                 }
                 else{
                 result.overrides.push(args.override.value);
-                OverridesModel.update({ 'agreement': args.agreement.value, 'guarantee': args.guarantee.value }, result , function (err) {
+                result.version +=1;
+                    OverridesModel.update({ 'agreement': args.agreement.value, 'guarantee': args.guarantee.value }, result, function (err) {
                     if (err) {
                         logger.error("Mongo error saving agreement: " + err.toString());
                         res.status(500).json(new ErrorModel(500, err));
                     } else {
-                        logger.info('New override saved successfully!');
+                        logger.info(' 2-New override saved successfully!');
                         logger.info('Initializing agreement state');
                         //Initialize state
+                        //TODO: Parametrize URL
+                        var urlReload = "http://localhost:8081/api/v5/states/" + args.agreement.value + "/guarantees?from=" + args.override.value.period.from + "&to=" + args.override.value.period.to + "&forceUpdate=true";
+                        logger.info("URLL: " + urlReload) //TODO: Remove
+                        var computerRequest = request.get({
+                            url: urlReload,
+                            //   qs: qs.parse(urlParams)
+                        }).on('end', function computerResponseHandler() {
+                            //Processing computer response
+                            //If HTTP status code is not equal 200 reject the promise and end the process
+
+                         
+                                res.status(200).send("OK");
+                        
+                           
+                        });
                     }
                 });
                 }
@@ -124,7 +161,7 @@ function _statesAgreementGuaranteesGuaranteeOverridesDELETE(args, res) {
         } else {
             var OverridesModel = db.models.OverridesModel;
             var overrides = new db.models.OverridesModel(schema);
-            OverridesModel.update({ 'agreement': args.agreement.value, 'guarantee': args.guarantee.value }, {$pull: {overrides: args.override.value} }, function (err, result) {
+            OverridesModel.update({ 'agreement': args.agreement.value, 'guarantee': args.guarantee.value }, { $pull: { overrides: args.override.value }, $inc: { 'version': 1 }}, function (err, result) {
             if (err) {
                 logger.error(err.toString());
                 res.status(500).json(new ErrorModel(500, err));

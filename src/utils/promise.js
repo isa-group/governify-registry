@@ -140,7 +140,7 @@ function _processParallelPromises(manager, promisesArray, result, res, streaming
  * @param {Boolean} streaming Decide if stream or not stream response
  * @alias module:gUtils.processMode
  * */
-function _processSequentialPromises(type, manager, queries, result, res, streaming) {
+function _processSequentialPromises(type, manager, queries, result, res, streaming, forceUpdate) {
 
 
     if (!result && !res) {
@@ -150,7 +150,7 @@ function _processSequentialPromises(type, manager, queries, result, res, streami
         return new Promise(function (resolve, reject) {
             Promise.each(queries, function (query) {
 
-                return manager.get(type, query).then(function (states) {
+                return manager.get(type, query, forceUpdate).then(function (states) {
                     for (var i in states) {
                         var state = states[i];
                         result.push(manager.current(state));
@@ -173,7 +173,7 @@ function _processSequentialPromises(type, manager, queries, result, res, streami
         //Controller mode using streaming
         Promise.each(queries, function (query) {
 
-            return manager.get(type, query).then(function (states) {
+            return manager.get(type, query, forceUpdate).then(function (states) {
                 for (var i in states) {
                     var state = states[i];
                     //feeding stream

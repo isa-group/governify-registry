@@ -58,13 +58,13 @@ module.exports = {
  * @param {Object} agreement agreement
  * @alias module:guaranteeCalculator.processAll
  * */
-function processGuarantees(agreement) {
+function processGuarantees(agreement, forceUpdate) {
     return new Promise(function (resolve, reject) {
         var processGuarantees = [];
-
+      
         // processGuarantee is called for each guarantee of the agreement guarantees definition
         agreement.terms.guarantees.forEach(function (guarantee) {
-            processGuarantees.push(processGuarantee(agreement, guarantee.id));
+            processGuarantees.push(processGuarantee(agreement, guarantee.id, true));
         });
 
         utils.promise.processParallelPromises(null, processGuarantees, null, null, null)
@@ -85,10 +85,11 @@ function processGuarantees(agreement) {
  * @param {Object} manager manager
  * @alias module:guaranteeCalculator.process
  * */
-function processGuarantee(manager, query) {
+function processGuarantee(manager, query, forceUpdate) {
 
     var agreement = manager.agreement;
     var guaranteeId = query.guarantee;
+
 
     var processScopedGuarantees = [];
 
@@ -130,7 +131,8 @@ function processGuarantee(manager, query) {
                     manager: manager,
                     query: query,
                     guarantee: guarantee,
-                    ofElement: ofElement
+                    ofElement: ofElement,
+                    forceUpdate: forceUpdate
                 });
             }
         });
@@ -141,7 +143,7 @@ function processGuarantee(manager, query) {
         // processScopedGuarantee is called for each scope (priority, node, serviceLine, activity, etc.) of the guarantee
 
         Promise.each(processScopedGuarantees, function (guaranteeParam) {
-            return processScopedGuarantee(guaranteeParam.manager, guaranteeParam.query, guaranteeParam.guarantee, guaranteeParam.ofElement).then(function (value) {
+            return processScopedGuarantee(guaranteeParam.manager, guaranteeParam.query, guaranteeParam.guarantee, guaranteeParam.ofElement, guaranteeParam.forceUpdate).then(function (value) {
 
                 logger.guarantees('Scoped guarantee has been processed');
                 // Once we have calculated the scoped guarantee state, we add it to the array 'guaranteeValues'
@@ -174,7 +176,7 @@ function processGuarantee(manager, query) {
  * @param {Object} ofElement of element
  * @param {Object} manager manager
  * */
-function processScopedGuarantee(manager, query, guarantee, ofElement) {
+function processScopedGuarantee(manager, query, guarantee, ofElement, forceUpdate) {
     try {
         return new Promise((resolve, reject) => {
 
@@ -228,7 +230,8 @@ function processScopedGuarantee(manager, query, guarantee, ofElement) {
                         period: {
                             from: query.period ? query.period.from : '*',
                             to: query.period ? query.period.to : '*'
-                        }
+                        },
+                        forceUpdate: forceUpdate
                     });
                 }
             }
@@ -239,7 +242,7 @@ function processScopedGuarantee(manager, query, guarantee, ofElement) {
             logger.guarantees('Obtaining required metrics states for scoped guarantee ' + guarantee.id + '...');
             Promise.each(processMetrics, function (metricParam) {
 
-                return manager.get('metrics', metricParam).then(function (scopedMetricValues) {
+                return manager.get('metrics', metricParam, metricParam.forceUpdate).then(function (scopedMetricValues) {
                     // Once we have all metrics involved in the scoped guarantee calculated...
                     if (scopedMetricValues.length > 0) {
                         logger.guarantees('Timed scoped metric values for ' + scopedMetricValues[0].id + ' has been calculated (' + scopedMetricValues.length + ') ');

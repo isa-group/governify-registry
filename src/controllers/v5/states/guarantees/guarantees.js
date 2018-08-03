@@ -103,7 +103,11 @@ function _guaranteesGET(req, res) {
                     validation.guarantee = guarantee.id;
                     validationErrors.push(validation);
                 } else {
-                    guaranteesPromises.push(manager.get('guarantees', query));
+                    if (req.query.forceUpdate == "true"){
+                    guaranteesPromises.push(manager.get('guarantees', query, true));
+                    } else {
+                        guaranteesPromises.push(manager.get('guarantees', query, false )); 
+                    }
                 }
             });
 
@@ -128,7 +132,13 @@ function _guaranteesGET(req, res) {
                 }
             });
             if (validationErrors.length === 0) {
-                utils.promise.processSequentialPromises('guarantees', manager, guaranteesQueries, result, res, config.streaming);
+
+                if (req.query.forceUpdate == "true") {
+                    utils.promise.processSequentialPromises('guarantees', manager, guaranteesQueries, result, res, config.streaming, true);
+                } else {
+                    utils.promise.processSequentialPromises('guarantees', manager, guaranteesQueries, result, res, config.streaming, false);
+                }
+                
             } else {
                 res.status(400).json(new ErrorModel(400, validationErrors));
             }
@@ -153,6 +163,7 @@ function _guaranteeIdGET(req, res) {
     var agreementId = args.agreement.value;
     var query = new Query(req.query);
     var guaranteeId = args.guarantee.value;
+    var forceUpdate = req.headers.forceupdate;
 
     var ret;
     if (config.streaming) {
@@ -176,7 +187,7 @@ function _guaranteeIdGET(req, res) {
             return controllerErrorHandler(res, "guarantees-controller", "_guaranteeIdGET", 400, errorString);
 
         } else {
-            manager.get('guarantees', query).then(function (success) {
+            manager.get('guarantees', query, JSON.parse(forceUpdate)).then(function (success) {
                 if (config.streaming) {
                     success.forEach(function (element) {
                         ret.push(manager.current(element));

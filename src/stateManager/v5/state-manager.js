@@ -105,9 +105,9 @@ function initialize(_agreement) {
  * @param {StateManagerQuery} query query will be matched with an state.
  * @return {Promise} Promise that will return an array of state objects
  * */
-function _get(stateType, query) {
+function _get(stateType, query, forceUpdate) {
     var stateManager = this;
-    logger.sm('(_get) Retrieving state of ' + stateType);
+    logger.sm('(_get) Retrieving state of ' + stateType + ' - ForceUpdate: ' + forceUpdate) ;
     return new Promise(function (resolve, reject) {
         logger.sm("Getting " + stateType + " state for query =  " + JSON.stringify(query));
         var StateModel = db.models.StateModel;
@@ -130,15 +130,17 @@ function _get(stateType, query) {
 
                 logger.sm('Checking if ' + stateType + ' is updated...');
                 isUpdated(stateManager.agreement, states).then(function (data) {
-                    logger.sm("Updated: " + (data.isUpdated ? 'YES' : 'NO'));
-                    if (data.isUpdated) {
+                
+                    logger.sm("Updated: " + (data.isUpdated ? 'YES' : 'NO') + "[forceUpdate: " + forceUpdate + "]");
+
+                    if (data.isUpdated &&! forceUpdate) {
                         //States are updated, returns.
                         logger.sm("Returning state of " + stateType);
                         return resolve(states);
                     } else {
                         //States are updated, returns.
                         logger.sm("Refreshing states of " + stateType);
-                        stateManager.update(stateType, query, data.logsState).then(function (states) {
+                        stateManager.update(stateType, query, data.logsState, forceUpdate).then(function (states) {
                             return resolve(states);
                         }, function (err) {
                             return reject(err);
@@ -157,7 +159,7 @@ function _get(stateType, query) {
                         var newState = new State(0, query, {});
                         return resolve([newState]);
                     } else {
-                        stateManager.update(stateType, query, data.logsState).then(function (states) {
+                        stateManager.update(stateType, query, data.logsState, forceUpdate).then(function (states) {
                             return resolve(states);
                         }).catch(function (err) {
 
@@ -274,7 +276,7 @@ function _put(stateType, query, value, metadata) {
  * @param {Object} logsState logsState
  * @return {Promise} Promise that will return an array of state objects
  * */
-function _update(stateType, query, logsState) {
+function _update(stateType, query, logsState, forceUpdate) {
     var stateManager = this;
     logger.sm('(_update) Updating state of ' + stateType);
     return new Promise(function (resolve, reject) {
@@ -295,7 +297,7 @@ function _update(stateType, query, logsState) {
                     });
                 break;
             case "guarantees":
-                calculators.guaranteeCalculator.process(stateManager, query)
+                calculators.guaranteeCalculator.process(stateManager, query, forceUpdate)
                     .then(function (guaranteeStates) {
                         logger.sm('Guarantee states for ' + guaranteeStates.guaranteeId + ' have been calculated (' + guaranteeStates.guaranteeValues.length + ') ');
                         logger.debug('Guarantee states: ' + JSON.stringify(guaranteeStates, null, 2));
