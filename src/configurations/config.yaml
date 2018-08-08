@@ -31,6 +31,9 @@ production:
     overrides:
       name: OverridesModel
       path: "./src/models/overridesModel.json"
+    bills:
+      name: BillsModel
+      path: "./src/models/billsModel.json"
   parallelProcess:
     guarantees: false
     metrics: false
@@ -79,6 +82,9 @@ development:
     overrides:
       name: OverridesModel
       path: "./src/models/overridesModel.json"
+    bills:
+      name: BillsModel
+      path: "./src/models/billsModel.json"
   parallelProcess:
     guarantees: false
     metrics: false
@@ -127,6 +133,9 @@ testing:
     overrides:
       name: OverridesModel
       path: "./src/models/overridesModel.json"
+    bills:
+      name: BillsModel
+      path: "./src/models/billsModel.json"
   parallelProcess:
     guarantees: false
     metrics: false

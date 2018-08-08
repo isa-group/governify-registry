@@ -73,6 +73,7 @@ function _connect(callback) {
             setupModel(instance, config.models.agreement.name, config.models.agreement.path);
             setupModel(instance, config.models.state.name, config.models.state.path);
             setupModel(instance, config.models.overrides.name, config.models.overrides.path);
+            setupModel(instance, config.models.bills.name, config.models.bills.path);
         }
         if (callback) {
             callback();

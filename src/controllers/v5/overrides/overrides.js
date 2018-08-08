@@ -104,6 +104,12 @@ function _statesAgreementGuaranteesGuaranteeOverridesPOST(args, res) {
                                     result = httpResponse;
                                 }
                                 res.status(200).send(result);
+                                request.post({
+                                    headers: {
+                                        'from': args.override.value.period.from,
+                                        'to': args.override.value.period.to
+                                    }, url: "http://localhost:5000/api/v1/contracts/" + args.agreement.value + "/ctrl/start"
+                                })
                             });
                            
                         }
@@ -129,10 +135,15 @@ function _statesAgreementGuaranteesGuaranteeOverridesPOST(args, res) {
                         }).on('end', function computerResponseHandler() {
                             //Processing computer response
                             //If HTTP status code is not equal 200 reject the promise and end the process
-
+                            
                          
                                 res.status(200).send("OK");
-                        
+                                console.log("Sending request to update influx")
+                            request.post({
+                                headers: {
+                                    'from': args.override.value.period.from,
+                                    'to': args.override.value.period.to
+                                }, url: "http://localhost:5000/api/v1/contracts/" +  args.agreement.value + "/ctrl/start"})
                            
                         });
                     }
@@ -161,17 +172,31 @@ function _statesAgreementGuaranteesGuaranteeOverridesDELETE(args, res) {
         } else {
             var OverridesModel = db.models.OverridesModel;
             var overrides = new db.models.OverridesModel(schema);
-            OverridesModel.update({ 'agreement': args.agreement.value, 'guarantee': args.guarantee.value }, { $pull: { overrides: args.override.value }, $inc: { 'version': 1 }}, function (err, result) {
+            OverridesModel.update({ 'agreement': args.agreement.value, 'guarantee': args.guarantee.value }, { $pull: { overrides: args.override.value }}, function (err, result) {
             if (err) {
                 logger.error(err.toString());
                 res.status(500).json(new ErrorModel(500, err));
                 } else {
-                    logger.info('New override saved successfully!');
+                    logger.info('New override deleted successfully!');
                     logger.info('Initializing agreement state');
+                var urlReload = "http://localhost:8081/api/v5/states/" + args.agreement.value + "/guarantees?from=" + args.override.value.period.from + "&to=" + args.override.value.period.to + "&forceUpdate=true";
+                logger.info("URLL: " + urlReload) //TODO: Remove
+                var computerRequest = request.get({
+                    url: urlReload,
+                    //   qs: qs.parse(urlParams)
+                }).on('end', function computerResponseHandler() {
+                    //Processing computer response
+                    //If HTTP status code is not equal 200 reject the promise and end the process
+
+
+                    res.status(200).send("OK");
+
+
+                });
                     //Initialize state
                 }
                 });
-            res.status(200); //TODO: Return URL with pprogress
+           
 
             }
 });

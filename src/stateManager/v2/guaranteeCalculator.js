@@ -132,7 +132,7 @@ function processGuarantee(manager, query) {
         // processScopedGuarantee is called for each scope (priority, node, serviceLine, activity, etc.) of the guarantee
 
         Promise.each(processScopedGuarantees, function (guaranteeParam) {
-            return processScopedGuarantee(guaranteeParam.manager, guaranteeParam.query, guaranteeParam.guarantee, guaranteeParam.ofElement).then(function (value) {
+            return processScopedGuarantee(guaranteeParam.manager, guaranteeParam.query, guaranteeParam.guarantee, guaranteeParam.ofElement, guaranteeParam.query.forceUpdate).then(function (value) {
 
                 logger.guarantees('Scoped guarantee has been processed');
                 // Once we have calculated the scoped guarantee state, we add it to the array 'guaranteeValues'

@@ -715,6 +715,62 @@ paths:
           schema:
             $ref: '#/definitions/rate_state'
       x-swagger-router-controller: StateRegistry
+  '/bills/{agreementId}':
+    get:
+      tags:
+        - bills
+      description: Return all existing bills for that agreement and guarantee
+      operationId: billsGET
+      parameters:
+        - name: agreementId
+          in: path
+          description: XXX
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/bill'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/error_model'
+      x-swagger-router-controller: BillRegistry
+  '/bills/{agreementId}/{billId}':
+    put:
+      tags:
+        - bills
+      description: Change state of one bill
+      operationId: billsPUT
+      parameters:
+        - name: agreementId
+          in: path
+          description: XXX
+          required: true
+          type: string
+        - name: billId
+          in: path
+          description: XXX
+          required: true
+          type: string
+        - in: body
+          name: bill
+          description: The bill to create.
+          schema:
+            $ref: '#/definitions/bill'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: string
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/error_model'
+      x-swagger-router-controller: BillRegistry
 definitions:
   query:
     type: object
@@ -1041,7 +1097,19 @@ definitions:
         type: object
       comment:
         type: string
-
+  bill:
+    type: object
+    properties:
+      agreementId:
+        type: string
+      billId:
+        type: string
+      period:
+        $ref: '#/definitions/period'
+      state:
+        type: string
+      closeDate:
+        type: string
 responses:
   error:
     description: Bad request
