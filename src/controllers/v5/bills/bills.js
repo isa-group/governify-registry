@@ -153,7 +153,7 @@ function _billsGET(args, res) {
                         if (!billsDates.includes(moment(period.from).unix())){
                             var standardBill = {
                             agreementId: args.agreementId.value,
-                            billId: moment(period.from).unix(),
+                            billId: moment(period.from).unix() + "",
                             state: 'open',
                             period: period,
                             };
