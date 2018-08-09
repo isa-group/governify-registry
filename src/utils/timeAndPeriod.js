@@ -47,6 +47,9 @@ module.exports = {
  * */
 function _getPeriods(agreement, window) {
     var periods = [];
+    if (!window){
+        window = {};
+    }
     var slot = slots[window.period || "monthly"];
 
     var Wfrom = moment.utc(moment.tz(window.initial ? window.initial : agreement.context.validity.initial, agreement.context.validity.timeZone));
@@ -66,6 +69,7 @@ function _getPeriods(agreement, window) {
 
     return periods;
 }
+
 
 var slots = {
     "quarterly": {

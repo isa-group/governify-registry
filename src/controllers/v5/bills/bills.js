@@ -30,10 +30,12 @@ const logger = require('../../../logger');
 const $RefParser = require('json-schema-ref-parser');
 const db = require('../../../database');
 const request = require('request');
+const utils = require('../../../utils');
 
 const states = require('../states/states');
 const ErrorModel = require('../../../errors/index.js').errorModel;
 const agreementManager = require('governify-agreement-manager').operations.states;
+const moment = require('moment-timezone');
 
 /**
  * Registry agreement module.
@@ -120,18 +122,59 @@ function _billsGET(args, res) {
     logger.info("New request to GET bills bills/bills.js");
     var BillsModel = db.models.BillsModel;
   //  console.log(args.agreement.value + " - " + args.guarantee.value);
-    BillsModel.find({ 'agreementId': args.agreementId.value }, function (err, bills) {
+    var AgreementModel = db.models.AgreementModel;
+  
+    AgreementModel.findOne({ 'id': args.agreementId.value }, function (err, agreement) {
+   
         if (err) {
             logger.error(err.toString());
             res.status(500).json(new ErrorModel(500, err));
         }
-        if (!bills || bills == ""){
-            res.status(200).json([]);
-        }else{
-        console.log(JSON.stringify(bills));
-        logger.info("Bills returned returned");
-        res.status(200).json(bills);
+    else{
+        if (agreement) {
+            BillsModel.find({ 'agreementId': args.agreementId.value }, function (err, bills) {
+                if (err) {
+                    logger.error(err.toString());
+                    res.status(500).json(new ErrorModel(500, err));
+                } else {
+                    if (!bills || bills == "") {
+                        res.status(200).json([]);
+                    } else {
+                        var periods = utils.time.getPeriods(agreement);
+                        var billsComplete = [];
+                        var billsDates = [];
+                        for (var x in bills){
+                            var bill = bills[x];
+                            console.log(JSON.stringify(bill));
+                            billsDates.push(moment(bill.period.from).unix());
+                        }
+                    for (var i in periods){
+                        var period = periods[i];
+                        console.log("BillDatos: " + billsDates);
+                        console.log("Period" + moment(period.from).unix())
+                        if (!billsDates.includes(moment(period.from).unix())){
+                            var standardBill = {
+                            agreementId: args.agreementId.value,
+                            billId: moment(period.from).unix(),
+                            state: 'open',
+                            period: period,
+                            };
+                            bills.push(standardBill);
+                        }
+                     }
+                    console.log(JSON.stringify(bills));
+                    logger.info("Bills returned returned");
+                    res.status(200).json(bills);
+                    }
+                }
+            });
+       
         }
+        else
+        {
+            res.status(404).send('Agreement not found');
+        }
+    }
     });
 }
 
