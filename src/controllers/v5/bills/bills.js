@@ -137,9 +137,7 @@ function _billsGET(args, res) {
                     logger.error(err.toString());
                     res.status(500).json(new ErrorModel(500, err));
                 } else {
-                    if (!bills || bills == "") {
-                        res.status(200).json([]);
-                    } else {
+
                         var periods = utils.time.getPeriods(agreement);
                         var billsComplete = [];
                         var billsDates = [];
@@ -165,7 +163,7 @@ function _billsGET(args, res) {
                     console.log(JSON.stringify(bills));
                     logger.info("Bills returned returned");
                     res.status(200).json(bills);
-                    }
+                    
                 }
             });
        
