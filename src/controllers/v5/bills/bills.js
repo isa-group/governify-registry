@@ -141,6 +141,7 @@ function _billsGET(args, res) {
                         var periods = utils.time.getPeriods(agreement);
                         var billsComplete = [];
                         var billsDates = [];
+                        var orderedBills = [];
                         for (var x in bills){
                             var bill = bills[x];
                             console.log(JSON.stringify(bill));
@@ -157,12 +158,15 @@ function _billsGET(args, res) {
                             state: 'open',
                             period: period,
                             };
-                            bills.push(standardBill);
+                            orderedBills.push(standardBill);
+                        }
+                        else{
+                            orderedBills.push(bills[billsDates.indexOf(moment(period.from).unix())])
                         }
                      }
                     console.log(JSON.stringify(bills));
                     logger.info("Bills returned returned");
-                    res.status(200).json(bills);
+                    res.status(200).json(orderedBills);
                     
                 }
             });
