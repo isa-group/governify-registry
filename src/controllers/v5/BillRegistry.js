@@ -51,7 +51,7 @@ module.exports = {
  * @alias module:BillRegistry.billsGET
  * */
 function _billsGET(req, res, next) {
-    bills.billsGET(req.swagger.params, res, next);
+    bills.billsGET(req, res, next);
 }
 
 /** 

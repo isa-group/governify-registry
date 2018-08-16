@@ -38,8 +38,8 @@ const agreementManager = require('governify-agreement-manager').operations.state
 const moment = require('moment-timezone');
 
 /**
- * Registry agreement module.
- * @module agreements
+ * Registry bill module.
+ * @module bills
  * @see module:AgreementRegistry
  * @see module:AgreementRegistryService
  * @requires config
@@ -56,11 +56,12 @@ module.exports = {
 };
 
 /**
- * Post an agreement
- * @param {Object} args {agreement: String}
+ * Post an bill
+ * @param {Object} args {bill: Object}
  * @param {Object} res response
  * @param {Object} next next function
- * @alias module:agreement.agreementsPUT
+ * @alias module:bills.bills
+ * PUT
  * */
 function _billsPUT(args, res) {
     logger.info("New request to CREATE bill");
@@ -78,19 +79,15 @@ function _billsPUT(args, res) {
                 }
                 else{
                     if (result && result.state == "closed"){
-
                         res.status(403).send("Is not allowed to edit when state is closed.")
                     }
                     else
                     {
-
                         BillsModel.update({ 'agreementId': args.bill.value.agreementId, 'billId': args.bill.value.billId }, args.bill.value, { upsert: true }, function (err, result) {
                             if (err) {
                                 logger.error(err.toString());
                                 res.status(500).json(new ErrorModel(500, err));
                             }
-                            console.log(JSON.stringify(result));
-
                             logger.info('New bill saved successfully!');
                             res.status(200).send(result);
 
@@ -108,24 +105,26 @@ function _billsPUT(args, res) {
 
 
 /**
- * Get all agreements.
- * @param {Object} args {}
+ * Get all bills.
+ * @param {Object} req {}
  * @param {Object} res response
  * @param {Object} next next function
- * @alias module:agreement.agreementsGET
+ * @alias module:bills.billsGET
  * */
-function _billsGET(args, res) {
+function _billsGET(req, res) {
     /**
      * parameters expected in the args:
      * namespace (String)
      **/
+  
+    var args = req.swagger.params;
+    var from = req.headers.from;
+    var to = req.headers.to;
     logger.info("New request to GET bills bills/bills.js");
     var BillsModel = db.models.BillsModel;
-  //  console.log(args.agreement.value + " - " + args.guarantee.value);
     var AgreementModel = db.models.AgreementModel;
   
     AgreementModel.findOne({ 'id': args.agreementId.value }, function (err, agreement) {
-   
         if (err) {
             logger.error(err.toString());
             res.status(500).json(new ErrorModel(500, err));
@@ -137,20 +136,28 @@ function _billsGET(args, res) {
                     logger.error(err.toString());
                     res.status(500).json(new ErrorModel(500, err));
                 } else {
-
-                        var periods = utils.time.getPeriods(agreement);
+                        var periods;
+                        if (from && to){
+                            var window = {
+                                initial: from,
+                                end: to
+                            };
+                            periods = utils.time.getPeriods(agreement, window);
+                       
+                        }
+                        else
+                        {
+                            periods = utils.time.getPeriods(agreement);
+                        }
                         var billsComplete = [];
                         var billsDates = [];
                         var orderedBills = [];
                         for (var x in bills){
                             var bill = bills[x];
-                            console.log(JSON.stringify(bill));
                             billsDates.push(moment(bill.period.from).unix());
                         }
                     for (var i in periods){
                         var period = periods[i];
-                        console.log("BillDatos: " + billsDates);
-                        console.log("Period" + moment(period.from).unix())
                         if (!billsDates.includes(moment(period.from).unix())){
                             var standardBill = {
                             agreementId: args.agreementId.value,

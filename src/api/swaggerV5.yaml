@@ -727,6 +727,16 @@ paths:
           description: XXX
           required: true
           type: string
+        - name: from
+          in: query
+          description: XXX
+          required: false
+          type: string
+        - name: to
+          in: query
+          description: XXX
+          required: false
+          type: string
       responses:
         '200':
           description: Success
