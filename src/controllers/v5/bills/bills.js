@@ -189,3 +189,16 @@ function _billsGET(req, res) {
 
 
 
+function getBill(agreementId, from){
+    var BillsModel = db.models.BillsModel;
+    BillsModel.findOne({ 'agreementId': args.agreementId.value, 'period.from': from }, function (err, bill) {
+        if (err) {
+            logger.error(err.toString());
+            return;
+        } else {
+          return bill;
+
+        }
+    });
+}
+
