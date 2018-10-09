@@ -56,8 +56,48 @@ var controllerErrorHandler = utils.errors.controllerErrorHandler;
 module.exports = {
     guaranteesGET: _guaranteesGET,
     guaranteeIdGET: _guaranteeIdGET,
-    guaranteeIdPenaltyGET: _guaranteeIdPenaltyGET
+    guaranteeIdPenaltyGET: _guaranteeIdPenaltyGET,
+    getGuarantees: _getGuarantees,
 };
+
+//Method used internally
+function _getGuarantees(agreementId, guaranteeId, query, forceUpdate){
+    return new Promise(function (resolve, reject) {
+    stateManager({
+        id: agreementId
+    }).then(function (manager) {
+        var guaranteesQueries = [];
+        var validationErrors = [];
+        manager.agreement.terms.guarantees.forEach(function (guarantee) {
+            var queryM = gUtils.buildGuaranteeQuery(guarantee.id, query.from, query.to);
+            
+            var validation = utils.validators.guaranteeQuery(queryM, guarantee.id, guarantee);
+            if (!validation.valid) {
+                validation.guarantee = guarantee.id;
+                validationErrors.push(validation);
+            } else {
+                guaranteesQueries.push(queryM);
+            }
+        });
+        if (validationErrors.length === 0) {
+                utils.promise.processSequentialPromises('guarantees', manager, guaranteesQueries, null, null, false, true).then(function (result){
+                   resolve(result);
+                }, function (err){
+                    reject( new ErrorModel(500, err));
+                });
+
+        } else {
+            reject(new ErrorModel(400, validationErrors));
+           
+        }
+    }, function (err) {
+
+        let errorString = 'Error while initializing state manager for agreement: ' + agreementId;
+        reject(new ErrorModel(500,errorString + " - " + err));
+
+    });
+    })
+}
 
 /**
  * Get all guarantees.
@@ -68,8 +108,7 @@ module.exports = {
  * */
 function _guaranteesGET(req, res) {
     logger.ctlState("New request to GET guarantees");
-    var args = req.swagger.params;
-    var agreementId = args.agreement.value;
+    var agreementId = req.swagger.params.agreement.value;
 
 
     var result;
@@ -98,6 +137,7 @@ function _guaranteesGET(req, res) {
             var guaranteesPromises = [];
             manager.agreement.terms.guarantees.forEach(function (guarantee) {
                 var query = new Query(req.query);
+                
                 var validation = utils.validators.guaranteeQuery(query, guarantee.id, guarantee);
                 if (!validation.valid) {
                     validation.guarantee = guarantee.id;
@@ -119,10 +159,10 @@ function _guaranteesGET(req, res) {
         } else {
 
             logger.ctlState("### Process mode = SEQUENTIAL ###");
-
             var guaranteesQueries = [];
             manager.agreement.terms.guarantees.forEach(function (guarantee) {
                 var query = gUtils.buildGuaranteeQuery(guarantee.id, req.query.from, req.query.to);
+               
                 var validation = utils.validators.guaranteeQuery(query, guarantee.id, guarantee);
                 if (!validation.valid) {
                     validation.guarantee = guarantee.id;

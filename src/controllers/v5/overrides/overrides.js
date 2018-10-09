@@ -22,8 +22,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 'use strict';
 
 const logger = require('../../../logger');
@@ -36,6 +34,7 @@ const ErrorModel = require('../../../errors/index.js').errorModel;
 const agreementManager = require('governify-agreement-manager').operations.states;
 const config = require('../../../configurations')
 const bills = require('../bills/bills');
+const guarantees = require('../states/guarantees/guarantees')
 
 /**
  * Registry override module.
@@ -56,6 +55,157 @@ module.exports = {
     statesAgreementGuaranteesGuaranteeOverridesGET: _statesAgreementGuaranteesGuaranteeOverridesGET
 };
 
+function createOverride(override, agreement, guarantee) {
+    return changeOverride(override, agreement, guarantee, false);
+}
+
+function deleteOverride(override, agreement, guarantee) {
+    return changeOverride(override, agreement, guarantee, true);
+}
+
+function changeOverride(override, agreement, guarantee, deleteOverride) {
+  return new Promise(function(resolve, reject) {
+    var billPromise = bills.getBill(agreement, override.period.from);
+    billPromise.then(
+      function(billFromPeriod) {
+        if (!billFromPeriod || billFromPeriod.state.toUpperCase() != "CLOSED") {
+          var OverridesModel = db.models.OverridesModel;
+          OverridesModel.findOne(
+            {
+              agreement: agreement,
+              guarantee: guarantee,
+              "overrides.id": override.id,
+              "overrides.scope.priority": override.scope.priority,
+              "overrides.period.from": override.period.from
+            },
+            function(err, result) {
+              if (result && !deleteOverride) {
+                reject(new ErrorModel(500, "That override already exists."));
+              } else if (!result && deleteOverride) {
+                reject(new ErrorModel(404, "That override does not exist."));
+              } else {
+                OverridesModel.findOne(
+                  {
+                    agreement: agreement,
+                    guarantee: guarantee
+                  },
+                  function(err, result) {
+                    if (err) {
+                      logger.error(err.toString());
+                      reject(new ErrorModel(500, err));
+                    } else {
+                      var newOverrides = [];
+                      if (result && result.overrides.length > 0) {
+                        newOverrides = result.overrides;
+                      }
+                      if (!deleteOverride) {
+                        newOverrides.push(override);
+                      }
+                      OverridesModel.update(
+                        {
+                          agreement: agreement,
+                          guarantee: guarantee
+                        },
+                        deleteOverride
+                          ? {
+                              $pull: {
+                                overrides: override
+                              }
+                            }
+                          : {
+                              overrides: newOverrides
+                            },
+                        {
+                          upsert: true
+                        },
+                        function(err) {
+                          if (err) {
+                            logger.error(
+                              "Mongo error saving override: " + err.toString()
+                            );
+                            reject(new ErrorModel(500, err));
+                          } else {
+                            logger.info("New override saved successfully!");
+                            logger.info("Initializing agreement state");
+                            //Initialize state
+                            var query = {
+                              from: override.period.from,
+                              to: override.period.to
+                            };
+                            guarantees
+                              .getGuarantees(agreement, guarantee, query, true)
+                              .then(
+                                function(result) {
+                                  logger.info(
+                                    "State from override updated correctly-"
+                                  );
+                                  resolve("OK");
+                                  var requestData = {
+                                    from: override.period.from,
+                                    to: override.period.to
+                                  };
+                                  logger.info("DATA3");
+                                  var AgreementModel = db.models.AgreementModel;
+                                  AgreementModel.findOne(
+                                    {
+                                      id: agreement
+                                    },
+                                    function(err, agreementRes) {
+                                      logger.info("DATA1:" + JSON.stringify(err) + " --- --- " + JSON.stringify(agreementRes));
+                                      if (!err && agreementRes) {
+                                        request(
+                                          {
+                                            url:
+                                              agreementRes.context
+                                                .infrastructure.reporter +
+                                              "/contracts/" +
+                                              agreement +
+                                              "/ctrl/start",
+                                            method: "POST",
+                                            json: requestData
+                                          },
+                                          function(error, response, body) {
+                                            logger.info("DATA2:" + JSON.stringify(err) + " --- --- " + JSON.stringify(response) + " --- --- " + JSON.stringify(body));
+                                            if (
+                                              !error &&
+                                              response.statusCode == 200
+                                            ) {
+                                              logger.info(body);
+                                            }
+                                          }
+                                        );
+                                      }
+                                    }
+                                  );
+                                },
+                                function(err) {
+                                  reject(err);
+                                }
+                              );
+                          }
+                        }
+                      );
+                    }
+                  }
+                );
+              }
+            }
+          );
+        } else {
+          reject(
+            new ErrorModel(
+              403,
+              "You cannot override periods when the bill is closed."
+            )
+          );
+        }
+      },
+      function(err) {
+        logger.info(err.toString);
+      }
+    );
+  });
+}
 /**
  * Post an agreement
  * @param {Object} args {agreement: String}
@@ -70,133 +220,14 @@ function _statesAgreementGuaranteesGuaranteeOverridesPOST(args, res) {
             logger.error(err.toString());
             res.status(500).json(new ErrorModel(500, err));
         } else {
-            var BillsModel = db.models.BillsModel;
-            BillsModel.findOne({ 'agreementId': args.agreement.value, 'period.from': args.override.value.period.from }, function (err, bill) {
-                if (err) {
-                    logger.error(err.toString());
-                    res.status(500).json(new ErrorModel(500, err));
-                }
-                else {
-                    console.log(" BILL STATE: " + JSON.stringify(bill))
-                    if (!bill || bill.state.toUpperCase() != "CLOSED") {
+            var overridePromise = createOverride(args.override.value, args.agreement.value, args.guarantee.value);
+            overridePromise.then(function (result) {
+                res.status(200).send(result);
+            },
+            function (error) {
+                res.status(error.code).json(error);
+            });
 
-                        var OverridesModel = db.models.OverridesModel;
-                        var overrides = new db.models.OverridesModel(schema);
-                        OverridesModel.findOne({ 'agreement': args.agreement.value, 'guarantee': args.guarantee.value }, function (err, result) {
-                            if (err) {
-                                logger.error(err.toString());
-                                res.status(500).json(new ErrorModel(500, err));
-                            }
-                            if (!result || result.length < 1) {
-
-                                var newAgreementOverrides = new OverridesModel({ 'agreement': args.agreement.value, 'guarantee': args.guarantee.value, 'overrides': [args.override.value] });
-                                newAgreementOverrides.save(function (err) {
-                                    if (err) {
-                                        logger.error("Mongo error saving agreement: " + err.toString());
-                                        res.status(500).json(new ErrorModel(500, err));
-                                    } else {
-                                        logger.info('New override saved successfully!');
-                                        logger.info('Initializing agreement state');
-                                        //Initialize state
-                                        var urlReload = "http://localhost:" + config.server.port + "/api/v5/states/" + args.agreement.value + "/guarantees?from=" + args.override.value.period.from + "&to= " + args.override.value.period.to + "&forceUpdate=true";
-                                        var computerRequest = request.get({
-                                            url: urlReload,
-                                            //   qs: qs.parse(urlParams)
-                                        }).on('response', function computerResponseHandler(httpResponse) {
-                                            //Processing computer response
-                                            //If HTTP status code is not equal 200 reject the promise and end the process
-                                            var result;
-                                            if (httpResponse.statusCode !== 200) {
-                                                result = "Error in forceUpdate state " + httpResponse.statusCode + ':' + httpResponse.statusMessage;
-                                            }
-                                            else {
-                                                result = httpResponse;
-                                            }
-                                            res.status(200).send(result);
-                                            stateManager({
-                                                id: args.agreement.value
-                                            }).then(function (manager) {
-                                                manager.get(args.agreement.value).then(function (agreement) {
-                                                    request.post({
-                                                        headers: {
-                                                            'period':{
-                                                            'from': args.override.value.period.from,
-                                                            'to': args.override.value.period.to
-                                                            }
-                                                        }, url: "http://localhost:5000/api/v1/contracts/" + args.agreement.value + "/ctrl/start"
-                                                    })
-                                                }, function (err) {
-                                                    logger.error(err.message.toString());
-
-                                                });
-                                            }, function (err) {
-                                                logger.error(err.message.toString());
-                                            });
-                                        });
-                                    }
-                                });
-
-
-                            }
-                            else {
-                                result.overrides.push(args.override.value);
-                                OverridesModel.update({ 'agreement': args.agreement.value, 'guarantee': args.guarantee.value }, result, function (err) {
-                                    if (err) {
-                                        logger.error("Mongo error saving agreement: " + err.toString());
-                                        res.status(500).json(new ErrorModel(500, err));
-                                    } else {
-                                        logger.info(' 2-New override saved successfully!');
-                                        logger.info('Initializing agreement state');
-                                        //Initialize state
-                                        //TODO: Parametrize URL
-                                        var urlReload = "http://localhost:8081/api/v5/states/" + args.agreement.value + "/guarantees?from=" + args.override.value.period.from + "&to=" + args.override.value.period.to + "&forceUpdate=true";
-                                        logger.info("URLL: " + urlReload) //TODO: Remove
-                                        var computerRequest = request.get({
-                                            url: urlReload,
-                                            //   qs: qs.parse(urlParams)
-                                        }).on('end', function computerResponseHandler() {
-                                            //Processing computer response
-                                            //If HTTP status code is not equal 200 reject the promise and end the process
-
-
-                                            res.status(200).send("OK");
-                                            console.log(" -- Sending request to update influx31")
-                                            //  console.log(JSON.stringify(postData));
-                                            console.log(args.agreement.value);
-
-                                            var requestData = {
-                                                'period': {
-                                                    'from': args.override.value.period.from,
-                                                    'to': args.override.value.period.to,
-
-                                                }
-                                            }
-                                            request({
-                                                url: "http://localhost:5000/api/v1/contracts/" + args.agreement.value + "/ctrl/start",
-                                                method: "POST",
-                                                json: requestData
-                                            }, function (error, response, body) {
-                                                if (!error && response.statusCode == 200) {
-                                                    console.log(body)
-                                                }
-                                            }
-                                            );
-
-
-                                        });
-                                    }
-                                });
-                            }
-                        });
-
-                    }
-                    else {
-                        res.status(400).send("You cannot override periods when the bill is closed.");
-                    }
-                }
-                });
-
-          
         }
     });
 }
@@ -216,35 +247,14 @@ function _statesAgreementGuaranteesGuaranteeOverridesDELETE(args, res) {
             logger.error(err.toString());
             res.status(500).json(new ErrorModel(500, err));
         } else {
-            var OverridesModel = db.models.OverridesModel;
-            var overrides = new db.models.OverridesModel(schema);
-            OverridesModel.update({ 'agreement': args.agreement.value, 'guarantee': args.guarantee.value }, { $pull: { overrides: args.override.value }}, function (err, result) {
-            if (err) {
-                logger.error(err.toString());
-                res.status(500).json(new ErrorModel(500, err));
-                } else {
-                    logger.info('New override deleted successfully!');
-                    logger.info('Initializing agreement state');
-                var urlReload = "http://localhost:8081/api/v5/states/" + args.agreement.value + "/guarantees?from=" + args.override.value.period.from + "&to=" + args.override.value.period.to + "&forceUpdate=true";
-                var computerRequest = request.get({
-                    url: urlReload,
-                    //   qs: qs.parse(urlParams)
-                }).on('end', function computerResponseHandler() {
-                    //Processing computer response
-                    //If HTTP status code is not equal 200 reject the promise and end the process
-
-
-                    res.status(200).send("OK");
-
-
-                });
-                    //Initialize state
-                }
-                });
-           
-
-            }
-});
+            deleteOverride(args.override.value, args.agreement.value, args.guarantee.value).then(function (result) {
+                    res.status(200).send(result);
+                },
+                function (error) {
+                    res.status(error.code).json(error);
+                })
+        }
+    });
 }
 
 
@@ -262,21 +272,20 @@ function _statesAgreementGuaranteesGuaranteeOverridesGET(args, res) {
      **/
     logger.info("New request to GET overrides overrides/overrides.js");
     var OverridesModel = db.models.OverridesModel;
-    console.log(args.agreement.value + " - " + args.guarantee.value);
-    OverridesModel.findOne({ 'agreement': args.agreement.value, 'guarantee': args.guarantee.value }, function (err, overrides) {
+    OverridesModel.findOne({
+        'agreement': args.agreement.value,
+        'guarantee': args.guarantee.value
+    }, function (err, overrides) {
         if (err) {
             logger.error(err.toString());
             res.status(500).json(new ErrorModel(500, err));
         }
-        if (!overrides || overrides == ""){
+        if (!overrides || overrides == "") {
             res.status(200).json([]);
-        }else{
-        console.log(JSON.stringify(overrides.overrides));
-        logger.info("Overrides returned returned");
-        res.status(200).json(overrides.overrides);
+        } else {
+            console.log(JSON.stringify(overrides.overrides));
+            logger.info("Overrides returned returned");
+            res.status(200).json(overrides.overrides);
         }
     });
 }
-
-
-

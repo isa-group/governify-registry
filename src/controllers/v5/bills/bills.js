@@ -52,7 +52,8 @@ const moment = require('moment-timezone');
  * */
 module.exports = {
     billsPUT: _billsPUT,
-    billsGET: _billsGET
+    billsGET: _billsGET,
+    getBill: _getBill
 };
 
 /**
@@ -118,8 +119,8 @@ function _billsGET(req, res) {
      **/
   
     var args = req.swagger.params;
-    var from = req.headers.from;
-    var to = req.headers.to;
+    var from = args.from.value;
+    var to = args.to.value;
     logger.info("New request to GET bills bills/bills.js");
     var BillsModel = db.models.BillsModel;
     var AgreementModel = db.models.AgreementModel;
@@ -171,7 +172,6 @@ function _billsGET(req, res) {
                             orderedBills.push(bills[billsDates.indexOf(moment(period.from).unix())])
                         }
                      }
-                    console.log(JSON.stringify(bills));
                     logger.info("Bills returned returned");
                     res.status(200).json(orderedBills);
                     
@@ -188,17 +188,17 @@ function _billsGET(req, res) {
 }
 
 
-
-function getBill(agreementId, from){
+/**
+ * Get bill for one agreement and period
+ * @param {String} agreementId AgreementId
+ * @alias module:bills.getBill
+ * */
+function _getBill(agreementId, from){
     var BillsModel = db.models.BillsModel;
-    BillsModel.findOne({ 'agreementId': args.agreementId.value, 'period.from': from }, function (err, bill) {
+   return BillsModel.findOne({ 'agreementId': agreementId, 'period.from': from }, function (err, bill) {
         if (err) {
             logger.error(err.toString());
-            return;
-        } else {
-          return bill;
-
-        }
+        } 
     });
 }
 
