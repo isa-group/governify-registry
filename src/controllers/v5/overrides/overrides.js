@@ -52,7 +52,8 @@ const guarantees = require('../states/guarantees/guarantees')
 module.exports = {
     statesAgreementGuaranteesGuaranteeOverridesPOST: _statesAgreementGuaranteesGuaranteeOverridesPOST,
     statesAgreementGuaranteesGuaranteeOverridesDELETE: _statesAgreementGuaranteesGuaranteeOverridesDELETE,
-    statesAgreementGuaranteesGuaranteeOverridesGET: _statesAgreementGuaranteesGuaranteeOverridesGET
+    statesAgreementGuaranteesGuaranteeOverridesGET: _statesAgreementGuaranteesGuaranteeOverridesGET,
+    statesAgreementOverridesDELETE: _statesAgreementOverridesDELETE
 };
 
 function createOverride(override, agreement, guarantee) {
@@ -288,4 +289,31 @@ function _statesAgreementGuaranteesGuaranteeOverridesGET(args, res) {
             res.status(200).json(overrides.overrides);
         }
     });
+}
+
+
+
+/**
+ * Delete override.
+ * @param {Object} args {}
+ * @param {Object} res response
+ * @param {Object} next next function
+ * @alias module:override.overrideDELETE
+ * */
+function _statesAgreementOverridesDELETE(args, res) {
+  logger.info("New request to DELETE all overrides for agreement");
+ 
+  var OverridesModel = db.models.OverridesModel;
+  OverridesModel.deleteMany({
+      'agreement': args.agreement.value
+  }, function (err, result) {
+      if (err) {
+          logger.error(err.toString());
+          res.status(500).json(new ErrorModel(500, err));
+      } else {
+          logger.info("Deleted all overrides for agreement " + args.agreement.value);
+          res.status(200).send("OK");
+      }
+  });
+ 
 }

@@ -41,6 +41,7 @@ module.exports = {
     statesAgreementGuaranteesGuaranteeOverridesGET: _statesAgreementGuaranteesGuaranteeOverridesGET,
     statesAgreementGuaranteesGuaranteeOverridesPOST: _statesAgreementGuaranteesGuaranteeOverridesPOST,
     statesAgreementGuaranteesGuaranteeOverridesDELETE: _statesAgreementGuaranteesGuaranteeOverridesDELETE,
+    statesAgreementOverridesDELETE: _statesAgreementOverridesDELETE
 
 };
 
@@ -75,4 +76,16 @@ function _statesAgreementGuaranteesGuaranteeOverridesPOST(req, res, next) {
  * */
 function _statesAgreementGuaranteesGuaranteeOverridesDELETE(req, res, next) {
     overrides.statesAgreementGuaranteesGuaranteeOverridesDELETE(req.swagger.params, res, next);
+}
+
+
+/** 
+ * statesAgreementOverridesDELETE.
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
+ * @alias module:OverrideRegistry.statesAgreementOverridesDELETE
+ * */
+function _statesAgreementOverridesDELETE(req, res, next) {
+    overrides.statesAgreementOverridesDELETE(req.swagger.params, res, next);
 }

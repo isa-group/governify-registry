@@ -53,6 +53,7 @@ const moment = require('moment-timezone');
 module.exports = {
     billsPUT: _billsPUT,
     billsGET: _billsGET,
+    billsDELETE: _billsDELETE,
     getBill: _getBill
 };
 
@@ -201,4 +202,24 @@ function _getBill(agreementId, from){
         } 
     });
 }
+
+
+/**
+ * Get bill for one agreement and period
+ * @param {String} agreementId AgreementId
+ * @alias module:bills.getBill
+ * */
+function _billsDELETE(req, res){
+    var args = req.swagger.params;
+    var BillsModel = db.models.BillsModel;
+   return BillsModel.deleteMany({ 'agreementId': args.agreementId.value }, function (err, bill) {
+        if (err) {
+            res.status(404).send('Agreement not found');
+        } 
+        else{
+            res.status(200).send("OK")
+        }
+    });
+}
+
 

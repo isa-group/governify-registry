@@ -40,6 +40,7 @@ module.exports = {
 
     billsGET: _billsGET,
     billsPUT: _billsPUT,
+    billsDELETE: _billsDELETE
 
 };
 
@@ -52,6 +53,18 @@ module.exports = {
  * */
 function _billsGET(req, res, next) {
     bills.billsGET(req, res, next);
+}
+
+
+/** 
+ * billsDELETE.
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {Object} next next function
+ * @alias module:BillRegistry.billsDELETE
+ * */
+function _billsDELETE(req, res, next) {
+    bills.billsDELETE(req, res, next);
 }
 
 /** 

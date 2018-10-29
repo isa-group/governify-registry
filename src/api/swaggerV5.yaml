@@ -436,6 +436,28 @@ paths:
           schema:
             $ref: '#/definitions/error_model'
       x-swagger-router-controller: OverrideRegistry
+  '/states/{agreement}/overrides':
+    delete:
+      tags:
+        - state-registry
+      description: Delete all overrides for one agreement
+      operationId: statesAgreementOverridesDELETE
+      parameters:
+        - name: agreement
+          in: path
+          description: XXX
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: string
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/error_model'
+      x-swagger-router-controller: OverrideRegistry
   '/states/{agreement}/metrics':
     get:
       tags:
@@ -744,6 +766,27 @@ paths:
             type: array
             items:
               $ref: '#/definitions/bill'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/error_model'
+      x-swagger-router-controller: BillRegistry
+    delete:
+      tags:
+        - bills
+      description: Remove all existing bills for that agreement 
+      operationId: billsDELETE
+      parameters:
+        - name: agreementId
+          in: path
+          description: XXX
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: string
         '400':
           description: Bad request
           schema:
