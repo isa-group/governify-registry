@@ -45,7 +45,7 @@ const app = express();
 
 const frontendPath = path.join(__dirname, '/public');
 const serverPort = process.env.PORT || config.server.port;
-const CURRENT_API_VERSION = "v5";
+const CURRENT_API_VERSION = "v6";
 
 app.use(express.static(frontendPath));
 
@@ -98,6 +98,7 @@ app.use('/api/v2/states/:agreement', middlewares.stateInProgress);
 app.use('/api/v3/states/:agreement', middlewares.stateInProgress);
 app.use('/api/v4/states/:agreement', middlewares.stateInProgress);
 app.use('/api/v5/states/:agreement', middlewares.stateInProgress);
+app.use('/api/v6/states/:agreement', middlewares.stateInProgress);
 
 // latest documentation redirection
 app.use('/api/latest/docs', function (req, res) {
@@ -154,7 +155,8 @@ function _deploy(configurations, callback) {
                 swaggerUtils.getSwaggerDoc(2),
                 swaggerUtils.getSwaggerDoc(3),
                 swaggerUtils.getSwaggerDoc(4),
-                swaggerUtils.getSwaggerDoc(5)
+                swaggerUtils.getSwaggerDoc(5),
+                swaggerUtils.getSwaggerDoc(6)
             ];
             //initialize swagger middleware for each swagger documents.
             swaggerUtils.initializeMiddleware(app, swaggerDocs, function () {

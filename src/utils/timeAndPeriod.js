@@ -51,7 +51,6 @@ function _getPeriods(agreement, window) {
         window = {};
     }
     var slot = slots[window.period || "monthly"];
-
     var Wfrom = moment.utc(moment.tz(window.initial ? window.initial : agreement.context.validity.initial, agreement.context.validity.timeZone));
     var Wto = window.end ? moment.utc(moment.tz(window.end, agreement.context.validity.timeZone)) : moment.utc();
 
@@ -79,6 +78,34 @@ var slots = {
     "monthly": {
         count: 1,
         unit: "months"
+    },
+    "daily": {
+        count: 1,
+        unit: "day"
+    },
+    "hourly": {
+        count: 1,
+        unit: "hour"
+    },
+    "minutely": {
+        count: 1,
+        unit: "minute"
+    },
+    "secondly": {
+        count: 1,
+        unit: "second"
+    },
+    "weekly": {
+        count: 1,
+        unit: "week"
+    },
+    "biweekly": {
+        count: 2,
+        unit: "week"
+    },
+    "yearly": {
+        count: 1,
+        unit: "years"
     }
 };
 

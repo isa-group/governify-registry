@@ -28,9 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const logger = require('../../../../logger');
 const db = require('../../../../database');
-const stateManager = require('../../../../stateManager/v5/state-manager.js');
+const stateManager = require('../../../../stateManager/v6/state-manager.js');
 const mailer = require('../../../../utils/mailer');
-const calculators = require('../../../../stateManager/v5/calculators.js');
+const calculators = require('../../../../stateManager/v6/calculators.js');
 
 const Promise = require('bluebird');
 const request = require('request');
@@ -119,7 +119,7 @@ function _agreementIdDELETE(args, res) {
                 logger.warning("Can't delete state for agreement " + agreementId + " :" + err);
             }
         });
-        
+
     } else {
         res.sendStatus(400);
         logger.warning("Can't delete state for agreement " + agreementId);
@@ -164,41 +164,67 @@ function _statesFilter(req, res) {
     var type = req.query.type;
     var from = req.query.from;
     var to = req.query.to;
-    var priority = req.query.priority;
+
+
+    // Recreate scopes object
+    var scopeQuery = {}
+    var groupQuery = {}
+    for (var property in req.query) {
+        if (property.startsWith("scope.")) {
+            if (req.query[property] === "*") {
+                scopeQuery[property] = {
+                    $exists: true
+                }
+            }
+            else {
+                scopeQuery[property] = {
+                    $eq: req.query[property]
+                }
+            }
+
+            groupQuery = {
+                $group:{ _id: "$" +property, evidences: { $push: "$records.evidences" }  }
+            }
+        }
+    }
+
 
     var StateModel = db.models.StateModel;
+
+    var andQuery = {
+        "agreementId": {
+            $eq: agreementId
+        },
+        "id": {
+            $eq: indicator
+        },
+        "stateType": {
+            $eq: type
+        },
+        "period.from": {
+            $eq: from
+        },
+       
+    }
+
+    if (to){
+        Object.assign(andQuery, {"period.to": {
+            $eq: to
+        }})
+    }
+
+    Object.assign(andQuery, scopeQuery) // Concat scope properties to the query
+
     StateModel.aggregate([{
         $match: {
-            $and: [{
-                "agreementId": {
-                    $eq: agreementId
-                },
-                "id": {
-                    $eq: indicator
-                },
-                "stateType": {
-                    $eq: type
-                },
-                "period.from": {
-                    $eq: from
-                },
-                "period.to": {
-                    $eq: to
-                },
-                "scope.priority": {
-                    $eq: priority
-                }
-            }]
+            $and: [andQuery]
         }
     },
     {
         $unwind: "$records"
     },
-    {
-        $project: {
-            evidences: "$records.evidences"
-        }
-    }
+    groupQuery?groupQuery:{}
+   
     ])
         .allowDiskUse(true)
         .cursor()

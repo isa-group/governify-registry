@@ -131,7 +131,7 @@ function _get(stateType, query, forceUpdate) {
                 logger.sm('Checking if ' + stateType + ' is updated...');
               //  isUpdated(stateManager.agreement, states).then(function (data) {
                 
-                    logger.sm("Updated: " + (data.isUpdated ? 'YES' : 'NO') + "[forceUpdate: " + forceUpdate + "]");
+               //     logger.sm("Updated: " + (data.isUpdated ? 'YES' : 'NO') + "[forceUpdate: " + forceUpdate + "]");
 
                     // if (data.isUpdated &&! forceUpdate) {
                     //     //States are updated, returns.
@@ -140,7 +140,7 @@ function _get(stateType, query, forceUpdate) {
                     // } else {
                         //States are updated, returns.
                         logger.sm("Refreshing states of " + stateType);
-                        stateManager.update(stateType, query, data.logsState, forceUpdate).then(function (states) {
+                        stateManager.update(stateType, query, 0, forceUpdate).then(function (states) { //Change 0 with (data.logState) in case of using DB system.
                             return resolve(states);
                         }, function (err) {
                             return reject(err);
@@ -153,13 +153,13 @@ function _get(stateType, query, forceUpdate) {
             } else {
                 logger.sm("There are not " + stateType + " state for query =  " + JSON.stringify(query) + " in DB");
                 logger.sm("Adding states of " + stateType);
-                isUpdated(stateManager.agreement).then(function (data) {
-                    if (data.isUpdated) {
-                        logger.sm("There is no state for this metric. Returning initial values.");
-                        var newState = new State(0, query, {});
-                        return resolve([newState]);
-                    } else {
-                        stateManager.update(stateType, query, data.logsState, forceUpdate).then(function (states) {
+                // isUpdated(stateManager.agreement).then(function (data) {
+                    // if (data.isUpdated) {
+                    //     logger.sm("There is no state for this metric. Returning initial values.");
+                    //     var newState = new State(0, query, {});
+                    //     return resolve([newState]);
+                    // } else {
+                        stateManager.update(stateType, query, 0, forceUpdate).then(function (states) {
                             return resolve(states);
                         }).catch(function (err) {
 
@@ -167,11 +167,11 @@ function _get(stateType, query, forceUpdate) {
                             return promiseErrorHandler(reject, "state-manager", "_get", 500, errorString, err);
 
                         });
-                    }
-                }, function (err) {
-                    logger.sm(JSON.stringify(err));
-                    return reject(new ErrorModel(500, "Error while checking if " + stateType + " state is updated: " + err));
-                });
+                    // }
+                // }, function (err) {
+                //     logger.sm(JSON.stringify(err));
+                //     return reject(new ErrorModel(500, "Error while checking if " + stateType + " state is updated: " + err));
+                // });
             }
         });
     });
@@ -309,10 +309,10 @@ function _update(stateType, query, logsState, forceUpdate) {
                                 period: guaranteeState.period,
                                 scope: guaranteeState.scope
                             }, guaranteeState.value, {
-                                    "logsState": logsState,
+                                 //   "logsState": logsState,
                                     metrics: guaranteeState.metrics,
                                     evidences: guaranteeState.evidences,
-                                    penalties: guaranteeState.penalties ? guaranteeState.penalties : null
+                                  //  penalties: guaranteeState.penalties ? guaranteeState.penalties : null
                                 }));
                         });
                         logger.sm('Created parameters array for saving states of guarantee of length ' + processGuarantees.length);
@@ -328,7 +328,7 @@ function _update(stateType, query, logsState, forceUpdate) {
 
                         });
                     }).catch(function (err) {
-
+                        console.log(err);
                         let errorString = "Error processing guarantees";
                         return promiseErrorHandler(reject, "state-manager", "_update", 500, errorString, err);
 
@@ -347,7 +347,7 @@ function _update(stateType, query, logsState, forceUpdate) {
                                     period: metricValue.period,
                                     window: query.window
                                 }, metricValue.value, {
-                                        "logsState": logsState,
+                                     //   "logsState": logsState,
                                         evidences: metricValue.evidences,
                                         parameters: metricValue.parameters
                                     }));
