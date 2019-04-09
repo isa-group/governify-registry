@@ -66,7 +66,7 @@ function processMetric(agreement, metricId, metricQuery) {
             if (!metric) {
                 return reject('Metric ' + metricId + ' not found.');
             }
-
+   
             var computerObj = metric.computer;
 
             /**### BUILD COMPUTER REQUEST QUERY ###**/
@@ -77,7 +77,6 @@ function processMetric(agreement, metricId, metricQuery) {
             if (metricQuery.evidences) {
                 computerQuery.evidences = metricQuery.evidences;
             }
-
             // //Select logs data. If metric has not log, select by default log.
             // var logDefinition, logId;
             // if (metric.log) {
@@ -100,13 +99,15 @@ function processMetric(agreement, metricId, metricQuery) {
             // computerQuery.logs = {};
             // computerQuery.logs[logId] = new LogField(
             //     logDefinition.uri,
-            //     logDefinition.stateUri,
+            //     logDefinition.stateUri,1
             //     logDefinition.terminator,
             //     logDefinition.structure
             // );
            
             // Mapping of columns names in log
-            var scope = utils.scopes.registryToComputerParser(metricQuery.scope, null);
+           // var scope = utils.scopes.registryToComputerParser(metricQuery.scope, null);
+   
+            var scope = metricQuery.scope
             computerQuery.measure = JSON.stringify(metric.measure);
             // adding computer config
             computerQuery.config = new Config(
@@ -119,7 +120,7 @@ function processMetric(agreement, metricId, metricQuery) {
             //     return reject('Log not found for metric ' + metricId + '. ' +
             //         'Please, specify metric log or default log.');
             // }
-           
+           // computerQuery.scope = Object.keys(scope).length > 0 ? scope : metricQuery.scope;
             computerQuery.scope = Object.keys(scope).length > 0 ? scope : metricQuery.scope;
             // ### PREPARE REQUEST ###
             //Build URL query that will use on computer request

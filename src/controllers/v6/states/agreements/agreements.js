@@ -177,9 +177,19 @@ function _statesFilter(req, res) {
                 }
             }
             else {
-                scopeQuery[property] = {
-                    $eq: req.query[property]
+                if ( req.query[property] === NaN){
+                    scopeQuery[property] = {
+                   
+                        $eq: req.query[property]
+                    }
                 }
+                else{
+                    scopeQuery[property] = {
+                   
+                        $eq: parseInt(req.query[property])
+                    }
+                }
+                
             }
 
             groupQuery = {
@@ -215,6 +225,7 @@ function _statesFilter(req, res) {
 
     Object.assign(andQuery, scopeQuery) // Concat scope properties to the query
 
+    console.log("Calling with query: " + JSON.stringify(andQuery))
     StateModel.aggregate([{
         $match: {
             $and: [andQuery]

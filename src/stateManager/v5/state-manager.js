@@ -129,15 +129,15 @@ function _get(stateType, query, forceUpdate) {
                 var states = result;
 
                 logger.sm('Checking if ' + stateType + ' is updated...');
-              //  isUpdated(stateManager.agreement, states).then(function (data) {
+                isUpdated(stateManager.agreement, states).then(function (data) {
                 
                     logger.sm("Updated: " + (data.isUpdated ? 'YES' : 'NO') + "[forceUpdate: " + forceUpdate + "]");
 
-                    // if (data.isUpdated &&! forceUpdate) {
-                    //     //States are updated, returns.
-                    //     logger.sm("Returning state of " + stateType);
-                    //     return resolve(states);
-                    // } else {
+                    if (data.isUpdated &&! forceUpdate) {
+                        //States are updated, returns.
+                        logger.sm("Returning state of " + stateType);
+                        return resolve(states);
+                    } else {
                         //States are updated, returns.
                         logger.sm("Refreshing states of " + stateType);
                         stateManager.update(stateType, query, data.logsState, forceUpdate).then(function (states) {
@@ -145,11 +145,11 @@ function _get(stateType, query, forceUpdate) {
                         }, function (err) {
                             return reject(err);
                         });
-               //     }
-                // }, function (err) {
-                //     logger.sm(JSON.stringify(err));
-                //     return reject(new ErrorModel(500, "Error while checking if " + stateType + " is is updated: " + err));
-                // });
+                    }
+                }, function (err) {
+                    logger.sm(JSON.stringify(err));
+                    return reject(new ErrorModel(500, "Error while checking if " + stateType + " is is updated: " + err));
+                });
             } else {
                 logger.sm("There are not " + stateType + " state for query =  " + JSON.stringify(query) + " in DB");
                 logger.sm("Adding states of " + stateType);

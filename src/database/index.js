@@ -60,10 +60,15 @@ module.exports = {
 function _connect(callback) {
     var instance = this;
     var db = null;
+    var options = {
+        keepAlive: true,
+        reconnectTries: Number.MAX_VALUE, //Never stop trying to reconnect
+        reconnectInterval: 3000, 
+      };
     let databaseFullURL = "mongodb://" + config.database.host + ":" + config.database.port + "/" + config.database.name;
     logger.info('Connecting to ' + databaseFullURL);
     mongoose.Promise = global.Promise;
-    mongoose.connect(databaseFullURL).then(() => {
+    mongoose.connect(databaseFullURL,options).then(() => {
         db = mongoose.connection;
 
         logger.info('Connected to db!');

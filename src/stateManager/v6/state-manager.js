@@ -234,13 +234,13 @@ function _put(stateType, query, value, metadata) {
                                     logger.error(err.toString());
                                     return reject(new ErrorModel(500, err));
                                 }
-                                if (result.length != 1) {
+                             /*    if (result.length != 1) {
                                     logger.error("Inconsistent DB: multiple states for query = " + JSON.stringify(refineQuery(stateManager.agreement.id, stateType, query), null, 2));
                                     logger.error("DB result = " + JSON.stringify(result, null, 2));
                                     return reject(new ErrorModel(500, "Inconsistent DB: multiple states for query " + JSON.stringify(refineQuery(stateManager.agreement.id, stateType, query), null, 2)));
-                                } else {
+                                } else { */
                                     return resolve(result);
-                                }
+                             //   }
                             });
                         }
                     });
@@ -253,13 +253,13 @@ function _put(stateType, query, value, metadata) {
                             logger.error(err.toString());
                             return reject(new ErrorModel(500, err));
                         }
-                        if (result.length != 1) {
+                    /*     if (result.length != 1) {
                             logger.error("Inconsistent DB: multiple states for query = " + JSON.stringify(refineQuery(stateManager.agreement.id, stateType, query), null, 2));
                             logger.error("DB result = " + JSON.stringify(result, null, 2));
                             return reject(new ErrorModel(500, "Inconsistent DB: multiple states for query " + JSON.stringify(refineQuery(stateManager.agreement.id, stateType, query), null, 2)));
-                        } else {
+                        } else { */
                             return resolve(result);
-                        }
+                       // }
                     });
                 }
             }
@@ -304,7 +304,7 @@ function _update(stateType, query, logsState, forceUpdate) {
                         var processGuarantees = [];
                         guaranteeStates.guaranteeValues.forEach(function (guaranteeState) {
                             logger.debug('Guarantee state: ' + JSON.stringify(guaranteeState, null, 2));
-                            processGuarantees.push(stateManager.put(stateType, {
+                             processGuarantees.push(stateManager.put(stateType, {
                                 guarantee: query.guarantee,
                                 period: guaranteeState.period,
                                 scope: guaranteeState.scope
@@ -313,7 +313,7 @@ function _update(stateType, query, logsState, forceUpdate) {
                                     metrics: guaranteeState.metrics,
                                     evidences: guaranteeState.evidences,
                                   //  penalties: guaranteeState.penalties ? guaranteeState.penalties : null
-                                }));
+                                })); 
                         });
                         logger.sm('Created parameters array for saving states of guarantee of length ' + processGuarantees.length);
                         logger.sm('Persisting guarantee states...');

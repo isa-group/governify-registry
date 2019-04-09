@@ -107,10 +107,12 @@ function _getGuarantees(agreementId, guaranteeId, query, forceUpdate) {
  * @alias module:guarantees.guaranteesGET
  * */
 function _guaranteesGET(req, res) {
-    logger.ctlState("New request to GET guarantees");
+   
     var agreementId = req.swagger.params.agreement.value;
     var from = req.query.from;
     var to = req.query.to;
+    var newPeriodsFromGuarantees = req.query.newPeriodsFromGuarantees ? (req.query.newPeriodsFromGuarantees === "true") : true;
+    logger.ctlState("New request to GET guarantees - With new periods from guarantees: " + newPeriodsFromGuarantees);
 
     var result;
     if (config.streaming) {
@@ -173,7 +175,11 @@ function _guaranteesGET(req, res) {
                 if (from && to) {
                     requestWindow.initial = from;
                     requestWindow.end = to;
+                    if (newPeriodsFromGuarantees){
                     periods = utils.time.getPeriods(manager.agreement, requestWindow);
+                    }else{
+                        periods = [{from: moment(from), to: moment(to)}]
+                    }
                     //Create query for every period
                     allQueries = periods.map(function (period) {
                         return gUtils.buildGuaranteeQuery(guarantee.id, period.from.format(), period.to.format())

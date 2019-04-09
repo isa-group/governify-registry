@@ -107,7 +107,7 @@ function processGuarantee(manager, query, forceUpdate) {
             let errorString = 'Guarantee ' + guaranteeId + ' not found.';
             return promiseErrorHandler(reject, "guarantees", "processGuarantees", 404, errorString);
         }
-        // We prepare the parameters needed by the processScopedGuarantee function
+        // We prepare the parameters needed by the processScopedGuarantee function 
         if (query.period && query.period.from === "*") {
             delete query.period;
         }
@@ -246,12 +246,14 @@ function processScopedGuarantee(manager, query, guarantee, ofElement, forceUpdat
             Promise.each(processMetrics, function (metricParam) {
 
                 return manager.get('metrics', metricParam, metricParam.forceUpdate).then(function (scopedMetricValues) {
+                    console.log("SCOPEDMETRICVALUES:" + JSON.stringify(scopedMetricValues))
                     // Once we have all metrics involved in the scoped guarantee calculated...
                     if (scopedMetricValues.length > 0) {
                         logger.guarantees('Timed scoped metric values for ' + scopedMetricValues[0].id + ' has been calculated (' + scopedMetricValues.length + ') ');
                         logger.guarantees('Updating timed scope array for ' + scopedMetricValues[0].id + '...');
                         // For each scoped metric value...
                         scopedMetricValues.forEach(function (metricValue) {
+                            console.log("METRICVALUE:" + JSON.stringify(metricValue))
                             var ts = {
                                 scope: metricValue.scope,
                                 period: metricValue.period
@@ -284,7 +286,8 @@ function processScopedGuarantee(manager, query, guarantee, ofElement, forceUpdat
                 //the execution when 1 promise fails
 
             }).then(function () {
-
+                console.log("TIMEDSCOPEDSTORED:" + JSON.stringify(timedScopes))
+                console.log("METRICVALUESTORED:" + JSON.stringify(metricValues))
                 var guaranteesValues = [];
                 logger.guarantees('Calculating penalties for scoped guarantee ' + guarantee.id + '...');
                  for (var index = 0; index < timedScopes.length; index++) {
@@ -297,6 +300,7 @@ function processScopedGuarantee(manager, query, guarantee, ofElement, forceUpdat
 
                 logger.guarantees('All penalties for scoped guarantee ' + guarantee.id + ' calculated.');
                 logger.debug('Guarantees values: ' + JSON.stringify(guaranteesValues, null, 2));
+                console.log("GUARANTEEVALUES" + JSON.stringify(guaranteesValues))
                 return resolve(guaranteesValues);
 
             }).catch(function (err) {

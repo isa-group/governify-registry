@@ -94,7 +94,8 @@ module.exports = {
  * */
 function _containsObject(obj, array) {
     for (var i = 0; i < array.length; i++) {
-        if (diff(array[i], obj) === null) {
+        var difs = diff(array[i], obj)
+        if (difs === undefined || difs === null ) {
             return i;
         }
     }
