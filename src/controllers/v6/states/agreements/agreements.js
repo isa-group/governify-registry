@@ -164,6 +164,7 @@ function _statesFilter(req, res) {
     var type = req.query.type;
     var from = req.query.from;
     var to = req.query.to;
+    var at = req.query.at;
 
 
     // Recreate scopes object
@@ -212,7 +213,7 @@ function _statesFilter(req, res) {
             $eq: type
         },
         "period.from": {
-            $eq: from
+            $eq: from || at
         },
        
     }
