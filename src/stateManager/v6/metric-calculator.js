@@ -112,6 +112,7 @@ function processMetric(agreement, metricId, metricQuery) {
             // adding computer config
             computerQuery.config = new Config(
                // computerObj.config.measures,
+                computerObj.config.ptkey,
                 computerObj.config.schedules,
                 computerObj.config.holidays || null,
                 agreement.context.infrastructure.registry + "/states/" + agreement.id + "/guarantees/" + metricId + "/overrides"
@@ -197,8 +198,9 @@ function processMetric(agreement, metricId, metricQuery) {
 
 //constructor of computer request config object
 class Config {
-    constructor(schedules, holidays, overrides) {
+    constructor(ptkey, schedules, holidays, overrides) {
       //  this.measures = measures;
+        this.ptkey = ptkey;
         this.schedules = schedules;
         this.holidays = holidays;
         this.overrides = overrides;
