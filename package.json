@@ -32,7 +32,7 @@
     "json-schema-ref-parser": "^3.1.2",
     "moment": "^2.15.1",
     "moment-timezone": "^0.5.5",
-    "mongoose": "^4.6.3",
+    "mongoose": "^5.4.10",
     "nodemailer": "^2.6.4",
     "nodemailer-sendgrid-transport": "^0.2.0",
     "request": "^2.75.0",
