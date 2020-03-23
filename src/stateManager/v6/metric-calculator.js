@@ -267,7 +267,8 @@ function getComputationV2(computationURL, ttl) {
             if (ttl<0)
                 reject('Retries time surpased TTL.');
             
-            let timeout = 4000; //Minimum 500ms
+            let realTimeout = 2000; //Minimum = firstTimeout
+            let firstTimeout = 500;
             let options = {
               json: true,
               url: computationURL,
@@ -282,20 +283,20 @@ function getComputationV2(computationURL, ttl) {
                         reject(err);
                     }
                     if (res.statusCode == '202'){
-                        logger.metrics("Computation " + computationURL.split("/").pop + " not ready jet. Retrying in " + timeout + " ms.");
+                        logger.metrics("Computation " + computationURL.split("/").pop + " not ready jet. Retrying in " + realTimeout + " ms.");
                         setTimeout(() => {
-                            getComputationV2(computationURL, ttl - timeout).then(response => {
+                            getComputationV2(computationURL, ttl - realTimeout).then(response => {
                                 resolve(response);
                             }).catch(err => {
                                 reject(err);
                             });
-                        }, timeout - 200);   
+                        }, realTimeout - firstTimeout);   
                     } else if (res.statusCode == '200')
                         resolve(body.computations);
                     else
                         reject("Error when obtaining computation - " + res.statusMessage);
                 });
-            }, 200);            
+            }, firstTimeout);            
           } catch (err) {
             reject(err);
           }
