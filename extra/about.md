@@ -1,7 +1,9 @@
 ## Engineering Team
 
-**Daniel Arteaga** - *research engineer* ( darteaga at us.es ) @dani8art
+**Alejandro Guerrero** - *research engineer* @AlexGue
 
-**Antonio Gámez** - *research engineer* ( agamez2 at us.es ) @antgamdia
+**Rafael Fresno** - *research engineer* @raffrearaUS
 
-**Felipe Serafim** - *research engineer* ( fvieiradacunha at us.es ) @feserafim
+**Cesar Garcia** - *research engineer* @cesgarpas
+
+**Antonio Gámez** - *research engineer* @antgamdia
