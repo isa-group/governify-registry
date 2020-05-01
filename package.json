@@ -42,7 +42,8 @@
     "url": "^0.11.0",
     "util": "^0.10.3",
     "vm": "^0.1.0",
-    "winston": "^2.2.0"
+    "winston": "^2.2.0",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -62,7 +63,9 @@
     "eslint": "eslint lib/**/*.js test/**/*.js",
     "test": "./node_modules/.bin/mocha --reporter spec --require test/bootstrap/node test/*.test.js test/**/*.test.js",
     "start": "node --max-old-space-size=20480 server.js",
-    "docs": "cmd /k generateDocs.bat"
+    "docs": "cmd /k generateDocs.bat",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "author": {
     "name": "ISA group",
@@ -75,5 +78,6 @@
   },
   "docker": {
     "url": "https://hub.docker.com/r/isagroup/governify-registry/"
-  }
+  },
+  "snyk": true
 }
