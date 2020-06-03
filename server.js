@@ -20,6 +20,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
+// Add this to the VERY top of the first file loaded in your app
+var apm = require('../apm-agent-nodejs').start({
+    // Override service name from package.json
+    // Allowed characters: a-z, A-Z, 0-9, -, _, and space
+
+    serviceName: 'Governify-Registry-V2',
+    serviceNodeName: 'Registry',
+    captureBody: 'all',
+    transactionMaxSpans: -1,
+    usePathAsTransactionName: true,
+    abortedErrorThreshold: 0,
+    distributedTracingOrigins: ['*']
+
+  })
+  
+
 /*
  * Put here your dependencies
  */

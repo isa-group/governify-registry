@@ -191,6 +191,7 @@ function processMetric(agreement, metricId, metricQuery) {
                     });
                 });
             } else if (computerObj.apiVersion == 2) {
+                metric.measure.scope = Object.keys(scope).length > 0 ? scope : metricQuery.scope;
                 let options = {
                     url: computerObj.url + "/api/v" + computerObj.apiVersion + "/" + computerObj.endpoint.replace(/^\//, ""),
                     method: 'POST',
@@ -199,19 +200,16 @@ function processMetric(agreement, metricId, metricQuery) {
                     },
                     json: {
                         config: computerObj.config,
-                        measure: metric.measure
+                        metric: metric.measure
                     }
                 };
-                options.json.measure['window'] = metricQuery.window;
-
+                options.json.metric['window'] = metricQuery.window;
                 var compositeResponse = [];
-                
                 request(options, (err, res, body) => {
                     if (err) {
                         var errorString = "Error in Computer response " + res.statusCode + ':' + res.statusMessage;
                         return promiseErrorHandler(reject, "metrics", processMetric.name, httpResponse.statusCode, errorString);
                     }
-
                     getComputationV2(computerObj.url + "/" + body.computation.replace(/^\//, ""), 60000).then(monthMetrics => {
                         try {
                             //Check if computer response is correct
@@ -267,7 +265,7 @@ function getComputationV2(computationURL, ttl) {
             if (ttl<0)
                 reject('Retries time surpased TTL.');
             
-            let realTimeout = 2000; //Minimum = firstTimeout
+            let realTimeout = 1000; //Minimum = firstTimeout
             let firstTimeout = 500;
             let options = {
               json: true,
