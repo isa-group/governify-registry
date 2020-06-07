@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 'use strict';
 
 // Add this to the VERY top of the first file loaded in your app
-var apm = require('../apm-agent-nodejs').start({
+var apm = require('elastic-apm-node').start({
     // Override service name from package.json
     // Allowed characters: a-z, A-Z, 0-9, -, _, and space
 
