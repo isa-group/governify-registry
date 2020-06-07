@@ -24,14 +24,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 var apm = require('elastic-apm-node').start({
     // Override service name from package.json
     // Allowed characters: a-z, A-Z, 0-9, -, _, and space
-
-    serviceName: 'Governify-Registry-V2',
-    serviceNodeName: 'Registry',
-    captureBody: 'all',
-    transactionMaxSpans: -1,
-    usePathAsTransactionName: true,
-    abortedErrorThreshold: 0,
-    distributedTracingOrigins: ['*']
+  // Override service name from package.json
+  // Allowed characters: a-z, A-Z, 0-9, -, _, and space
+  serviceName: 'Governify-Registry',
+  serviceNodeName: 'Registry',
+  captureBody: 'all',
+  transactionMaxSpans: -1,
+  usePathAsTransactionName: true,
+  abortedErrorThreshold: 0,
+  distributedTracingOrigins: ['*'],
+  active: config.apisense.enabled
 
   })
   
