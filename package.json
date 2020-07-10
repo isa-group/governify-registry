@@ -55,7 +55,7 @@
     "grunt-dockerize": "0.0.2",
     "grunt-mocha-test": "^0.13.2",
     "grunt-release-github": "^2.0.0",
-    "grunt-run": "^0.6.0",
+    "grunt-run": "^0.8.0",
     "mocha": "^3.1.0"
   },
   "scripts": {
