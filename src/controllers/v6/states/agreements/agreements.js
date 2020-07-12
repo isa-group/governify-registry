@@ -214,7 +214,7 @@ function _statesFilter(req, res) {
         },
         "period.from": {
             $eq: from || at
-        },
+        }
        
     }
 
@@ -234,8 +234,8 @@ function _statesFilter(req, res) {
     },
     {
         $unwind: "$records"
-    },
-    groupQuery?groupQuery:{}
+    }
+    //,groupQuery?groupQuery:{}
    
     ])
         .allowDiskUse(true)
