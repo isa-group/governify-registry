@@ -295,10 +295,11 @@ function processMetric(agreement, metricId, metricQuery) {
 
                 // adding computer config
                 computerQuery.config = new Config(
-                    computerObj.config.measures,
+                    "",
                     computerObj.config.schedules,
                     computerObj.config.holidays || null,
-                    agreement.context.infrastructure.registry + "/states/" + agreement.id + "/guarantees/" + metricId + "/overrides"
+                    agreement.context.infrastructure.registry + "/states/" + agreement.id + "/guarantees/" + metricId + "/overrides",
+                    computerObj.config.measures,
                 );
 
                 if (!computerQuery.logs) {
@@ -433,8 +434,8 @@ function getComputationV2(computationURL, ttl) {
 
 //constructor of computer request config object
 class Config {
-    constructor(ptkey, schedules, holidays, overrides) {
-        //  this.measures = measures;
+    constructor(ptkey, schedules, holidays, overrides, measures) {
+         this.measures = measures;
         this.ptkey = ptkey;
         this.schedules = schedules;
         this.holidays = holidays;
