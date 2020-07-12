@@ -20,6 +20,8 @@ production:
     level: debug
     maxFiles: 30
     maxSize: 10000000
+  apisense:
+    enabled: false
   maxAttempts: 20
   models:
     agreement:
@@ -71,6 +73,8 @@ development:
     level: debug
     maxFiles: 30
     maxSize: 10000000
+  apisense:
+    enabled: false
   maxAttempts: 10
   models:
     agreement:
@@ -122,6 +126,8 @@ testing:
     level: debug
     maxFiles: 30
     maxSize: 10000000
+  apisense:
+    enabled: false
   maxAttempts: 10
   models:
     agreement:

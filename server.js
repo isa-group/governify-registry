@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
+const config = require("./src/configurations");
+
 // Add this to the VERY top of the first file loaded in your app
 var apm = require('elastic-apm-node').start({
     // Override service name from package.json
@@ -52,7 +54,6 @@ const fs = require('fs');
 const path = require('path');
 
 //Self dependencies
-const config = require("./src/configurations");
 const logger = require("./src/logger");
 const db = require('./src/database');
 const swaggerUtils = require('./src/utils').swagger;
