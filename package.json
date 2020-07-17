@@ -14,7 +14,7 @@
   "private": true,
   "dependencies": {
     "JSONStream": "^1.2.1",
-    "ajv": "^4.7.7",
+    "ajv": "^6.12.3",
     "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "chai": "^3.5.0",
