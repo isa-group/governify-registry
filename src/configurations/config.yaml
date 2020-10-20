@@ -1,9 +1,9 @@
 ---
 production:
   database:
-    host: mongo_registry
-    port: 27017
-    name: registry
+    host: {{DB_HOST}}{{^DB_HOST}}mongo_registry{{/DB_HOST}}
+    port: {{DB_PORT}}{{^DB_PORT}}27017{{/DB_PORT}}
+    name: {{DB_NAME}}{{^DB_NAME}}registry{{/DB_NAME}}
   email:
     defaultMailFrom: '"ISA-Group" <no-reply@isa.us.es>'
     mailerApiKey: this API key has been revoked. Pass it as an environment var to

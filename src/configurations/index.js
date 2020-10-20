@@ -30,6 +30,7 @@ const jsyaml = require('js-yaml');
 const fs = require('fs');
 const winston = require('winston');
 const path = require('path');
+const mustache = require('mustache');
 
 
 /**
@@ -79,14 +80,15 @@ module.exports.stream = {
  * Implement the functions
  */
 function _addConfiguration(uri, encoding) {
+    var configStringTemplate = null;
     var configString = null;
 
     if (!uri) {
         throw new Error("Parameter URI is required");
     } else {
-        configString = fs.readFileSync(path.join(__dirname, uri), encoding);
+        configStringTemplate = fs.readFileSync(path.join(__dirname, uri), encoding);
     }
-
+    configString = mustache.render(configStringTemplate, process.env);
     var newConfigurations = jsyaml.safeLoad(configString)[process.env.NODE_ENV ? process.env.NODE_ENV : 'development'];
 
     for (var c in newConfigurations) {
