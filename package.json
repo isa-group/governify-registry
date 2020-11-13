@@ -33,7 +33,7 @@
     "moment": "^2.15.1",
     "moment-timezone": "^0.5.5",
     "mongoose": "^4.6.3",
-    "nodemailer": "^2.6.4",
+    "nodemailer": "^6.4.16",
     "nodemailer-sendgrid-transport": "^0.2.0",
     "request": "^2.75.0",
     "requestretry": "^1.12.0",
